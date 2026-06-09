@@ -135,12 +135,6 @@ namespace My
             var chunkDb = gameLogicManager?.AreaManager?.cacheChunkDatabase;
             var overlay = gameLogicManager?.AreaManager?.cacheMapOverlayCfg;
 
-            if (worldRoot != null && worldRoot.HasLogicWorldRectOverride)
-            {
-                rect = worldRoot.LogicWorldRectOverride;
-                return true;
-            }
-
             if (chunkDb != null)
             {
                 rect = chunkDb.ResolveLogicWorldRect();

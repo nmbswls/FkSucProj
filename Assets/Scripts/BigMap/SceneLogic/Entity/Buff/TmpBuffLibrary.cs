@@ -1521,7 +1521,7 @@ namespace My.Map.Entity
                     MaxStackLayer = 5,
                     DefaultDuration = -1,
                     SupportsEffectToggle = true,
-                    Icon = "fallback",
+                    Icon = "player_weiyi",
 
                     ModifierAttrs = new()
                     {

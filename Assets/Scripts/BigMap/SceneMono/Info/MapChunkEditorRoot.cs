@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-// Editor 场景根配置：挂于 Variant 场景 AreaRoot（如 Main_Area_01），与 WorldAreaRoot 同级
+// Editor 场景根配置：挂于 *_Editor 场景 AreaRoot，运行时由 WorldAreaRoot 承接
 public class MapChunkEditorRoot : MonoBehaviour
 {
     public string SceneName;

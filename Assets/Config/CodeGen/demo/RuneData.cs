@@ -20,13 +20,12 @@ public sealed partial class RuneData : Luban.BeanBase
     {
         { if(!_buf["rune_id"].IsString) { throw new SerializationException(); }  RuneId = _buf["rune_id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
+        { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["rune_type"].IsNumber) { throw new SerializationException(); }  RuneType = (demo.ERuneType)_buf["rune_type"].AsInt; }
         { if(!_buf["equip_slot"].IsNumber) { throw new SerializationException(); }  EquipSlot = (demo.ERuneEquipSlot)_buf["equip_slot"].AsInt; }
         { if(!_buf["initial_upgrade_id"].IsString) { throw new SerializationException(); }  InitialUpgradeId = _buf["initial_upgrade_id"]; }
         { if(!_buf["layout_template_id"].IsString) { throw new SerializationException(); }  LayoutTemplateId = _buf["layout_template_id"]; }
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
-        { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
-        { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
     }
 
     public static RuneData DeserializeRuneData(JSONNode _buf)
@@ -36,13 +35,12 @@ public sealed partial class RuneData : Luban.BeanBase
 
     public string RuneId;
     public string Name;
+    public string Desc;
     public demo.ERuneType RuneType;
     public demo.ERuneEquipSlot EquipSlot;
     public string InitialUpgradeId;
     public string LayoutTemplateId;
     public string Icon;
-    public string Desc;
-    public int SortOrder;
    
     public const int __ID__ = 1585911247;
     public override int GetTypeId() => __ID__;
@@ -56,13 +54,12 @@ public sealed partial class RuneData : Luban.BeanBase
         return "{ "
         + "runeId:" + RuneId + ","
         + "name:" + Name + ","
+        + "desc:" + Desc + ","
         + "runeType:" + RuneType + ","
         + "equipSlot:" + EquipSlot + ","
         + "initialUpgradeId:" + InitialUpgradeId + ","
         + "layoutTemplateId:" + LayoutTemplateId + ","
         + "icon:" + Icon + ","
-        + "desc:" + Desc + ","
-        + "sortOrder:" + SortOrder + ","
         + "}";
     }
 }

@@ -53,7 +53,7 @@ namespace My.Dungeon.Editor
             EditorGUILayout.LabelField("图例", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("绿框 = Start 房间");
             EditorGUILayout.LabelField("黄框 = Combat 房间");
-            EditorGUILayout.LabelField("蓝点 = 出生点 (PlayerBornPos)");
+            EditorGUILayout.LabelField("蓝点 = 出生点 (PreviewBornPos)");
             EditorGUILayout.LabelField("青圈 = DestroyObj 插槽");
         }
 

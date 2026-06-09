@@ -1031,12 +1031,12 @@ namespace My.Map.Logic
 
         public void ApplyMapVariantPresentation(WorldAreaRoot root)
         {
-            if (root == null || cacheChunkDatabase == null)
+            if (root == null)
             {
                 return;
             }
 
-            WorldAreaRoot.TryBindWalkGridFromDatabase(root, cacheChunkDatabase);
+            root.Initialize(cacheChunkDatabase);
         }
 
     }

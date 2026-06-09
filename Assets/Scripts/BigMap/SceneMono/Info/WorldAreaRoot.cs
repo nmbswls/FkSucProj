@@ -4,54 +4,132 @@ using My.MapExport;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// 运行时区域上下文：场景内固定 GridRoot / NavMesh，逻辑层与 chunk 内容运行时装配
 public class WorldAreaRoot : MonoBehaviour
 {
-    public Grid Grid;
+    public const string DefaultLogicHeightConfigKey = "MapLogicHeightConfig";
+    public const string SceneGridRootName = "GridRoot";
 
-    // 由 MapLogicHeightConfig.GroundLayerNames 装配，勿在 Inspector 手拖全量 Tilemap。
-    public Tilemap[] TileGrounds;
-    public Tilemap TileHole;
+    Grid _grid;
+    Tilemap[] _tileGrounds;
+    Tilemap _tileHole;
+    MapLogicHeightConfig _logicHeightConfig;
 
-    [Header("Logic Height")]
-    public MapLogicHeightConfig LogicHeightConfig;
-
-    public Transform PlayerBornPos;
-
-    public Transform StaticPrefabRoot;
-
-    public Transform BackgroundChunkRoot;
-    public Transform TilemapChunkRoot;
-
-    [Header("Camera Bounds")]
-    [Tooltip("留空则使用 MapChunkDatabase.LogicWorldRect（或由 Chunks 推算）")]
-    public Rect LogicWorldRectOverride;
+    Transform _staticPrefabRoot;
+    Transform _backgroundChunkRoot;
+    Transform _tilemapChunkRoot;
 
     GameObject _walkGridInstance;
+    readonly List<GameObject> _walkLayerInstances = new List<GameObject>();
 
-    public bool HasLogicWorldRectOverride =>
-        LogicWorldRectOverride.width > 0f && LogicWorldRectOverride.height > 0f;
+    public Grid Grid => _grid;
+    public Tilemap[] TileGrounds => _tileGrounds;
+    public Tilemap TileHole => _tileHole;
+    public MapLogicHeightConfig LogicHeightConfig => _logicHeightConfig;
+    public Transform StaticPrefabRoot => _staticPrefabRoot;
+    public Transform BackgroundChunkRoot => _backgroundChunkRoot;
+    public Transform TilemapChunkRoot => _tilemapChunkRoot;
 
-    public bool HasWalkTileGrounds => TileGrounds != null && TileGrounds.Length > 0;
+    public bool HasWalkTileGrounds => _tileGrounds != null && _tileGrounds.Length > 0;
+    public bool HasSceneGridRoot => ResolveSceneGridRoot() != null;
 
     void Awake()
     {
-        if (BackgroundChunkRoot == null)
+        EnsureRuntimeHandles();
+        EnsureSceneGrid();
+    }
+
+    public void Initialize(MapChunkDatabase chunkDb)
+    {
+        EnsureRuntimeHandles();
+        EnsureSceneGrid();
+
+        if (chunkDb != null)
         {
-            var go = new GameObject("BackgroundChunkRoot");
-            go.transform.SetParent(transform, false);
-            BackgroundChunkRoot = go.transform;
+            BindLogicHeightConfig(chunkDb);
         }
 
-        if (TilemapChunkRoot == null)
+        if (_logicHeightConfig == null)
         {
-            var go = new GameObject("TilemapChunkRoot");
-            go.transform.SetParent(transform, false);
-            TilemapChunkRoot = go.transform;
+            _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(DefaultLogicHeightConfigKey);
         }
 
+        if (HasSceneGridRoot)
+        {
+            if (chunkDb != null && chunkDb.HasWalkGrid && !HasWalkTileGrounds)
+            {
+                PopulateWalkLayersFromPrefab(chunkDb.WalkGridKey);
+            }
+
+            ApplyTileGroundsFromLogicHeightConfig();
+            return;
+        }
+
+        if (chunkDb != null && chunkDb.HasWalkGrid)
+        {
+            BindWalkGridLegacy(chunkDb.WalkGridKey);
+            return;
+        }
+
+        if (!HasWalkTileGrounds)
+        {
+            ApplyTileGroundsFromLogicHeightConfig();
+        }
     }
 
     public void BindWalkGrid(string resourceKey)
+    {
+        if (HasSceneGridRoot)
+        {
+            PopulateWalkLayersFromPrefab(resourceKey);
+            return;
+        }
+
+        BindWalkGridLegacy(resourceKey);
+    }
+
+    void PopulateWalkLayersFromPrefab(string resourceKey)
+    {
+        ClearWalkLayers();
+        if (string.IsNullOrEmpty(resourceKey) || _grid == null)
+        {
+            return;
+        }
+
+        var prefab = Resources.Load<GameObject>(resourceKey);
+        if (prefab == null)
+        {
+            Debug.LogError($"[WorldAreaRoot] Walk grid prefab not found: Resources/{resourceKey}");
+            return;
+        }
+
+        var sourceGrid = prefab.GetComponent<Grid>();
+        if (sourceGrid == null)
+        {
+            Debug.LogError($"[WorldAreaRoot] Walk grid prefab has no Grid: Resources/{resourceKey}");
+            return;
+        }
+
+        for (int i = 0; i < sourceGrid.transform.childCount; i++)
+        {
+            var child = sourceGrid.transform.GetChild(i);
+            var clone = Instantiate(child.gameObject, _grid.transform);
+            clone.name = child.name;
+            clone.transform.localPosition = child.localPosition;
+            clone.transform.localRotation = child.localRotation;
+            clone.transform.localScale = child.localScale;
+            _walkLayerInstances.Add(clone);
+        }
+
+        ResolveTileHoleFromGrid();
+        ApplyTileGroundsFromLogicHeightConfig();
+
+        Debug.Log(
+            $"[WorldAreaRoot] Walk layers populated under scene GridRoot: {resourceKey}, " +
+            $"groundLayers={_tileGrounds?.Length ?? 0}");
+    }
+
+    void BindWalkGridLegacy(string resourceKey)
     {
         ClearWalkGrid();
         if (string.IsNullOrEmpty(resourceKey))
@@ -72,17 +150,18 @@ public class WorldAreaRoot : MonoBehaviour
         _walkGridInstance.transform.localRotation = Quaternion.identity;
         _walkGridInstance.transform.localScale = Vector3.one;
 
-        Grid = _walkGridInstance.GetComponent<Grid>();
+        _grid = _walkGridInstance.GetComponent<Grid>();
         ResolveTileHoleFromGrid();
         ApplyTileGroundsFromLogicHeightConfig();
 
         Debug.Log(
-            $"[WorldAreaRoot] Walk grid bound: {resourceKey}, groundLayers={TileGrounds?.Length ?? 0} " +
-            "(from LogicHeightConfig)");
+            $"[WorldAreaRoot] Walk grid bound (legacy): {resourceKey}, groundLayers={_tileGrounds?.Length ?? 0}");
     }
 
     public void ClearWalkGrid()
     {
+        ClearWalkLayers();
+
         if (_walkGridInstance != null)
         {
             if (Application.isPlaying)
@@ -96,33 +175,64 @@ public class WorldAreaRoot : MonoBehaviour
         }
 
         _walkGridInstance = null;
+
+        if (!HasSceneGridRoot)
+        {
+            _grid = null;
+            _tileGrounds = null;
+            _tileHole = null;
+        }
     }
 
-    // 按 LogicHeightConfig.GroundLayerNames 从 Grid 下解析地面 Tilemap（仅地面层）。
+    void ClearWalkLayers()
+    {
+        for (int i = _walkLayerInstances.Count - 1; i >= 0; i--)
+        {
+            var go = _walkLayerInstances[i];
+            if (go == null)
+            {
+                continue;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(go);
+            }
+            else
+            {
+                DestroyImmediate(go);
+            }
+        }
+
+        _walkLayerInstances.Clear();
+        _tileGrounds = null;
+        _tileHole = null;
+    }
+
     public bool ApplyTileGroundsFromLogicHeightConfig()
     {
-        if (LogicHeightConfig == null)
+        if (_logicHeightConfig == null)
         {
             Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig is missing, cannot assemble ground layers.");
             return false;
         }
 
-        if (LogicHeightConfig.GroundLayerNames == null || LogicHeightConfig.GroundLayerNames.Length == 0)
+        if (_logicHeightConfig.GroundLayerNames == null || _logicHeightConfig.GroundLayerNames.Length == 0)
         {
             Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig.GroundLayerNames is empty.");
             return false;
         }
 
-        EnsureGridReference();
-        if (Grid == null)
+        EnsureSceneGrid();
+        if (_grid == null)
         {
             Debug.LogWarning("[WorldAreaRoot] Grid not found, cannot assemble ground layers.");
             return false;
         }
 
         ResolveTileHoleFromGrid();
-        TileGrounds = CollectGroundTilemaps(Grid, TileHole, LogicHeightConfig);
-        if (TileGrounds == null || TileGrounds.Length == 0)
+        _tileGrounds = CollectGroundTilemaps(_grid, _tileHole, _logicHeightConfig);
+        if (_tileGrounds == null || _tileGrounds.Length == 0)
         {
             Debug.LogWarning("[WorldAreaRoot] No ground tilemaps matched GroundLayerNames.");
             return false;
@@ -171,41 +281,7 @@ public class WorldAreaRoot : MonoBehaviour
 
     public bool IsWorldPosWalkableOnTileGrounds(Vector3 worldPos)
     {
-        return IsWorldPosWalkable(worldPos, TileGrounds, TileHole);
-    }
-
-    public static void TryBindWalkGridFromDatabase(WorldAreaRoot root, MapChunkDatabase chunkDb)
-    {
-        if (root == null || chunkDb == null || !chunkDb.HasWalkGrid)
-        {
-            return;
-        }
-
-        TryBindLogicHeightConfigFromDatabase(root, chunkDb);
-        root.BindWalkGrid(chunkDb.WalkGridKey);
-    }
-
-    public static void TryBindLogicHeightConfigFromDatabase(WorldAreaRoot root, MapChunkDatabase chunkDb)
-    {
-        if (root == null || chunkDb == null || string.IsNullOrEmpty(chunkDb.LogicHeightConfigKey))
-        {
-            return;
-        }
-
-        if (root.LogicHeightConfig != null)
-        {
-            return;
-        }
-
-        var config = Resources.Load<MapLogicHeightConfig>(chunkDb.LogicHeightConfigKey);
-        if (config != null)
-        {
-            root.LogicHeightConfig = config;
-        }
-        else
-        {
-            Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{chunkDb.LogicHeightConfigKey}");
-        }
+        return IsWorldPosWalkable(worldPos, _tileGrounds, _tileHole);
     }
 
     public static bool IsWorldPosWalkable(Vector3 worldPos, Tilemap[] tileGrounds, Tilemap tileHole)
@@ -248,65 +324,119 @@ public class WorldAreaRoot : MonoBehaviour
 
     public Tilemap[] ResolveGroundSamplingTilemaps()
     {
-        if (TileGrounds != null && TileGrounds.Length > 0)
+        if (_tileGrounds != null && _tileGrounds.Length > 0)
         {
-            return TileGrounds;
+            return _tileGrounds;
         }
 
-        if (LogicHeightConfig != null)
+        if (_logicHeightConfig != null)
         {
             ApplyTileGroundsFromLogicHeightConfig();
         }
 
-        return TileGrounds;
+        return _tileGrounds;
     }
 
-    void EnsureGridReference()
+    void BindLogicHeightConfig(MapChunkDatabase chunkDb)
     {
-        if (Grid != null)
-        {
-            return;
-        }
+        var key = !string.IsNullOrEmpty(chunkDb.LogicHeightConfigKey)
+            ? chunkDb.LogicHeightConfigKey
+            : DefaultLogicHeightConfigKey;
 
-        if (_walkGridInstance != null)
+        _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(key);
+        if (_logicHeightConfig == null)
         {
-            Grid = _walkGridInstance.GetComponent<Grid>();
-            if (Grid != null)
+            Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{key}");
+        }
+    }
+
+    void EnsureRuntimeHandles()
+    {
+        if (_staticPrefabRoot == null)
+        {
+            var staticRoot = transform.Find("StaticRoot");
+            if (staticRoot != null)
             {
-                return;
+                _staticPrefabRoot = staticRoot;
             }
         }
 
-        Grid = GetComponentInChildren<Grid>(true);
-        if (Grid != null)
+        if (_backgroundChunkRoot == null)
+        {
+            var existing = transform.Find("BackgroundChunkRoot");
+            if (existing != null)
+            {
+                _backgroundChunkRoot = existing;
+            }
+            else
+            {
+                var go = new GameObject("BackgroundChunkRoot");
+                go.transform.SetParent(transform, false);
+                _backgroundChunkRoot = go.transform;
+            }
+        }
+
+        if (_tilemapChunkRoot == null)
+        {
+            var existing = transform.Find("TilemapChunkRoot");
+            if (existing != null)
+            {
+                _tilemapChunkRoot = existing;
+            }
+            else
+            {
+                var go = new GameObject("TilemapChunkRoot");
+                go.transform.SetParent(transform, false);
+                _tilemapChunkRoot = go.transform;
+            }
+        }
+    }
+
+    Transform ResolveSceneGridRoot()
+    {
+        if (_staticPrefabRoot != null)
+        {
+            var underStatic = _staticPrefabRoot.Find(SceneGridRootName);
+            if (underStatic != null)
+            {
+                return underStatic;
+            }
+        }
+
+        return transform.Find(SceneGridRootName);
+    }
+
+    void EnsureSceneGrid()
+    {
+        if (_grid != null)
         {
             return;
         }
 
-        if (StaticPrefabRoot == null)
-        {
-            return;
-        }
-
-        var gridRoot = StaticPrefabRoot.Find("GridRoot");
+        var gridRoot = ResolveSceneGridRoot();
         if (gridRoot != null)
         {
-            Grid = gridRoot.GetComponent<Grid>();
+            _grid = gridRoot.GetComponent<Grid>();
+        }
+
+        if (_grid == null)
+        {
+            _grid = GetComponentInChildren<Grid>(true);
         }
     }
 
     void ResolveTileHoleFromGrid()
     {
-        if (TileHole != null || Grid == null)
+        if (_tileHole != null || _grid == null)
         {
             return;
         }
 
-        foreach (var tm in Grid.GetComponentsInChildren<Tilemap>(true))
+        foreach (var tm in _grid.GetComponentsInChildren<Tilemap>(true))
         {
             if (tm != null && tm.name == "Hole")
             {
-                TileHole = tm;
+                _tileHole = tm;
                 return;
             }
         }
@@ -329,4 +459,23 @@ public class WorldAreaRoot : MonoBehaviour
 
         return null;
     }
+
+#if UNITY_EDITOR
+    public void EditorResolveFromSceneHierarchy()
+    {
+        EnsureRuntimeHandles();
+        EnsureSceneGrid();
+        if (_logicHeightConfig == null)
+        {
+            _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(DefaultLogicHeightConfigKey);
+        }
+
+        ApplyTileGroundsFromLogicHeightConfig();
+    }
+
+    public void EditorSetTileGrounds(Tilemap[] tileGrounds)
+    {
+        _tileGrounds = tileGrounds;
+    }
+#endif
 }

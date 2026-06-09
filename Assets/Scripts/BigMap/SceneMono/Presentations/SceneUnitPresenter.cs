@@ -125,7 +125,8 @@ namespace My.Map.Scene
 
             CreateRootForwardHinter();
 
-            InitTallGrassCover();
+            // 高草堆改由 Y 排序遮挡，Shader 裁剪暂时废弃
+            // InitTallGrassCover();
         }
 
         protected override void LateUpdate()
@@ -136,7 +137,7 @@ namespace My.Map.Scene
                 //transform.position = MainGameManager.Instance.GetWorldPosFromLogicPos(UnitEntity.Pos);
             }
 
-            TickTallGrassCover();
+            // TickTallGrassCover();
         }
 
         public override void Tick(float dt)

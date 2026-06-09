@@ -736,8 +736,7 @@ namespace My.UI.Rune
             }
 
             var owned = runeSystem.GetOwnedByType(ERuneType.Equippable)
-                .OrderBy(x => x.SortOrder)
-                .ThenBy(x => x.RuneId)
+                .OrderBy(x => x.RuneId)
                 .ToList();
 
             ClearOwnedCells();

@@ -49,6 +49,7 @@ namespace My.Dungeon.Editor
                 return false;
             }
 
+            root.EditorResolveFromSceneHierarchy();
             EnsureAccentTilemapLayer(root);
 
             var a = DungeonGenerator.Generate(dungeonId, seed);
@@ -145,7 +146,7 @@ namespace My.Dungeon.Editor
 
         private static void ApplyBornMarker(DungeonGenerationResult result, WorldAreaRoot root)
         {
-            if (root.PlayerBornPos == null || result.RuntimeMapData?.NamedPoints == null)
+            if (result.RuntimeMapData?.NamedPoints == null)
             {
                 return;
             }
@@ -157,8 +158,17 @@ namespace My.Dungeon.Editor
                     continue;
                 }
 
-                Undo.RecordObject(root.PlayerBornPos, "Dungeon Preview Born");
-                root.PlayerBornPos.position = new Vector3(point.Position.x, point.Position.y, 0f);
+                var marker = root.transform.Find("PreviewBornPos");
+                if (marker == null)
+                {
+                    var go = new GameObject("PreviewBornPos");
+                    go.transform.SetParent(root.transform, false);
+                    marker = go.transform;
+                    Undo.RegisterCreatedObjectUndo(go, "Dungeon Preview Born");
+                }
+
+                Undo.RecordObject(marker, "Dungeon Preview Born");
+                marker.position = new Vector3(point.Position.x, point.Position.y, 0f);
                 break;
             }
         }
@@ -337,7 +347,7 @@ namespace My.Dungeon.Editor
             accentRenderer.sortingOrder = 1;
 
             Undo.RegisterCreatedObjectUndo(accentGo, "Dungeon Accent Tilemap");
-            root.TileGrounds = new[] { root.TileGrounds[0], accentMap };
+            root.EditorSetTileGrounds(new[] { root.TileGrounds[0], accentMap });
             EditorSceneManager.MarkSceneDirty(root.gameObject.scene);
         }
     }

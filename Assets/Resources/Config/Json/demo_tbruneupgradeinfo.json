@@ -84,17 +84,30 @@
     "sort_order": 201
   },
   {
-    "upgrade_id": "rune_lady_initial",
-    "name": "耐受核心·基础",
-    "desc": "核心槽基础效果",
-    "base_rune_id": "lady_initial",
+    "upgrade_id": "lady_initial",
+    "name": "淑女",
+    "desc": "基础效果",
+    "base_rune_id": "rune_lady",
     "prerequisite_upgrade_ids": [],
-    "passive_skill_id": "",
+    "passive_skill_id": "rune_weiyi_regen_ooc",
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
     "layout_slot": 1,
     "sort_order": 15
+  },
+  {
+    "upgrade_id": "lady_up_1",
+    "name": "淑女·α",
+    "desc": "威仪强化",
+    "base_rune_id": "rune_lady",
+    "prerequisite_upgrade_ids": [],
+    "passive_skill_id": "rune_weiyi_more_layer",
+    "func_unlock_key": "",
+    "func_open_type": 0,
+    "icon": "",
+    "layout_slot": 0,
+    "sort_order": 0
   },
   {
     "upgrade_id": "rune_evil_hand_initial",

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using My.Map.Ground;
 using My.Map.Logic;
 using My.MapExport;
 using UnityEditor;
@@ -128,6 +129,7 @@ public static class MapChunkExportCore
             if (gridRootExported)
             {
                 database.WalkGridKey = $"MapChunk/{mapName}/Prefabs/GridRoot";
+                AssignLogicHeightConfigKey(database, mapName, rootFolder, existingDb);
             }
             else if (existingDb != null && !string.IsNullOrEmpty(existingDb.WalkGridKey))
             {
@@ -137,6 +139,11 @@ public static class MapChunkExportCore
         else if (existingDb != null)
         {
             database.WalkGridKey = existingDb.WalkGridKey;
+        }
+
+        if (string.IsNullOrEmpty(database.LogicHeightConfigKey))
+        {
+            AssignLogicHeightConfigKey(database, mapName, rootFolder, existingDb);
         }
 
         if (editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
@@ -161,6 +168,11 @@ public static class MapChunkExportCore
             if (exportGridRootPrefab && gridRootExported)
             {
                 existingDb.WalkGridKey = database.WalkGridKey;
+            }
+
+            if (!string.IsNullOrEmpty(database.LogicHeightConfigKey))
+            {
+                existingDb.LogicHeightConfigKey = database.LogicHeightConfigKey;
             }
 
             existingDb.Chunks = database.Chunks;
@@ -317,18 +329,37 @@ public static class MapChunkExportCore
         return coords;
     }
 
+    static void AssignLogicHeightConfigKey(
+        MapChunkDatabase database,
+        string mapName,
+        string rootFolder,
+        MapChunkDatabase existingDb)
+    {
+        const string defaultAssetPath = "Assets/Resources/MapLogicHeightConfig.asset";
+        string destPath = $"{rootFolder}/LogicHeightConfig.asset";
+        if (File.Exists(defaultAssetPath))
+        {
+            if (!File.Exists(destPath))
+            {
+                AssetDatabase.CopyAsset(defaultAssetPath, destPath);
+            }
+
+            database.LogicHeightConfigKey = $"MapChunk/{mapName}/LogicHeightConfig";
+            return;
+        }
+
+        if (existingDb != null && !string.IsNullOrEmpty(existingDb.LogicHeightConfigKey))
+        {
+            database.LogicHeightConfigKey = existingDb.LogicHeightConfigKey;
+            return;
+        }
+
+        database.LogicHeightConfigKey = WorldAreaRoot.DefaultLogicHeightConfigKey;
+    }
+
     static bool ExportGridRootPrefab(MapChunkEditorRoot editorRoot, string rootFolder)
     {
         var gridRoot = MapChunkEditorTilemapResolver.TryGetGridRoot(editorRoot);
-        if (gridRoot == null)
-        {
-            var worldArea = editorRoot.GetComponent<WorldAreaRoot>();
-            if (worldArea != null && worldArea.Grid != null)
-            {
-                gridRoot = worldArea.Grid.transform;
-            }
-        }
-
         if (gridRoot == null)
         {
             return false;

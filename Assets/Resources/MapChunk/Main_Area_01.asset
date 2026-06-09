@@ -20,7 +20,7 @@ MonoBehaviour:
   SourceTextureWidth: 1536
   SourceTextureHeight: 1536
   WalkGridKey: MapChunk/Main_Area_01/Prefabs/GridRoot
-  LogicHeightConfigKey: 
+  LogicHeightConfigKey: MapLogicHeightConfig
   Chunks:
   - X: 0
     Y: 0
