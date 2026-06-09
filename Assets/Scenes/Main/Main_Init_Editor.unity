@@ -323,7 +323,7 @@ GameObject:
   m_Component:
   - component: {fileID: 984845312}
   m_Layer: 0
-  m_Name: StaticRoot
+  m_Name: MapVariantRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

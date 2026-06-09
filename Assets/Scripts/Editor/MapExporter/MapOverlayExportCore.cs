@@ -11,9 +11,6 @@ using static My.MapExport.MapExportDatabase;
 // Overlay 级 MapExport 扫描与写出
 public static class MapOverlayExportCore
 {
-    public const string CommonFolderName = "Common";
-    public const string StaticOverlayFolderName = "StaticOverlay";
-
     public struct OverlayScanResult
     {
         public string OverlayId;
@@ -46,7 +43,7 @@ public static class MapOverlayExportCore
         public List<PortalNetworkExport> PortalNetworks;
     }
 
-    public static ScanSummary ScanAll(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string variantSceneName)
+    public static ScanSummary ScanAll(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string mapVariantSceneName)
     {
         var summary = new ScanSummary { Overlays = new List<OverlayScanResult>() };
         if (areaRoot == null)
@@ -64,7 +61,7 @@ public static class MapOverlayExportCore
         summary.NamedPathCount = shared.NamedPaths.Count;
         summary.PortalNetworkCount = shared.PortalNetworks.Count;
 
-        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(variantSceneName);
+        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName);
         if (overlays.Count == 0)
         {
             var legacy = ScanOverlay(areaRoot, null, chunkSize, chunkOrigin);
@@ -146,12 +143,12 @@ public static class MapOverlayExportCore
         };
     }
 
-    public static ExportResult ExportAllOverlays(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string variantSceneName)
+    public static ExportResult ExportAllOverlays(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string mapVariantSceneName)
     {
-        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(variantSceneName);
+        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName);
         if (overlays.Count == 0)
         {
-            return Fail($"No overlays found for variant scene '{variantSceneName}'.");
+            return Fail($"No overlays found for variant scene '{mapVariantSceneName}'.");
         }
 
         int count = 0;
@@ -192,7 +189,7 @@ public static class MapOverlayExportCore
         }
 
         ScanPortalNetworks(areaRoot.transform, data.PortalNetworks);
-        ScanFovSegments(areaRoot.transform.Find("StaticRoot"), chunkSize, chunkOrigin, data.ChunkSegments);
+        ScanFovSegments(MapVariantSceneHierarchy.ResolveMapVariantRoot(areaRoot.transform), chunkSize, chunkOrigin, data.ChunkSegments);
         return data;
     }
 
@@ -215,40 +212,44 @@ public static class MapOverlayExportCore
 
     static IEnumerable<Transform> ResolveStaticScanRoots(Transform areaRoot, string overlayId)
     {
-        var staticRoot = areaRoot.Find("StaticRoot");
-        if (staticRoot == null)
+        var mapVariantRoot = MapVariantSceneHierarchy.ResolveMapVariantRoot(areaRoot);
+        if (mapVariantRoot != null)
         {
-            yield break;
+            foreach (var layer in ResolveStaticExportLayers(mapVariantRoot))
+            {
+                yield return layer;
+            }
         }
 
-        var overlayRoot = staticRoot.Find(StaticOverlayFolderName);
-        if (overlayRoot != null)
+        // DynamicRoot 下的 MapScenePrefabProvider（动态摆放 prefab）
+        foreach (var root in ResolveDynamicScanRoots(areaRoot, overlayId))
         {
-            var common = overlayRoot.Find(CommonFolderName);
-            if (common != null)
-            {
-                yield return common;
-            }
+            yield return root;
+        }
+    }
 
-            if (!string.IsNullOrEmpty(overlayId))
+    static IEnumerable<Transform> ResolveStaticExportLayers(Transform overlayNode)
+    {
+        bool foundLayer = false;
+        foreach (var layerName in MapVariantSceneHierarchy.StaticExportLayerNames)
+        {
+            var layer = overlayNode.Find(layerName);
+            if (layer != null)
             {
-                var specific = overlayRoot.Find(overlayId);
-                if (specific != null)
-                {
-                    yield return specific;
-                }
+                foundLayer = true;
+                yield return layer;
             }
-
-            yield break;
         }
 
-        // 旧结构：StaticRoot 下除 GridRoot 外全部扫描
-        yield return staticRoot;
+        if (!foundLayer)
+        {
+            yield return overlayNode;
+        }
     }
 
     static IEnumerable<Transform> ResolveDynamicScanRoots(Transform areaRoot, string overlayId)
     {
-        var dynamicRoot = areaRoot.Find("DynamicRoot");
+        var dynamicRoot = MapVariantSceneHierarchy.ResolveDynamicRoot(areaRoot);
         if (dynamicRoot == null)
         {
             yield break;
@@ -260,7 +261,7 @@ public static class MapOverlayExportCore
             yield break;
         }
 
-        var common = dynamicRoot.Find(CommonFolderName);
+        var common = dynamicRoot.Find(MapVariantSceneHierarchy.CommonFolderName);
         if (common != null)
         {
             yield return common;
@@ -273,7 +274,6 @@ public static class MapOverlayExportCore
             yield break;
         }
 
-        // 无 overlay 子文件夹时回退整棵 DynamicRoot
         if (common == null)
         {
             yield return dynamicRoot;
@@ -302,7 +302,12 @@ public static class MapOverlayExportCore
                 continue;
             }
 
-            if (t.name == "GridRoot")
+            if (t.name == MapVariantSceneHierarchy.GridRootName)
+            {
+                continue;
+            }
+
+            if (MapVariantSceneHierarchy.IsVariantInfrastructureFolder(t.name))
             {
                 continue;
             }
@@ -368,12 +373,12 @@ public static class MapOverlayExportCore
     }
 
     static void ScanFovSegments(
-        Transform staticRoot,
+        Transform mapVariantRoot,
         float chunkSize,
         Vector2 chunkOrigin,
         Dictionary<(int x, int y), List<Segment2D>> chunkSegments)
     {
-        if (staticRoot == null)
+        if (mapVariantRoot == null)
         {
             return;
         }
@@ -381,11 +386,16 @@ public static class MapOverlayExportCore
         var fovLayer = LayerMask.NameToLayer("MapViewObc");
         int segmentIdx = 0;
         var stack = new Stack<Transform>();
-        stack.Push(staticRoot);
+        stack.Push(mapVariantRoot);
         while (stack.Count > 0)
         {
             var t = stack.Pop();
             if (!t.gameObject.activeInHierarchy)
+            {
+                continue;
+            }
+
+            if (t.name == MapVariantSceneHierarchy.LegacyStaticOverlayFolderName)
             {
                 continue;
             }

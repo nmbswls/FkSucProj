@@ -132,7 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 28079556}
   m_Layer: 0
-  m_Name: StaticRoot
+  m_Name: MapVariantRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12177,7 +12177,6 @@ MonoBehaviour:
   - {fileID: 838021581}
   TileHole: {fileID: 0}
   PlayerBornPos: {fileID: 0}
-  StaticPrefabRoot: {fileID: 1903785365}
 --- !u!114 &2121741548
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using My.MapExport;
 using UnityEngine;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -7,9 +8,14 @@ using UnityEditor;
 // Editor 场景根配置：挂于 *_Editor 场景 AreaRoot，运行时由 WorldAreaRoot 承接
 public class MapChunkEditorRoot : MonoBehaviour
 {
-    public string SceneName;
+    // 对应 Luban AreaVariantInfo.scene_name（运行时场景名，如 Main_Area_01）
+    [FormerlySerializedAs("SceneName")]
+    public string MapVariantSceneName;
+
     public Vector2 ChunkOrigin;
-    public Transform StaticPrefabRoot;
+
+    // GridRoot 下参与行走/逻辑高度采样的 Tilemap 层名（不含 Hole）
+    public string[] GroundLayerNames;
 
     [Header("Painted Background")]
     public Rect PaintWorldRect;
@@ -27,15 +33,22 @@ public class MapChunkEditorRoot : MonoBehaviour
         }
     }
 
+    public Transform MapVariantRoot => MapVariantSceneHierarchy.ResolveMapVariantRoot(transform);
+
     void Reset()
     {
-        SceneName = gameObject.scene.name;
+        MapVariantSceneName = ResolveDefaultMapVariantSceneName();
+    }
 
-        var staticRoot = transform.Find("StaticRoot");
-        if (staticRoot != null)
+    string ResolveDefaultMapVariantSceneName()
+    {
+        var sceneName = gameObject.scene.name;
+        if (sceneName.EndsWith("_Editor"))
         {
-            StaticPrefabRoot = staticRoot;
+            return sceneName.Substring(0, sceneName.Length - "_Editor".Length);
         }
+
+        return sceneName;
     }
 
 #if UNITY_EDITOR

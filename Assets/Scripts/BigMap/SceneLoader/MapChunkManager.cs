@@ -402,10 +402,10 @@ public class MapChunkManager : MonoBehaviour
             return false;
         }
 
-        var staticRoot = MainGameManager.Instance?.GetWorldStaticPrefabRoot("1");
+        var staticRoot = MainGameManager.Instance?.GetWorldMapVariantRoot("1");
         if (staticRoot == null)
         {
-            Debug.LogError($"[MapChunkManager] {context} attach static prefab failed: StaticPrefabRoot is null");
+            Debug.LogError($"[MapChunkManager] {context} attach static prefab failed: MapVariantRoot is null");
             return false;
         }
 

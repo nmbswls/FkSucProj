@@ -65,8 +65,6 @@ public class MapPaintBackgroundWindow : EditorWindow
 
     void DrawSettings(MapChunkEditorRoot root)
     {
-        var settings = MapChunkEditorSettings.GetOrCreate();
-
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Map", EditorStyles.boldLabel);
         EditorGUI.BeginChangeCheck();
@@ -92,28 +90,6 @@ public class MapPaintBackgroundWindow : EditorWindow
             }
         }
 
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Global Settings", EditorStyles.boldLabel);
-        EditorGUI.BeginChangeCheck();
-        settings.ChunkWorldSize = EditorGUILayout.FloatField("Chunk World Size", settings.ChunkWorldSize);
-        settings.TexturePPU = EditorGUILayout.FloatField("Runtime PPU", settings.TexturePPU);
-        settings.PaintExportPPU = EditorGUILayout.FloatField("Export PPU (0=Runtime)", settings.PaintExportPPU);
-        settings.PaintMaskColor = EditorGUILayout.ColorField("Mask Color", settings.PaintMaskColor);
-        settings.PaintCaptureLayerMask = LayerMaskField("Capture Layers", settings.PaintCaptureLayerMask);
-        settings.PaintCaptureCameraZ = EditorGUILayout.FloatField("Camera Z", settings.PaintCaptureCameraZ);
-        settings.BackgroundSortingOrder = EditorGUILayout.IntField("Background Sort Order", settings.BackgroundSortingOrder);
-        settings.PaintContextExpandRatio = EditorGUILayout.Slider("Context Expand", settings.PaintContextExpandRatio, 0f, 0.49f);
-        if (EditorGUI.EndChangeCheck())
-        {
-            EditorUtility.SetDirty(settings);
-        }
-
-        EditorGUILayout.LabelField("Paint Slice Px", settings.PaintSlicePixelSize.ToString());
-        if (GUILayout.Button("Select Global Settings Asset"))
-        {
-            Selection.activeObject = settings;
-            EditorGUIUtility.PingObject(settings);
-        }
     }
 
     void DrawWorkflow(MapChunkEditorRoot root)
@@ -333,12 +309,6 @@ public class MapPaintBackgroundWindow : EditorWindow
         {
             EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<Object>(path));
         }
-    }
-
-    static LayerMask LayerMaskField(string label, LayerMask layerMask)
-    {
-        int mask = EditorGUILayout.MaskField(label, layerMask.value, InternalEditorUtility.layers);
-        return mask;
     }
 
     static void LogResult(bool success, string message)

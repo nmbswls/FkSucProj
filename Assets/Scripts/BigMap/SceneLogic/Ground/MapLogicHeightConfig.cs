@@ -31,10 +31,6 @@ namespace My.Map.Ground
         [Header("Slope Tiles (north high / south low, continuous within cell)")]
         public SlopeTileEntry[] SlopeTiles;
 
-        // 与 GridRoot/WalkGridRoot 下 Tilemap 的 GameObject 名一致；留空则采样全部 Walk 层
-        [Header("Ground Tilemap Layer Names")]
-        public string[] GroundLayerNames;
-
         [Header("Resolver")]
         public float MaxLogicYDeltaPerSec = 20f;
         public float ProbeDownMaxDistance = 8f;

@@ -293,10 +293,10 @@ namespace My
             return DynamicRoot;
         }
 
-        public Transform GetWorldStaticPrefabRoot(string worldName)
+        public Transform GetWorldMapVariantRoot(string worldName)
         {
             var areaRoot = WorldAreaManager?.currentRoot;
-            return areaRoot != null ? areaRoot.StaticPrefabRoot : null;
+            return areaRoot != null ? areaRoot.MapVariantRoot : null;
         }
 
         void HandleNextDayPeriod()

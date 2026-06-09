@@ -8,14 +8,15 @@ using UnityEngine.Tilemaps;
 public class WorldAreaRoot : MonoBehaviour
 {
     public const string DefaultLogicHeightConfigKey = "MapLogicHeightConfig";
-    public const string SceneGridRootName = "GridRoot";
+    public const string SceneGridRootName = MapVariantSceneHierarchy.GridRootName;
 
     Grid _grid;
     Tilemap[] _tileGrounds;
     Tilemap _tileHole;
     MapLogicHeightConfig _logicHeightConfig;
+    string[] _groundLayerNames;
 
-    Transform _staticPrefabRoot;
+    Transform _mapVariantRoot;
     Transform _backgroundChunkRoot;
     Transform _tilemapChunkRoot;
 
@@ -26,7 +27,7 @@ public class WorldAreaRoot : MonoBehaviour
     public Tilemap[] TileGrounds => _tileGrounds;
     public Tilemap TileHole => _tileHole;
     public MapLogicHeightConfig LogicHeightConfig => _logicHeightConfig;
-    public Transform StaticPrefabRoot => _staticPrefabRoot;
+    public Transform MapVariantRoot => _mapVariantRoot;
     public Transform BackgroundChunkRoot => _backgroundChunkRoot;
     public Transform TilemapChunkRoot => _tilemapChunkRoot;
 
@@ -46,13 +47,10 @@ public class WorldAreaRoot : MonoBehaviour
 
         if (chunkDb != null)
         {
-            BindLogicHeightConfig(chunkDb);
+            BindGroundLayerNames(chunkDb);
         }
 
-        if (_logicHeightConfig == null)
-        {
-            _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(DefaultLogicHeightConfigKey);
-        }
+        EnsureLogicHeightConfig();
 
         if (HasSceneGridRoot)
         {
@@ -211,15 +209,9 @@ public class WorldAreaRoot : MonoBehaviour
 
     public bool ApplyTileGroundsFromLogicHeightConfig()
     {
-        if (_logicHeightConfig == null)
+        if (_groundLayerNames == null || _groundLayerNames.Length == 0)
         {
-            Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig is missing, cannot assemble ground layers.");
-            return false;
-        }
-
-        if (_logicHeightConfig.GroundLayerNames == null || _logicHeightConfig.GroundLayerNames.Length == 0)
-        {
-            Debug.LogWarning("[WorldAreaRoot] LogicHeightConfig.GroundLayerNames is empty.");
+            Debug.LogWarning("[WorldAreaRoot] GroundLayerNames is empty.");
             return false;
         }
 
@@ -231,7 +223,7 @@ public class WorldAreaRoot : MonoBehaviour
         }
 
         ResolveTileHoleFromGrid();
-        _tileGrounds = CollectGroundTilemaps(_grid, _tileHole, _logicHeightConfig);
+        _tileGrounds = CollectGroundTilemaps(_grid, _tileHole, _groundLayerNames);
         if (_tileGrounds == null || _tileGrounds.Length == 0)
         {
             Debug.LogWarning("[WorldAreaRoot] No ground tilemaps matched GroundLayerNames.");
@@ -241,15 +233,15 @@ public class WorldAreaRoot : MonoBehaviour
         return true;
     }
 
-    public static Tilemap[] CollectGroundTilemaps(Grid grid, Tilemap tileHole, MapLogicHeightConfig config)
+    public static Tilemap[] CollectGroundTilemaps(Grid grid, Tilemap tileHole, string[] groundLayerNames)
     {
-        if (grid == null || config?.GroundLayerNames == null || config.GroundLayerNames.Length == 0)
+        if (grid == null || groundLayerNames == null || groundLayerNames.Length == 0)
         {
             return null;
         }
 
         var result = new List<Tilemap>();
-        foreach (var layerName in config.GroundLayerNames)
+        foreach (var layerName in groundLayerNames)
         {
             if (string.IsNullOrEmpty(layerName))
             {
@@ -337,28 +329,33 @@ public class WorldAreaRoot : MonoBehaviour
         return _tileGrounds;
     }
 
-    void BindLogicHeightConfig(MapChunkDatabase chunkDb)
+    void BindGroundLayerNames(MapChunkDatabase chunkDb)
     {
-        var key = !string.IsNullOrEmpty(chunkDb.LogicHeightConfigKey)
-            ? chunkDb.LogicHeightConfigKey
-            : DefaultLogicHeightConfigKey;
+        if (chunkDb?.GroundLayerNames != null && chunkDb.GroundLayerNames.Length > 0)
+        {
+            _groundLayerNames = chunkDb.GroundLayerNames;
+        }
+    }
 
-        _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(key);
+    void EnsureLogicHeightConfig()
+    {
+        if (_logicHeightConfig != null)
+        {
+            return;
+        }
+
+        _logicHeightConfig = Resources.Load<MapLogicHeightConfig>(DefaultLogicHeightConfigKey);
         if (_logicHeightConfig == null)
         {
-            Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{key}");
+            Debug.LogWarning($"[WorldAreaRoot] LogicHeightConfig not found: Resources/{DefaultLogicHeightConfigKey}");
         }
     }
 
     void EnsureRuntimeHandles()
     {
-        if (_staticPrefabRoot == null)
+        if (_mapVariantRoot == null)
         {
-            var staticRoot = transform.Find("StaticRoot");
-            if (staticRoot != null)
-            {
-                _staticPrefabRoot = staticRoot;
-            }
+            _mapVariantRoot = MapVariantSceneHierarchy.ResolveMapVariantRoot(transform);
         }
 
         if (_backgroundChunkRoot == null)
@@ -394,12 +391,12 @@ public class WorldAreaRoot : MonoBehaviour
 
     Transform ResolveSceneGridRoot()
     {
-        if (_staticPrefabRoot != null)
+        if (_mapVariantRoot != null)
         {
-            var underStatic = _staticPrefabRoot.Find(SceneGridRootName);
-            if (underStatic != null)
+            var underVariant = _mapVariantRoot.Find(SceneGridRootName);
+            if (underVariant != null)
             {
-                return underStatic;
+                return underVariant;
             }
         }
 

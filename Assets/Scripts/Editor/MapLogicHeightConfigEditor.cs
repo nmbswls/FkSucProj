@@ -1,8 +1,6 @@
 #if UNITY_EDITOR
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace My.Map.Ground
 {
@@ -12,12 +10,6 @@ namespace My.Map.Ground
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.HelpBox(
-                "Ground Layer Names：填 GridRoot/WalkGridRoot 下地面 Tilemap 节点名（如 Ground、Building_01_Ground）。\n" +
-                "运行时 WorldAreaRoot 通过此列表从 WalkGrid 装配地面层；留空则无法自动装配。",
-                MessageType.Info);
 
             var config = (MapLogicHeightConfig)target;
             if (config.SlopeTiles == null)
@@ -42,32 +34,6 @@ namespace My.Map.Ground
                         MessageType.Warning);
                 }
             }
-
-            if (GUILayout.Button("从 GridRoot prefab 填充 LayerName（Main_Area_01）"))
-            {
-                TryFillLayerNamesFromGridRootPrefab(config);
-            }
-        }
-
-        static void TryFillLayerNamesFromGridRootPrefab(MapLogicHeightConfig config)
-        {
-            const string gridRootPath = "Assets/Resources/MapChunk/Main_Area_01/Prefabs/GridRoot.prefab";
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(gridRootPath);
-            if (prefab == null)
-            {
-                EditorUtility.DisplayDialog("Fill LayerName", $"Prefab not found:\n{gridRootPath}", "OK");
-                return;
-            }
-
-            config.GroundLayerNames = prefab.GetComponentsInChildren<Tilemap>(true)
-                .Select(t => t.name)
-                .Where(n => n != "Hole")
-                .Distinct()
-                .OrderBy(n => n)
-                .ToArray();
-
-            EditorUtility.SetDirty(config);
-            Debug.Log($"[MapLogicHeightConfig] Filled {config.GroundLayerNames.Length} layer name(s) from GridRoot prefab.");
         }
     }
 }

@@ -18,7 +18,7 @@ public static class MapExporterValidator
         public List<Issue> Issues;
     }
 
-    public static ValidationResult Validate(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string variantSceneName)
+    public static ValidationResult Validate(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string mapVariantSceneName)
     {
         var issues = new List<Issue>();
         if (areaRoot == null)
@@ -33,45 +33,31 @@ public static class MapExporterValidator
             return new ValidationResult { CanExport = false, Issues = issues };
         }
 
-        if (string.IsNullOrWhiteSpace(variantSceneName))
+        if (string.IsNullOrWhiteSpace(mapVariantSceneName))
         {
-            issues.Add(Error("Variant scene key is empty. Set MapChunkEditorRoot.SceneName."));
+            issues.Add(Error("Map variant scene name is empty. Set MapChunkEditorRoot.MapVariantSceneName."));
             return new ValidationResult { CanExport = false, Issues = issues };
         }
 
         if (!MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor))
         {
-            issues.Add(Warn("GridRoot / Tilemap not ready under StaticRoot."));
+            issues.Add(Warn($"GridRoot / Tilemap not ready under {MapVariantSceneHierarchy.MapVariantRootName}."));
         }
 
-        var variant = MapExporterConfigReader.FindVariantBySceneName(variantSceneName);
+        var variant = MapExporterConfigReader.FindVariantBySceneName(mapVariantSceneName);
         if (variant == null)
         {
-            issues.Add(Warn($"No AreaVariantInfo for scene '{variantSceneName}'."));
+            issues.Add(Warn($"No AreaVariantInfo for scene '{mapVariantSceneName}'."));
         }
 
-        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(variantSceneName);
+        var overlays = MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName);
         if (overlays.Count == 0)
         {
-            issues.Add(Warn("No overlay entries in config; overlay export uses legacy DynamicRoot scan."));
+            issues.Add(Warn("No overlay entries in config; overlay export uses legacy scan."));
         }
         else
         {
-            var dynamicRoot = areaRoot.transform.Find("DynamicRoot");
-            var staticRoot = areaRoot.transform.Find("StaticRoot");
-            foreach (var overlay in overlays)
-            {
-                if (dynamicRoot != null && dynamicRoot.Find(overlay.Id) == null && dynamicRoot.Find(MapOverlayExportCore.CommonFolderName) == null)
-                {
-                    issues.Add(Warn($"DynamicRoot missing folder '{overlay.Id}' (will fallback to full DynamicRoot)."));
-                }
-
-                var overlayRoot = staticRoot != null ? staticRoot.Find(MapOverlayExportCore.StaticOverlayFolderName) : null;
-                if (overlayRoot != null && overlayRoot.Find(overlay.Id) == null && overlayRoot.Find(MapOverlayExportCore.CommonFolderName) == null)
-                {
-                    issues.Add(Warn($"StaticOverlay missing folder '{overlay.Id}'."));
-                }
-            }
+            ValidateOverlayHierarchy(areaRoot.transform, overlays, issues);
         }
 
         bool hasError = false;
@@ -85,6 +71,38 @@ public static class MapExporterValidator
         }
 
         return new ValidationResult { CanExport = !hasError, Issues = issues };
+    }
+
+    static void ValidateOverlayHierarchy(Transform areaRoot, List<cfg.demo.AreaOverlayStateInfo> overlays, List<Issue> issues)
+    {
+        var mapVariantRoot = MapVariantSceneHierarchy.ResolveMapVariantRoot(areaRoot);
+        if (mapVariantRoot == null)
+        {
+            issues.Add(Warn($"{MapVariantSceneHierarchy.MapVariantRootName} not found."));
+        }
+        else if (mapVariantRoot.Find(MapVariantSceneHierarchy.DecorateFolderName) == null &&
+                 mapVariantRoot.Find(MapVariantSceneHierarchy.TriggerFolderName) == null)
+        {
+            issues.Add(Warn(
+                $"{MapVariantSceneHierarchy.MapVariantRootName} missing {MapVariantSceneHierarchy.DecorateFolderName}/" +
+                $"{MapVariantSceneHierarchy.TriggerFolderName}; static export may be empty."));
+        }
+
+        var dynamicRoot = MapVariantSceneHierarchy.ResolveDynamicRoot(areaRoot);
+        if (dynamicRoot == null)
+        {
+            issues.Add(Warn($"{MapVariantSceneHierarchy.DynamicRootName} not found."));
+            return;
+        }
+
+        foreach (var overlay in overlays)
+        {
+            if (dynamicRoot.Find(overlay.Id) == null &&
+                dynamicRoot.Find(MapVariantSceneHierarchy.CommonFolderName) == null)
+            {
+                issues.Add(Warn($"DynamicRoot missing folder '{overlay.Id}' (will fallback to full DynamicRoot)."));
+            }
+        }
     }
 
     public static string FormatIssues(IReadOnlyList<Issue> issues)

@@ -110,8 +110,8 @@ public static class MapAreaSceneCreator
 
         var areaRootGo = new GameObject("AreaRoot");
         areaRootGo.AddComponent<WorldAreaRoot>();
-        var staticRoot = CreateChild(areaRootGo.transform, "StaticRoot");
-        CreateSceneGridRoot(staticRoot);
+        var mapVariantRoot = CreateChild(areaRootGo.transform, MapVariantSceneHierarchy.MapVariantRootName);
+        CreateSceneGridRoot(mapVariantRoot);
         CreateNavMeshSurface(areaRootGo.transform);
 
         EditorSceneManager.SaveScene(scene, savePath);
@@ -124,15 +124,17 @@ public static class MapAreaSceneCreator
 
         var areaRootGo = new GameObject("AreaRoot");
         var editorRoot = areaRootGo.AddComponent<MapChunkEditorRoot>();
-        editorRoot.SceneName = runtimeSceneName;
+        editorRoot.MapVariantSceneName = runtimeSceneName;
 
-        var staticRoot = CreateChild(areaRootGo.transform, "StaticRoot");
-        editorRoot.StaticPrefabRoot = staticRoot;
-        CreateGridRoot(staticRoot);
+        var mapVariantRoot = CreateChild(areaRootGo.transform, MapVariantSceneHierarchy.MapVariantRootName);
+        CreateChild(mapVariantRoot, MapVariantSceneHierarchy.RoomFolderName);
+        CreateChild(mapVariantRoot, MapVariantSceneHierarchy.DecorateFolderName);
+        CreateChild(mapVariantRoot, MapVariantSceneHierarchy.TriggerFolderName);
+        CreateGridRoot(mapVariantRoot);
 
         CreateChild(areaRootGo.transform, "NamedPath");
         CreateChild(areaRootGo.transform, "NamedPoint");
-        CreateChild(areaRootGo.transform, "DynamicRoot");
+        CreateChild(areaRootGo.transform, MapVariantSceneHierarchy.DynamicRootName);
         CreateChild(areaRootGo.transform, "FovObstacleRoot");
 
         var portalNetworks = CreateChild(areaRootGo.transform, "PortalNetworks");
@@ -140,14 +142,42 @@ public static class MapAreaSceneCreator
 
         CreateNavMeshSurface(areaRootGo.transform);
         CreateChild(areaRootGo.transform, "NavObc");
-        CreateChild(areaRootGo.transform, "TriggerArea");
-
-        var roomRoot = CreateChild(areaRootGo.transform, "RoomRoot");
-        roomRoot.gameObject.SetActive(false);
-
         CreateChild(areaRootGo.transform, "Col");
 
+        SetupOverlaySkeleton(editorRoot, runtimeSceneName);
+
         EditorSceneManager.SaveScene(scene, savePath);
+    }
+
+    static void SetupOverlaySkeleton(MapChunkEditorRoot editorRoot, string mapVariantSceneName)
+    {
+        var mapVariantRoot = editorRoot.MapVariantRoot;
+        if (mapVariantRoot == null)
+        {
+            return;
+        }
+
+        EnsureChild(mapVariantRoot, MapVariantSceneHierarchy.RoomFolderName);
+        EnsureChild(mapVariantRoot, MapVariantSceneHierarchy.DecorateFolderName);
+        EnsureChild(mapVariantRoot, MapVariantSceneHierarchy.TriggerFolderName);
+
+        var dynamicRoot = EnsureChild(editorRoot.transform, MapVariantSceneHierarchy.DynamicRootName);
+        EnsureChild(dynamicRoot, MapVariantSceneHierarchy.CommonFolderName);
+        foreach (var overlay in MapExporterConfigReader.GetOverlaysForVariantScene(mapVariantSceneName))
+        {
+            EnsureChild(dynamicRoot, overlay.Id);
+        }
+    }
+
+    static Transform EnsureChild(Transform parent, string name)
+    {
+        var child = parent.Find(name);
+        if (child != null)
+        {
+            return child;
+        }
+
+        return CreateChild(parent, name);
     }
 
     static Transform CreateChild(Transform parent, string name)
@@ -157,18 +187,18 @@ public static class MapAreaSceneCreator
         return go.transform;
     }
 
-    static void CreateSceneGridRoot(Transform staticRoot)
+    static void CreateSceneGridRoot(Transform mapVariantRoot)
     {
         var gridRootGo = new GameObject(WorldAreaRoot.SceneGridRootName);
-        gridRootGo.transform.SetParent(staticRoot, false);
+        gridRootGo.transform.SetParent(mapVariantRoot, false);
         var grid = gridRootGo.AddComponent<Grid>();
         grid.cellSize = Vector3.one;
     }
 
-    static void CreateGridRoot(Transform staticRoot)
+    static void CreateGridRoot(Transform mapVariantRoot)
     {
         var gridRootGo = new GameObject(WorldAreaRoot.SceneGridRootName);
-        gridRootGo.transform.SetParent(staticRoot, false);
+        gridRootGo.transform.SetParent(mapVariantRoot, false);
         gridRootGo.SetActive(false);
 
         var grid = gridRootGo.AddComponent<Grid>();

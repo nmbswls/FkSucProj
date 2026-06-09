@@ -24,11 +24,11 @@ public static class MapChunkExportCore
         MapChunkEditorRoot editorRoot,
         string mapName,
         float chunkWorldSize,
-        Vector2 chunkOrigin,
-        bool exportTilemap,
-        bool exportGridRootPrefab,
-        bool bakeVisualLayers = true)
+        Vector2 chunkOrigin)
     {
+        const bool exportTilemap = true;
+        const bool exportGridRootPrefab = true;
+        const bool bakeVisualLayers = true;
         if (editorRoot == null)
         {
             return Fail("MapChunkEditorRoot is missing on AreaRoot.");
@@ -42,11 +42,8 @@ public static class MapChunkExportCore
         MapChunkEditorTilemapResolver.TryResolveTileGrounds(editorRoot, out var tileGrounds);
         if (exportTilemap && (tileGrounds == null || tileGrounds.Length == 0))
         {
-            return Fail("GridRoot/Tilemap not found under StaticPrefabRoot. Create or import Grid before tilemap export.");
+            return Fail("GridRoot/Tilemap not found under MapVariantRoot. Create or import Grid before tilemap export.");
         }
-
-        editorRoot.ChunkOrigin = chunkOrigin;
-        EditorUtility.SetDirty(editorRoot);
 
         int slicePx = MapChunkUtility.ComputeSlicePixelSize(chunkWorldSize, MapChunkEditorSettings.GetOrCreate().TexturePPU);
         float chunkSize = chunkWorldSize;
@@ -129,7 +126,6 @@ public static class MapChunkExportCore
             if (gridRootExported)
             {
                 database.WalkGridKey = $"MapChunk/{mapName}/Prefabs/GridRoot";
-                AssignLogicHeightConfigKey(database, mapName, rootFolder, existingDb);
             }
             else if (existingDb != null && !string.IsNullOrEmpty(existingDb.WalkGridKey))
             {
@@ -141,10 +137,9 @@ public static class MapChunkExportCore
             database.WalkGridKey = existingDb.WalkGridKey;
         }
 
-        if (string.IsNullOrEmpty(database.LogicHeightConfigKey))
-        {
-            AssignLogicHeightConfigKey(database, mapName, rootFolder, existingDb);
-        }
+        database.GroundLayerNames = editorRoot.GroundLayerNames != null && editorRoot.GroundLayerNames.Length > 0
+            ? (string[])editorRoot.GroundLayerNames.Clone()
+            : existingDb?.GroundLayerNames;
 
         if (editorRoot.PaintWorldRect.width > 0f && editorRoot.PaintWorldRect.height > 0f)
         {
@@ -170,9 +165,9 @@ public static class MapChunkExportCore
                 existingDb.WalkGridKey = database.WalkGridKey;
             }
 
-            if (!string.IsNullOrEmpty(database.LogicHeightConfigKey))
+            if (database.GroundLayerNames != null && database.GroundLayerNames.Length > 0)
             {
-                existingDb.LogicHeightConfigKey = database.LogicHeightConfigKey;
+                existingDb.GroundLayerNames = database.GroundLayerNames;
             }
 
             existingDb.Chunks = database.Chunks;
@@ -192,7 +187,7 @@ public static class MapChunkExportCore
         return new ExportResult
         {
             Success = true,
-            Message = BuildSuccessMessage(dbPath, tmCount, gridRootExported, exportTilemap, exportGridRootPrefab, bakeVisualLayers),
+            Message = BuildSuccessMessage(dbPath, tmCount, gridRootExported),
             Database = database,
             BackgroundChunkCount = 0,
             TilemapChunkCount = tmCount,
@@ -222,30 +217,16 @@ public static class MapChunkExportCore
         return rows * slicePx;
     }
 
-    static string BuildSuccessMessage(
-        string dbPath,
-        int tmCount,
-        bool gridRootExported,
-        bool exportTilemap,
-        bool exportGridRootPrefab,
-        bool bakeVisualLayers)
+    static string BuildSuccessMessage(string dbPath, int tmCount, bool gridRootExported)
     {
-        var parts = new List<string> { $"database -> {dbPath}" };
-        if (exportTilemap)
+        var parts = new List<string>
         {
-            parts.Add($"tilemap(grid) chunks: {tmCount}");
-            if (bakeVisualLayers)
-            {
-                parts.Add("visual bake: on");
-            }
-        }
-
-        if (exportGridRootPrefab)
-        {
-            parts.Add(gridRootExported ? "GridRoot prefab: yes" : "GridRoot prefab: skipped (not found)");
-        }
-
-        parts.Add("background: use Map Paint Background -> Sync");
+            $"database -> {dbPath}",
+            $"tilemap chunks: {tmCount}",
+            "visual bake: on",
+            gridRootExported ? "GridRoot prefab: yes" : "GridRoot prefab: skipped (not found)",
+            "background: use Map Paint Background -> Sync",
+        };
         return string.Join(", ", parts);
     }
 
@@ -276,14 +257,8 @@ public static class MapChunkExportCore
                     continue;
                 }
 
-                source.CompressBounds();
-                foreach (var pos in source.cellBounds.allPositionsWithin)
+                foreach (var pos in GetUsedTilePositions(source))
                 {
-                    if (source.GetTile(pos) == null)
-                    {
-                        continue;
-                    }
-
                     var world = source.GetCellCenterWorld(pos);
                     var coord = MapChunkUtility.WorldToChunk(world, origin, chunkSize);
                     if (hasPlayRect &&
@@ -327,34 +302,6 @@ public static class MapChunkExportCore
         }
 
         return coords;
-    }
-
-    static void AssignLogicHeightConfigKey(
-        MapChunkDatabase database,
-        string mapName,
-        string rootFolder,
-        MapChunkDatabase existingDb)
-    {
-        const string defaultAssetPath = "Assets/Resources/MapLogicHeightConfig.asset";
-        string destPath = $"{rootFolder}/LogicHeightConfig.asset";
-        if (File.Exists(defaultAssetPath))
-        {
-            if (!File.Exists(destPath))
-            {
-                AssetDatabase.CopyAsset(defaultAssetPath, destPath);
-            }
-
-            database.LogicHeightConfigKey = $"MapChunk/{mapName}/LogicHeightConfig";
-            return;
-        }
-
-        if (existingDb != null && !string.IsNullOrEmpty(existingDb.LogicHeightConfigKey))
-        {
-            database.LogicHeightConfigKey = existingDb.LogicHeightConfigKey;
-            return;
-        }
-
-        database.LogicHeightConfigKey = WorldAreaRoot.DefaultLogicHeightConfigKey;
     }
 
     static bool ExportGridRootPrefab(MapChunkEditorRoot editorRoot, string rootFolder)
@@ -412,6 +359,21 @@ public static class MapChunkExportCore
         }
 
         return true;
+    }
+
+    static IEnumerable<Vector3Int> GetUsedTilePositions(Tilemap tilemap)
+    {
+        if (tilemap == null)
+        {
+            yield break;
+        }
+
+        var used = new List<Vector3Int>();
+        tilemap.GetUsedTiles(used);
+        for (int i = 0; i < used.Count; i++)
+        {
+            yield return used[i];
+        }
     }
 
     static ExportResult Fail(string message)

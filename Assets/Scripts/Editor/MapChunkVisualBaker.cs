@@ -106,16 +106,17 @@ public static class MapChunkVisualBaker
             return;
         }
 
-        dual.RefreshAll();
-
         var source = dual.ViewTilemap;
         var layer = CreateLayer(source, $"Baked_{source.name}");
-        source.CompressBounds();
+        var viewCells = new HashSet<Vector3Int>();
+        var dataCells = new List<Vector3Int>();
+        dual.DataTilemap.GetUsedTiles(dataCells);
+        for (int i = 0; i < dataCells.Count; i++)
+        {
+            DualGridCore.CollectViewsToRefreshAroundDataCell(dataCells[i], viewCells);
+        }
 
-        var bounds = source.cellBounds;
-        ExpandBounds(ref bounds, 1);
-
-        foreach (var pos in bounds.allPositionsWithin)
+        foreach (var pos in viewCells)
         {
             if (!dual.TryGetViewSprite(pos, out var sprite) || sprite == null)
             {
@@ -147,18 +148,17 @@ public static class MapChunkVisualBaker
         string bakedTileFolder,
         Dictionary<Sprite, Tile> tileCache)
     {
-        source.CompressBounds();
-        var bounds = source.cellBounds;
-        if (bounds.size.x <= 0 || bounds.size.y <= 0)
+        var used = new List<Vector3Int>();
+        source.GetUsedTiles(used);
+        if (used.Count == 0)
         {
             return;
         }
 
         var layer = CreateLayer(source, $"Baked_{source.name}");
-        ExpandBounds(ref bounds, 1);
-
-        foreach (var pos in bounds.allPositionsWithin)
+        for (int i = 0; i < used.Count; i++)
         {
+            var pos = used[i];
             var baseTile = source.GetTile(pos);
             if (baseTile == null)
             {
@@ -170,7 +170,6 @@ public static class MapChunkVisualBaker
                 continue;
             }
 
-            source.RefreshTile(pos);
             var data = new TileData();
             baseTile.GetTileData(pos, source, ref data);
             if (data.sprite == null)

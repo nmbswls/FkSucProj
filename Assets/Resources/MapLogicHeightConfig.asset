@@ -64,8 +64,5 @@ MonoBehaviour:
   - Tile: {fileID: 11400000, guid: 8153f2a780150c948b2c0d32f388fcb6, type: 2}
     SouthLogicY: 13
     NorthLogicY: 14
-  GroundLayerNames:
-  - Ground
-  - Building_01_Ground
   MaxLogicYDeltaPerSec: 20
   ProbeDownMaxDistance: 8
