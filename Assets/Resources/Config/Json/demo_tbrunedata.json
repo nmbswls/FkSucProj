@@ -28,7 +28,7 @@
     "equip_slot": 1,
     "initial_upgrade_id": "lady_initial",
     "layout_template_id": "RuneLayout_Single1",
-    "icon": "rune_harvest",
+    "icon": "rune_lady",
     "desc": "核心槽装配符文",
     "sort_order": 20
   },

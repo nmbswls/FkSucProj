@@ -5,7 +5,7 @@ namespace My
 {
     public class SceneGroundLiquidChunkFieldManager : MonoBehaviour
     {
-        const string LiquidMaskLayerName = "LiquidMask";
+        static readonly int LiquidTexId = Shader.PropertyToID("_LiquidTex");
 
         static readonly (int dx, int dy, float weight)[] SoftKernel =
         {
@@ -16,12 +16,13 @@ namespace My
 
         [Header("Liquid Field Chunks")]
         public Transform liquidLayerContainer;
+        [SerializeField] Material liquidChunkMaterial;
+        [SerializeField] string sortingLayerName = "Ground";
+        [SerializeField] int sortingOrder = 1;
 
         readonly Dictionary<Vector2Int, ChunkView> _activeChunks = new();
         readonly Queue<ChunkView> _chunkPool = new();
         readonly Color32[] _pixelScratch = new Color32[LiquidFieldConstants.ChunkTexSizeWithHalo * LiquidFieldConstants.ChunkTexSizeWithHalo];
-
-        int _liquidMaskLayer = -1;
 
         LogicGroundLiquidFieldManager FieldManager =>
             MainGameManager.Instance.gameLogicManager.GroundLiquidFieldManager;
@@ -30,6 +31,7 @@ namespace My
         {
             public GameObject Root;
             public SpriteRenderer Renderer;
+            public Material Material;
             public Texture2D Texture;
             public Sprite Sprite;
             public Vector2Int Coord;
@@ -37,8 +39,12 @@ namespace My
 
         void Awake()
         {
-            _liquidMaskLayer = LayerMask.NameToLayer(LiquidMaskLayerName);
             EnsureContainer();
+        }
+
+        void OnDestroy()
+        {
+            DestroyAllChunkMaterials();
         }
 
         public void RegisterEvents()
@@ -129,14 +135,10 @@ namespace My
                 new Vector2(0.5f, 0.5f),
                 ppu);
             view.Renderer.sprite = view.Sprite;
+            ApplyRendererSorting(view.Renderer);
 
             Vector2 center = chunkMin + Vector2.one * (LiquidFieldConstants.ChunkWorldSize * 0.5f);
             view.Root.transform.position = new Vector3(center.x, center.y, 0f);
-
-            if (_liquidMaskLayer >= 0)
-            {
-                view.Root.layer = _liquidMaskLayer;
-            }
 
             _activeChunks.Add(chunkCoord, view);
             return view;
@@ -144,9 +146,20 @@ namespace My
 
         ChunkView CreateChunkView()
         {
+            if (liquidChunkMaterial == null)
+            {
+                Debug.LogError("SceneGroundLiquidChunkFieldManager: liquidChunkMaterial is missing");
+            }
+
             var root = new GameObject("LiquidFieldChunk");
             var renderer = root.AddComponent<SpriteRenderer>();
-            renderer.sortingOrder = 0;
+            ApplyRendererSorting(renderer);
+
+            Material mat = liquidChunkMaterial != null ? new Material(liquidChunkMaterial) : null;
+            if (mat != null)
+            {
+                renderer.material = mat;
+            }
 
             var texture = new Texture2D(
                 LiquidFieldConstants.ChunkTexSizeWithHalo,
@@ -162,8 +175,15 @@ namespace My
             {
                 Root = root,
                 Renderer = renderer,
+                Material = mat,
                 Texture = texture
             };
+        }
+
+        void ApplyRendererSorting(SpriteRenderer renderer)
+        {
+            renderer.sortingLayerName = sortingLayerName;
+            renderer.sortingOrder = sortingOrder;
         }
 
         void RebuildChunkTexture(ChunkView view)
@@ -202,6 +222,17 @@ namespace My
             SyncHaloFromNeighbors(view.Coord, _pixelScratch, texSize, coreSize, halo);
             view.Texture.SetPixels32(_pixelScratch);
             view.Texture.Apply(false, false);
+            BindChunkLiquidTexture(view);
+        }
+
+        void BindChunkLiquidTexture(ChunkView view)
+        {
+            if (view.Material == null)
+            {
+                return;
+            }
+
+            view.Material.SetTexture(LiquidTexId, view.Texture);
         }
 
         void SyncHaloFromNeighbors(Vector2Int chunkCoord, Color32[] pixels, int texSize, int coreSize, int halo)
@@ -349,6 +380,34 @@ namespace My
             view.Root.SetActive(false);
             view.Root.transform.SetParent(transform, false);
             _chunkPool.Enqueue(view);
+        }
+
+        void DestroyAllChunkMaterials()
+        {
+            foreach (var view in _chunkPool)
+            {
+                DestroyChunkMaterial(view);
+            }
+
+            foreach (var kvp in _activeChunks)
+            {
+                DestroyChunkMaterial(kvp.Value);
+            }
+        }
+
+        static void DestroyChunkMaterial(ChunkView view)
+        {
+            if (view.Material == null)
+            {
+                return;
+            }
+
+            Destroy(view.Material);
+            view.Material = null;
+            if (view.Renderer != null)
+            {
+                view.Renderer.sharedMaterial = null;
+            }
         }
     }
 }

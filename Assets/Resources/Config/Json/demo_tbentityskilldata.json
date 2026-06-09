@@ -1148,5 +1148,28 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "lamp_extra_vision",
+    "main_ability_id": "",
+    "desc": "",
+    "is_passive": true,
+    "passive_buff_ids": [
+      "b_lamp_extra_vision"
+    ],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": false,
+    "is_derived": false,
+    "cool_down": 0,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 0,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

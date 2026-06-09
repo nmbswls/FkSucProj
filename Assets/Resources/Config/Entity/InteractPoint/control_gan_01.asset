@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: control_gan
+  m_Name: control_gan_01
   m_EditorClassIdentifier: 
   CfgId: control_gan
   ShowName: "\u64CD\u7EB5\u6746"

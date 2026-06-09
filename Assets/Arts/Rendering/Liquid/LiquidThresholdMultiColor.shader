@@ -102,7 +102,14 @@ Shader "Custom/LiquidThresholdMultiColor"
                 fixed3 finalRGB = baseRGB * detail;
                 finalRGB += (noiseB - 0.5) * _ShimmerStrength * totalAlpha;
 
-                float edgeSample = SampleLiquidMask(i.uv + float2(0.0025, 0.0015), waterAlpha, poisonAlpha, oilAlpha);
+                float edgeWater;
+                float edgePoison;
+                float edgeOil;
+                float edgeSample = SampleLiquidMask(
+                    i.uv + float2(0.0025, 0.0015),
+                    edgeWater,
+                    edgePoison,
+                    edgeOil);
                 float edgeFoam = saturate((totalAlpha - edgeSample) * 12.0) * _EdgeFoamStrength;
                 finalRGB = lerp(finalRGB, fixed3(1, 1, 1), edgeFoam * 0.5);
 

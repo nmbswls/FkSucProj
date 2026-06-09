@@ -29,6 +29,7 @@ namespace My
         MapCameraBoundsController _mapCameraBounds;
         Coroutine _cameraOverrideRoutine;
         bool _cameraOverrideInputLocked;
+        Transform _overrideFocusAnchor;
 
         public bool IsCameraOverrideActive { get; private set; }
 
@@ -321,7 +322,7 @@ namespace My
                 gameLogicManager?.GetLogicEntity(pinEntityId, ensureExist: true);
             }
 
-            aoi.PrewarmTickAtFocusOnce(logicPos, 0f);
+            aoi.PrewarmTickAtFocusOnce(logicPos, 0f, pinEntityId);
 
             float deadline = Time.realtimeSinceStartup + CameraOverrideReadyTimeoutSec;
             while (Time.realtimeSinceStartup < deadline)
@@ -331,14 +332,17 @@ namespace My
                     break;
                 }
 
-                aoi.PrewarmTickAtFocusOnce(logicPos, LogicTime.deltaTime);
+                aoi.PrewarmTickAtFocusOnce(logicPos, LogicTime.deltaTime, pinEntityId);
                 yield return null;
             }
 
             if (!aoi.IsFocusAreaReady(logicPos, pinEntityId))
             {
                 Debug.LogWarning(
-                    $"[MainGameManager] Camera override focus not ready at {logicPos}, pin={pinEntityId}");
+                    $"[MainGameManager] Camera override aborted: focus not ready at {logicPos}, pin={pinEntityId}");
+                EndCameraOverrideSession(logicPos, pinEntityId, blockInput);
+                _cameraOverrideRoutine = null;
+                yield break;
             }
 
             ActivateOverrideVcam(logicPos);
@@ -358,6 +362,18 @@ namespace My
             _cameraOverrideRoutine = null;
         }
 
+        void EnsureOverrideFocusAnchor()
+        {
+            if (_overrideFocusAnchor != null)
+            {
+                return;
+            }
+
+            var go = new GameObject("OverrideFocusAnchor");
+            go.transform.SetParent(transform, false);
+            _overrideFocusAnchor = go.transform;
+        }
+
         void ActivateOverrideVcam(Vector2 logicPos)
         {
             if (OverrideVCam == null)
@@ -366,10 +382,19 @@ namespace My
                 return;
             }
 
+            EnsureOverrideFocusAnchor();
+
             var worldPos = GetWorldPosFromLogicPos(logicPos) + overrideVcamWorldOffset;
-            OverrideVCam.Follow = null;
+            _overrideFocusAnchor.position = worldPos;
+
+            if (MainMapVCam != null)
+            {
+                OverrideVCam.m_Lens = MainMapVCam.m_Lens;
+            }
+
+            // OverrideVCam 使用 FramingTransposer，必须提供 Follow 锚点，否则切镜后位置无效导致黑屏
+            OverrideVCam.Follow = _overrideFocusAnchor;
             OverrideVCam.LookAt = null;
-            OverrideVCam.transform.position = worldPos;
             OverrideVCam.Priority = overrideVcamPriority;
             OverrideVCam.PreviousStateIsValid = false;
             IsCameraOverrideActive = true;
@@ -384,8 +409,11 @@ namespace My
             }
 
             OverrideVCam.Priority = 0;
+            OverrideVCam.Follow = null;
+            OverrideVCam.LookAt = null;
             OverrideVCam.PreviousStateIsValid = false;
             IsCameraOverrideActive = false;
+            EnsureOpenWorldVcamFollow();
         }
 
         void SetCameraOverrideInputLock(bool blockInput)

@@ -14,54 +14,50 @@ using SimpleJSON;
 namespace cfg.demo
 {
 [System.Serializable]
-public sealed partial class BodyPartLevel : Luban.BeanBase
+public sealed partial class BodyPartProgressInfo : Luban.BeanBase
 {
-    public BodyPartLevel(JSONNode _buf) 
+    public BodyPartProgressInfo(JSONNode _buf) 
     {
+        { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["part_id"].IsNumber) { throw new SerializationException(); }  PartId = (demo.EBodyPart)_buf["part_id"].AsInt; }
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
-        { if(!_buf["need_exp"].IsNumber) { throw new SerializationException(); }  NeedExp = _buf["need_exp"]; }
+        { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { var __json0 = _buf["global_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } GlobalBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  GlobalBonuses.Add(__v0); }   }
-        { if(!_buf["hp"].IsNumber) { throw new SerializationException(); }  Hp = _buf["hp"]; }
-        { if(!_buf["h_power"].IsNumber) { throw new SerializationException(); }  HPower = _buf["h_power"]; }
-        { if(!_buf["absorb_rate"].IsNumber) { throw new SerializationException(); }  AbsorbRate = _buf["absorb_rate"]; }
-        { var __json0 = _buf["local_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } LocalBonuses = new System.Collections.Generic.List<demo.PartLocalStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.PartLocalStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.PartLocalStatBonus.DeserializePartLocalStatBonus(__e0);  }  LocalBonuses.Add(__v0); }   }
+        { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
     }
 
-    public static BodyPartLevel DeserializeBodyPartLevel(JSONNode _buf)
+    public static BodyPartProgressInfo DeserializeBodyPartProgressInfo(JSONNode _buf)
     {
-        return new demo.BodyPartLevel(_buf);
+        return new demo.BodyPartProgressInfo(_buf);
     }
 
+    public int Id;
     public demo.EBodyPart PartId;
     public int Level;
-    public long NeedExp;
+    public string Desc;
     public System.Collections.Generic.List<demo.TalentStatBonus> GlobalBonuses;
-    public long Hp;
-    public long HPower;
-    public long AbsorbRate;
-    public System.Collections.Generic.List<demo.PartLocalStatBonus> LocalBonuses;
+    /// <summary>
+    /// 全局被动效果
+    /// </summary>
+    public string PassiveSkillId;
    
-    public const int __ID__ = -1316994332;
+    public const int __ID__ = 1918437659;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
         foreach (var _e in GlobalBonuses) { _e?.ResolveRef(tables); }
-        foreach (var _e in LocalBonuses) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
     {
         return "{ "
+        + "id:" + Id + ","
         + "partId:" + PartId + ","
         + "level:" + Level + ","
-        + "needExp:" + NeedExp + ","
+        + "desc:" + Desc + ","
         + "globalBonuses:" + Luban.StringUtil.CollectionToString(GlobalBonuses) + ","
-        + "hp:" + Hp + ","
-        + "hPower:" + HPower + ","
-        + "absorbRate:" + AbsorbRate + ","
-        + "localBonuses:" + Luban.StringUtil.CollectionToString(LocalBonuses) + ","
+        + "passiveSkillId:" + PassiveSkillId + ","
         + "}";
     }
 }

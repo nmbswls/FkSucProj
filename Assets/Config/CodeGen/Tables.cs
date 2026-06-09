@@ -96,6 +96,7 @@ public partial class Tables
     public demo.TbRuneData TbRuneData {get; }
     public demo.TbBodyPartDef TbBodyPartDef {get; }
     public demo.TbBodyPartLevel TbBodyPartLevel {get; }
+    public demo.TbBodyPartProgressInfo TbBodyPartProgressInfo {get; }
     public demo.TbPartLocalAttrDef TbPartLocalAttrDef {get; }
     public demo.TbPartGear TbPartGear {get; }
     public demo.TbRuneUpgradeInfo TbRuneUpgradeInfo {get; }
@@ -172,6 +173,7 @@ public partial class Tables
         TbRuneData = new demo.TbRuneData(loader("demo_tbrunedata"));
         TbBodyPartDef = new demo.TbBodyPartDef(loader("demo_tbbodypartdef"));
         TbBodyPartLevel = new demo.TbBodyPartLevel(loader("demo_tbbodypartlevel"));
+        TbBodyPartProgressInfo = new demo.TbBodyPartProgressInfo(loader("demo_tbbodypartprogressinfo"));
         TbPartLocalAttrDef = new demo.TbPartLocalAttrDef(loader("demo_tbpartlocalattrdef"));
         TbPartGear = new demo.TbPartGear(loader("demo_tbpartgear"));
         TbRuneUpgradeInfo = new demo.TbRuneUpgradeInfo(loader("demo_tbruneupgradeinfo"));
@@ -250,6 +252,7 @@ public partial class Tables
         TbRuneData.ResolveRef(this);
         TbBodyPartDef.ResolveRef(this);
         TbBodyPartLevel.ResolveRef(this);
+        TbBodyPartProgressInfo.ResolveRef(this);
         TbPartLocalAttrDef.ResolveRef(this);
         TbPartGear.ResolveRef(this);
         TbRuneUpgradeInfo.ResolveRef(this);

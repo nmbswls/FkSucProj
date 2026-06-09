@@ -2635,7 +2635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1044945942
 Transform:
   m_ObjectHideFlags: 0
@@ -7979,7 +7979,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1594407509
 Transform:
   m_ObjectHideFlags: 0
@@ -9375,9 +9375,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1b2c3d4e5f6789012345678abcdef04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   liquidLayerContainer: {fileID: 488250848}
+  liquidChunkMaterial: {fileID: 2100000, guid: bf32afe1cb11fe54cbeefe0663a6509d, type: 2}
+  sortingLayerName: Ground
+  sortingOrder: 1
 --- !u!1 &1888856809
 GameObject:
   m_ObjectHideFlags: 0

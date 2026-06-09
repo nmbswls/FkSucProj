@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using My.MapExport;
 using UnityEditor;
@@ -63,7 +64,7 @@ public static class MapChunkEditorSceneSetup
 
             runtimeArea.ApplyTileGroundsFromLogicHeightConfig();
 
-            var clone = Object.Instantiate(runtimeArea.Grid.gameObject);
+            var clone = UnityEngine.Object.Instantiate(runtimeArea.Grid.gameObject);
             clone.name = "GridRoot";
             clone.transform.SetParent(staticRoot, false);
 
@@ -94,171 +95,12 @@ public static class MapChunkEditorSceneSetup
     }
 }
 
+[Obsolete("Use Window/Map Exporter instead.")]
 public class MapChunkExporterWindow : EditorWindow
 {
-    [SerializeField] private GameObject areaRoot;
-    [SerializeField] private string mapName = "Main_Area_01";
-    [SerializeField] private float chunkCellSize = 32f;
-    [SerializeField] private Vector2 chunkOrigin;
-    [SerializeField] private bool exportTilemapChunks = true;
-    [SerializeField] private bool exportVisualBake = true;
-    [SerializeField] private bool exportWalkGridPrefab = true;
-
     [MenuItem("Window/Map Chunk Exporter")]
     public static void Open()
     {
-        GetWindow<MapChunkExporterWindow>("Map Chunk Exporter");
-    }
-
-    void OnGUI()
-    {
-        EditorGUILayout.LabelField("Map Source", EditorStyles.boldLabel);
-        areaRoot = (GameObject)EditorGUILayout.ObjectField("Area Root", areaRoot, typeof(GameObject), true);
-        if (GUILayout.Button("Use Selected AreaRoot"))
-        {
-            if (Selection.activeGameObject != null)
-            {
-                areaRoot = Selection.activeGameObject;
-            }
-        }
-
-        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
-        if (chunkEditor == null)
-        {
-            EditorGUILayout.HelpBox("AreaRoot 上需要 MapChunkEditorRoot 组件。", MessageType.Warning);
-        }
-        else
-        {
-            var settings = MapChunkEditorSettings.GetOrCreate();
-            EditorGUILayout.LabelField("Paint World Rect", chunkEditor.PaintWorldRect.ToString());
-            EditorGUILayout.LabelField("Texture PPU", settings.TexturePPU.ToString());
-            EditorGUILayout.LabelField("Slice Pixel Size", settings.SlicePixelSize.ToString());
-            EditorGUILayout.LabelField("Grid Status",
-                MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor) ? "Ready" : "Missing");
-        }
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Export Settings", EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("Map Chunk Key", "Resources/MapChunk/{scene_name}");
-        mapName = EditorGUILayout.TextField("Scene Name (Variant)", mapName);
-        chunkCellSize = EditorGUILayout.FloatField("Chunk Cell Size", chunkCellSize);
-        chunkOrigin = EditorGUILayout.Vector2Field("Chunk Origin", chunkOrigin);
-
-        var editorSettings = MapChunkEditorSettings.GetOrCreate();
-        exportTilemapChunks = EditorGUILayout.Toggle("Walk Grid Chunks (tm_*)", exportTilemapChunks);
-        using (new EditorGUI.DisabledScope(!exportTilemapChunks))
-        {
-            exportVisualBake = EditorGUILayout.Toggle("  Bake Visual Layers", exportVisualBake);
-        }
-        exportWalkGridPrefab = EditorGUILayout.Toggle("Walk Grid Prefab (GridRoot)", exportWalkGridPrefab);
-        if (exportWalkGridPrefab)
-        {
-            EditorGUI.BeginChangeCheck();
-            editorSettings.ExportGridRoot3DCollision = EditorGUILayout.Toggle(
-                "  GridRoot 3D Collision (slow)",
-                editorSettings.ExportGridRoot3DCollision);
-            if (EditorGUI.EndChangeCheck())
-            {
-                EditorUtility.SetDirty(editorSettings);
-            }
-        }
-
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Sync From MapChunkEditorRoot"))
-        {
-            SyncFromScene();
-        }
-
-        if (chunkEditor != null && !MapChunkEditorTilemapResolver.HasTilemapSource(chunkEditor))
-        {
-            EditorGUILayout.HelpBox("未找到可走 Tilemap：请在 WorldAreaRoot.TileGrounds 或 StaticRoot/GridRoot 下配置。", MessageType.Warning);
-        }
-
-        if (exportTilemapChunks && exportVisualBake)
-        {
-            EditorGUILayout.HelpBox(
-                "WalkGrid 导出完整 Grid（保留各层 TilemapRenderer 开关）；tm_* 仅含 Visual Bake 装饰层并按 chunk 流式加载。",
-                MessageType.Info);
-        }
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Painted Background", EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox(
-            "背景在 Map Paint Background 窗口：Import Painted PNG → Sync（裁剪打包）。",
-            MessageType.Info);
-        if (GUILayout.Button("Open Map Paint Background Window"))
-        {
-            EditorApplication.ExecuteMenuItem("Window/Map Paint Background");
-        }
-
-        EditorGUILayout.Space();
-        if (GUILayout.Button("Export Map"))
-        {
-            Export();
-        }
-    }
-
-    void SyncFromScene()
-    {
-        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
-        MapChunkEditorUtility.SyncChunkSettings(chunkEditor, ref chunkCellSize, ref chunkOrigin);
-        var key = MapChunkEditorUtility.ResolveMapChunkKey(chunkEditor);
-        if (!string.IsNullOrEmpty(key))
-        {
-            mapName = key;
-        }
-    }
-
-    void Export()
-    {
-        var chunkEditor = MapChunkEditorUtility.Resolve(areaRoot);
-        if (chunkEditor == null)
-        {
-            EditorUtility.DisplayDialog("Map Chunk Export", "MapChunkEditorRoot not found on Area Root.", "OK");
-            return;
-        }
-
-        if (!exportTilemapChunks && !exportWalkGridPrefab)
-        {
-            EditorUtility.DisplayDialog("Map Chunk Export", "Select at least one export target.", "OK");
-            return;
-        }
-
-        MapChunkEditorUtility.PushChunkSettings(chunkEditor, chunkCellSize, chunkOrigin);
-        chunkEditor.SceneName = mapName;
-        EditorUtility.SetDirty(chunkEditor);
-
-        var result = MapChunkExportCore.Export(
-            chunkEditor,
-            mapName,
-            chunkCellSize,
-            chunkOrigin,
-            exportTilemapChunks,
-            exportWalkGridPrefab,
-            exportVisualBake);
-
-        if (!result.Success)
-        {
-            EditorUtility.DisplayDialog("Map Chunk Export", result.Message, "OK");
-            Debug.LogWarning("[MapChunkExport] " + result.Message);
-            return;
-        }
-
-        Debug.Log("[MapChunkExport] " + result.Message);
-        EditorUtility.DisplayDialog("Map Chunk Export", result.Message, "OK");
-        if (result.Database != null)
-        {
-            EditorGUIUtility.PingObject(result.Database);
-        }
-    }
-
-    void OnEnable()
-    {
-        if (areaRoot == null)
-        {
-            areaRoot = MapChunkEditorUtility.FindInActiveScene()?.gameObject;
-        }
-
-        SyncFromScene();
+        MapExporterWindow.Open();
     }
 }

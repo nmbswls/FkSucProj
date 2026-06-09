@@ -337,9 +337,11 @@ public class SceneAOIManager : MonoBehaviour
             {
                 return false;
             }
+
+            mapChunkManager.ProcessPendingVisibleChunkRefresh();
         }
 
-        if (pinEntityId != 0 && GetActivePresentation(pinEntityId) == null)
+        if (pinEntityId != 0 && !IsPinnedPresentationShown(pinEntityId))
         {
             return false;
         }
@@ -347,7 +349,27 @@ public class SceneAOIManager : MonoBehaviour
         return true;
     }
 
-    public void PrewarmTickAtFocusOnce(Vector2 focusPos, float dt)
+    public bool IsPinnedPresentationShown(long entityId)
+    {
+        if (entityId == 0)
+        {
+            return true;
+        }
+
+        if (!_aoiStates.TryGetValue(entityId, out var entry) || entry.entity == null)
+        {
+            return false;
+        }
+
+        if (entry.entity.MarkDestroyed)
+        {
+            return false;
+        }
+
+        return entry.isShown && entry.pres != null;
+    }
+
+    public void PrewarmTickAtFocusOnce(Vector2 focusPos, float dt, long pinEntityId = 0)
     {
         if (!CanRefreshStaticChunksNow())
         {
@@ -362,6 +384,22 @@ public class SceneAOIManager : MonoBehaviour
         _chunkCenterScratch.Add(focusPos);
         mapChunkManager?.RefreshChunksUnion(_chunkCenterScratch, chunkRing);
         mapChunkManager?.ProcessPendingVisibleChunkRefresh();
+
+        if (mapChunkManager != null)
+        {
+            var worldPos = MainGameManager.Instance.GetWorldPosFromLogicPos(focusPos);
+            if (mapChunkManager.IsWorldPosChunkLoaded(worldPos))
+            {
+                mapChunkManager.ForceUpdateOneChunk(mapChunkManager.WorldToChunk(worldPos));
+            }
+        }
+
+        if (pinEntityId != 0
+            && _pinnedPresentationIds.Contains(pinEntityId)
+            && _aoiStates.TryGetValue(pinEntityId, out var pinnedEntry))
+        {
+            EnsurePinnedPresentationVisible(pinnedEntry, dt, noEnterGrace: true);
+        }
     }
 
     public void TickPinnedPresentation(long entityId, float dt)

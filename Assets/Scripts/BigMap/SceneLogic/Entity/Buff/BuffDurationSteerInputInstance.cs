@@ -36,7 +36,7 @@ namespace My.Map.Entity
             }
         }
 
-        public override void OnBuffConfigureChanged(BuffInstance inst)
+        public override void OnBuffInfoChanged(BuffInstance inst)
         {
             PushSteer(inst);
         }

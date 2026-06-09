@@ -30,6 +30,8 @@ namespace My.UI
         [SerializeField] BodyPartFocusMarkView focusPartMark;
         [SerializeField] GearEquipTransferAnimView transferAnim;
 
+        [SerializeField] BodyPartProgressLineView partProgressLine;
+
         Transform _root;
         readonly List<PartPropInfoRowView> _localRows = new();
 
@@ -240,6 +242,7 @@ namespace My.UI
             if (_selectedPart == EBodyPart.None)
             {
                 partExpBar?.Refresh(_bodyPart, EBodyPart.None);
+                partProgressLine?.Refresh(EBodyPart.None, 0);
                 return;
             }
 
@@ -270,6 +273,8 @@ namespace My.UI
             BuildLocalStats(state);
             bagGrid?.Refresh(_eq, _selectedPart, null);
             bagGrid?.ConfigureEquipAnim(transferAnim, () => _selectedPart, RefreshAllAfterTransfer);
+
+            partProgressLine?.Refresh(_selectedPart, state?.Level ?? 0);
         }
 
         void OnUnequipRequested(int equippedIndex)

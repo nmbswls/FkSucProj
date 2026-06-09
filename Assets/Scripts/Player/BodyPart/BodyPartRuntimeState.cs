@@ -13,5 +13,10 @@ namespace My.Player
         {
             LocalStats = My.Config.BodyPartCatalog.BuildLocalStats(PartId, Level);
         }
+
+        public void RebuildInnerInfo()
+        {
+
+        }
     }
 }

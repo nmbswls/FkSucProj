@@ -108,6 +108,10 @@ namespace My.Map.Entity
 
         // NearCasterWatch: ParamFloat1=触发半径, ParamFloat2=检测间隔(0=每Tick)
         NearCasterWatch,
+
+        // RelativeExposeLevel: ParamStr1=目标属性, ParamFloat1=线性每级加成,
+        // ParamStr2=非线性映射(如 "0:100,1:200"), CommonFlag1=暴露真身时是否生效
+        RelativeExposeLevel,
     }
 
     public enum EBuffMoveSteerMode
@@ -135,7 +139,7 @@ namespace My.Map.Entity
     // Buff 持续时间侧效果：与 Lifetime 并行，按 DurationType 多态处理持续期逻辑。
     public abstract class BuffDurationInstanceBase
     {
-        public abstract void OnBuffConfigureChanged(BuffInstance inst);
+        public abstract void OnBuffInfoChanged(BuffInstance inst);
         public abstract void OnDetached(BuffInstance inst);
         public abstract void OnTick(BuffInstance inst, float dt);
     }
@@ -201,6 +205,7 @@ namespace My.Map.Entity
     internal static class BuffDurationInstanceFactory
     {
         internal const string RelativeAttrModAbilitySlot = "__BuffDuration_RelativeAttr";
+        internal const string RelativeExposeLevelModAbilitySlot = "__BuffDuration_RelativeExposeLevel";
 
         public static BuffDurationInstanceBase Create(BuffDurationEffet eff)
         {
@@ -213,6 +218,8 @@ namespace My.Map.Entity
             {
                 case EBuffDurationType.RelativeAttr:
                     return new BuffDurationRelativeAttrInstance(eff);
+                case EBuffDurationType.RelativeExposeLevel:
+                    return new BuffDurationRelativeExposeLevelInstance(eff);
                 case EBuffDurationType.SteerInput:
                     return new BuffDurationSteerInputInstance(eff);
                 case EBuffDurationType.NearCasterWatch:
@@ -239,7 +246,7 @@ namespace My.Map.Entity
             _ratio = cfg.ParamFloat1;
         }
 
-        public override void OnBuffConfigureChanged(BuffInstance inst)
+        public override void OnBuffInfoChanged(BuffInstance inst)
         {
             if (!IsConfigValid(inst))
             {
@@ -1448,7 +1455,7 @@ namespace My.Map.Entity
 
             foreach (var logic in _durationLogics)
             {
-                logic?.OnBuffConfigureChanged(this);
+                logic?.OnBuffInfoChanged(this);
             }
 
             if (isAdd && Def.FlushWitnessOnApply && BuffOwner is BaseUnitLogicEntity unit)

@@ -20,7 +20,7 @@ namespace My.Map.Entity
             _checkInterval = cfg.ParamFloat2 > 0f ? cfg.ParamFloat2 : 0f;
         }
 
-        public override void OnBuffConfigureChanged(BuffInstance inst)
+        public override void OnBuffInfoChanged(BuffInstance inst)
         {
         }
 
