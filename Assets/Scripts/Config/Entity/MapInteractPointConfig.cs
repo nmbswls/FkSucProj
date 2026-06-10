@@ -23,6 +23,9 @@ namespace Config.Map
 
         public bool IsAlwaysActive = false;
 
+        [Tooltip("需要地图刷新项 UniqName；为 true 时 LocalSwitch 写入 PlayerData 稀疏存档")]
+        public bool PersistByUniqName = false;
+
         [Tooltip("在大地图（M）上显示为重要地标")]
         public bool ShowOnWorldMap = false;
 

@@ -1,3 +1,4 @@
+using My;
 using My.Map;
 using My.Saving;
 
@@ -134,6 +135,11 @@ namespace My.Map.Logic
                 }
 
                 if (rec.EntityType == EEntityType.FishingSpot)
+                {
+                    continue;
+                }
+
+                if (MapInteractPointPersistUtil.ShouldSkipMapRuntimeEntityRecord(rec))
                 {
                     continue;
                 }

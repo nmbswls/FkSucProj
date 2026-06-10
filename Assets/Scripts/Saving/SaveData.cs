@@ -63,6 +63,9 @@ namespace My.Saving
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
         public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
 
+        // 具名交互点 / 可移除障碍：键为地图刷新项 UniqName，仅存 LocalSwitches
+        public Dictionary<string, MapInteractPointPersistData> InteractPointByUniqName = new();
+
         // 师门/技能学习系统获得的技能（不含自带、授予）
         public List<LearnedSkillEntry> LearnedSkills = new();
 
@@ -276,6 +279,12 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class MapInteractPointPersistData
+    {
+        public List<string> LocalSwitches;
+    }
+
+    [Serializable]
     public class RefreshRuntimePersist
     {
         public int StaticId;
@@ -384,6 +393,7 @@ namespace My.Saving
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
+            data.PlayerData.InteractPointByUniqName ??= new Dictionary<string, MapInteractPointPersistData>();
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
             data.PlayerData.HomeCurrentPopulation = Math.Max(0, data.PlayerData.HomeCurrentPopulation);
             data.PlayerData.LearnedSkills ??= new List<LearnedSkillEntry>();

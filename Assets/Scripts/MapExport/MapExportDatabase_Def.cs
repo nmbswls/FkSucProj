@@ -208,6 +208,12 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4RemovableObstacle : EntityInitInfo4InteractPoint
+    {
+        public override EEntityType EntityType => EEntityType.RemovableObstacle;
+    }
+
+    [Serializable]
     public class EntityInitInfo4LootPoint : EntityInitInfo
     {
         public override EEntityType EntityType => EEntityType.LootPoint;

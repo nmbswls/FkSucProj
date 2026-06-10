@@ -467,6 +467,17 @@ namespace My.Map.Logic
                         record = realRecord;
                         break;
                     }
+                case EEntityType.RemovableObstacle:
+                    {
+                        var realRecord = new LogicEntityRecord4InteractPoint();
+                        realRecord.Status = 0;
+
+                        var initInfo4RO = (EntityInitInfo4RemovableObstacle)initInfo;
+                        initInfo4RO.CopyVariablesTo(realRecord.DynamicVariables);
+
+                        record = realRecord;
+                        break;
+                    }
                 case EEntityType.LootPoint:
                     {
                         var realRecord = new LogicEntityRecord4LootPoint();

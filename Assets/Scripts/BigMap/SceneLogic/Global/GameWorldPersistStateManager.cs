@@ -21,6 +21,8 @@ namespace My
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
+        public readonly MapInteractPointPersistRegistry MapInteractPoints = new();
+
         // mapId|triggerId -> consumed
         private readonly Dictionary<string, bool> _microPlotConsumed = new();
 
@@ -96,6 +98,8 @@ namespace My
             }
 
             NpcCharacters.LoadFromSave(savingData?.PlayerData?.NpcCharacterPersistByKey);
+
+            MapInteractPoints.LoadFromSave(savingData?.PlayerData?.InteractPointByUniqName);
 
             if (savingData?.PlayerData?.MicroPlotConsumedByKey != null)
             {
@@ -199,6 +203,8 @@ namespace My
             }
 
             NpcCharacters.SaveTo(data.PlayerData);
+
+            MapInteractPoints.SaveTo(data.PlayerData);
 
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.MicroPlotConsumedByKey.Clear();

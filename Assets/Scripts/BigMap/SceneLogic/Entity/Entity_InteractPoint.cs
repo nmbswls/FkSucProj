@@ -106,6 +106,28 @@ namespace My.Map.Entity
             ApplyInitialDormantState();
         }
 
+        protected override void OnLocalSwitchesMutated()
+        {
+            base.OnLocalSwitchesMutated();
+            SyncLocalSwitchesToPersistRegistryIfNeeded();
+        }
+
+        void SyncLocalSwitchesToPersistRegistryIfNeeded()
+        {
+            if (string.IsNullOrEmpty(SrcUniqName))
+            {
+                return;
+            }
+
+            if (!MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
+            {
+                return;
+            }
+
+            LogicManager?.worldPersistState?.MapInteractPoints?.ReplaceRuntimeLocalSwitches(
+                SrcUniqName, EntityLocalSwitches);
+        }
+
         bool DormantRevealEnabled() =>
             cacheCfg != null && cacheCfg.DormantRevealSettings != null && cacheCfg.DormantRevealSettings.Enable;
 
@@ -167,7 +189,7 @@ namespace My.Map.Entity
             return value;
         }
 
-        public StatusInfo GetCurrentStatusInfo()
+        public virtual StatusInfo GetCurrentStatusInfo()
         {
             if(CurrStatusId == 0)
             {
@@ -182,7 +204,7 @@ namespace My.Map.Entity
         /// <summary>
         /// ??????
         /// </summary>
-        public void CheckStatusCondition()
+        public virtual void CheckStatusCondition()
         {
             foreach(var rule in cacheCfg.StateChangeRules)
             {
@@ -279,7 +301,7 @@ namespace My.Map.Entity
             CheckStatusCondition();
         }
 
-        public void ChangeSelfStatus(int newStatus, StateChangeView changeView = null)
+        public virtual void ChangeSelfStatus(int newStatus, StateChangeView changeView = null)
         {
             int oldStat = CurrStatusId;
             CurrStatusId = newStatus;
@@ -404,7 +426,15 @@ namespace My.Map.Entity
             base.RefreshEntityRecordInfo(input);
 
             var realRecord = input as LogicEntityRecord4InteractPoint;
-            realRecord.Status = CurrStatusId;
+            if (MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
+            {
+                realRecord.Status = 0;
+            }
+            else
+            {
+                realRecord.Status = CurrStatusId;
+            }
+
             realRecord.DynamicVariables.Clear();
             realRecord.DynamicVariables.AddRange(DynamicVariables);
             realRecord.PoisonBaitEndTime = _poisonBaitEndTime;

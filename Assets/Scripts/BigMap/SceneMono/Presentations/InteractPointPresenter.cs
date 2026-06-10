@@ -52,7 +52,7 @@ namespace My.Map.Scene
             return GetWorldPosition();
         }
 
-        public float GetHintOffsetInfos()
+        public virtual float GetHintOffsetInfos()
         {
             return RealLogic.cacheCfg.NameOffset;
         }

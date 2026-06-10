@@ -103,6 +103,34 @@ namespace Config
         }
     }
 
+    public static class MapRemovableObstacleLoader
+    {
+        private static Dictionary<string, MapRemovableObstacleConfig> _byId = new Dictionary<string, MapRemovableObstacleConfig>();
+
+        public static MapRemovableObstacleConfig Get(string cfgId)
+        {
+            if (_byId.TryGetValue(cfgId, out var data))
+                return data;
+
+            var loadOne = Load(cfgId);
+            _byId[cfgId] = loadOne;
+            return loadOne;
+        }
+
+        private static MapRemovableObstacleConfig Load(string cfgId)
+        {
+            var data = Resources.Load<MapRemovableObstacleConfig>($"Config/Entity/RemovableObstacle/{cfgId}");
+            if (data == null)
+                Debug.LogError($"MapRemovableObstacleLoader not found at Resources/Config/Entity/RemovableObstacle/{cfgId}");
+            return data;
+        }
+
+        public static void Clear()
+        {
+            _byId.Clear();
+        }
+    }
+
     public static class MapInteractPointLoader
     {
 

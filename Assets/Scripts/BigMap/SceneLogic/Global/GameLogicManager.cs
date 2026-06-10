@@ -424,6 +424,12 @@ namespace My
                         newEntity = newIntPoint;
                     }
                     break;
+                case EEntityType.RemovableObstacle:
+                    {
+                        var removable = new LogicEntityRemovableObstacle(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = removable;
+                    }
+                    break;
                 case EEntityType.DestroyObj:
                     {
                         var newDdestroyObj = new DestroyObjLogicEntity(this, record.Id, record.CfgId, record.Position, record);

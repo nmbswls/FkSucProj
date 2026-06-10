@@ -45,6 +45,17 @@ namespace My
 
                         return $"Prefab/Presentations/InteractPoint/{prefabName}";
                     }
+                case EEntityType.RemovableObstacle:
+                    {
+                        var cfg = MapRemovableObstacleLoader.Get(cfgId);
+                        string prefabName = cfg != null ? cfg.PrefabName : string.Empty;
+                        if (string.IsNullOrEmpty(prefabName))
+                        {
+                            prefabName = cfgId;
+                        }
+
+                        return $"Prefab/Presentations/RemovableObstacle/{prefabName}";
+                    }
                 case EEntityType.LootPoint:
                     {
                         var cfg = MapLootPointConfigLoader.Get(cfgId);

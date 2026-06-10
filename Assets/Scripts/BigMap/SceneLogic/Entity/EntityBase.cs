@@ -19,6 +19,7 @@ namespace My.Map
         None,
         Player,
         InteractPoint,
+        RemovableObstacle,
         Npc,
         LootPoint,
         AreaEffect,

@@ -813,6 +813,8 @@ namespace My.Map.Logic
                 DesireCrystalSpawnLogic.ApplyOnNpcBeforeSpawn(logicManager, this, npcRec);
             }
 
+            logicManager.worldPersistState?.MapInteractPoints.TryApplyToRecordBeforeSpawn(rec);
+
             var ent = logicManager.CreateEntityByRecord(rec);
             Repo.Loaded[entityId] = ent;
             ent.Initialize();
