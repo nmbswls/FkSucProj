@@ -124,6 +124,7 @@ namespace My.Map.Entity
         public const string PlayerUnlockYuhuo = "PlayerUnlockYuhuo";
         public const string PlayerUnlockYindu = "PlayerUnlockYindu";
         public const string PlayerUnlockJiang = "PlayerUnlockJiang";
+        public const string PlayerUnlockYijin = "PlayerUnlockYijin";
 
         public const string PlayerHunger = "PlayerHunger";
         public const string PlayerClothes = "PlayerClothes"; // 衣装

@@ -50,6 +50,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerUnlockYuhuo:
                 case AttrIdConsts.PlayerUnlockYindu:
                 case AttrIdConsts.PlayerUnlockJiang:
+                case AttrIdConsts.PlayerUnlockYijin:
 
                 case AttrIdConsts.Charmed:
                 case AttrIdConsts.ImmuneJianSu:

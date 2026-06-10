@@ -1357,6 +1357,7 @@ namespace My.Map.Entity
                 }
             }
 
+            addValue = (long)(addValue * ctx.EffectOutputScale);
             target.ApplyResourceChange(realCfg.ResourceId, addValue, realCfg.IsEnmity, realCfg.Flags, ctx.SourceInfo.SrcEntityId, extraAttrs);
         }
     }
@@ -1386,6 +1387,7 @@ namespace My.Map.Entity
 
             long maxVal = target.GetResourceMax(realCfg.ResourceId);
             long delta = -(maxVal * realCfg.RateBp / 10000);
+            delta = (long)(delta * ctx.EffectOutputScale);
             target.ApplyResourceChange(
                 realCfg.ResourceId,
                 delta,
@@ -1539,7 +1541,7 @@ namespace My.Map.Entity
             }
 
             var srcProvider = new CtxFightAttrProvider(ctx);
-            var dmgVal = DamagePipeline.BuildRawDamage(realCfg, srcProvider);
+            var dmgVal = (long)(DamagePipeline.BuildRawDamage(realCfg, srcProvider) * ctx.EffectOutputScale);
             var hImpulse = DamagePipeline.ResolveHImpulseRate10000(realCfg, ctx.SourceInfo);
             var extraAttrs = DamagePipeline.BuildPipelineExtraAttrs(realCfg, srcProvider, hImpulse);
 
@@ -2093,6 +2095,34 @@ namespace My.Map.Entity
     }
     
 
+
+    public class AbilityEffectExecutor4MiniBlurt : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectMiniBlurtCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4MiniBlurt cfg err");
+                return;
+            }
+
+            var target = ctx.Env.GetLogicEntity(ctx.TargetId) as NpcUnitLogicEntity;
+            if (target == null)
+            {
+                return;
+            }
+
+            float sjAmount = realCfg.BaseSjAmount * ctx.EffectOutputScale;
+            if (sjAmount <= 0f)
+            {
+                return;
+            }
+
+            long? srcId = ctx.SourceInfo.SrcEntityId != 0 ? ctx.SourceInfo.SrcEntityId : null;
+            target.OnNpcMiniBlurt(sjAmount, realCfg.FixedSjDamage, srcId);
+        }
+    }
 
     public class AbilityEffectExecutor4HModeBlurt : AbilityEffectExecutor
     {

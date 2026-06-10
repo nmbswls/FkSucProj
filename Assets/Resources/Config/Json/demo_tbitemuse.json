@@ -110,5 +110,37 @@
     "p4": 0,
     "s1": "item_throw_smoke_grenade",
     "s2": ""
+  },
+  {
+    "id": 11,
+    "item_id": "rune_unlock_lady_up_1",
+    "slot": 0,
+    "usable": true,
+    "cost_on_use": true,
+    "use_cd": 0,
+    "use_time": 0,
+    "use_type": 4,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "lady_up_1",
+    "s2": ""
+  },
+  {
+    "id": 12,
+    "item_id": "rune_unlock_lady_up_2",
+    "slot": 0,
+    "usable": true,
+    "cost_on_use": true,
+    "use_cd": 0,
+    "use_time": 0,
+    "use_type": 4,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "lady_up_2",
+    "s2": ""
   }
 ]

@@ -7,6 +7,7 @@ namespace My
     {
         static readonly int LiquidTexId = Shader.PropertyToID("_LiquidTex");
         static readonly int NoiseTexId = Shader.PropertyToID("_NoiseTex");
+        static readonly int RippleTexId = Shader.PropertyToID("_RippleTex");
 
         static readonly (int dx, int dy, float weight)[] SoftKernel =
         {
@@ -162,6 +163,11 @@ namespace My
                 if (liquidChunkMaterial.HasProperty(NoiseTexId))
                 {
                     mat.SetTexture(NoiseTexId, liquidChunkMaterial.GetTexture(NoiseTexId));
+                }
+
+                if (liquidChunkMaterial.HasProperty(RippleTexId))
+                {
+                    mat.SetTexture(RippleTexId, liquidChunkMaterial.GetTexture(RippleTexId));
                 }
 
                 renderer.material = mat;

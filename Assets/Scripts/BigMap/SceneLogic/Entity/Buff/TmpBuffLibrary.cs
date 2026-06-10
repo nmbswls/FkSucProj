@@ -639,6 +639,85 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["status_bleed"] = new BuffDefinition()
+                {
+                    BuffId = "status_bleed",
+                    Desc = "流血",
+                    Icon = "status_bleed",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    DefaultDuration = 5f,
+                    PotencyCopyAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                        },
+                    },
+                    PotencyBase = 150,
+                    PotencyCalcRates = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.PlayerSpellPower,
+                            ModifierValue = 10000,
+                        },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 800,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectApplyDamageCfg()
+                                {
+                                    BaseDamage = 150,
+                                    ExtraDamageRate = new()
+                                    {
+                                        new AttrKvPair { AttrId = AttrIdConsts.PlayerSpellPower, Val = 10000 },
+                                    },
+                                    DamageCategory = EDmgCategory.Physics,
+                                    IsEnmity = true,
+                                },
+                            },
+                        },
+                    },
+                };
+
+                _library["status_yijin"] = new BuffDefinition()
+                {
+                    BuffId = "status_yijin",
+                    Desc = "遗精",
+                    Icon = "status_yijin",
+                    LayerOverrideType = EBuffLayerOverrideType.AddLayer,
+                    MaxStackLayer = 10,
+                    DefaultDuration = 8f,
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 8000,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectMiniBlurtCfg()
+                                {
+                                    LayerScaleUsage = EBuffLayerScaleUsage.Custom,
+                                    BaseSjAmount = 0.25f,
+                                    FixedSjDamage = 0.4f,
+                                },
+                                new MapFightEffectAddLiquidCfg()
+                                {
+                                    ElementType = EGroundLiquidType.GcLiquid,
+                                    Range = 0.4f,
+                                    Duration = 8f,
+                                },
+                            },
+                        },
+                    },
+                };
+
                 _library["status_stiff"] = new BuffDefinition()
                 {
                     BuffId = "status_stiff",
@@ -694,6 +773,18 @@ namespace My.Map.Entity
                     ModifierAttrs = new()
                     {
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockJiang, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["player_unlock_yijin"] = new BuffDefinition()
+                {
+                    BuffId = "player_unlock_yijin",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PlayerUnlockYijin, ModifierValue = 1 },
                     },
                     DefaultDuration = -1,
                     IsHidden = true,

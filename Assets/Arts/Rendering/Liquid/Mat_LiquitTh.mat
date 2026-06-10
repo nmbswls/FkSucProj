@@ -47,13 +47,21 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _RippleTex:
+        m_Texture: {fileID: 2800000, guid: 9e04866f813724a4183388417bd62a8d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DetailStrength: 4.18
-    - _EdgeFoamStrength: 0.932
+    - _DetailStrength: 1.5
+    - _EdgeAnimSpeed: 0
+    - _EdgeFoamStrength: 0.35
     - _EnableExternalAlpha: 0
-    - _NoiseTiling: 1.04
-    - _OverallAlpha: 0.92
+    - _NoiseTiling: 1
+    - _OverallAlpha: 0.9
+    - _RippleHighlight: 0.25
+    - _RippleShimmerSpeed: 0.15
+    - _RippleTiling: 1
     - _ShimmerStrength: 0.4
     - _SmoothRange: 0.08
     - _Threshold: 0.19607843

@@ -1,5 +1,6 @@
 
 using My.Map;
+using My.Map.Entity;
 using My.UI;
 
 namespace My
@@ -139,9 +140,24 @@ namespace My
                 return;
             }
 
+            if (playerLogicEntity.AggroSystem != null && playerLogicEntity.AggroSystem.CombatEngaged)
+            {
+                GameSession.IsPeaceful = false;
+                return;
+            }
+
             foreach (var one in AreaManager.FindEntityInRange(playerLogicEntity.Pos, SavePointPeaceScanRadius))
             {
                 if (one is NpcUnitLogicEntity npcUnit && npcUnit.IsInCombat)
+                {
+                    GameSession.IsPeaceful = false;
+                    return;
+                }
+
+                if (one is NpcUnitLogicEntity partyAlly
+                    && partyAlly.FactionId == EFactionId.Ally
+                    && partyAlly.AggroSystem != null
+                    && partyAlly.AggroSystem.CombatEngaged)
                 {
                     GameSession.IsPeaceful = false;
                     return;

@@ -6,6 +6,7 @@ using Config;
 using My.Config;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Unit;
 using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
@@ -1608,6 +1609,7 @@ namespace My.Map
 
         public override void InitAggroSystem()
         {
+            AggroSystem = new UnitAggroSystem(this, EAggroMode.Player);
         }
 
         public override void InitEnmitySystem()
@@ -1629,6 +1631,11 @@ namespace My.Map
         {
             get
             {
+                if (AggroSystem != null && AggroSystem.HasHostile)
+                {
+                    return AggroSystem.CurrentTargetId;
+                }
+
                 RequestAimHelper();
                 return SupportTargetId;
             }

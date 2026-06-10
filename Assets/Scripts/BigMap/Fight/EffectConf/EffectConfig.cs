@@ -7,6 +7,13 @@ using UnityEngine;
 
  namespace My.Map.Entity
 {
+    public enum EBuffLayerScaleUsage
+    {
+        Ignore = 0,
+        MultiplyNumeric = 1,
+        Custom = 2,
+    }
+
     public enum EAbilityEffectType
     {
         None,
@@ -27,7 +34,7 @@ using UnityEngine;
     {
         public EAbilityEffectType EffectType;
         public float PendingTime;
-
+        public EBuffLayerScaleUsage LayerScaleUsage = EBuffLayerScaleUsage.Ignore;
     }
 
     [Serializable]

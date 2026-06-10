@@ -89,7 +89,7 @@ namespace My.UI.Rune
         void RefreshEquippableFromBinder(PlayerRuneSystem runeSystem)
         {
             var slot = _binder.EquipSlot;
-            bool slotUnlocked = RuneLoadoutPanel.IsEquipSlotUnlocked(runeSystem, slot);
+            bool slotUnlocked = runeSystem.IsEquipSlotOpen(slot);
             string equippedRuneId = runeSystem.GetEquipped(slot);
             _displayRuneId = equippedRuneId;
             if (!slotUnlocked)

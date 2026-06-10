@@ -1,0 +1,43 @@
+[
+  {
+    "equip_slot": 1,
+    "display_name": "核心纹",
+    "sort_order": 1,
+    "unlock_conds": [],
+    "lock_hint": ""
+  },
+  {
+    "equip_slot": 2,
+    "display_name": "手部纹",
+    "sort_order": 2,
+    "unlock_conds": [
+      {
+        "type": 6,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "lock_hint": "手部槽位尚未解锁。"
+  },
+  {
+    "equip_slot": 3,
+    "display_name": "足部纹",
+    "sort_order": 3,
+    "unlock_conds": [
+      {
+        "type": 6,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "lock_hint": "足部槽位尚未解锁。"
+  }
+]

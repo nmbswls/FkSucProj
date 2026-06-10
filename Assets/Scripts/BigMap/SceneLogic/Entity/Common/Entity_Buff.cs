@@ -1774,6 +1774,8 @@ namespace My.Map.Entity
                 case MapAbilityEffectAddBuffCfg:
                 case MapFightEffectShowEffect:
                 case MapFightEffectShowCloseupWindowCfg:
+                case MapFightEffectAddLiquidCfg:
+                case MapFightEffectMiniBlurtCfg:
                     {
                         long srcEntity = CasterId;
 
@@ -1787,6 +1789,7 @@ namespace My.Map.Entity
 
                         ctx.TriggerPos = BuffOwner.Pos;
                         ctx.TargetId = BuffOwner.Id;
+                        ctx.EffectOutputScale = ResolveEffectOutputScale(fightEffect);
 
                         FillTriggerCacheAttrVal(ctx);
 
@@ -1878,6 +1881,16 @@ namespace My.Map.Entity
                 BuffOwner.BuffContainer.Remove(InstanceId);
             }
         }
+        float ResolveEffectOutputScale(MapFightEffectCfg fightEffect)
+        {
+            if (fightEffect == null || fightEffect.LayerScaleUsage == EBuffLayerScaleUsage.Ignore)
+            {
+                return 1f;
+            }
+
+            return Math.Max(1, GetModifierScaleLayer());
+        }
+
         void FillTriggerCacheAttrVal(GameLogicManager.LogicFightEffectContext ctx)
         {
             if (CachedPotencyAttrs != null)

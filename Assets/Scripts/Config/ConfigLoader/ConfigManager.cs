@@ -81,6 +81,7 @@ namespace My.Config
             ItemCatalog.RebuildItemCaches();
             ItemStackPolicy.RebuildCaches();
             RuneUpgradeCatalog.RebuildCaches();
+            RuneCatalog.RebuildEquipSlotOrder();
         }
     }
 }

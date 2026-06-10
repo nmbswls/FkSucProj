@@ -227,7 +227,7 @@
         <var name="count" type="long" comment="数量"/>
     </bean>
 
-    <!-- 符文：Datas/rune.xlsx，表见 __tables__ -->
+    <!-- 符文：Datas/rune.xlsx（rune_data / rune_upgrade_info / rune_equip_slot），表见 __tables__ -->
     <enum name="ERuneType">
         <var name="Permanent" value="1"/>
         <var name="Equippable" value="2"/>

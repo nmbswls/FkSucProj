@@ -778,6 +778,18 @@ namespace My.Map
             ApplyResourceChange(AttrIdConsts.HP, -totalDamage, false, Fight.FightStruct.EDmgFlag.None, LogicManager.playerLogicEntity.Id);
         }
 
+        // debuff 小射精：不清空射精条
+        public void OnNpcMiniBlurt(float sjAmount, float sjDamage, long? srcEntityId)
+        {
+            var totalDamage = (long)(sjAmount * sjDamage * 1000);
+            if (totalDamage <= 0)
+            {
+                return;
+            }
+
+            ApplyResourceChange(AttrIdConsts.HP, -totalDamage, false, Fight.FightStruct.EDmgFlag.None, srcEntityId);
+        }
+
         protected void TryUseBlurtSkill()
         {
 

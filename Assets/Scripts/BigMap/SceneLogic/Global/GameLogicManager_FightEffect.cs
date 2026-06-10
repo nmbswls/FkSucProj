@@ -203,6 +203,11 @@ namespace My
                             executor = new AbilityEffectExecutor4HModeBlurt();
                         }
                         break;
+                    case MapFightEffectMiniBlurtCfg:
+                        {
+                            executor = new AbilityEffectExecutor4MiniBlurt();
+                        }
+                        break;
                     case MapFightEffectInterruptCaster:
                         {
                             executor = new AbilityEffectExecutor4InterruptCaster();
@@ -387,6 +392,9 @@ namespace My
             public List<long> OutHitWindowIds = new();
 
             public int ThrowTimelineEventIndex = -1;
+
+            // 组装 context 时写入；非 buff 或 Ignore 效果保持 1
+            public float EffectOutputScale = 1f;
 
             public string GetVariatyRawVal(OneVariaty oneVariaty)
             {

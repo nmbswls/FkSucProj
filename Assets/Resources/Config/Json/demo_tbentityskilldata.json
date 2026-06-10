@@ -1219,9 +1219,9 @@
     "cast_conditions": []
   },
   {
-    "skill_id": "passive_perfect_dodge_weiyi",
+    "skill_id": "rune_perfect_dodge_weiyi",
     "main_ability_id": "",
-    "desc": "完美闪避获得威仪",
+    "desc": "",
     "is_passive": true,
     "passive_buff_ids": [
       "passive_perfect_dodge_weiyi"

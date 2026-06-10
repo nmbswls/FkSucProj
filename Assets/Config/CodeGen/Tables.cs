@@ -100,6 +100,7 @@ public partial class Tables
     public demo.TbPartLocalAttrDef TbPartLocalAttrDef {get; }
     public demo.TbPartGear TbPartGear {get; }
     public demo.TbRuneUpgradeInfo TbRuneUpgradeInfo {get; }
+    public demo.TbRuneEquipSlot TbRuneEquipSlot {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -177,6 +178,7 @@ public partial class Tables
         TbPartLocalAttrDef = new demo.TbPartLocalAttrDef(loader("demo_tbpartlocalattrdef"));
         TbPartGear = new demo.TbPartGear(loader("demo_tbpartgear"));
         TbRuneUpgradeInfo = new demo.TbRuneUpgradeInfo(loader("demo_tbruneupgradeinfo"));
+        TbRuneEquipSlot = new demo.TbRuneEquipSlot(loader("demo_tbruneequipslot"));
         ResolveRef();
     }
     
@@ -256,6 +258,7 @@ public partial class Tables
         TbPartLocalAttrDef.ResolveRef(this);
         TbPartGear.ResolveRef(this);
         TbRuneUpgradeInfo.ResolveRef(this);
+        TbRuneEquipSlot.ResolveRef(this);
     }
 }
 

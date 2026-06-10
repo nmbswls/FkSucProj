@@ -236,8 +236,40 @@ namespace My.Map.Unit
                 return true;
             }
 
+            var playerEntity = UnitEntity.LogicManager.playerLogicEntity;
+
+            if (otherUnit.FactionId == EFactionId.Ally
+                && UnitEntity.IsInCombat)
+            {
+                return true;
+            }
+
+            if (UnitEntity.FactionId == EFactionId.Ally
+                && UnitEntity.AggroSystem != null
+                && UnitEntity.AggroSystem.CombatEngaged)
+            {
+                if (UnitEntity.AggroSystem.HasThreatEntry(otherUnit.Id))
+                {
+                    return true;
+                }
+
+                if (otherUnit is NpcUnitLogicEntity npcEnemy
+                    && playerEntity != null
+                    && npcEnemy.CurrentTargetId == playerEntity.Id)
+                {
+                    return true;
+                }
+
+                if (CheckIsEmnityFaction(otherUnit.FactionId))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             // 目前只针对player有特殊处理
-            if(otherUnit is not PlayerLogicEntity playerEntity)
+            if(otherUnit is not PlayerLogicEntity player)
             {
                 return false;
             }
@@ -264,7 +296,7 @@ namespace My.Map.Unit
             }
 
             // 面对女王模式下的主角 始终敌对
-            if (!playerEntity.LogicManager.PlayerHumanMode && playerEntity.IsExposed)
+            if (!player.LogicManager.PlayerHumanMode && player.IsExposed)
             {
                 return true;
             }

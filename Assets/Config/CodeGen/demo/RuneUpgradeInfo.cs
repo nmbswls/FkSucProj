@@ -28,7 +28,6 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         { if(!_buf["func_open_type"].IsNumber) { throw new SerializationException(); }  FuncOpenType = (demo.EFuncOpenType)_buf["func_open_type"].AsInt; }
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
         { if(!_buf["layout_slot"].IsNumber) { throw new SerializationException(); }  LayoutSlot = _buf["layout_slot"]; }
-        { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
     }
 
     public static RuneUpgradeInfo DeserializeRuneUpgradeInfo(JSONNode _buf)
@@ -46,7 +45,6 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
     public demo.EFuncOpenType FuncOpenType;
     public string Icon;
     public int LayoutSlot;
-    public int SortOrder;
    
     public const int __ID__ = 1357224741;
     public override int GetTypeId() => __ID__;
@@ -68,7 +66,6 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         + "funcOpenType:" + FuncOpenType + ","
         + "icon:" + Icon + ","
         + "layoutSlot:" + LayoutSlot + ","
-        + "sortOrder:" + SortOrder + ","
         + "}";
     }
 }

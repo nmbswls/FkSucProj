@@ -15,6 +15,7 @@ namespace My.Player
         const string LogTag = "[PlayerRuneSystem]";
 
         readonly PlayerSystemManager _owner;
+        GameLogicManager _logic;
         readonly HashSet<string> _owned = new(StringComparer.Ordinal);
         readonly HashSet<string> _unlockedUpgrades = new(StringComparer.Ordinal);
         readonly Dictionary<ERuneEquipSlot, string> _equipped = new();
@@ -26,6 +27,7 @@ namespace My.Player
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
+            _logic = ctx;
             _owned.Clear();
             _unlockedUpgrades.Clear();
             _equipped.Clear();
@@ -242,6 +244,26 @@ namespace My.Player
             return _equipped.TryGetValue(slot, out var id) ? id : null;
         }
 
+        public bool IsEquipSlotOpen(ERuneEquipSlot slot)
+        {
+            if (slot == ERuneEquipSlot.None)
+            {
+                return false;
+            }
+
+            var def = RuneCatalog.GetEquipSlotDef(slot);
+            if (def == null)
+            {
+                return true;
+            }
+
+            if (_logic == null)
+            {
+                return false;
+            }
+
+            return _logic.CheckCommonCondsAll(def.UnlockConds);
+        }
         public IEnumerable<RuneData> GetOwnedByType(ERuneType runeType)
         {
             foreach (var id in _owned)

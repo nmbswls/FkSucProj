@@ -1030,7 +1030,21 @@ namespace My.Map
 
                 if(intent.srcEntityId != null)
                 {
-                    AggroSystem?.OnTakeDamage(intent.srcEntityId.Value, 111);
+                    float threatAmount = 111f;
+                    if (attrId == AttrIdConsts.HP && intent.finalDelta < 0)
+                    {
+                        threatAmount = Math.Abs(intent.finalDelta);
+                    }
+
+                    AggroSystem?.OnTakeDamage(intent.srcEntityId.Value, threatAmount);
+
+                    var player = LogicManager.playerLogicEntity;
+                    if (player != null
+                        && intent.srcEntityId.Value == player.Id
+                        && this != player)
+                    {
+                        player.AggroSystem?.OnDealHostileDamage(Id, threatAmount);
+                    }
                 }
             }
         }
