@@ -12,28 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
   m_Name: insult_girl_peace
   m_EditorClassIdentifier: 
-  DialogId: 
+  LinkedJsonPath: Assets/Resources/Dialogue/output/insult_girl_peace.json
   Steps:
   - Id: 1
     Note: main
-    IsExpanded: 1
     Commands:
-    - rid: 4055726077229662314
-    - rid: 4055726077229662315
+    - rid: 958884322540519447
+    - rid: 958884322540519448
   references:
     version: 2
     RefIds:
-    - rid: 4055726077229662314
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519447
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
+        TextLines: []
         Speaker: 
         Content: "\u548C\u5E73\u89E3\u51B3\u628A"
-        VoiceLine: {fileID: 0}
-    - rid: 4055726077229662315
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+        VoiceLine: 
+    - rid: 958884322540519448
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         SimpleFuncType: 1
         Param1: 0
         Param2: 0

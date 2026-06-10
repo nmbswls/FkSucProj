@@ -12,121 +12,110 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
   m_Name: base_fight_end
   m_EditorClassIdentifier: 
-  DialogId: 
-  LockTime: 0
-  ControlledEntityNames: []
+  LinkedJsonPath: Assets/Resources/Dialogue/output/base_fight_end.json
   Steps:
   - Id: 1
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8510164613401935874
-    - rid: 8510164613401935873
-    - rid: 8510164613401935875
-    - rid: 8510164613401935876
-    - rid: 8510164613401935877
-    - rid: 8510164613401935878
-    - rid: 8510164613401935879
-    - rid: 8510164613401935880
-    - rid: 8510164613401935881
-    - rid: 8510164613401935882
-    - rid: 8510164613401935884
-    - rid: 8510164613401935885
-    - rid: 8510164613401936258
-    - rid: 3582754457494225044
+    - rid: 958884322540519424
+    - rid: 958884322540519425
+    - rid: 958884322540519426
+    - rid: 958884322540519427
+    - rid: 958884322540519428
+    - rid: 958884322540519429
+    - rid: 958884322540519430
+    - rid: 958884322540519431
+    - rid: 958884322540519432
+    - rid: 958884322540519433
+    - rid: 958884322540519434
+    - rid: 958884322540519435
+    - rid: 958884322540519436
+    - rid: 958884322540519437
   references:
     version: 2
     RefIds:
-    - rid: 3582754457494225044
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519424
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
-        TextLines:
-        - Speaker: 
-          Content: ???
-          VoiceLine: {fileID: 0}
-    - rid: 8510164613401935873
-      type: {class: EditorPlayerTimelineCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
-      data:
-        IsFolded: 0
-        TimelineId: tl_main
-        WaitUntilFinished: 0
-    - rid: 8510164613401935874
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
-      data:
-        IsFolded: 0
         TextLines:
         - Speaker: 
           Content: "\u5207\u6362\u573A\u666F\uFF0C\u8BED\u53E51"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: 
           Content: "\u5207\u6362\u573A\u666F\uFF0C\u8BED\u53E52"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: 
           Content: "\u5207\u6362\u573A\u666F\uFF0C\u8BED\u53E53"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164613401935875
-      type: {class: EditorWaitTimelineSignalCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519425
+      type: {class: DialogCommandData4PlayTimeline, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
+        TimelineId: tl_main
+        WaitUntilFinished: 0
+    - rid: 958884322540519426
+      type: {class: DialogCommandData4WaitTimelineSignal, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
         SignalName: b2
-    - rid: 8510164613401935876
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519427
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 
           Content: "\u64AD\u4E86\u4E00\u5C0F\u6BB5"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164613401935877
-      type: {class: EditorCommandResumeTimeline, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519428
+      type: {class: DialogCommandData4ResumeTimeline, ns: My.Dialog, asm: Assembly-CSharp}
+      data: 
+    - rid: 958884322540519429
+      type: {class: DialogCommandData4WaitTimelineSignal, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 1
-    - rid: 8510164613401935878
-      type: {class: EditorWaitTimelineSignalCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
-      data:
-        IsFolded: 0
         SignalName: b2
-    - rid: 8510164613401935879
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519430
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 
           Content: "\u64AD\u653E\u4E00\u6BB5\u5DE6\u5230\u53F3"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164613401935880
-      type: {class: EditorCommandResumeTimeline, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519431
+      type: {class: DialogCommandData4ResumeTimeline, ns: My.Dialog, asm: Assembly-CSharp}
+      data: 
+    - rid: 958884322540519432
+      type: {class: DialogCommandData4WaitTimelineSignal, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 1
-    - rid: 8510164613401935881
-      type: {class: EditorWaitTimelineSignalCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
-      data:
-        IsFolded: 0
         SignalName: b2
-    - rid: 8510164613401935882
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519433
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 
           Content: "\u64AD\u653E\u4E00\u6BB5\u53F3\u5230\u5DE6"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: 
           Content: "\u518D\u8BF4\u4E00\u4E9B\u8BDD"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: 
           Content: "\u7ED3\u675F\u4E86"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164613401935884
-      type: {class: EditorCommandWait, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519434
+      type: {class: DialogCommandData4Wait, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         WaitTime: 1
-    - rid: 8510164613401935885
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519435
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         SimpleFuncType: 6
         Param1: 0
         Param2: 0
@@ -134,10 +123,9 @@ MonoBehaviour:
         Param4: 0
         Param5: base_01
         Param6: born_center
-    - rid: 8510164613401936258
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519436
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         SimpleFuncType: 5
         Param1: 0
         Param2: 0
@@ -145,3 +133,13 @@ MonoBehaviour:
         Param4: 0
         Param5: base_clear
         Param6: 
+    - rid: 958884322540519437
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines:
+        - Speaker: 
+          Content: ???
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 

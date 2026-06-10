@@ -12,78 +12,87 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
   m_Name: wanted_arrest
   m_EditorClassIdentifier: 
-  DialogId: 
-  LockTime: 0
+  LinkedJsonPath: Assets/Resources/Dialogue/output/wanted_arrest.json
   Steps:
   - Id: origin
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8250388039077986389
-    - rid: 8250388048327737345
+    - rid: 958884322540519466
+    - rid: 958884322540519467
   - Id: youhuo
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8250388048327737346
-    - rid: 8250388048327737347
-    - rid: 8250388048327737350
+    - rid: 958884322540519468
+    - rid: 958884322540519469
+    - rid: 958884322540519470
   - Id: dikang
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8250388048327737348
-    - rid: 8250388048327737349
-    - rid: 8250388048327737351
+    - rid: 958884322540519471
+    - rid: 958884322540519472
+    - rid: 958884322540519473
   - Id: fucong
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8250388048327737352
+    - rid: 958884322540519474
   references:
     version: 2
     RefIds:
-    - rid: 8250388039077986389
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519466
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: "\u5B88\u536B"
           Content: "\u4F60\u88AB\u902E\u6355\u4E86\uFF01"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: "\u5B88\u536B"
           Content: "\u4E0D\u8981\u8F7B\u4E3E\u5984\u52A8"
-          VoiceLine: {fileID: 0}
-    - rid: 8250388048327737345
-      type: {class: EditorChoiceCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519467
+      type: {class: DialogCommandData4Choice, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TimeLimit: 0
         Options:
         - Text: "\u8BF1\u60D1"
           TargetStepId: youhuo
+          TargetDialogId: 
+          ProbabilityType: 0
+          ProbabilityParam1: 0
+          FailTargetStepId: 
           ShowWhenFail: 0
           Conditions1: []
         - Text: "\u62B5\u6297"
           TargetStepId: dikang
+          TargetDialogId: 
+          ProbabilityType: 0
+          ProbabilityParam1: 0
+          FailTargetStepId: 
           ShowWhenFail: 0
           Conditions1: []
         - Text: "\u4E56\u4E56\u670D\u4ECE"
           TargetStepId: fucong
+          TargetDialogId: 
+          ProbabilityType: 0
+          ProbabilityParam1: 0
+          FailTargetStepId: 
           ShowWhenFail: 0
           Conditions1: []
-    - rid: 8250388048327737346
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519468
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 1
         TextLines:
         - Speaker: "\u8389\u8389\u4E1D"
           Content: "\u6211\u53EF\u4EE5\u7528\u522B\u7684\u65B9\u5F0F\u507F\u8FD8\u3002"
-          VoiceLine: {fileID: 0}
-    - rid: 8250388048327737347
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519469
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 1
         SimpleFuncType: 3
         Param1: 0
         Param2: 0
@@ -91,21 +100,26 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - rid: 8250388048327737348
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519470
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
+        TargetStepId: end
+    - rid: 958884322540519471
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
         TextLines:
         - Speaker: "\u8389\u8389\u4E1D"
           Content: "\u76F8\u6293\u6211\uFF1F"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
         - Speaker: "\u5B88\u536B"
           Content: "\u627E\u6B7B\uFF01"
-          VoiceLine: {fileID: 0}
-    - rid: 8250388048327737349
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519472
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         SimpleFuncType: 2
         Param1: 0
         Param2: 0
@@ -113,18 +127,11 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - rid: 8250388048327737350
-      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519473
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TargetStepId: end
-    - rid: 8250388048327737351
-      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519474
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
-        TargetStepId: end
-    - rid: 8250388048327737352
-      type: {class: EditorDialogueCommand4JumpTo, ns: My.Dialog, asm: Assembly-CSharp-Editor}
-      data:
-        IsFolded: 0
         TargetStepId: end

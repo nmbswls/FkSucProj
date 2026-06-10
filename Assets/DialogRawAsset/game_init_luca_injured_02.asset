@@ -12,23 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
   m_Name: game_init_luca_injured_02
   m_EditorClassIdentifier: 
-  DialogId: 
-  LockTime: 0
-  ControlledEntityNames: []
+  LinkedJsonPath: Assets/Resources/Dialogue/output/game_init_luca_injured_02.json
   Steps:
   - Id: 1
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 3582754571614945280
+    - rid: 958884322540519439
   references:
     version: 2
     RefIds:
-    - rid: 3582754571614945280
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519439
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 
           Content: "02\u53F7\u5BF9\u8BDD"
-          VoiceLine: {fileID: 0}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 

@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
+  m_Name: npc_generic_entry
+  m_EditorClassIdentifier: 
+  LinkedJsonPath: Assets/Resources/Dialogue/output/npc_generic_entry.json
+  Steps:
+  - Id: npc_hub
+    Note: "\u5165\u53E3\uFF1A\u52A8\u6001\u9009\u9879 + \u53EF\u8DEF\u7531\u56DE\u6B64
+      Step"
+    Commands:
+    - rid: 958884322540519449
+  - Id: shop
+    Note: "\u6253\u5F00\u5546\u5E97"
+    Commands:
+    - rid: 958884322540519450
+    - rid: 958884322540519451
+  - Id: hub_combat
+    Note: "\u6218\u6597\u4E2D"
+    Commands:
+    - rid: 958884322540519452
+    - rid: 958884322540519453
+  - Id: hub_bye
+    Note: "\u7ED3\u675F"
+    Commands:
+    - rid: 958884322540519454
+  references:
+    version: 2
+    RefIds:
+    - rid: 958884322540519449
+      type: {class: DialogCommandData4DynamicNpcChoice, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TimeLimit: 0
+    - rid: 958884322540519450
+      type: {class: DialogCommandData4OpenShop, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        FixShop: 0
+        BindingShop: 1
+    - rid: 958884322540519451
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TargetStepId: npc_hub
+    - rid: 958884322540519452
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines:
+        - Speaker: NPC
+          Content: "\u2026\u2026\u73B0\u5728\u4E0D\u662F\u8BF4\u8FD9\u4E2A\u7684\u65F6\u5019\uFF01"
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519453
+      type: {class: DialogCommandData4SwitchDialogSegment, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TargetStepId: npc_hub
+        CancelTypingState: 1
+    - rid: 958884322540519454
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines:
+        - Speaker: NPC
+          Content: "\u56DE\u89C1\u3002"
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 

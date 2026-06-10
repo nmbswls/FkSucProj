@@ -18,6 +18,7 @@ namespace My.Dialog
         public string Id;
         public string Note;
 
+        [SerializeReference]
         public List<DialogCommandData> Commands = new List<DialogCommandData>();
     }
 

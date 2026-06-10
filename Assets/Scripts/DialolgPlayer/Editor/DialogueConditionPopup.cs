@@ -3,8 +3,6 @@ using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
-
 namespace My.Dialog
 {
     // 这是一个临时的弹出窗口内容，用于编辑单个条件
@@ -41,7 +39,7 @@ namespace My.Dialog
             // 绘制背景
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            EditorGUI.BeginChangeCheck(); // 开始检测修改
+            EditorGUI.BeginChangeCheck();
 
             // 2. 通用反射绘制字段
             foreach (var field in _fields)
@@ -65,8 +63,11 @@ namespace My.Dialog
             // 如果发生修改
             if (EditorGUI.EndChangeCheck())
             {
-                // 标记对象已脏，确保Ctrl+Z有效且能保存
-                if (_dataObject != null) EditorUtility.SetDirty(_dataObject);
+                if (_dataObject != null)
+                {
+                    Undo.RecordObject(_dataObject, "Edit Condition");
+                    EditorUtility.SetDirty(_dataObject);
+                }
                 // 强制主窗口重绘，以便按钮上的文字实时更新
                 if (_ownerWindow != null) _ownerWindow.Repaint();
             }

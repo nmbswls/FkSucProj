@@ -12,50 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
   m_Name: init_dialog_01
   m_EditorClassIdentifier: 
-  DialogId: 
-  LockTime: 0
-  ControlledEntityNames: []
+  LinkedJsonPath: Assets/Resources/Dialogue/output/init_dialog_01.json
   Steps:
   - Id: 1
     Note: 
-    IsExpanded: 1
     Commands:
-    - rid: 8510164526873182391
-    - rid: 8510164526873182393
-    - rid: 8510164526873182394
-    - rid: 8510164526873182395
+    - rid: 958884322540519441
+    - rid: 958884322540519442
+    - rid: 958884322540519443
+    - rid: 958884322540519444
   references:
     version: 2
     RefIds:
-    - rid: 8510164526873182391
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519441
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 0
           Content: "\u521D\u59CB\u5BF9\u8BDD1"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164526873182393
-      type: {class: EditorActorMoveCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519442
+      type: {class: DialogCommandData4MoveEntity, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         StaticName: init_luca
         MovePos: {x: -5.12, y: -1.82}
         ForceStartPos: 1
         StartPos: {x: -5, y: -5.16}
         MoveDuration: 3
-    - rid: 8510164526873182394
-      type: {class: EditorDialogueCommand4Text, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+    - rid: 958884322540519443
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         TextLines:
         - Speaker: 1
           Content: "\u521D\u59CB\u5BF9\u8BDD2"
-          VoiceLine: {fileID: 0}
-    - rid: 8510164526873182395
-      type: {class: EditorSimpleFuncCommand, ns: My.Dialog, asm: Assembly-CSharp-Editor}
+          VoiceLine: 
+        Speaker: 
+        Content: 
+        VoiceLine: 
+    - rid: 958884322540519444
+      type: {class: DialogCommandData4SimpleFunc, ns: My.Dialog, asm: Assembly-CSharp}
       data:
-        IsFolded: 0
         SimpleFuncType: 5
         Param1: 0
         Param2: 0

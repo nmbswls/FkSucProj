@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce2afe3d388cbe14d9d792f23eb3d4ae, type: 3}
+  m_Name: qigai_01
+  m_EditorClassIdentifier: 
+  LinkedJsonPath: Assets/Resources/Dialogue/output/qigai_01.json
+  Steps:
+  - Id: begin
+    Note: "\u51FA\u95E8\u9009\u9879"
+    Commands:
+    - rid: 958884322540519458
+    - rid: 958884322540519459
+    - rid: 958884322540519460
+  - Id: ok
+    Note: "\u540C\u610F"
+    Commands:
+    - rid: 958884322540519461
+    - rid: 958884322540519462
+    - rid: 958884322540519463
+  - Id: no
+    Note: "\u7B97\u4E86"
+    Commands:
+    - rid: 958884322540519464
+    - rid: 958884322540519465
+  references:
+    version: 2
+    RefIds:
+    - rid: 958884322540519458
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines: []
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u9644\u8FD1\u6709\u5C0F\u5DF7\u5B50..."
+        VoiceLine: 
+    - rid: 958884322540519459
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines: []
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u8981\u4E0D\u8981\u9080\u8BF7\u4ED6\u53BB\u90A3\u91CC\uFF1F"
+        VoiceLine: 
+    - rid: 958884322540519460
+      type: {class: DialogCommandData4Choice, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TimeLimit: 0
+        Options:
+        - Text: "\u597D\u7684"
+          TargetStepId: ok
+          TargetDialogId: 
+          ProbabilityType: 0
+          ProbabilityParam1: 0
+          FailTargetStepId: 
+          ShowWhenFail: 0
+          Conditions1: []
+        - Text: "\u7B97\u4E86"
+          TargetStepId: no
+          TargetDialogId: 
+          ProbabilityType: 0
+          ProbabilityParam1: 0
+          FailTargetStepId: 
+          ShowWhenFail: 0
+          Conditions1: []
+    - rid: 958884322540519461
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines: []
+        Speaker: 
+        Content: "\u90A3\u5C31\u53BB\u90A3\u91CC\u5427\u3002"
+        VoiceLine: 
+    - rid: 958884322540519462
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines: []
+        Speaker: "\u8389\u8389\u4E1D"
+        Content: "\u653E\u8F7B\u677E\uFF0C\u4EA4\u7ED9\u6211\u5C31\u884C\u3002"
+        VoiceLine: 
+    - rid: 958884322540519463
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TargetStepId: end
+    - rid: 958884322540519464
+      type: {class: DialogCommandData4Text, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TextLines: []
+        Speaker: 
+        Content: "\u8FD8\u662F\u7B97\u4E86\u5427"
+        VoiceLine: 
+    - rid: 958884322540519465
+      type: {class: DialogCommandData4JumpTo, ns: My.Dialog, asm: Assembly-CSharp}
+      data:
+        TargetStepId: end
