@@ -875,7 +875,7 @@
     "is_derived": false,
     "cool_down": 0,
     "stack_count": 0,
-    "icon_path": "",
+    "icon_path": "smoke_grenade",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
@@ -996,7 +996,8 @@
     "passive_buff_ids": [
       "player_unlock_yuhuo",
       "player_unlock_yindu",
-      "player_unlock_jiang"
+      "player_unlock_jiang",
+      "player_unlock_yijin"
     ],
     "passive_buff_level_variable_key": "",
     "is_combo": false,
@@ -1021,7 +1022,8 @@
     "passive_buff_ids": [
       "player_unlock_yuhuo",
       "player_unlock_yindu",
-      "player_unlock_jiang"
+      "player_unlock_jiang",
+      "player_unlock_yijin"
     ],
     "passive_buff_level_variable_key": "",
     "is_combo": false,
@@ -1046,7 +1048,8 @@
     "passive_buff_ids": [
       "player_unlock_yuhuo",
       "player_unlock_yindu",
-      "player_unlock_jiang"
+      "player_unlock_jiang",
+      "player_unlock_yijin"
     ],
     "passive_buff_level_variable_key": "",
     "is_combo": false,

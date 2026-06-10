@@ -197,7 +197,7 @@ namespace My
             ClearMapCameraBounds();
 
             gameLogicManager?.playerDataManager?.ItemEnchant?.ClearAll();
-            gameLogicManager?.playerDataManager?.ClearLmbOverride();
+            gameLogicManager?.playerDataManager?.SkillSystem?.ClearTempSkill();
 
             sceneDropManager.ClearAllDrop();
 

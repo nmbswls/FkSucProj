@@ -46,8 +46,8 @@ namespace My.Config
             NextDayPeriod,
             MarkCharacterValue, // 标记人物变量
 
-            // Param3 = skillId；一次性消失请配合 ChangeSelfStatus / SetLocalSwitch
-            GrantLmbSkillOverride,
+            // Param1 = 持续秒数（0=直到 LMB 成功施放一次）；Param3 = skillId；一次性消失请配合 ChangeSelfStatus
+            GrantTempSkill,
 
             // Param3 = rune_id
             GrantRune,
@@ -100,6 +100,9 @@ namespace My.Config
             NoLocalSwitch,
 
             PlayerNotRetreating,
+
+            // Param3 = skill_id；玩家当前已持有该临时技能时不可交互
+            PlayerNotHoldTempSkill,
         }
 
         public ECheckType CheckType;

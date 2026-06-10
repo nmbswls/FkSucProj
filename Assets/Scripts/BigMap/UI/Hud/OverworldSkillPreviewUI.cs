@@ -210,9 +210,19 @@ namespace My.UI
 
             }
 
-            MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(skillCfg.SkillId, castVec: wp);
+            bool ok;
+            var player = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
+            var skillSystem = MainGameManager.Instance.gameLogicManager.playerDataManager?.SkillSystem;
+            if (skillSystem != null && skillSystem.IsTempSkill(skillCfg.SkillId))
+            {
+                ok = player.ablilityManager.TryUseSkillFromConfig(skillCfg.SkillId, castVec: wp);
+            }
+            else
+            {
+                ok = player.ablilityManager.UseSkill(skillCfg.SkillId, castVec: wp);
+            }
 
-            cbOnConfirm?.Invoke(true);
+            cbOnConfirm?.Invoke(ok);
 
             HUDPanel.UpdateHudMode(EHudMode.Normal);
         }

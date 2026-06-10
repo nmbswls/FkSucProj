@@ -63,6 +63,10 @@ namespace My.Quest
         public int ChangeAmount;
     }
 
+    public struct PlayerTempSkillChangedEvent
+    {
+    }
+
     public static class PlayerEventBus
     {
         /// <summary>

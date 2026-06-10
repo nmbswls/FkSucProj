@@ -257,6 +257,14 @@ namespace My.Map
                             }
                         }
                         break;
+                    case InteractCheckCond.ECheckType.PlayerNotHoldTempSkill:
+                        {
+                            if (playerSystem.IsTempSkill(oneCond.Param3))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
                         
                 }
             }
@@ -701,15 +709,15 @@ namespace My.Map
                         }
                         break;
 
-                    case LogicInteractOutput.EOutputType.GrantLmbSkillOverride:
+                    case LogicInteractOutput.EOutputType.GrantTempSkill:
                         {
                             if (string.IsNullOrEmpty(output.Param3))
                             {
-                                Debug.LogWarning("GrantLmbSkillOverride: Param3 skillId is empty");
+                                Debug.LogWarning("GrantTempSkill: Param3 skillId is empty");
                                 break;
                             }
 
-                            GetInteractingPlayerSystem()?.GrantLmbOverride(output.Param3);
+                            GetInteractingPlayerSystem()?.GrantTempSkill(output.Param3, output.Param1);
                             My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh();
                             My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
                         }

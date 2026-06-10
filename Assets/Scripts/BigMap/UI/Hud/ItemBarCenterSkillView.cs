@@ -88,10 +88,10 @@ namespace My.UI
             }
         }
 
-        public void Refresh(string skillId, bool isLmbOverride = false)
+        public void Refresh(string skillId, bool isTempSkill = false, float remainingSec = 0f)
         {
             EnsureOverrideVisualRefs();
-            SetOverrideVisual(isLmbOverride);
+            SetTempSkillVisual(isTempSkill, remainingSec);
 
             if (string.IsNullOrEmpty(skillId))
             {
@@ -109,7 +109,7 @@ namespace My.UI
             }
         }
 
-        void SetOverrideVisual(bool active)
+        void SetTempSkillVisual(bool active, float remainingSec = 0f)
         {
             if (_overrideRing != null)
             {
@@ -121,7 +121,14 @@ namespace My.UI
                 _overrideChargeText.gameObject.SetActive(active);
                 if (active)
                 {
-                    _overrideChargeText.text = "1";
+                    if (remainingSec > 0f)
+                    {
+                        _overrideChargeText.text = Mathf.CeilToInt(remainingSec).ToString();
+                    }
+                    else
+                    {
+                        _overrideChargeText.text = "1";
+                    }
                 }
             }
         }

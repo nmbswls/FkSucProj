@@ -363,9 +363,9 @@ namespace My.Player
 
         public string ResolveLeftClickSkillId()
         {
-            if (_player.HasLmbOverride)
+            if (_player.SkillSystem.HasTempSkill)
             {
-                return _player.GetLmbOverrideSkillId();
+                return _player.SkillSystem.GetTempSkillId();
             }
 
             if (_player.IsUsingFaQingSkillBar())

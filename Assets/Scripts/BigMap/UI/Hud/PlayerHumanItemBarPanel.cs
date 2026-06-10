@@ -373,7 +373,14 @@ namespace My.UI
             {
                 _centerSkillView.gameObject.SetActive(true);
                 var pdm = glm.playerDataManager;
-                _centerSkillView.Refresh(qb.ResolveLeftClickSkillId(), pdm != null && pdm.HasLmbOverride);
+                var skillSystem = pdm?.SkillSystem;
+                float remainingSec = skillSystem != null && skillSystem.HasTempSkill
+                    ? skillSystem.TempSkillRemainingSec
+                    : 0f;
+                _centerSkillView.Refresh(
+                    qb.ResolveLeftClickSkillId(),
+                    skillSystem != null && skillSystem.HasTempSkill,
+                    remainingSec);
             }
         }
     }

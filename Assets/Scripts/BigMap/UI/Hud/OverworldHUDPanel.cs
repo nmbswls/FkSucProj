@@ -305,6 +305,7 @@ namespace My.UI
             });
 
             InitializePropBalls();
+            PlayerEventBus.Subscribe<PlayerTempSkillChangedEvent>(OnTempSkillChanged);
 
             var dayPeriodObj = transform.Find("DayPeriodIndicator");
             if (dayPeriodObj != null)
@@ -882,12 +883,17 @@ namespace My.UI
         public void OnClickUseSkill(string skillId, Action<bool> onConfirm = null, bool isExtend = false)
         {
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
+            if (skillConf == null)
+            {
+                NotifySkillUseConfirmed(skillId, false, onConfirm);
+                return;
+            }
+
             var castOverrides = ResolveHumanWeaponCastOverrides(skillId);
             if(skillConf.IsCombo)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
-                    skillId, castVec: null, target: null, castOverrides: castOverrides);
-                NotifySkillUseConfirmed(skillId, true, onConfirm);
+                bool ok = TryCastPlayerSkill(skillId, null, null, null, castOverrides);
+                NotifySkillUseConfirmed(skillId, ok, onConfirm);
                 return;
             }
 
@@ -912,41 +918,73 @@ namespace My.UI
 
             if (mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.NoTarget)
             {
-                MainGameManager.Instance.playerScenePresenter.PlayerEntity.ablilityManager.UseSkill(
-                    skillId, castVec: null, target: null, inputVec: dir, castOverrides: castOverrides);
-                NotifySkillUseConfirmed(skillId, true, onConfirm);
+                bool ok = TryCastPlayerSkill(skillId, dir, null, null, castOverrides);
+                NotifySkillUseConfirmed(skillId, ok, onConfirm);
                 return;
             }
             else if(mainAbilityCfg.CastType == MapAbilitySpecConfig.ECastType.ToFace)
             {
                 var player = MainGameManager.Instance.playerScenePresenter.PlayerEntity;
-                player.ablilityManager.UseSkill(
+                bool ok = TryCastPlayerSkill(
                     skillId,
-                    castVec: player.Pos + player.CurrentLook * 1.0f,
-                    target: null,
-                    inputVec: dir,
-                    castOverrides: castOverrides);
-                NotifySkillUseConfirmed(skillId, true, onConfirm);
+                    dir,
+                    player.Pos + player.CurrentLook * 1.0f,
+                    null,
+                    castOverrides);
+                NotifySkillUseConfirmed(skillId, ok, onConfirm);
                 return;
             }
 
             EnterSkillPreviewMode(skillId, (ret) => NotifySkillUseConfirmed(skillId, ret, onConfirm));
         }
 
+        static bool TryCastPlayerSkill(
+            string skillId,
+            Vector2? inputVec,
+            Vector2? castVec,
+            My.Map.ILogicEntity target,
+            Dictionary<string, string> castOverrides)
+        {
+            var player = MainGameManager.Instance?.playerScenePresenter?.PlayerEntity;
+            var skillSystem = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.SkillSystem;
+            if (player?.ablilityManager == null)
+            {
+                return false;
+            }
+
+            if (skillSystem != null && skillSystem.IsTempSkill(skillId))
+            {
+                return player.ablilityManager.TryUseSkillFromConfig(skillId, inputVec, castVec, target, castOverrides);
+            }
+
+            return player.ablilityManager.UseSkill(skillId, inputVec, castVec, target, castOverrides);
+        }
+
+        void OnTempSkillChanged(PlayerTempSkillChangedEvent _)
+        {
+            PlayerHumanItemBarPanel.RefreshFromGame();
+            SkilBar?.Refresh();
+        }
+
+        void OnDestroy()
+        {
+            PlayerEventBus.Unsubscribe<PlayerTempSkillChangedEvent>(OnTempSkillChanged);
+        }
+
         void NotifySkillUseConfirmed(string skillId, bool success, Action<bool> onConfirm)
         {
             if (success)
             {
-                TryConsumeLmbOverride(skillId);
+                TryConsumeTempSkill(skillId);
             }
 
             onConfirm?.Invoke(success);
         }
 
-        static void TryConsumeLmbOverride(string skillId)
+        static void TryConsumeTempSkill(string skillId)
         {
             var pdm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (pdm == null || !pdm.ConsumeLmbOverrideIfMatch(skillId))
+            if (pdm == null || !pdm.ConsumeTempSkillIfMatch(skillId))
             {
                 return;
             }

@@ -1111,12 +1111,20 @@ namespace My.Map.Entity
             return merged;
         }
 
-        // 脱手施法：不打连招，只用 MainAbilityId；不查 CD/CanActiveUseSkill/是否注册；仅应在 IsActionable 时由 Tick 调用
-        bool UseSkillDetached(string skillId, Vector2? inputVec, Vector2? castVec, ILogicEntity target)
+        // 临时技能等：按 SkillLibrary 施放，不要求 SkillRuntimes 注册；不查 CD/连招
+        public bool TryUseSkillFromConfig(
+            string skillId,
+            Vector2? inputVec = null,
+            Vector2? castVec = null,
+            ILogicEntity target = null,
+            Dictionary<string, string> castOverrides = null)
         {
-            if (!TryResolveDetachedSkillConfig(skillId,
-                    out string realAbilityId,
-                    out Dictionary<string, string> overrideParams))
+            if (!TryResolveDetachedSkillConfig(skillId, out string realAbilityId, out Dictionary<string, string> overrideParams))
+            {
+                return false;
+            }
+
+            if (!OwnerEntity.CanActiveUseSkill())
             {
                 return false;
             }
@@ -1126,13 +1134,14 @@ namespace My.Map.Entity
                 return false;
             }
 
+            var merged = MergeCastOverrides(overrideParams, castOverrides);
             comboOrchestrator?.TransitCombo(0);
 
             if (!Executor.TryUseAbility(realAbilityId,
                     inputVec: inputVec,
                     castVec: castVec,
                     target: target,
-                    overrideParams: overrideParams))
+                    overrideParams: merged))
             {
                 return false;
             }
@@ -1140,6 +1149,12 @@ namespace My.Map.Entity
             CurrentSkillId = skillId;
             CurrentAbilityId = realAbilityId;
             return true;
+        }
+
+        // 脱手施法：不打连招，只用 MainAbilityId；不查 CD/CanActiveUseSkill/是否注册；仅应在 IsActionable 时由 Tick 调用
+        bool UseSkillDetached(string skillId, Vector2? inputVec, Vector2? castVec, ILogicEntity target)
+        {
+            return TryUseSkillFromConfig(skillId, inputVec, castVec, target);
         }
 
         bool TryResolveDetachedSkillConfig(string skillId, out string mainAbilityId, out Dictionary<string, string> overrideParams)

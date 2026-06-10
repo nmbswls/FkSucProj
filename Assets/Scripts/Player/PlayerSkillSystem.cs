@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
 using My.Map.Logic;
+using My.Quest;
 using My.Saving;
 using UnityEngine;
 
@@ -55,6 +56,25 @@ namespace My.Player
 
         // 成长面板被动搭配栏
         public readonly string[] PassiveSkillSlots = new string[PassiveSlotCount];
+
+        string _tempSkillId;
+        float _tempSkillRemainingSec;
+        int _tempSkillLastCeilSec = -1;
+
+        public bool HasTempSkill => !string.IsNullOrEmpty(_tempSkillId);
+
+        public string TempSkillId => _tempSkillId;
+
+        public float TempSkillRemainingSec => _tempSkillRemainingSec;
+
+        public string GetTempSkillId() => _tempSkillId;
+
+        public bool IsTempSkill(string skillId)
+        {
+            return HasTempSkill
+                && !string.IsNullOrEmpty(skillId)
+                && skillId == _tempSkillId;
+        }
 
         private static readonly string[] InnateSkillIds =
         {
@@ -256,8 +276,72 @@ namespace My.Player
         {
         }
 
+        public void GrantTempSkill(string skillId, float durationSec = 0f)
+        {
+            if (string.IsNullOrEmpty(skillId) || SkillLibrary.GetSkillConfig(skillId) == null)
+            {
+                _tempSkillId = null;
+                _tempSkillRemainingSec = 0f;
+                _tempSkillLastCeilSec = -1;
+                return;
+            }
+
+            _tempSkillId = skillId;
+            _tempSkillRemainingSec = durationSec > 0f ? durationSec : 0f;
+            _tempSkillLastCeilSec = durationSec > 0f ? Mathf.CeilToInt(durationSec) : -1;
+            NotifyTempSkillChanged();
+        }
+
+        public void ClearTempSkill()
+        {
+            if (!HasTempSkill)
+            {
+                return;
+            }
+
+            _tempSkillId = null;
+            _tempSkillRemainingSec = 0f;
+            _tempSkillLastCeilSec = -1;
+            NotifyTempSkillChanged();
+        }
+
+        public bool ConsumeTempSkillIfMatch(string usedSkillId)
+        {
+            if (!IsTempSkill(usedSkillId))
+            {
+                return false;
+            }
+
+            ClearTempSkill();
+            return true;
+        }
+
         public void Tick(float dt)
         {
+            if (!HasTempSkill || _tempSkillRemainingSec <= 0f)
+            {
+                return;
+            }
+
+            int ceilBefore = Mathf.CeilToInt(_tempSkillRemainingSec);
+            _tempSkillRemainingSec -= dt;
+            if (_tempSkillRemainingSec <= 0f)
+            {
+                ClearTempSkill();
+                return;
+            }
+
+            int ceilAfter = Mathf.CeilToInt(_tempSkillRemainingSec);
+            if (ceilAfter != ceilBefore && ceilAfter != _tempSkillLastCeilSec)
+            {
+                _tempSkillLastCeilSec = ceilAfter;
+                NotifyTempSkillChanged();
+            }
+        }
+
+        static void NotifyTempSkillChanged()
+        {
+            PlayerEventBus.Publish(new PlayerTempSkillChangedEvent());
         }
 
         public void WriteToSave(SaveData data)

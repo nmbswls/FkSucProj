@@ -77,32 +77,28 @@ namespace My.Player
 
         public PlayerMagicClothesManager MagicClothes { get; private set; }
 
-        // 一次性拾取：临时覆盖左键技能（不存档，切图清空）
-        string _lmbOverrideSkillId;
+        public bool HasTempSkill => SkillSystem.HasTempSkill;
 
-        public bool HasLmbOverride => !string.IsNullOrEmpty(_lmbOverrideSkillId);
+        public string GetTempSkillId() => SkillSystem.GetTempSkillId();
 
-        public string GetLmbOverrideSkillId() => _lmbOverrideSkillId;
-
-        public void GrantLmbOverride(string skillId)
+        public void GrantTempSkill(string skillId, float durationSec = 0f)
         {
-            _lmbOverrideSkillId = string.IsNullOrEmpty(skillId) ? null : skillId;
+            SkillSystem.GrantTempSkill(skillId, durationSec);
         }
 
-        public void ClearLmbOverride()
+        public void ClearTempSkill()
         {
-            _lmbOverrideSkillId = null;
+            SkillSystem.ClearTempSkill();
         }
 
-        public bool ConsumeLmbOverrideIfMatch(string usedSkillId)
+        public bool ConsumeTempSkillIfMatch(string usedSkillId)
         {
-            if (string.IsNullOrEmpty(_lmbOverrideSkillId) || usedSkillId != _lmbOverrideSkillId)
-            {
-                return false;
-            }
+            return SkillSystem.ConsumeTempSkillIfMatch(usedSkillId);
+        }
 
-            _lmbOverrideSkillId = null;
-            return true;
+        public bool IsTempSkill(string skillId)
+        {
+            return SkillSystem.IsTempSkill(skillId);
         }
 
         public string[] HumanSkillSlots = new string[8];
@@ -355,6 +351,7 @@ namespace My.Player
             DialogTriggerSystem.Tick(dt);
             FuncOpenSystem.Tick(dt);
             RumorIntel.Tick(dt);
+            SkillSystem.Tick(dt);
         }
 
         public bool CheckHaveItem(string itemId, long count)

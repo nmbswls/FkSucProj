@@ -57,23 +57,8 @@ namespace My.Config
 
                 list.Add(row);
             }
-
-            foreach (var list in _byBaseRuneId.Values)
-            {
-                list.Sort(CompareUpgradeOrder);
-            }
         }
 
-        static int CompareUpgradeOrder(RuneUpgradeInfo a, RuneUpgradeInfo b)
-        {
-            int c = a.SortOrder.CompareTo(b.SortOrder);
-            if (c != 0)
-            {
-                return c;
-            }
-
-            return string.Compare(a.UpgradeId, b.UpgradeId, StringComparison.Ordinal);
-        }
 
         public static RuneUpgradeInfo GetOrDefault(string upgradeId)
         {
