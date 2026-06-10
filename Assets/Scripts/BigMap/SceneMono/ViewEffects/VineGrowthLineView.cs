@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace My.Map.View
 {
-    // 配置 VineGrowLength = 从 vine_line 原点 (y=0) 到顶端的总高度（世界单位）。
-    // base 为底部装饰不参与高度预算；body 用 Tiled + flipY + scaleY<0 反转扩展方向，Transform 钉顶边；head 接在 body 顶边。
+    // 配置 VineGrowLength = body 的目标高度（世界单位），从 vine_line 原点 (y=0) 向上生长。
+    // base 为底部装饰不参与高度预算；head 接在 body 顶边，不计入 VineGrowLength。
     public class VineGrowthLineView : MonoBehaviour
     {
         const float BodyTiledScaleY = -1f;
@@ -125,15 +125,12 @@ namespace My.Map.View
                 return;
             }
 
-            float targetLocalTopY = EvaluateTargetLocalTopY(_currentProgress);
+            float bodyLocalH = EvaluateTargetLocalTopY(_currentProgress);
             float tipLocalH = GetSegmentLocalHeight(tipRenderer);
             float baseLocalH = GetSegmentLocalHeight(baseMaskRenderer);
 
-            // 总高度 = body + head；未长到能容纳 head 前只伸 body
-            bool showTip = tipLocalH <= 0.001f || targetLocalTopY >= tipLocalH - 0.001f;
-            float bodyLocalH = showTip
-                ? Mathf.Max(0f, targetLocalTopY - tipLocalH)
-                : targetLocalTopY;
+            // head 叠在 body 顶端，生长过程中随 body 顶边移动
+            bool showTip = tipLocalH > 0.001f && bodyLocalH > 0.001f;
 
             if (baseMaskRenderer != null && baseLocalH > 0f)
             {

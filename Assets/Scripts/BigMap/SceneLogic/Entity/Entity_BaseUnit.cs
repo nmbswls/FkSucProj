@@ -1075,6 +1075,8 @@ namespace My.Map
                 b.DoBuffTrigger(ETriggerType.OnPerfectDodge);
             }
 
+            Debug.LogError("完美闪避啦");
+
             LogicManager.globalBuffManager.RemoveAllBuffById(Id, "phase_perfect_dodge");
             return true;
         }
