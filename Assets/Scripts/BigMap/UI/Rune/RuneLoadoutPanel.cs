@@ -31,10 +31,13 @@ namespace My.UI.Rune
         [SerializeField] RuneUpgradeLayoutHost layoutHost;
         [SerializeField] RuneUpgradeDetailSection upgradeDetail;
         [SerializeField] RectTransform ownedArea;
+        [SerializeField] ScrollRect ownedScroll;
         [SerializeField] RectTransform ownedGrid;
         [SerializeField] RuneOwnedCell ownedCellTemplate;
         [SerializeField] TextMeshProUGUI ownedHint;
         [SerializeField] RuneDragDropController dragController;
+
+        const string OwnedCellPrefabPath = "UI/Prefabs/PlayerProgressionHubPanelSub/RuneOwnedCell";
 
         IPlayerProgressionHubHost _progressionHubHost;
 
@@ -120,6 +123,7 @@ namespace My.UI.Rune
                 return;
             }
 
+            EnsureOwnedCellTemplate();
             if (ownedCellTemplate != null)
             {
                 ownedCellTemplate.gameObject.SetActive(false);
@@ -138,6 +142,18 @@ namespace My.UI.Rune
         public override void Show()
         {
             base.Show();
+
+            if (ownedArea != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ownedArea);
+            }
+
+            CacheLayoutAnchors();
+            if (!_detailVisible && ownedArea != null)
+            {
+                ownedArea.anchoredPosition = _ownedAreaHiddenAnchoredPos;
+            }
+
             RefreshAll();
         }
 
@@ -160,12 +176,17 @@ namespace My.UI.Rune
         {
             if (detailArea != null)
             {
-                _detailShownAnchoredPos = detailArea.anchoredPosition;
+                // 设计位为 (0,0)；勿用当前 anchoredPosition，避免关闭 detail 后再次 Setup 误缓存滑出位置
+                _detailShownAnchoredPos = Vector2.zero;
             }
 
             if (ownedArea != null)
             {
-                _ownedAreaShownAnchoredPos = ownedArea.anchoredPosition;
+                var savedPos = ownedArea.anchoredPosition;
+                _ownedAreaShownAnchoredPos = Vector2.zero;
+                ownedArea.anchoredPosition = _ownedAreaShownAnchoredPos;
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ownedArea);
+
                 float height = ownedArea.rect.height;
                 if (height <= 1f)
                 {
@@ -174,6 +195,7 @@ namespace My.UI.Rune
 
                 _ownedAreaHiddenAnchoredPos = _ownedAreaShownAnchoredPos
                     + new Vector2(0f, -(height + OwnedHiddenExtraOffset));
+                ownedArea.anchoredPosition = savedPos;
             }
         }
 
@@ -223,10 +245,22 @@ namespace My.UI.Rune
                 return false;
             }
 
-            if (ownedGrid == null || ownedCellTemplate == null)
+            if (ownedGrid == null)
             {
-                Debug.LogError("[RunePanel] Prefab missing ownedGrid or ownedCellTemplate.");
+                Debug.LogError("[RunePanel] Prefab missing ownedGrid.");
                 return false;
+            }
+
+            EnsureOwnedCellTemplate();
+            if (ownedCellTemplate == null)
+            {
+                Debug.LogError("[RunePanel] Prefab missing ownedCellTemplate.");
+                return false;
+            }
+
+            if (ownedScroll == null && ownedGrid != null)
+            {
+                ownedScroll = ownedGrid.GetComponentInParent<ScrollRect>();
             }
 
             if (detailTitle == null)
@@ -521,21 +555,38 @@ namespace My.UI.Rune
 
         void PlayOwnedAreaShow()
         {
-            if (ownedArea == null || _ownedAreaVisible)
+            if (ownedArea == null)
             {
+                return;
+            }
+
+            ownedArea.gameObject.SetActive(true);
+
+            if (_ownedAreaVisible)
+            {
+                ownedArea.anchoredPosition = _ownedAreaShownAnchoredPos;
                 RefreshOwnedGrid();
                 return;
             }
 
             _ownedAreaVisible = true;
-            ownedArea.gameObject.SetActive(true);
             KillOwnedAreaTween();
             ownedArea.anchoredPosition = _ownedAreaHiddenAnchoredPos;
             _ownedAreaTween = ownedArea
                 .DOAnchorPos(_ownedAreaShownAnchoredPos, OwnedSlideDuration)
                 .SetEase(Ease.OutCubic)
                 .SetUpdate(true)
-                .OnComplete(RefreshOwnedGrid);
+                .OnComplete(OnOwnedAreaShowComplete);
+            RefreshOwnedGrid();
+        }
+
+        void OnOwnedAreaShowComplete()
+        {
+            if (ownedArea != null)
+            {
+                ownedArea.anchoredPosition = _ownedAreaShownAnchoredPos;
+            }
+
             RefreshOwnedGrid();
         }
 
@@ -739,12 +790,23 @@ namespace My.UI.Rune
                 .OrderBy(x => x.RuneId)
                 .ToList();
 
+            if (!EnsureOwnedCellTemplate())
+            {
+                return;
+            }
+
             ClearOwnedCells();
             for (int i = 0; i < owned.Count; i++)
             {
                 var def = owned[i];
-                var cell = Instantiate(ownedCellTemplate, ownedGrid, false);
-                cell.gameObject.SetActive(true);
+                var cellGo = Instantiate(ownedCellTemplate.gameObject, ownedGrid, false);
+                cellGo.SetActive(true);
+                var cell = cellGo.GetComponent<RuneOwnedCell>();
+                if (cell == null)
+                {
+                    Destroy(cellGo);
+                    continue;
+                }
 
                 bool canEquip = def.EquipSlot == _selectedEquipSlot;
                 string equippedId = runeSystem.GetEquipped(def.EquipSlot);
@@ -760,7 +822,55 @@ namespace My.UI.Rune
                 ownedHint.text = owned.Count == 0 ? "暂无已拥有的装配符文" : string.Empty;
             }
 
+            RebuildOwnedGridLayout();
+        }
+
+        bool EnsureOwnedCellTemplate()
+        {
+            if (ownedCellTemplate != null)
+            {
+                return true;
+            }
+
+            var prefab = Resources.Load<GameObject>(OwnedCellPrefabPath);
+            if (prefab == null)
+            {
+                Debug.LogError("[RunePanel] Failed to load RuneOwnedCell prefab.");
+                return false;
+            }
+
+            ownedCellTemplate = prefab.GetComponent<RuneOwnedCell>();
+            if (ownedCellTemplate == null)
+            {
+                Debug.LogError("[RunePanel] RuneOwnedCell prefab missing RuneOwnedCell component.");
+            }
+
+            return ownedCellTemplate != null;
+        }
+
+        void RebuildOwnedGridLayout()
+        {
+            if (ownedGrid == null)
+            {
+                return;
+            }
+
             LayoutRebuilder.ForceRebuildLayoutImmediate(ownedGrid);
+
+            if (ownedScroll != null)
+            {
+                if (ownedScroll.content != null)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(ownedScroll.content);
+                }
+
+                if (ownedScroll.viewport != null)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(ownedScroll.viewport);
+                }
+
+                ownedScroll.verticalNormalizedPosition = 1f;
+            }
         }
 
         void ClearOwnedCells()

@@ -1143,7 +1143,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790639
+      rid: 958884307705790779
   - StaticId: 101
     UniqName: 
     AppearCond:
@@ -1167,7 +1167,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790640
+      rid: 958884307705790780
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -1191,7 +1191,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790641
+      rid: 958884307705790781
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -1215,7 +1215,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790642
+      rid: 958884307705790782
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -1239,7 +1239,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790643
+      rid: 958884307705790783
   - StaticId: 105
     UniqName: 
     AppearCond:
@@ -1263,7 +1263,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790644
+      rid: 958884307705790784
   - StaticId: 106
     UniqName: 
     AppearCond:
@@ -1287,7 +1287,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790645
+      rid: 958884307705790785
   - StaticId: 107
     UniqName: gp_03
     AppearCond:
@@ -1311,7 +1311,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790646
+      rid: 958884307705790786
   - StaticId: 108
     UniqName: gp_02
     AppearCond:
@@ -1335,7 +1335,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790647
+      rid: 958884307705790787
   - StaticId: 109
     UniqName: gp_01
     AppearCond:
@@ -1359,7 +1359,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790648
+      rid: 958884307705790788
   - StaticId: 110
     UniqName: 
     AppearCond:
@@ -1383,7 +1383,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790649
+      rid: 958884307705790789
   - StaticId: 111
     UniqName: 
     AppearCond:
@@ -1407,7 +1407,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790650
+      rid: 958884307705790790
   - StaticId: 112
     UniqName: 
     AppearCond:
@@ -1431,7 +1431,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790651
+      rid: 958884307705790791
   - StaticId: 113
     UniqName: 
     AppearCond:
@@ -1455,7 +1455,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790652
+      rid: 958884307705790792
   - StaticId: 114
     UniqName: 
     AppearCond:
@@ -1479,7 +1479,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790653
+      rid: 958884307705790793
   - StaticId: 115
     UniqName: 
     AppearCond:
@@ -1503,7 +1503,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790654
+      rid: 958884307705790794
   - StaticId: 116
     UniqName: 
     AppearCond:
@@ -1527,7 +1527,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790655
+      rid: 958884307705790795
   - StaticId: 117
     UniqName: 
     AppearCond:
@@ -1551,7 +1551,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790656
+      rid: 958884307705790796
   - StaticId: 118
     UniqName: 
     AppearCond:
@@ -1575,7 +1575,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790657
+      rid: 958884307705790797
   - StaticId: 119
     UniqName: 
     AppearCond:
@@ -1599,7 +1599,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790658
+      rid: 958884307705790798
   - StaticId: 120
     UniqName: 
     AppearCond:
@@ -1623,7 +1623,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790659
+      rid: 958884307705790799
   - StaticId: 121
     UniqName: 
     AppearCond:
@@ -1647,7 +1647,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790660
+      rid: 958884307705790800
   - StaticId: 122
     UniqName: 
     AppearCond:
@@ -1671,7 +1671,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790661
+      rid: 958884307705790801
   - StaticId: 123
     UniqName: 
     AppearCond:
@@ -1695,7 +1695,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790662
+      rid: 958884307705790802
   - StaticId: 124
     UniqName: cornor_01_b
     AppearCond:
@@ -1719,7 +1719,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790663
+      rid: 958884307705790803
   - StaticId: 125
     UniqName: cornor_01_a
     AppearCond:
@@ -1743,7 +1743,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790664
+      rid: 958884307705790804
   - StaticId: 126
     UniqName: 
     AppearCond:
@@ -1767,7 +1767,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790665
+      rid: 958884307705790805
   - StaticId: 127
     UniqName: 
     AppearCond:
@@ -1791,7 +1791,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790666
+      rid: 958884307705790806
   - StaticId: 128
     UniqName: 
     AppearCond:
@@ -1815,7 +1815,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790667
+      rid: 958884307705790807
   - StaticId: 129
     UniqName: 
     AppearCond:
@@ -1839,7 +1839,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790668
+      rid: 958884307705790808
   - StaticId: 130
     UniqName: 
     AppearCond:
@@ -1863,7 +1863,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790669
+      rid: 958884307705790809
   - StaticId: 131
     UniqName: 
     AppearCond:
@@ -1887,7 +1887,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790670
+      rid: 958884307705790810
   - StaticId: 132
     UniqName: 
     AppearCond:
@@ -1911,7 +1911,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884307705790671
+      rid: 958884307705790811
   NamedPoints:
   - Name: control_gan_look
     PointType: 0
@@ -2155,7 +2155,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 958884307705790639
+    - rid: 958884307705790779
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: control_gan_01
@@ -2166,7 +2166,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790640
+    - rid: 958884307705790780
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon_01
@@ -2182,7 +2182,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790641
+    - rid: 958884307705790781
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: memory_point
@@ -2193,7 +2193,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790642
+    - rid: 958884307705790782
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_top
@@ -2204,7 +2204,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790643
+    - rid: 958884307705790783
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_seed
@@ -2217,7 +2217,7 @@ MonoBehaviour:
           - VineGrowLength
           values:
           - 3.7
-    - rid: 958884307705790644
+    - rid: 958884307705790784
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
@@ -2225,7 +2225,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790645
+    - rid: 958884307705790785
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_entry_01
@@ -2233,7 +2233,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790646
+    - rid: 958884307705790786
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2241,7 +2241,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790647
+    - rid: 958884307705790787
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2249,7 +2249,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790648
+    - rid: 958884307705790788
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2257,7 +2257,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790649
+    - rid: 958884307705790789
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2267,7 +2267,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_out
-    - rid: 958884307705790650
+    - rid: 958884307705790790
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2277,7 +2277,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_in
-    - rid: 958884307705790651
+    - rid: 958884307705790791
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2288,7 +2288,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790652
+    - rid: 958884307705790792
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2299,7 +2299,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790653
+    - rid: 958884307705790793
       type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_insult_girl
@@ -2310,7 +2310,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790654
+    - rid: 958884307705790794
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
@@ -2321,7 +2321,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790655
+    - rid: 958884307705790795
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -2332,7 +2332,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790656
+    - rid: 958884307705790796
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -2343,7 +2343,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884307705790657
+    - rid: 958884307705790797
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -2365,11 +2365,11 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 958884307705790672
+            rid: 958884307705790812
         - GroupIdx: 1
           InitInfo:
-            rid: 958884307705790673
-    - rid: 958884307705790658
+            rid: 958884307705790813
+    - rid: 958884307705790798
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
@@ -2377,7 +2377,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790659
+    - rid: 958884307705790799
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2385,7 +2385,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790660
+    - rid: 958884307705790800
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2393,7 +2393,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790661
+    - rid: 958884307705790801
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2401,7 +2401,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790662
+    - rid: 958884307705790802
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
@@ -2417,7 +2417,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790663
+    - rid: 958884307705790803
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -2433,7 +2433,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790664
+    - rid: 958884307705790804
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -2449,7 +2449,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790665
+    - rid: 958884307705790805
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -2465,7 +2465,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790666
+    - rid: 958884307705790806
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -2481,7 +2481,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790667
+    - rid: 958884307705790807
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -2497,7 +2497,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790668
+    - rid: 958884307705790808
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
@@ -2513,7 +2513,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790669
+    - rid: 958884307705790809
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
@@ -2521,7 +2521,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790670
+    - rid: 958884307705790810
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -2529,7 +2529,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790671
+    - rid: 958884307705790811
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -2537,7 +2537,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884307705790672
+    - rid: 958884307705790812
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
@@ -2553,7 +2553,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884307705790673
+    - rid: 958884307705790813
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
