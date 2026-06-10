@@ -207,7 +207,7 @@ namespace My.Map.View
             renderer.flipY = true;
 
             var tr = renderer.transform;
-            tr.localScale = new Vector3(tr.localScale.x, BodyTiledScaleY, tr.localScale.z);
+            //tr.localScale = new Vector3(tr.localScale.x, BodyTiledScaleY, tr.localScale.z);
         }
 
         static void ApplyTiledBodyLayout(SpriteRenderer renderer, float topLocalY, float localHeight)

@@ -1016,6 +1016,11 @@ namespace My.Map.Entity
                 {
                     if(candidate.CheckHasState(AttrIdConsts.NoSelect))
                     {
+                        if (candidate is BaseUnitLogicEntity pdUnit
+                            && pdUnit.TryResolvePerfectDodgeAgainstHit(ctx.SourceInfo.SrcEntityId, null))
+                        {
+                            continue;
+                        }
                         continue; 
                     }
 

@@ -1104,6 +1104,18 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["phase_perfect_dodge"] = new BuffDefinition()
+                {
+                    BuffId = "phase_perfect_dodge",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = 0.15f,
+                    IsHidden = true,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PerfectDodgeWindow, ModifierValue = 1 },
+                    },
+                };
+
 
                 // ?????黤??
                 _library["gc_self_yishang"] = new BuffDefinition()
@@ -1571,6 +1583,31 @@ namespace My.Map.Entity
                         {
                             DurationType = EBuffDurationType.OutOfCombatWatch,
                             ParamFloat1 = 3f,
+                        },
+                    },
+                };
+
+                _library["passive_perfect_dodge_weiyi"] = new BuffDefinition()
+                {
+                    BuffId = "passive_perfect_dodge_weiyi",
+                    Desc = "完美闪避获得威仪",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.OnPerfectDodge,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddBuffCfg()
+                                {
+                                    BuffId = "player_weiyi",
+                                    Layer = 1,
+                                },
+                            },
                         },
                     },
                 };

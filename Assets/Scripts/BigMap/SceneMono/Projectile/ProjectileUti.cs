@@ -47,6 +47,17 @@ namespace My
 
         public static void HandleHitOutput(LogicProjectileInfo logicProjectile, Vector2 hitPosition, Vector2 hitDir, SceneUnitPresenter hitOne)
         {
+            if (hitOne?.UnitEntity != null
+                && hitOne.UnitEntity.CheckHasState(AttrIdConsts.NoSelect))
+            {
+                if (hitOne.UnitEntity.TryResolvePerfectDodgeAgainstHit(
+                        logicProjectile.ownerEntity?.Id, hitDir))
+                {
+                    return;
+                }
+                return;
+            }
+
             if (logicProjectile.pData.EntityHitResult != null)
             {
                 foreach (var ef in logicProjectile.pData.EntityHitResult.OnHitEffects)

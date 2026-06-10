@@ -753,6 +753,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidSkillOp, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PerfectDodgeWindow, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoInteract, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Ghost, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Invisible, initialBase: 0);
@@ -1060,6 +1061,22 @@ namespace My.Map
                     }
                 }
             }
+        }
+
+        public bool TryResolvePerfectDodgeAgainstHit(long? srcEntityId, Vector2? hitDir)
+        {
+            if (!CheckHasState(AttrIdConsts.PerfectDodgeWindow))
+            {
+                return false;
+            }
+
+            foreach (var b in BuffContainer.Values)
+            {
+                b.DoBuffTrigger(ETriggerType.OnPerfectDodge);
+            }
+
+            LogicManager.globalBuffManager.RemoveAllBuffById(Id, "phase_perfect_dodge");
+            return true;
         }
 
         public virtual void ProcessHit(long? srcEntityId, Vector2? hitDir)

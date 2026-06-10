@@ -1217,5 +1217,28 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "passive_perfect_dodge_weiyi",
+    "main_ability_id": "",
+    "desc": "完美闪避获得威仪",
+    "is_passive": true,
+    "passive_buff_ids": [
+      "passive_perfect_dodge_weiyi"
+    ],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": false,
+    "is_derived": false,
+    "cool_down": 0,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 0,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

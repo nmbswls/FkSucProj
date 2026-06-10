@@ -122,6 +122,11 @@ public class MapUnitWeaponCtrl : MonoBehaviour
 
         if(logicEntity.GetAttr(AttrIdConsts.NoSelect) > 0)
         {
+            if (logicEntity is BaseUnitLogicEntity pdUnit
+                && pdUnit.TryResolvePerfectDodgeAgainstHit(UnitPresenter.UnitEntity?.Id, null))
+            {
+                return;
+            }
             return;
         }
 

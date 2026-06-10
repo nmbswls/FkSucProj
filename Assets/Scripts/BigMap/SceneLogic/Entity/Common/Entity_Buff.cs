@@ -23,6 +23,7 @@ namespace My.Map.Entity
         Tick,
         OnSkillUsed,
         OnHit,
+        OnPerfectDodge, // 完美闪避窗口内被命中（NoSelect 不下血，单独广播）
         OnDamageTaken, // 受到伤害（伤害管道广播，含威仪减伤抵扣与最终 HP 伤害）
         OnDie,
         FinalDmgReduced, // 累计最终减伤

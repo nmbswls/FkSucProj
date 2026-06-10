@@ -628,7 +628,7 @@ namespace My.Map.Entity
             var mainPhase = new MapAbilityPhase()
             {
                 PhaseName = "Executing",
-                PhaseBuff = new() { "phase_move"},
+                PhaseBuff = new() { "phase_move", "phase_perfect_dodge"},
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
