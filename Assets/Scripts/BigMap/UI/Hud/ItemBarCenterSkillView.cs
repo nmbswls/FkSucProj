@@ -172,7 +172,7 @@ namespace My.UI
 
             if (empty)
             {
-                SetOverrideVisual(false);
+                SetTempSkillVisual(false);
             }
         }
     }

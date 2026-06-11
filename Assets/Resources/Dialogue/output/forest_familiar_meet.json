@@ -1,0 +1,249 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "森林废墟·女主与使魔相遇（多角色立绘切换测试）",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "残破的拱门斜插在苔藓里，风从石缝里渗出低鸣。\n这里是旧时代神殿的废墟，连地图上的标记都已褪色。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/lilith_default.png",
+          "Position": 0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "……有人吗？不对，刚才那声像是魔力共鸣。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "如果是陷阱就太无聊了。我可不想在废墟里白跑一趟。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/yingyu_default.png",
+          "Position": 2
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "影羽",
+              "Content": "哈？终于有个活人闯进来了。我还以为你会被那些腐烂的结界直接弹飞。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "使魔？你的气息……和我订下的那份契约很像。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "别用那种眼神看我。我只是睡太久，羽毛都沾了灰尘而已。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "睡太久？你刚才明明在偷看我的魔力流向。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "那是专业评估！顺便说一句——你走路真的很吵。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "……行。既然你认得我，就省得自我介绍了。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "彼此彼此，女主人。欢迎光临你的废墟重逢现场。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Choice, Assembly-CSharp",
+          "TimeLimit": 0.0,
+          "Options": [
+            {
+              "Text": "向影羽伸出手",
+              "TargetStepId": "reach",
+              "TargetDialogId": "",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": "",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            },
+            {
+              "Text": "先观察四周再搭话",
+              "TargetStepId": "caution",
+              "TargetDialogId": "",
+              "ProbabilityType": 0,
+              "ProbabilityParam1": 0.0,
+              "FailTargetStepId": "",
+              "ShowWhenFail": false,
+              "Conditions1": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": "reach",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/lilith_default.png",
+          "Position": 0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "契约既然还在，就没必要继续互相试探了。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/yingyu_default.png",
+          "Position": 2
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "影羽",
+              "Content": "哦？这么主动？那我勉为其难回来帮你也不是不行。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    },
+    {
+      "Id": "caution",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/yingyu_default.png",
+          "Position": 2
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "影羽",
+              "Content": "谨慎是好事。这废墟底下还埋着半套古代封印，乱踩会很有趣。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SetImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/Portrait/lilith_default.png",
+          "Position": 0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "多谢提醒。有你这种嘴碎的使魔在，至少不会太闷。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4JumpTo, Assembly-CSharp",
+          "TargetStepId": "end"
+        }
+      ]
+    },
+    {
+      "Id": "end",
+      "Note": "",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "风停了片刻。废墟深处，有什么古老的东西与契约一起轻轻应答。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "走吧，女主人。下一段路我会盯着——主要是盯你别再把结界踩碎。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "……闭嘴，带路。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

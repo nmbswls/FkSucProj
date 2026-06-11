@@ -170,6 +170,9 @@ namespace My.UI
             if (nameTextContainer) nameTextContainer.gameObject.SetActive(hasSpeaker);
             if (nameText) nameText.text = hasSpeaker ? line.Speaker : "";
 
+            if (hasSpeaker && portraits != null)
+                portraits.FocusSpeaker(line.Speaker);
+
             ShowNextIndicator(false);
 
             if (IsFastMode)

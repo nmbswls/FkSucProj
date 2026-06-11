@@ -20,6 +20,59 @@ public class PortraitManager : MonoBehaviour
     public List<Slot> slots = new List<Slot>();
     public DIalogueCharacterDatabase db;
 
+    private void Awake()
+    {
+        EnsureSlotsFromHierarchy();
+    }
+
+    // DialoguePanel 预制体未配置 slots 时，按子节点横向位置自动绑定 Left/Center/Right
+    public void EnsureSlotsFromHierarchy()
+    {
+        if (slots != null && slots.Count > 0)
+            return;
+
+        slots = new List<Slot>();
+        var children = new List<(RectTransform rt, float x)>();
+        foreach (Transform child in transform)
+        {
+            if (child is RectTransform rt)
+                children.Add((rt, rt.anchoredPosition.x));
+        }
+
+        if (children.Count == 0)
+            return;
+
+        children.Sort((a, b) => a.x.CompareTo(b.x));
+        string[] slotNames = { "Left", "Center", "Right" };
+        for (int i = 0; i < children.Count && i < slotNames.Length; i++)
+            slots.Add(BuildSlot(children[i].rt, slotNames[i]));
+    }
+
+    private static Slot BuildSlot(RectTransform root, string slotName)
+    {
+        var image = root.GetComponent<Image>();
+        if (image == null)
+            image = root.gameObject.AddComponent<Image>();
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+
+        var group = root.GetComponent<CanvasGroup>();
+        if (group == null)
+            group = root.gameObject.AddComponent<CanvasGroup>();
+        group.alpha = 0f;
+
+        root.sizeDelta = new Vector2(300f, 400f);
+        root.gameObject.name = slotName;
+
+        return new Slot
+        {
+            name = slotName,
+            root = root,
+            image = image,
+            group = group
+        };
+    }
+
     public void Show(string slotName, string charId, string expr, float fade, DialogueTimeDriver driver, Action onComplete)
     {
         var s = FindSlot(slotName);
@@ -74,6 +127,39 @@ public class PortraitManager : MonoBehaviour
             s.image.sprite = sprite;
             onComplete?.Invoke();
         }
+    }
+
+    // 根据 Speaker 名字高亮对应立绘槽（slot.characterId 需与 Speaker 一致）
+    public void FocusSpeaker(string speaker)
+    {
+        if (string.IsNullOrEmpty(speaker))
+            return;
+
+        foreach (var slot in slots)
+        {
+            if (slot?.group == null || string.IsNullOrEmpty(slot.characterId))
+                continue;
+            bool active = slot.characterId == speaker;
+            slot.group.alpha = active ? 1f : 0.45f;
+        }
+    }
+
+    public void ShowSlotSprite(string slotName, Sprite sprite, string speakerId = null)
+    {
+        EnsureSlotsFromHierarchy();
+
+        var slot = FindSlot(slotName);
+        if (slot == null)
+            return;
+
+        if (!string.IsNullOrEmpty(speakerId))
+            slot.characterId = speakerId;
+
+        if (sprite != null && slot.image != null)
+            slot.image.sprite = sprite;
+
+        if (slot.group != null)
+            slot.group.alpha = 1f;
     }
 
     public void Hide(string slotName, float fade, DialogueTimeDriver driver, Action onComplete)

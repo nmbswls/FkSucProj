@@ -585,6 +585,13 @@ public partial class DialoguePlayer : MonoBehaviour
             //        break;
             //    }
 
+            case DialogCommandData4SetImage setImage:
+                {
+                    ApplySetImage(setImage);
+                    SafeComplete();
+                    break;
+                }
+
             case DialogCommandData4Wait cd4Wait:
                 {
                     driver.Run(cd4Wait.WaitTime, _ => { }, SafeComplete);
@@ -1051,6 +1058,46 @@ public partial class DialoguePlayer : MonoBehaviour
     public void SetActiveDirector(PlayableDirector director)
     {
         activeDirector = director;
+    }
+
+    private void ApplySetImage(DialogCommandData4SetImage setImage)
+    {
+        var pm = ui != null && ui.portraits != null ? ui.portraits : runtimeRef?.portraits;
+        if (pm == null)
+            return;
+
+        string slotName = setImage.Position switch
+        {
+            DialogCommandData4SetImage.ImgPos.Left => "Left",
+            DialogCommandData4SetImage.ImgPos.Center => "Center",
+            DialogCommandData4SetImage.ImgPos.Right => "Right",
+            DialogCommandData4SetImage.ImgPos.Background => "Background",
+            _ => "Center"
+        };
+
+        Sprite sprite = null;
+        if (!string.IsNullOrEmpty(setImage.ImageName))
+            sprite = LoadDialogueSprite(setImage.ImageName);
+
+        string speakerId = DialoguePortraitCatalog.ResolveSpeaker(setImage.ImageName);
+        pm.ShowSlotSprite(slotName, sprite, speakerId);
+    }
+
+    private static Sprite LoadDialogueSprite(string assetPath)
+    {
+        if (string.IsNullOrEmpty(assetPath))
+            return null;
+
+        assetPath = assetPath.Replace('\\', '/');
+        if (!assetPath.StartsWith("Assets/Resources/"))
+            return null;
+
+        string resPath = assetPath.Substring("Assets/Resources/".Length);
+        int dot = resPath.LastIndexOf('.');
+        if (dot > 0)
+            resPath = resPath.Substring(0, dot);
+
+        return Resources.Load<Sprite>(resPath);
     }
 
 

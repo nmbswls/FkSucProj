@@ -1941,6 +1941,11 @@ namespace My.Map
 
         public bool IsInBusyZone = false;
 
+
+        /// <summary>
+        /// 直接吸收
+        /// </summary>
+        /// <param name="absorbVal"></param>
         public void OnAbsorbBlurtDirectly(float absorbVal)
         {
             long hungerBaseRate = 2000;
