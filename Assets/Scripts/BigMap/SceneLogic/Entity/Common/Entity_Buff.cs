@@ -54,6 +54,9 @@ namespace My.Map.Entity
 
         public int NeedCount = 1;
         public float TriggerInterval = 0;
+
+        // 触发成功后使 HostPassiveSkillId 对应被动进入 CD（时长读技能表 cool_down）
+        public bool StartHostSkillCooldown;
     }
 
     public enum EBuffEffectType
@@ -1181,6 +1184,9 @@ namespace My.Map.Entity
 
         public bool EffectsEnabled { get; private set; } = true;
 
+        // 被动技能绑定的 Buff 写入宿主 skill_id，供 trigger 进入 CD 时使用
+        public string HostPassiveSkillId;
+
         public bool UsesIndependentStack => Def != null && Def.LayerStackMode == EBuffLayerStackMode.IndependentStack;
 
         private List<Modifier?> registeredModifiers;
@@ -1623,6 +1629,8 @@ namespace My.Map.Entity
                             HandleBuffTriggerEffect(e, ETriggerType.Tick);
                         }
                     }
+
+                    TryStartHostSkillCooldownFromRule(triggerInfo.config);
                 }
             }
 
@@ -1744,6 +1752,21 @@ namespace My.Map.Entity
                 {
                     this.MarkedForRemove = true;
                 }
+
+                TryStartHostSkillCooldownFromRule(t.config);
+            }
+        }
+
+        void TryStartHostSkillCooldownFromRule(BuffTriggerRuleConfig rule)
+        {
+            if (rule == null || !rule.StartHostSkillCooldown || string.IsNullOrEmpty(HostPassiveSkillId))
+            {
+                return;
+            }
+
+            if (BuffOwner is BaseUnitLogicEntity unit)
+            {
+                unit.ablilityManager?.TryStartPassiveSkillCooldown(HostPassiveSkillId);
             }
         }
         

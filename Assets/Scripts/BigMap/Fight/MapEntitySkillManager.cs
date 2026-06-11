@@ -726,6 +726,55 @@ namespace My.Map.Entity
             return true;
         }
 
+        public bool TryStartPassiveSkillCooldown(string skillId)
+        {
+            if (string.IsNullOrEmpty(skillId) || !SkillRuntimes.TryGetValue(skillId, out var rt))
+            {
+                return false;
+            }
+
+            var cfg = rt.cacheConfig;
+            if (cfg == null || !cfg.IsPassive || cfg.CoolDown <= 0f)
+            {
+                return false;
+            }
+
+            rt.cooldown = cfg.CoolDown;
+            SyncPassiveBuffEffectsEnabled(rt, false);
+            return true;
+        }
+
+        void SyncPassiveBuffEffectsEnabled(SkillRuntime rt, bool enabled)
+        {
+            if (rt == null || OwnerEntity == null)
+            {
+                return;
+            }
+
+            foreach (var kv in rt.PassiveBuffInstanceByBuffId)
+            {
+                if (kv.Value == 0)
+                {
+                    continue;
+                }
+
+                if (OwnerEntity.BuffContainer.TryGetValue(kv.Value, out var inst) && inst != null)
+                {
+                    inst.SetEffectsEnabled(enabled);
+                }
+            }
+        }
+
+        static void BindPassiveBuffHostSkill(BuffInstance inst, string skillId)
+        {
+            if (inst == null || string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            inst.HostPassiveSkillId = skillId;
+        }
+
         void TryAttachPassiveBuffForRuntime(SkillRuntime rt)
         {
             var cfg = rt.cacheConfig;
@@ -798,6 +847,7 @@ namespace My.Map.Entity
                     boundInst.SetBuffLayerDirect(wantLayer);
                 }
 
+                BindPassiveBuffHostSkill(boundInst, skillId);
                 return;
             }
 
@@ -828,16 +878,22 @@ namespace My.Map.Entity
                         chosen.SetBuffLayerDirect(wantLayer);
                     }
 
+                    BindPassiveBuffHostSkill(chosen, skillId);
                     return;
                 }
             }
 
-            rt.PassiveBuffInstanceByBuffId[buffId] = OwnerEntity.BuffManager.AddBuff(
+            long instId = OwnerEntity.BuffManager.AddBuff(
                 OwnerEntity.Id,
                 buffId,
                 layer: wantLayer,
                 overrideDuration: -1,
                 casterId: OwnerEntity.Id);
+            rt.PassiveBuffInstanceByBuffId[buffId] = instId;
+            if (instId != 0 && OwnerEntity.BuffContainer.TryGetValue(instId, out var newInst))
+            {
+                BindPassiveBuffHostSkill(newInst, skillId);
+            }
         }
 
         void DetachPassiveBuffBinding(SkillRuntime rt)
@@ -901,9 +957,17 @@ namespace My.Map.Entity
 
             foreach (var abState in SkillRuntimes.Values)
             {
-                if (abState.cooldown > 0)
+                if (abState.cooldown <= 0)
                 {
-                    abState.cooldown -= dt;
+                    continue;
+                }
+
+                bool isPassive = abState.cacheConfig != null && abState.cacheConfig.IsPassive;
+                float prevCd = abState.cooldown;
+                abState.cooldown = Mathf.Max(0f, abState.cooldown - dt);
+                if (isPassive && prevCd > 0f && abState.cooldown <= 0f)
+                {
+                    SyncPassiveBuffEffectsEnabled(abState, true);
                 }
             }
 
