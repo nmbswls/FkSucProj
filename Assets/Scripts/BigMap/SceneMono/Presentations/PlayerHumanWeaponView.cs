@@ -7,7 +7,8 @@ namespace My.Map.Scene
     // 人类武器表现：挂载在 PlayerScenePresenter，BindPoint1 下动态挂载通用 View
     public sealed class PlayerHumanWeaponView : MonoBehaviour
     {
-        Transform _bindPoint;
+        [SerializeField] Transform _bindPoint;
+
         MapUnitWeaponCtrl _weaponCtrl;
         MapUnitWeaponOne _equippedView;
         string _equippedItemId;
@@ -26,11 +27,40 @@ namespace My.Map.Scene
             }
 
             _weaponCtrl = presenter.WeaponCtrl;
-            _bindPoint = presenter.transform.Find("WeaponRoot/BindPoint1");
+            if (_bindPoint == null && _weaponCtrl != null)
+            {
+                _bindPoint = _weaponCtrl.transform.Find(UnitPresentationPaths.BindPoint1);
+            }
+
+            if (_bindPoint == null)
+            {
+                _bindPoint = FindBindPointFallback(presenter.transform);
+            }
+
             if (_bindPoint == null)
             {
                 Debug.LogWarning("PlayerHumanWeaponView: BindPoint1 not found under WeaponRoot.");
             }
+        }
+
+        static Transform FindBindPointFallback(Transform presenterRoot)
+        {
+            string[] paths =
+            {
+                $"{UnitPresentationPaths.View}/{UnitPresentationPaths.WeaponRoot}/{UnitPresentationPaths.BindPoint1}",
+                $"{UnitPresentationPaths.WeaponRoot}/{UnitPresentationPaths.BindPoint1}",
+            };
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                var found = presenterRoot.Find(paths[i]);
+                if (found != null)
+                {
+                    return found;
+                }
+            }
+
+            return null;
         }
 
         public void Equip(string itemId)

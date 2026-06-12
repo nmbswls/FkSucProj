@@ -312,7 +312,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7206513549484514200}
-  m_Father: {fileID: 8552881982338698837}
+  m_Father: {fileID: 9010000572920847535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &637426610165199311
 MonoBehaviour:
@@ -364,7 +364,6 @@ Transform:
   m_Children:
   - {fileID: 9010000572920847535}
   - {fileID: 97632157315048649}
-  - {fileID: 7921256209700466238}
   - {fileID: 8530266492118516531}
   - {fileID: 8103896050489516976}
   m_Father: {fileID: 0}
@@ -606,7 +605,7 @@ GameObject:
   - component: {fileID: 9010000572920847535}
   - component: {fileID: 916761782552648843}
   m_Layer: 20
-  m_Name: View
+  m_Name: view
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -627,6 +626,7 @@ Transform:
   m_Children:
   - {fileID: 5242637832211512431}
   - {fileID: 6614107088177408671}
+  - {fileID: 7921256209700466238}
   m_Father: {fileID: 8552881982338698837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &916761782552648843

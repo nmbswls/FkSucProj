@@ -635,7 +635,8 @@ MonoBehaviour:
   placeholderBodyText: {fileID: 0}
   runeDescText: {fileID: 8122165752221240692}
   layoutHostRoot: {fileID: 2187213896783732140}
-  bgRunePicture: {fileID: 0}
+  bgRunePicture: {fileID: 9123456789012345679}
+  upgradeDetailRoot: {fileID: 7376848449251125362}
   templateRoot: {fileID: 6448740735487439361}
   slotViewPrefab: {fileID: 920000022, guid: 582457288c5f4b47b37245c74f1d6bb9, type: 3}
   upgradeTitle: {fileID: 156172827387186364}
@@ -1762,6 +1763,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3489251734454919177}
+  - component: {fileID: 9123456789012345678}
+  - component: {fileID: 9123456789012345679}
   m_Layer: 0
   m_Name: IconBg
   m_TagString: Untagged
@@ -1788,6 +1791,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &9123456789012345678
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2323619782130210964}
+  m_CullTransparentMesh: 1
+--- !u!114 &9123456789012345679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2323619782130210964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &3655899362729259939
 GameObject:
   m_ObjectHideFlags: 0

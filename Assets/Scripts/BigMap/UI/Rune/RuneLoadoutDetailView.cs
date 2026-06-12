@@ -30,6 +30,10 @@ namespace My.UI.Rune
 
         const string TemplateResourceRoot = "UI/Prefabs/PlayerProgressionHubPanelSub/RuneLayout/";
 
+        const string DetailBgResourceRoot = "Sprites/Rune/detail/";
+
+        const string LockedPlaceholder = "???";
+
         const float SlideDuration = 0.22f;
 
         const float SlideOffsetX = 72f;
@@ -39,7 +43,6 @@ namespace My.UI.Rune
         [SerializeField] Button closeButton;
 
         [SerializeField] GameObject lockOverlay;
-
         [SerializeField] TextMeshProUGUI titleText;
         [SerializeField] TextMeshProUGUI runeDescText;
 
@@ -47,6 +50,8 @@ namespace My.UI.Rune
         [SerializeField] GameObject layoutHostRoot;
 
         [SerializeField] Image bgRunePicture;
+
+        [SerializeField] GameObject upgradeDetailRoot;
 
         [SerializeField] RectTransform templateRoot;
 
@@ -165,6 +170,42 @@ namespace My.UI.Rune
                 slotViewPrefab = Resources.Load<RuneUpgradeSlotView>(
 
                     "UI/Prefabs/PlayerProgressionHubPanelSub/RuneLayout/RuneUpgradeSlotView");
+
+            }
+
+
+
+            if (bgRunePicture == null && layoutHostRoot != null)
+
+            {
+
+                var iconBg = layoutHostRoot.transform.Find("IconBg");
+
+                if (iconBg != null)
+
+                {
+
+                    bgRunePicture = iconBg.GetComponent<Image>();
+
+                }
+
+            }
+
+
+
+            if (upgradeDetailRoot == null)
+
+            {
+
+                var child = transform.Find("UpgradeDetail");
+
+                if (child != null)
+
+                {
+
+                    upgradeDetailRoot = child.gameObject;
+
+                }
 
             }
 
@@ -478,17 +519,23 @@ namespace My.UI.Rune
 
 
 
-            var provider = slot.GetComponent<RuneInfoProvider>();
+            string runeId = ResolveRuneId(slot);
 
-            if (provider == null)
+            if (string.IsNullOrEmpty(runeId))
 
             {
 
-                ShowPlaceholder(string.Empty);
+                ClearContent();
 
                 return;
 
             }
+
+
+
+            var runeDef = RuneCatalog.GetOrDefault(runeId);
+
+            bool unlocked = IsRuneUnlocked(slot, runeId);
 
 
 
@@ -496,94 +543,11 @@ namespace My.UI.Rune
 
             {
 
-                titleText.text = provider.GetDisplayName();
+                titleText.text = unlocked && runeDef != null && !string.IsNullOrEmpty(runeDef.Name)
 
-            }
+                    ? runeDef.Name
 
-
-
-            if (slot.Binder.SlotKind == RuneSlotKind.Fixed)
-
-            {
-
-                RefreshFixedSlot(slot, provider);
-
-                return;
-
-            }
-
-
-
-            RefreshEquippedSlot(slot, provider);
-
-        }
-
-
-
-        void RefreshFixedSlot(RuneSlotView slot, RuneInfoProvider provider)
-
-        {
-
-            bool locked = slot.State == RuneSlotVisualState.Locked;
-
-            SetLockOverlayVisible(locked);
-
-            if(locked)
-            {
-                lockOverlay.gameObject.SetActive(false);
-            }
-            else
-            {
-                lockOverlay.gameObject.SetActive(true);
-            }
-
-            if (locked)
-
-            {
-
-                ShowPlaceholder(provider.GetDetailText());
-
-                return;
-
-            }
-
-
-
-            string runeId = slot.Binder.FixedRuneId;
-
-            ShowOwnedRuneDetail(runeId, provider);
-
-        }
-
-
-
-        void RefreshEquippedSlot(RuneSlotView slot, RuneInfoProvider provider)
-
-        {
-
-            SetLockOverlayVisible(false);
-
-            string runeId = ResolveEquippedRuneId(slot, _runeSystem);
-
-            ShowOwnedRuneDetail(runeId, provider);
-
-        }
-
-
-
-        void ShowOwnedRuneDetail(string runeId, RuneInfoProvider provider)
-
-        {
-
-            var runeDef = RuneCatalog.GetOrDefault(runeId);
-
-            if (runeDef == null || _runeSystem == null || !_runeSystem.OwnsRune(runeId))
-
-            {
-
-                ShowPlaceholder(provider.GetDetailText());
-
-                return;
+                    : LockedPlaceholder;
 
             }
 
@@ -593,15 +557,137 @@ namespace My.UI.Rune
 
             {
 
-                runeDescText.text = runeDef.Desc ?? string.Empty;
+                runeDescText.text = unlocked && runeDef != null
+
+                    ? (runeDef.Desc ?? string.Empty)
+
+                    : LockedPlaceholder;
 
             }
 
 
 
-            ShowLayoutForRune(runeId);
+            SetLockOverlayVisible(!unlocked);
 
-            RefreshSelectedUpgradeDetail();
+            ApplyDetailBackground(runeDef);
+
+            SetLayoutHostActive(true);
+
+
+
+            if (unlocked && runeDef != null && _runeSystem != null && _runeSystem.OwnsRune(runeId))
+
+            {
+
+                SetUpgradeLayoutVisible(true);
+
+                SetUpgradeDetailVisible(true);
+
+                ShowLayoutForRune(runeId);
+
+                RefreshSelectedUpgradeDetail();
+
+                return;
+
+            }
+
+
+
+            HideLayout();
+
+            ClearUpgradeDetail();
+
+            SetUpgradeLayoutVisible(false);
+
+            SetUpgradeDetailVisible(false);
+
+        }
+
+
+
+        static string ResolveRuneId(RuneSlotView slot)
+
+        {
+
+            if (slot.Binder.SlotKind == RuneSlotKind.Fixed)
+
+            {
+
+                return slot.Binder.FixedRuneId;
+
+            }
+
+
+
+            return slot.DisplayRuneId;
+
+        }
+
+
+
+        static bool IsRuneUnlocked(RuneSlotView slot, string runeId)
+
+        {
+
+            if (string.IsNullOrEmpty(runeId))
+
+            {
+
+                return false;
+
+            }
+
+
+
+            if (slot.Binder.SlotKind == RuneSlotKind.Fixed)
+
+            {
+
+                return slot.State != RuneSlotVisualState.Locked;
+
+            }
+
+
+
+            return slot.State == RuneSlotVisualState.Equipped;
+
+        }
+
+
+
+        void ApplyDetailBackground(RuneData runeDef)
+
+        {
+
+            if (bgRunePicture == null)
+
+            {
+
+                return;
+
+            }
+
+
+
+            if (runeDef == null || string.IsNullOrEmpty(runeDef.Icon))
+
+            {
+
+                bgRunePicture.sprite = null;
+
+                bgRunePicture.enabled = false;
+
+                return;
+
+            }
+
+
+
+            var sprite = SimpleResManager.Load<Sprite>($"{DetailBgResourceRoot}{runeDef.Icon}");
+
+            bgRunePicture.sprite = sprite;
+
+            bgRunePicture.enabled = sprite != null;
 
         }
 
@@ -616,6 +702,12 @@ namespace My.UI.Rune
             ClearUpgradeDetail();
 
             SetLockOverlayVisible(false);
+
+            SetLayoutHostActive(false);
+
+            SetUpgradeLayoutVisible(false);
+
+            SetUpgradeDetailVisible(false);
 
 
 
@@ -637,6 +729,17 @@ namespace My.UI.Rune
 
             }
 
+
+
+            if (bgRunePicture != null)
+
+            {
+
+                bgRunePicture.sprite = null;
+
+                bgRunePicture.enabled = false;
+
+            }
 
         }
 
@@ -668,21 +771,33 @@ namespace My.UI.Rune
 
 
 
-        static string ResolveEquippedRuneId(RuneSlotView slot, PlayerRuneSystem runeSystem)
+        void SetUpgradeLayoutVisible(bool visible)
 
         {
 
-            if (slot?.Binder == null || runeSystem == null)
+            if (templateRoot != null)
 
             {
 
-                return null;
+                templateRoot.gameObject.SetActive(visible);
 
             }
 
+        }
 
 
-            return runeSystem.GetEquipped(slot.Binder.EquipSlot);
+
+        void SetUpgradeDetailVisible(bool visible)
+
+        {
+
+            if (upgradeDetailRoot != null)
+
+            {
+
+                upgradeDetailRoot.SetActive(visible);
+
+            }
 
         }
 
@@ -714,19 +829,7 @@ namespace My.UI.Rune
 
             {
 
-                SetLayoutHostActive(false);
-
                 return;
-
-            }
-
-
-
-            if (bgRunePicture != null)
-
-            {
-
-                bgRunePicture.sprite = SimpleResManager.Load<Sprite>($"Sprites/Rune/{runeDef.Icon}");
 
             }
 
@@ -737,8 +840,6 @@ namespace My.UI.Rune
             {
 
                 Debug.LogError("[RuneLoadoutDetailView] Missing templateRoot or slotViewPrefab.");
-
-                SetLayoutHostActive(false);
 
                 return;
 
@@ -756,15 +857,11 @@ namespace My.UI.Rune
 
                 Debug.LogWarning($"[RuneLoadoutDetailView] Layout template not found: {path}");
 
-                SetLayoutHostActive(false);
-
                 return;
 
             }
 
 
-
-            SetLayoutHostActive(true);
 
             var instance = Instantiate(prefab, templateRoot, false);
 
@@ -813,8 +910,6 @@ namespace My.UI.Rune
         {
 
             ClearTemplate();
-
-            SetLayoutHostActive(false);
 
             _activeRuneId = null;
 

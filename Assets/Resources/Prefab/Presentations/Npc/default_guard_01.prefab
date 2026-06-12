@@ -782,7 +782,7 @@ Transform:
   - {fileID: 3842365816437210012}
   - {fileID: 5216523421791197989}
   - {fileID: 5237790594303159144}
-  m_Father: {fileID: 8552881982338698837}
+  m_Father: {fileID: 9010000572920847535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &637426610165199311
 MonoBehaviour:
@@ -851,7 +851,6 @@ Transform:
   - {fileID: 6487020006799734520}
   - {fileID: 8760437086293585761}
   - {fileID: 6867970446395434528}
-  - {fileID: 7921256209700466238}
   - {fileID: 1352328000936773924}
   - {fileID: 1975954831798602855}
   m_Father: {fileID: 0}
@@ -895,12 +894,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 792f0c79a183f384b9e223a77308fd38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainViewRt: {fileID: 0}
+  MainViewRt: {fileID: 9010000572920847535}
   pivotHeader: {fileID: 1975954831798602855}
   highlightFx: {fileID: 0}
-  ViewRoot: {fileID: 0}
-  ShadowView: {fileID: 0}
-  AgentView: {fileID: 0}
+  ViewRoot: {fileID: 9010000572920847535}
+  ShadowView: {fileID: 3422455419748351447}
+  AgentView: {fileID: 4132191292925587753}
   ViewPoint: {fileID: 0}
   faceIndicator: {fileID: 3152875329715387495}
   HitPivot: {fileID: 0}
@@ -1445,6 +1444,7 @@ Transform:
   m_Children:
   - {fileID: 3422455419748351447}
   - {fileID: 4132191292925587753}
+  - {fileID: 7921256209700466238}
   m_Father: {fileID: 8552881982338698837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8579729601256938463

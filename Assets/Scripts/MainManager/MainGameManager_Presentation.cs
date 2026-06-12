@@ -166,7 +166,11 @@ namespace My
                 var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove", null);
 
                 var effectGo = ctx.EffectGo.GetComponent<PlayerGhostMoveFxCtrl>();
-                effectGo.playerSR = playerScenePresenter.transform.Find("view").Find("agent").GetComponentInChildren<SpriteRenderer>();
+                var agentView = playerScenePresenter.AgentView;
+                effectGo.playerSR = agentView != null
+                    ? agentView.GetComponentInChildren<SpriteRenderer>()
+                    : playerScenePresenter.transform.Find(UnitPresentationPaths.View)?.Find(UnitPresentationPaths.Agent)
+                        ?.GetComponentInChildren<SpriteRenderer>();
                 effectGo.PlayMoveFx(playerScenePresenter.transform, targetPos, () => { onCompelete?.Invoke(); }, () => { });
             }
         }

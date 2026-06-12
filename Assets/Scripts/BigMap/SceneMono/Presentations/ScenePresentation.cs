@@ -77,13 +77,17 @@ namespace My
         }
 
         [ContextMenu("Auto Collect Child Sprites")]
-        private void CollectSprites()
+        protected void CollectSprites()
         {
+            if (MainViewRt == null)
+            {
+                return;
+            }
+
             _mainSpriteArr = MainViewRt.GetComponentsInChildren<SpriteRenderer>(true);
 
             Debug.Log($"已收集 {_mainSpriteArr.Length} 个 SpriteRenderer");
 
-            // 标记对象已修改，确保 Unity 保存这个列表，否则重启后会丢失
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
 #endif
@@ -228,18 +232,28 @@ namespace My
 
         protected virtual void OnFadeStateUpdate()
         {
-            // 优化：所有部件共用同一个值，所以只要设置一次 MPB
             _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
 
-            // 3. 遍历应用
-            for (int i = 0; i < _mainSpriteArr.Length; i++)
+            if (_mainSpriteArr != null)
             {
-                // 获取当前可能已有的属性（防止覆盖其他属性）
-                _mainSpriteArr[i].GetPropertyBlock(_mpb);
-                // 更新 Fade 值
+                for (int i = 0; i < _mainSpriteArr.Length; i++)
+                {
+                    if (_mainSpriteArr[i] == null)
+                    {
+                        continue;
+                    }
+
+                    _mainSpriteArr[i].GetPropertyBlock(_mpb);
+                    _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
+                    _mainSpriteArr[i].SetPropertyBlock(_mpb);
+                }
+            }
+
+            if (_shadowView != null)
+            {
+                _shadowView.GetPropertyBlock(_mpb);
                 _mpb.SetFloat(FadeProp, 1 - _currFadeAlpha);
-                // 应用回去
-                _mainSpriteArr[i].SetPropertyBlock(_mpb);
+                _shadowView.SetPropertyBlock(_mpb);
             }
         }
 

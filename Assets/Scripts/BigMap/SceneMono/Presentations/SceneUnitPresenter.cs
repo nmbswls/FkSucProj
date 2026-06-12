@@ -64,6 +64,7 @@ namespace My.Map.Scene
         protected override void Awake()
         {
             base.Awake();
+            TryAutoBindViewHierarchy();
 
             if (!rb)
             {
@@ -793,7 +794,12 @@ namespace My.Map.Scene
             var hinter = GameObject.Instantiate(src, transform);
 
             _rootForwardHinter = hinter;
-            _rootForwardRotator = hinter.transform.GetChild(0).GetChild(0);
+            _rootForwardRotator = FindChildByPath(hinter.transform, UnitPresentationPaths.ForwardHintRotator);
+            if (_rootForwardRotator == null && hinter.transform.childCount > 0)
+            {
+                var first = hinter.transform.GetChild(0);
+                _rootForwardRotator = first.childCount > 0 ? first.GetChild(0) : first;
+            }
 
             _rootForwardHinter.SetActive(false);
         }

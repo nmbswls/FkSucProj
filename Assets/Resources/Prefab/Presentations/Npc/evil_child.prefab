@@ -246,7 +246,7 @@ Transform:
   m_Children:
   - {fileID: 5237790594303159144}
   - {fileID: 3060418970375024757}
-  m_Father: {fileID: 8552881982338698837}
+  m_Father: {fileID: 9010000572920847535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &637426610165199311
 MonoBehaviour:
@@ -299,7 +299,6 @@ Transform:
   - {fileID: 3326938578291675276}
   - {fileID: 6487020006799734520}
   - {fileID: 6867970446395434528}
-  - {fileID: 7921256209700466238}
   - {fileID: 1352328000936773924}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -344,7 +343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MainViewRt: {fileID: 9010000572920847535}
   highlightFx: {fileID: 0}
-  ViewRoot: {fileID: 0}
+  ViewRoot: {fileID: 9010000572920847535}
   ShadowView: {fileID: 2977834207970148246}
   AgentView: {fileID: 694915445582660189}
   ViewPoint: {fileID: 0}
@@ -779,6 +778,7 @@ Transform:
   m_Children:
   - {fileID: 2977834207970148246}
   - {fileID: 694915445582660189}
+  - {fileID: 7921256209700466238}
   m_Father: {fileID: 8552881982338698837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8579729601256938463
