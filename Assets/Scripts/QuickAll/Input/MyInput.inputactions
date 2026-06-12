@@ -187,6 +187,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "EnterExpose",
+                    "type": "Button",
+                    "id": "c8e4a1b2-3d5f-4e6a-9b0c-1d2e3f4a5b6c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SceneCancel",
                     "type": "Button",
                     "id": "120c5f44-dad9-4852-97dc-55324d60dfbf",
@@ -503,6 +512,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d9f5b2c3-4e6a-5f7b-0c1d-2e3f4a5b6c7d",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EnterExpose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

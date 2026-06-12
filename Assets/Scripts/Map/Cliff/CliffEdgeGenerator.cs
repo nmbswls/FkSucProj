@@ -35,10 +35,6 @@ namespace My.Map.Cliff
             public CliffSpanRole Span;
             public CliffDepthJunction DepthJunction;
             public CliffCornerShape Corner;
-            public bool LeftOpen;
-            public bool RightOpen;
-            public bool LeftCliffWall;
-            public bool RightCliffWall;
         }
 
         public struct SouthEdgeColumn
@@ -68,16 +64,18 @@ namespace My.Map.Cliff
             return set;
         }
 
-        // 水平 |dx|=1,|dy|<=height；同列岩壁 |dx|=0,|dy|=1
-        public static List<List<SouthEdgeColumn>> GroupSouthEdgeSegments(HashSet<Vector3Int> southEdge, int height)
+        // 相邻列 |dy|<=height 且 X+1 列竖直射线通；同列岩壁 |dx|=0,|dy|=1
+        public static List<List<SouthEdgeColumn>> GroupSouthEdgeSegments(
+            Tilemap view,
+            HashSet<Vector3Int> southEdge,
+            int height)
         {
             var segments = new List<List<SouthEdgeColumn>>();
-            if (southEdge == null || southEdge.Count == 0)
+            if (view == null || southEdge == null || southEdge.Count == 0)
             {
                 return segments;
             }
 
-            int maxHorizontalDy = Mathf.Max(1, height);
             var visited = new HashSet<Vector3Int>();
             foreach (var start in southEdge.OrderBy(c => c.x).ThenBy(c => c.y))
             {
@@ -95,7 +93,7 @@ namespace My.Map.Cliff
                     var cell = queue.Dequeue();
                     segment.Add(new SouthEdgeColumn { X = cell.x, Y = cell.y, Z = cell.z });
 
-                    foreach (var next in EnumerateSegmentNeighbors(cell, southEdge, maxHorizontalDy))
+                    foreach (var next in EnumerateSegmentNeighbors(view, cell, southEdge, height))
                     {
                         if (visited.Add(next))
                         {
@@ -117,10 +115,82 @@ namespace My.Map.Cliff
             return segments;
         }
 
+        // 归一化 left=(x,ya), right=(x+1,yb)；相邻列连通看 X+1 列
+        static bool AreSouthEdgeCellsConnected(
+            Tilemap view,
+            Vector3Int a,
+            Vector3Int b,
+            int height)
+        {
+            if (view == null || a.z != b.z)
+            {
+                return false;
+            }
+
+            if (a.x == b.x)
+            {
+                return Mathf.Abs(a.y - b.y) == 1;
+            }
+
+            if (Mathf.Abs(a.x - b.x) != 1)
+            {
+                return false;
+            }
+
+            var left = a.x < b.x ? a : b;
+            var right = a.x < b.x ? b : a;
+            int ya = left.y;
+            int yb = right.y;
+            int xRight = right.x;
+            int z = left.z;
+            int dy = yb - ya;
+
+            if (Mathf.Abs(dy) > height)
+            {
+                return false;
+            }
+
+            if (dy == 0)
+            {
+                return true;
+            }
+
+            int yMin = Mathf.Min(ya, yb);
+            int yMax = Mathf.Max(ya, yb);
+
+            // 情况 A：X+1 列在 [yMin,yMax] 整段竖条全满（缓坡 / 立面）
+            if (IsViewColumnStripFilled(view, xRight, yMin, yMax, z))
+            {
+                return true;
+            }
+
+            // 情况 B：外凸角阶 |dy|==1，右列南缘高度 yb 处有砖即可衔接（(x+1,ya) 可空）
+            if (Mathf.Abs(dy) == 1 && view.GetTile(new Vector3Int(xRight, yb, z)) != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool IsViewColumnStripFilled(Tilemap view, int x, int yMin, int yMax, int z)
+        {
+            for (int y = yMin; y <= yMax; y++)
+            {
+                if (view.GetTile(new Vector3Int(x, y, z)) == null)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         static IEnumerable<Vector3Int> EnumerateSegmentNeighbors(
+            Tilemap view,
             Vector3Int cell,
             HashSet<Vector3Int> southEdge,
-            int maxHorizontalDy)
+            int height)
         {
             for (int dy = -1; dy <= 1; dy += 2)
             {
@@ -133,10 +203,15 @@ namespace My.Map.Cliff
 
             for (int dx = -1; dx <= 1; dx += 2)
             {
-                for (int dy = -maxHorizontalDy; dy <= maxHorizontalDy; dy++)
+                for (int dy = -height; dy <= height; dy++)
                 {
                     var n = new Vector3Int(cell.x + dx, cell.y + dy, cell.z);
-                    if (southEdge.Contains(n))
+                    if (!southEdge.Contains(n))
+                    {
+                        continue;
+                    }
+
+                    if (AreSouthEdgeCellsConnected(view, cell, n, height))
                     {
                         yield return n;
                     }
@@ -144,34 +219,18 @@ namespace My.Map.Cliff
             }
         }
 
-        // 同列多格南缘 = 岩壁立面
-        static bool IsCliffWallColumn(HashSet<Vector3Int> southEdge, int x, int z)
+        // 分段后：左端 x-1、右端 x+1，View 有砖则把该格并入南缘并追加到本段
+        static void ExtendSegmentEndsAtCliffView(
+            Tilemap view,
+            List<List<SouthEdgeColumn>> segments,
+            HashSet<Vector3Int> southEdge)
         {
-            int count = 0;
-            foreach (var c in southEdge)
-            {
-                if (c.x == x && c.z == z)
-                {
-                    count++;
-                    if (count > 1)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        // 分段后：左端 x-1、右端 x+1，View 有砖则把该格并入南缘（贴岩壁延长 1 格）
-        static void ExtendSegmentEndsAtCliffView(Tilemap view, HashSet<Vector3Int> southEdge, int height)
-        {
-            if (view == null || southEdge == null || southEdge.Count == 0)
+            if (view == null || segments == null || southEdge == null)
             {
                 return;
             }
 
-            foreach (var segment in GroupSouthEdgeSegments(southEdge, height))
+            foreach (var segment in segments)
             {
                 if (segment.Count == 0)
                 {
@@ -193,27 +252,46 @@ namespace My.Map.Cliff
                     }
                 }
 
+                var appended = new List<SouthEdgeColumn>();
                 foreach (var col in segment)
                 {
                     if (col.X == minX)
                     {
-                        var left = new Vector3Int(col.X - 1, col.Y, col.Z);
-                        if (view.GetTile(left) != null)
-                        {
-                            southEdge.Add(left);
-                        }
+                        TryAppendExtendedSouthEdge(view, appended, southEdge, col.X - 1, col.Y, col.Z);
                     }
 
                     if (col.X == maxX)
                     {
-                        var right = new Vector3Int(col.X + 1, col.Y, col.Z);
-                        if (view.GetTile(right) != null)
-                        {
-                            southEdge.Add(right);
-                        }
+                        TryAppendExtendedSouthEdge(view, appended, southEdge, col.X + 1, col.Y, col.Z);
                     }
                 }
+
+                if (appended.Count == 0)
+                {
+                    continue;
+                }
+
+                segment.AddRange(appended);
+                segment.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
             }
+        }
+
+        static void TryAppendExtendedSouthEdge(
+            Tilemap view,
+            List<SouthEdgeColumn> appended,
+            HashSet<Vector3Int> southEdge,
+            int x,
+            int y,
+            int z)
+        {
+            var cell = new Vector3Int(x, y, z);
+            if (view.GetTile(cell) == null || southEdge.Contains(cell))
+            {
+                return;
+            }
+
+            southEdge.Add(cell);
+            appended.Add(new SouthEdgeColumn { X = x, Y = y, Z = z });
         }
 
         public static void LogSouthEdgeSegments(IReadOnlyList<List<SouthEdgeColumn>> segments)
@@ -256,8 +334,8 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
-            ExtendSegmentEndsAtCliffView(view, southEdge, height);
-            var segments = GroupSouthEdgeSegments(southEdge, height);
+            var segments = GroupSouthEdgeSegments(view, southEdge, height);
+            ExtendSegmentEndsAtCliffView(view, segments, southEdge);
             LogSouthEdgeSegments(segments);
 
             if (segments.Count == 0)
@@ -271,7 +349,7 @@ namespace My.Map.Cliff
             {
                 foreach (var col in segment)
                 {
-                    var attrs = ClassifyColumn(view, col, segment, southEdge);
+                    var attrs = ClassifyColumn(view, col, segment, height);
                     placed += PlaceColumn(cliff, tileSet, col.X, attrs, height, ownerSouthEdgeY);
                 }
             }
@@ -287,13 +365,14 @@ namespace My.Map.Cliff
             }
 
             var southEdge = CollectSouthEdgeCells(view);
-            ExtendSegmentEndsAtCliffView(view, southEdge, height);
+            var segments = GroupSouthEdgeSegments(view, southEdge, height);
+            ExtendSegmentEndsAtCliffView(view, segments, southEdge);
             var ownerSouthEdgeY = new Dictionary<Vector3Int, int>();
-            foreach (var segment in GroupSouthEdgeSegments(southEdge, height))
+            foreach (var segment in segments)
             {
                 foreach (var col in segment)
                 {
-                    var attrs = ClassifyColumn(view, col, segment, southEdge);
+                    var attrs = ClassifyColumn(view, col, segment, height);
                     int rowCount = ResolveRowCount(height, attrs.SouthEdgeY, attrs.TopAnchorY);
                     for (int r = 0; r < rowCount; r++)
                     {
@@ -330,29 +409,43 @@ namespace My.Map.Cliff
             return CliffDualGridMapping.ResolveViewSouthEdgeWorld(view, placement.ViewSouthEdgeCell);
         }
 
-        // 邻接由 GroupSouthEdgeSegments 分段时已确定；此处只在本段 x±1 列取代表格，不再筛 |Δy|
-        static bool TryGetSegmentNeighbor(
+        // 段内 x±1 连通邻格（与 GroupSouthEdgeSegments 同规则）；同行优先，否则 |Δy| 最小
+        static bool TryGetSegmentConnectedNeighbor(
+            Tilemap view,
             IReadOnlyList<SouthEdgeColumn> segment,
             SouthEdgeColumn col,
             int dx,
+            int height,
             out SouthEdgeColumn neighbor)
         {
             int nx = col.X + dx;
+            var colCell = new Vector3Int(col.X, col.Y, col.Z);
             SouthEdgeColumn? best = null;
             int bestDy = int.MaxValue;
+            bool bestSameRow = false;
 
-            foreach (var c in segment)
+            foreach (var candidate in segment)
             {
-                if (c.X != nx || c.Z != col.Z)
+                if (candidate.X != nx || candidate.Z != col.Z)
                 {
                     continue;
                 }
 
-                int dy = Mathf.Abs(c.Y - col.Y);
-                if (dy < bestDy)
+                var candidateCell = new Vector3Int(candidate.X, candidate.Y, candidate.Z);
+                if (!AreSouthEdgeCellsConnected(view, colCell, candidateCell, height))
                 {
-                    bestDy = dy;
-                    best = c;
+                    continue;
+                }
+
+                bool sameRow = candidate.Y == col.Y;
+                int absDy = Mathf.Abs(candidate.Y - col.Y);
+                if (best == null
+                    || (sameRow && !bestSameRow)
+                    || (sameRow == bestSameRow && absDy < bestDy))
+                {
+                    best = candidate;
+                    bestSameRow = sameRow;
+                    bestDy = absDy;
                 }
             }
 
@@ -366,42 +459,22 @@ namespace My.Map.Cliff
             return false;
         }
 
-        static bool SegmentHasColumnAtX(IReadOnlyList<SouthEdgeColumn> segment, int x)
-        {
-            foreach (var c in segment)
-            {
-                if (c.X == x)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         static ColumnAttrs ClassifyColumn(
             Tilemap view,
             SouthEdgeColumn col,
             IReadOnlyList<SouthEdgeColumn> segment,
-            HashSet<Vector3Int> southEdge)
+            int height)
         {
             int leftX = col.X - 1;
             int rightX = col.X + 1;
 
-            bool hasSegLeft = SegmentHasColumnAtX(segment, leftX);
-            bool hasSegRight = SegmentHasColumnAtX(segment, rightX);
+            bool hasSegLeft = TryGetSegmentConnectedNeighbor(view, segment, col, -1, height, out var left);
+            bool hasSegRight = TryGetSegmentConnectedNeighbor(view, segment, col, 1, height, out var right);
 
-            SouthEdgeColumn left = default;
-            SouthEdgeColumn right = default;
-            bool segLeft = hasSegLeft && TryGetSegmentNeighbor(segment, col, -1, out left);
-            bool segRight = hasSegRight && TryGetSegmentNeighbor(segment, col, 1, out right);
-
-            bool leftCliffWall = IsCliffWallColumn(southEdge, leftX, col.Z);
-            bool rightCliffWall = IsCliffWallColumn(southEdge, rightX, col.Z);
-
-            // 硬边：本段该侧 x 列不再延伸，且该侧不是岩壁列（左右同一规则）
-            bool leftOpen = !hasSegLeft && !leftCliffWall && view.GetTile(new Vector3Int(leftX, col.Y, col.Z)) == null;
-            bool rightOpen = !hasSegRight && !rightCliffWall;
+            bool leftOpen = !hasSegLeft
+                && view.GetTile(new Vector3Int(leftX, col.Y, col.Z)) == null;
+            bool rightOpen = !hasSegRight
+                && view.GetTile(new Vector3Int(rightX, col.Y, col.Z)) == null;
 
             CliffSpanRole span;
             if (leftOpen && rightOpen)
@@ -423,7 +496,7 @@ namespace My.Map.Cliff
 
             CliffDepthJunction depth = CliffDepthJunction.None;
             int depthDelta = 0;
-            if (segLeft && segRight)
+            if (hasSegLeft && hasSegRight)
             {
                 int leftY = left.Y;
                 int rightY = right.Y;
@@ -447,15 +520,15 @@ namespace My.Map.Cliff
 
             CliffCornerShape corner = depth != CliffDepthJunction.None
                 ? CliffCornerShape.None
-                : ResolveConvexCorner(view, col, hasSegLeft, hasSegRight, leftCliffWall, rightCliffWall);
+                : ResolveConvexCorner(view, col, hasSegLeft, hasSegRight);
 
             int topAnchorY = col.Y;
-            if (segLeft)
+            if (hasSegLeft)
             {
                 topAnchorY = Mathf.Max(topAnchorY, left.Y);
             }
 
-            if (segRight)
+            if (hasSegRight)
             {
                 topAnchorY = Mathf.Max(topAnchorY, right.Y);
             }
@@ -469,10 +542,6 @@ namespace My.Map.Cliff
                 Span = span,
                 DepthJunction = depth,
                 Corner = corner,
-                LeftOpen = leftOpen,
-                RightOpen = rightOpen,
-                LeftCliffWall = leftCliffWall,
-                RightCliffWall = rightCliffWall,
             };
         }
 
@@ -480,18 +549,16 @@ namespace My.Map.Cliff
             Tilemap view,
             SouthEdgeColumn col,
             bool hasSegLeft,
-            bool hasSegRight,
-            bool leftCliffWall,
-            bool rightCliffWall)
+            bool hasSegRight)
         {
             bool filled(int dx, int dy) => view.GetTile(new Vector3Int(col.X + dx, col.Y + dy, col.Z)) != null;
 
-            if (!filled(-1, -1) && (hasSegLeft || leftCliffWall))
+            if (!filled(-1, -1) && hasSegLeft)
             {
                 return CliffCornerShape.ConvexLeft;
             }
 
-            if (!filled(1, -1) && (hasSegRight || rightCliffWall))
+            if (!filled(1, -1) && hasSegRight)
             {
                 return CliffCornerShape.ConvexRight;
             }
@@ -619,3 +686,4 @@ namespace My.Map.Cliff
         }
     }
 }
+

@@ -282,6 +282,27 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                     IsHidden = true,
                 };
+
+                _library["chain_bind"] = new BuffDefinition()
+                {
+                    BuffId = "chain_bind",
+                    Desc = "锁链捆缚",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = 3f,
+                    EffectId = "Buff/chain_bind",
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                    },
+                    OnAttachEffects = new()
+                    {
+                        new MapFightEffectShowEffect()
+                        {
+                            ShowMode = MapFightEffectShowEffect.EShowMode.TargetAligned,
+                            EffectName = "Buff/chain_bind_spawn",
+                        },
+                    },
+                };
                 _library["as_presentation"] = new BuffDefinition()
                 {
                     BuffId = "as_presentation",
@@ -1676,6 +1697,40 @@ namespace My.Map.Entity
                             ParamFloat1 = 3f,
                         },
                     },
+                };
+
+                _library["orb_skill_regen"] = new BuffDefinition()
+                {
+                    BuffId = "orb_skill_regen",
+                    Desc = "能量球弹药恢复",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerInterval = 4f,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectAddResourceCfg()
+                                {
+                                    ResourceId = AttrIdConsts.SkillProxyOrbAmmo,
+                                    AddValue = 1,
+                                    IsSelf = true,
+                                },
+                            },
+                        },
+                    },
+                };
+
+                _library["orb_skill_owner_link"] = new BuffDefinition()
+                {
+                    BuffId = "orb_skill_owner_link",
+                    DefaultDuration = -1,
+                    IsHidden = true,
                 };
 
                 _library["passive_perfect_dodge_weiyi"] = new BuffDefinition()

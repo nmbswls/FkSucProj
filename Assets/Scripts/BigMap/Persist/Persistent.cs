@@ -38,6 +38,12 @@ namespace My.Map.Logic
     }
 
     [Serializable]
+    public class LogicEntityRecord4SkillProxy : LogicEntityRecord
+    {
+        public long OwnerEntityId;
+    }
+
+    [Serializable]
     public class LogicEntityRecord4InteractPoint : LogicEntityRecord
     {
         public int Status;

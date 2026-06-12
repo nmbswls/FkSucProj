@@ -1545,6 +1545,14 @@ namespace My.Map.Entity
                 unit.VisionSystem?.FlushWitnessState();
                 unit.AggroSystem?.OnVisionUpdate();
             }
+
+            if (isAdd && EffectsEnabled && Def.OnAttachEffects != null)
+            {
+                foreach (var fightEffect in Def.OnAttachEffects)
+                {
+                    HandleBuffTriggerEffect(fightEffect, ETriggerType.Default);
+                }
+            }
         }
 
 

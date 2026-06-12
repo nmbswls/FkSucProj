@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace My
 {
-    // 按归一化进度驱动粒子/分档显隐，不关心进度来源
+    // 按 MapSceneEffectCtrl 的 progress 驱动粒子/分档显隐
+    [RequireComponent(typeof(MapSceneEffectCtrl))]
     public class SceneEffectProgressPresentation : MonoBehaviour
     {
         [SerializeField] ParticleSystem[] particleSystems;
@@ -10,6 +11,7 @@ namespace My
         [SerializeField] ProgressStage[] stages;
 
         int _lastStageIndex = -1;
+        MapSceneEffectCtrl _effectCtrl;
 
         [System.Serializable]
         public struct ProgressStage
@@ -17,6 +19,38 @@ namespace My
             [Range(0f, 1f)]
             public float AtProgress;
             public GameObject Root;
+        }
+
+        void Awake()
+        {
+            _effectCtrl = GetComponent<MapSceneEffectCtrl>();
+        }
+
+        void OnEnable()
+        {
+            if (_effectCtrl == null)
+            {
+                return;
+            }
+
+            _effectCtrl.OnShown += HandleShown;
+            _effectCtrl.OnProgressChanged += Apply;
+        }
+
+        void OnDisable()
+        {
+            if (_effectCtrl == null)
+            {
+                return;
+            }
+
+            _effectCtrl.OnShown -= HandleShown;
+            _effectCtrl.OnProgressChanged -= Apply;
+        }
+
+        void HandleShown()
+        {
+            ResetPresentation();
         }
 
         public void ResetPresentation()

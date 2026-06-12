@@ -62,6 +62,7 @@ namespace My.Input
 
         HView,
         Crouch,
+        EnterExpose,
 
         Bag,
         Skill,
@@ -158,6 +159,7 @@ namespace My.Input
 
         private readonly string keyMouseRight = EInputKey.MouseRight.ToString();
         private readonly string keyTab = EInputKey.Tab.ToString();
+        private readonly string keyEnterExpose = EInputKey.EnterExpose.ToString();
         private void Update()
         {
             
@@ -176,6 +178,11 @@ namespace My.Input
                 if (actions.OverworldMap.Tab.IsPressed())
                 {
                     OnKeyHoldingUpdate(keyTab);
+                }
+
+                if (actions.OverworldMap.EnterExpose.IsPressed())
+                {
+                    OnKeyHoldingUpdate(keyEnterExpose);
                 }
             }
 
@@ -237,6 +244,10 @@ namespace My.Input
                 {
                     OnKeyHoldEnd(keyTab);
                 }
+                if (actions.OverworldMap.EnterExpose.IsPressed())
+                {
+                    OnKeyHoldEnd(keyEnterExpose);
+                }
             }
 
             ReleaseHuntingModeIfNeeded();
@@ -248,6 +259,7 @@ namespace My.Input
                 // 强制告诉业务层停止一切长按行为
                 OnKeyHoldEnd(keyMouseRight);
                 OnKeyHoldEnd(keyTab);
+                OnKeyHoldEnd(keyEnterExpose);
                 ReleaseHuntingModeIfNeeded();
 
                 // 也可以顺便把移动方向清零
@@ -304,7 +316,10 @@ namespace My.Input
             actions.OverworldMap.HView.canceled += OnHotKeyHViewCanceled;
 
             actions.OverworldMap.Crouch.performed += OnHotKeyCrouch;
-            
+
+            actions.OverworldMap.EnterExpose.started += OnHotKeyEnterExpose;
+            actions.OverworldMap.EnterExpose.performed += OnHotKeyEnterExpose;
+            actions.OverworldMap.EnterExpose.canceled += OnHotKeyEnterExposeEnd;
 
             actions.OverworldMap.HotKey1.performed += OnHotKey1;
             actions.OverworldMap.HotKey2.performed += OnHotKey2;
@@ -356,6 +371,12 @@ namespace My.Input
 
             actions.OverworldMap.HView.started -= OnHotKeyHViewStarted;
             actions.OverworldMap.HView.canceled -= OnHotKeyHViewCanceled;
+
+            actions.OverworldMap.Crouch.performed -= OnHotKeyCrouch;
+
+            actions.OverworldMap.EnterExpose.started -= OnHotKeyEnterExpose;
+            actions.OverworldMap.EnterExpose.performed -= OnHotKeyEnterExpose;
+            actions.OverworldMap.EnterExpose.canceled -= OnHotKeyEnterExposeEnd;
 
             actions.OverworldMap.HotKey1.performed -= OnHotKey1;
             actions.OverworldMap.HotKey2.performed -= OnHotKey2;
@@ -629,6 +650,9 @@ namespace My.Input
         }
 
         public void OnHotKeyCrouch(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Crouch.ToString());
+
+        public void OnHotKeyEnterExpose(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.EnterExpose.ToString());
+        public void OnHotKeyEnterExposeEnd(InputAction.CallbackContext ctx) => OnKeyHoldEnd(EInputKey.EnterExpose.ToString());
 
         public void OnHotKeyBag(InputAction.CallbackContext ctx) => OnKeyPress(ctx, EInputKey.Bag.ToString());
 

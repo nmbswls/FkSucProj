@@ -273,6 +273,15 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""EnterExpose"",
+                    ""type"": ""Button"",
+                    ""id"": ""c8e4a1b2-3d5f-4e6a-9b0c-1d2e3f4a5b6c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SceneCancel"",
                     ""type"": ""Button"",
                     ""id"": ""120c5f44-dad9-4852-97dc-55324d60dfbf"",
@@ -594,6 +603,17 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""d9f5b2c3-4e6a-5f7b-0c1d-2e3f4a5b6c7d"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EnterExpose"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""12de23c3-a1c3-4cf4-82b2-4d32da705391"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
@@ -741,6 +761,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         m_OverworldMap_S04 = m_OverworldMap.FindAction("S04", throwIfNotFound: true);
         m_OverworldMap_HView = m_OverworldMap.FindAction("HView", throwIfNotFound: true);
         m_OverworldMap_Crouch = m_OverworldMap.FindAction("Crouch", throwIfNotFound: true);
+        m_OverworldMap_EnterExpose = m_OverworldMap.FindAction("EnterExpose", throwIfNotFound: true);
         m_OverworldMap_SceneCancel = m_OverworldMap.FindAction("SceneCancel", throwIfNotFound: true);
         m_OverworldMap_Skill = m_OverworldMap.FindAction("Skill", throwIfNotFound: true);
         m_OverworldMap_Bag = m_OverworldMap.FindAction("Bag", throwIfNotFound: true);
@@ -855,6 +876,7 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OverworldMap_S04;
     private readonly InputAction m_OverworldMap_HView;
     private readonly InputAction m_OverworldMap_Crouch;
+    private readonly InputAction m_OverworldMap_EnterExpose;
     private readonly InputAction m_OverworldMap_SceneCancel;
     private readonly InputAction m_OverworldMap_Skill;
     private readonly InputAction m_OverworldMap_Bag;
@@ -952,6 +974,10 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "OverworldMap/Crouch".
         /// </summary>
         public InputAction @Crouch => m_Wrapper.m_OverworldMap_Crouch;
+        /// <summary>
+        /// Provides access to the underlying input action "OverworldMap/EnterExpose".
+        /// </summary>
+        public InputAction @EnterExpose => m_Wrapper.m_OverworldMap_EnterExpose;
         /// <summary>
         /// Provides access to the underlying input action "OverworldMap/SceneCancel".
         /// </summary>
@@ -1062,6 +1088,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
+            @EnterExpose.started += instance.OnEnterExpose;
+            @EnterExpose.performed += instance.OnEnterExpose;
+            @EnterExpose.canceled += instance.OnEnterExpose;
             @SceneCancel.started += instance.OnSceneCancel;
             @SceneCancel.performed += instance.OnSceneCancel;
             @SceneCancel.canceled += instance.OnSceneCancel;
@@ -1151,6 +1180,9 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
+            @EnterExpose.started -= instance.OnEnterExpose;
+            @EnterExpose.performed -= instance.OnEnterExpose;
+            @EnterExpose.canceled -= instance.OnEnterExpose;
             @SceneCancel.started -= instance.OnSceneCancel;
             @SceneCancel.performed -= instance.OnSceneCancel;
             @SceneCancel.canceled -= instance.OnSceneCancel;
@@ -1541,6 +1573,13 @@ public partial class @MyInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCrouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "EnterExpose" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEnterExpose(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "SceneCancel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

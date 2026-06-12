@@ -103,6 +103,14 @@ namespace My
                     {
                         return $"Prefab/Presentations/Trap/{cfgId}";
                     }
+                case EEntityType.SkillProxy:
+                    {
+                        var spec = SkillProxySpecRuntimeMap.Get(cfgId);
+                        string prefabName = spec != null && !string.IsNullOrEmpty(spec.PrefabName)
+                            ? spec.PrefabName
+                            : cfgId;
+                        return $"Prefab/Presentations/SkillProxy/{prefabName}";
+                    }
                 case EEntityType.AttractPoint:
                     {
                         return $"Prefab/Presentations/AttractPoint/{cfgId}";

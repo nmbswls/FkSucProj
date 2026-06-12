@@ -145,6 +145,11 @@ namespace My
                             executor = new AbilityEffectExecutor4SpawnEntity();
                         }
                         break;
+                    case MapAbilityEffectSpawnSkillProxyCfg:
+                        {
+                            executor = new AbilityEffectExecutor4SpawnSkillProxy();
+                        }
+                        break;
                     case MapAbilityEffectRangePreviewCfg:
                         {
                             executor = new AbilityEffectExecutor4RangePreview();
@@ -265,6 +270,11 @@ namespace My
                     case MapFightEffectXuLiStageCfg:
                         {
                             executor = new AbilityFightExecutor4XuLiStage();
+                        }
+                        break;
+                    case MapFightEffectEnterExposeCfg:
+                        {
+                            executor = new AbilityEffectExecutor4EnterExpose();
                         }
                         break;
                     case MapFightEffectShowEffect:

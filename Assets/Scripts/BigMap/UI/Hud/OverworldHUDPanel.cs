@@ -249,6 +249,8 @@ namespace My.UI
 
         public ParticleSystem FaQingPS;
 
+        public Image ExposeSkillPressHint;
+
         public class PlayerPropBall
         {
             public string AttrId;
@@ -848,6 +850,10 @@ namespace My.UI
                 skillSLotIdx = 7;
                 isSkillSlot = true;
             }
+            else if (keyName == EInputKey.EnterExpose.ToString())
+            {
+                return "player_enter_expose";
+            }
             if (isSkillSlot)
             {
                 return showSkills[skillSLotIdx];
@@ -867,6 +873,18 @@ namespace My.UI
             if (TryHandleHumanQuickBarHotkey(keyName))
             {
                 return true;
+            }
+
+            if (keyName == EInputKey.EnterExpose.ToString())
+            {
+                var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+                if (player == null
+                    || player.LogicManager.PlayerHumanMode
+                    || player.IsExposed
+                    || !player.DisguiseIfPossible)
+                {
+                    return false;
+                }
             }
 
             var skillId = GetSkillIdByKey(keyName);

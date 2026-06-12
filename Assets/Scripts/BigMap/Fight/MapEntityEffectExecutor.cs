@@ -1690,6 +1690,48 @@ namespace My.Map.Entity
         }
     }
 
+    public class AbilityEffectExecutor4SpawnSkillProxy : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapAbilityEffectSpawnSkillProxyCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnSkillProxy cfg error");
+                return;
+            }
+
+            var spec = SkillProxySpecRuntimeMap.Get(realCfg.CfgId);
+            if (spec == null)
+            {
+                Debug.LogError($"AbilityEffectExecutor4SpawnSkillProxy unknown cfg: {realCfg.CfgId}");
+                return;
+            }
+
+            long ownerId = ctx.SourceInfo.SrcEntityId;
+            var owner = ctx.Env.GetLogicEntity(ownerId, false) as BaseUnitLogicEntity;
+            if (owner == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4SpawnSkillProxy owner invalid");
+                return;
+            }
+
+            var record = new LogicEntityRecord4SkillProxy
+            {
+                Id = GameLogicManager.LogicEntityIdInst++,
+                CfgId = realCfg.CfgId,
+                EntityType = EEntityType.SkillProxy,
+                OwnerEntityId = ownerId,
+                LifeBindEntityId = ownerId,
+                LifeTime = realCfg.LifeTime > 0f ? realCfg.LifeTime : spec.DefaultLifetime,
+                Position = owner.Pos,
+                FactionId = owner.FactionId,
+            };
+
+            ctx.Env.AddNewEntityRecord(record);
+        }
+    }
+
     public class AbilityEffectExecutor4RangePreview : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
@@ -1909,6 +1951,26 @@ namespace My.Map.Entity
             }
 
             playerEntity.ExitExposeState(realCfg.RestoreValue);
+        }
+    }
+
+    public class AbilityEffectExecutor4EnterExpose : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            if (effectConf is not MapFightEffectEnterExposeCfg)
+            {
+                Debug.LogError("AbilityEffectExecutor4EnterExpose cfg error");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster is not PlayerLogicEntity playerEntity)
+            {
+                return;
+            }
+
+            playerEntity.TryEnterExposeFromSkill();
         }
     }
 

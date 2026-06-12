@@ -1116,12 +1116,24 @@ namespace My.Map.Entity
                 skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig),
                 castOverrides);
 
+            var skillCastCosts = SkillCastCostLibrary.GetCosts(skillId);
+            var abilityCfg = AbilityLibrary.GetAbilityConfig(realAbilityId);
+            var abilityCastCosts = SkillCostUtil.ResolveAbilityCastCosts(abilityCfg);
+            var castCosts = abilityCastCosts ?? skillCastCosts;
+            if (!SkillCostUtil.CanPay(OwnerEntity, castCosts))
+            {
+                Debug.Log($"UseSkill cost check failed: {skillId}");
+                return false;
+            }
+
             if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: overrideParams))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);
                 return false;
             }
+
+            SkillCostUtil.Pay(OwnerEntity, OwnerEntity.Id, castCosts);
 
             // 执行combo状态更新
             // todo 如果技能打断连击 则需要在这里置空

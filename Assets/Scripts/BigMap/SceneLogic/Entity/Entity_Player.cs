@@ -1850,6 +1850,29 @@ namespace My.Map
             attributeStore.Commit();
         }
 
+        // 技能蓄力主动进入暴露态（Z 键）；仅在可伪装区域且尚未暴露时生效
+        public bool TryEnterExposeFromSkill()
+        {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
+            if (IsExposed)
+            {
+                return false;
+            }
+
+            if (!DisguiseIfPossible)
+            {
+                return false;
+            }
+
+            var clothes = GetAttr(AttrIdConsts.PlayerClothes);
+            EnterExposeState(clothes > 0 ? false : true);
+            return true;
+        }
+
         private void EnterExposeState(bool isBroken)
         {
             IsExposed = true;

@@ -47,6 +47,7 @@ namespace My.Map
         FishingSpot,
 
         Trap,
+        SkillProxy,
     }
 
     public interface IEntityBuffOwner : IEntityAttributeOwner

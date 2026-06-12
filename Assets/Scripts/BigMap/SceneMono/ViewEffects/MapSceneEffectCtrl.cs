@@ -1,8 +1,9 @@
 
 using Animancer;
-using My;
+using System;
 using UnityEngine;
 
+// 场景特效入口：绑定信息、progress 状态与可序列化配置；复杂表现由同 GameObject 上的其他组件订阅实现
 public class MapSceneEffectCtrl : MonoBehaviour
 {
     public enum EEffectType
@@ -16,29 +17,36 @@ public class MapSceneEffectCtrl : MonoBehaviour
 
     [SerializeField] Vector2 unitBindOffset = new Vector2(0f, 0.55f);
 
-    SceneEffectProgressPresentation _progressPresentation;
-    protected int BoundEffectUniqId { get; private set; }
+    public float Progress01 { get; private set; }
+    public int BoundEffectUniqId { get; private set; }
+    public long? BindingUnitId { get; private set; }
+    public int BindingRandomSeed { get; private set; }
+    public Vector2 UnitBindOffset => unitBindOffset;
 
-    void Awake()
-    {
-        _progressPresentation = GetComponent<SceneEffectProgressPresentation>();
-    }
+    public event Action OnShown;
+    public event Action<float> OnProgressChanged;
 
     internal void BindFromManager(MapSceneEffectManager.EffectCtx ctx)
     {
         BoundEffectUniqId = ctx != null ? ctx.UniqId : 0;
-        OnEffectBound(ctx);
-    }
+        BindingUnitId = ctx?.BindingUnit;
 
-    protected virtual void OnEffectBound(MapSceneEffectManager.EffectCtx ctx)
-    {
+        if (BindingUnitId != null)
+        {
+            BindingRandomSeed = (int)(BindingUnitId.Value % int.MaxValue);
+        }
+        else
+        {
+            BindingRandomSeed = UnityEngine.Random.Range(1, 99999);
+        }
+
         if (ctx?.BindingUnit != null)
         {
             ctx.BindingUnitVec = new Vector3(unitBindOffset.x, unitBindOffset.y, 0f);
         }
     }
 
-    protected MapSceneEffectManager.EffectCtx GetBoundEffectCtx()
+    public MapSceneEffectManager.EffectCtx GetBoundEffectCtx()
     {
         if (BoundEffectUniqId == 0 || MapSceneEffectManager.Instance == null)
         {
@@ -48,18 +56,21 @@ public class MapSceneEffectCtrl : MonoBehaviour
         return MapSceneEffectManager.Instance.FindSceneEffect(BoundEffectUniqId);
     }
 
-    public virtual void SetProgress01(float progress01)
+    public void SetProgress01(float progress01)
     {
-        _progressPresentation?.Apply(progress01);
+        Progress01 = Mathf.Clamp01(progress01);
+        OnProgressChanged?.Invoke(Progress01);
     }
 
-    public virtual void Show()
+    public void Show()
     {
+        Progress01 = 0f;
+
         if (AnimancerComp != null && ShowClip != null)
         {
             AnimancerComp.Play(ShowClip, 0, FadeMode.FromStart);
         }
 
-        _progressPresentation?.ResetPresentation();
+        OnShown?.Invoke();
     }
 }

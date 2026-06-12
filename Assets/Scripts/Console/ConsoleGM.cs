@@ -381,6 +381,40 @@ public class ConsoleGM : MonoBehaviour
                 }
             });
 
+        Register("chain_bind", "测试锁链捆缚：对附近最近单位施加 chain_bind",
+            new[] { new CmdParam("duration", "可选，默认 3 秒") },
+            args =>
+            {
+                float dur = 3f;
+                if (args.Count > 0 && float.TryParse(args[0], out var parsed))
+                {
+                    dur = parsed;
+                }
+
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var player = glm.playerLogicEntity;
+                long targetId = player.Id;
+                float bestDist = float.MaxValue;
+
+                foreach (var entity in player.FindEntityInRange(player.Pos, 8f))
+                {
+                    if (entity.Id == player.Id || entity is not My.Map.BaseUnitLogicEntity)
+                    {
+                        continue;
+                    }
+
+                    float dist = (entity.Pos - player.Pos).sqrMagnitude;
+                    if (dist < bestDist)
+                    {
+                        bestDist = dist;
+                        targetId = entity.Id;
+                    }
+                }
+
+                glm.globalBuffManager.RequestAddBuff(targetId, "chain_bind", overrideDuration: dur);
+                Log($"chain_bind applied to entity {targetId}, duration={dur}s");
+            });
+
         Register("wanted", "通缉",
             null,
             args =>

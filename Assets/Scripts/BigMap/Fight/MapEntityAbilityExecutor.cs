@@ -123,6 +123,28 @@ namespace My.Map.Entity
     {
         public BaseUnitLogicEntity EntityOwner { get; set; }
 
+        protected virtual ILogicEntity GetSpatialHost() => EntityOwner;
+
+        protected virtual ILogicEntity GetCombatSource() => EntityOwner;
+
+        protected virtual bool IsDetachedHost() => false;
+
+        protected virtual IEntityBuffOwner GetBuffCheckOwner() => EntityOwner;
+
+        protected virtual Vector2 ResolveSpatialFaceDir()
+        {
+            if (GetSpatialHost() is BaseUnitLogicEntity unit)
+            {
+                return unit.FinalLook;
+            }
+
+            if (EntityOwner != null)
+            {
+                return EntityOwner.FinalLook;
+            }
+
+            return Vector2.right;
+        }
 
         public class AbilityRunningContext
         {
@@ -287,8 +309,9 @@ namespace My.Map.Entity
         /// <returns></returns>
         protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? inputVec = null, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null, Action<bool> onAbilityEnd = null)
         {
+            var spatialHost = GetSpatialHost();
 
-            if(abilityConf.IsDodge)
+            if (!IsDetachedHost() && abilityConf.IsDodge)
             {
                 EntityOwner.TryInterrupt(new InterruptRequest()
                 {
@@ -302,10 +325,13 @@ namespace My.Map.Entity
                 return false;
             }
 
-            EntityOwner.TryInterrupt(new InterruptRequest()
+            if (!IsDetachedHost())
             {
-                source = EInterruptSource.Cast,
-            });
+                EntityOwner.TryInterrupt(new InterruptRequest()
+                {
+                    source = EInterruptSource.Cast,
+                });
+            }
 
 
             if (IsRunning)
@@ -314,7 +340,7 @@ namespace My.Map.Entity
             }
 
             // 检查强制转向
-            if(abilityConf.AdjustFaceDir)
+            if (!IsDetachedHost() && abilityConf.AdjustFaceDir)
             {
                 if(castVec1 != null)
                 {
@@ -340,8 +366,8 @@ namespace My.Map.Entity
                 RunningVariables = runningOverrides,
                 InputVec = inputVec,
                 CastVec1 = castVec1,
-                FaceDir = EntityOwner.FinalLook,
-                Position = EntityOwner.Pos,
+                FaceDir = ResolveSpatialFaceDir(),
+                Position = spatialHost.Pos,
 
                 OneAbilityEnd = onAbilityEnd,
 
@@ -547,7 +573,10 @@ namespace My.Map.Entity
                 }
             }
 
-            ApplyPhaseStepSnap(phase, CurrentCtx.AbilityConfig);
+            if (!IsDetachedHost())
+            {
+                ApplyPhaseStepSnap(phase, CurrentCtx.AbilityConfig);
+            }
 
             // 安排该阶段的事件
             ctx._scheduled.Clear();
@@ -792,18 +821,20 @@ namespace My.Map.Entity
 
         public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility(AbilityRunningContext abilityCtx)
         {
+            var combatSource = GetCombatSource();
+            var spatialHost = GetSpatialHost();
             var sourceInfo = new EffectSourceInfo()
             {
                 SrcType = ESourceType.Ability,
-                SrcEntityId = this.EntityOwner.Id,
-                SrcFactionId = this.EntityOwner.FactionId,
+                SrcEntityId = combatSource.Id,
+                SrcFactionId = combatSource.FactionId,
 
                 SrcAbilityId = abilityCtx.AbilityConfig.Id,
                 SrcAbilityPhaseId = abilityCtx.PhaseIndex,
             };
             var ctx = new GameLogicManager.LogicFightEffectContext(EntityOwner.LogicManager, EFightCtxType.Ability, sourceInfo);
             ctx.TargetId = abilityCtx.Target ?.Id ?? 0;
-            ctx.TriggerPos = EntityOwner.Pos;
+            ctx.TriggerPos = spatialHost.Pos;
 
             if(abilityCtx.CastVec1 != null)
             {
@@ -811,7 +842,7 @@ namespace My.Map.Entity
             }
             else
             {
-                ctx.CastVec1 = this.EntityOwner.Pos + abilityCtx.FaceDir;
+                ctx.CastVec1 = spatialHost.Pos + abilityCtx.FaceDir;
             }
 
             ctx.InputVec = abilityCtx.InputVec;
@@ -866,9 +897,10 @@ namespace My.Map.Entity
                 {
                     //var executor = GetExecutor(s.Source.Effect);
                     //executor?.Apply(s.Source.Effect, CurrentCtx);
+                    var buffCheckOwner = GetBuffCheckOwner();
                     if(!string.IsNullOrEmpty(s.Source.CheckNeedBuff))
                     {
-                        if (!EntityOwner.CheckHasBuff(s.Source.CheckNeedBuff))
+                        if (!buffCheckOwner.CheckHasBuff(s.Source.CheckNeedBuff))
                         {
                             Debug.Log($"tick ability skip need buff :{s.Source.Effect.EffectType}");
                             continue;
@@ -877,7 +909,7 @@ namespace My.Map.Entity
 
                     if (!string.IsNullOrEmpty(s.Source.CheckNoBuff))
                     {
-                        if (EntityOwner.CheckHasBuff(s.Source.CheckNoBuff))
+                        if (buffCheckOwner.CheckHasBuff(s.Source.CheckNoBuff))
                         {
                             Debug.Log($"tick ability skip no buff :{s.Source.Effect.EffectType}");
                             continue;

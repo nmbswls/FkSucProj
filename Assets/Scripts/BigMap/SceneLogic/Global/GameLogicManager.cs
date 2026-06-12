@@ -510,6 +510,11 @@ namespace My
                         newEntity = new TrapLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                     }
                     break;
+                case EEntityType.SkillProxy:
+                    {
+                        newEntity = new SkillProxyLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    }
+                    break;
                 default:
                     {
                         ;

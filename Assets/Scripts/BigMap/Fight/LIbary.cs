@@ -261,6 +261,21 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateOrbSkillCastAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateOrbSkillSummonAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreatePlayerEnterExposeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDefaultDashSlash();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -2054,6 +2069,167 @@ namespace My.Map.Entity
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
 
             spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateOrbSkillCastAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "orb_skill_cast";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+
+            spec.CastCosts.Add(new SkillCostEntry
+            {
+                CostType = ESkillCostType.Resource,
+                ResourceId = AttrIdConsts.SkillProxyOrbAmmo,
+                Amount = 1,
+                Target = ESkillCostTarget.HostEntity,
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.05"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "player_trace_bullet_01",
+                MotionData = new LinearMotionData()
+                {
+                    speed = 10f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.NearestEnemyInRadius,
+                nearestEnemyAcquireRadius = 8f,
+                bulletMaxPenetration = 1,
+                lifeTime = 4f,
+                TriggerOnCollide = true,
+                BulletHitResult = new HitResult()
+                {
+                    OnHitEffects = new List<MapFightEffectCfg>
+                    {
+                        new MapAbilityEffectHitBoxCfg()
+                        {
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 0.6f,
+                            CampFilterType = ECampFilterType.NotSelf,
+                            MaxCatchCount = 1,
+                            HitResult = new HitResult()
+                            {
+                                OnHitEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapFightEffectApplyDamageCfg()
+                                    {
+                                        BaseDamage = 8000,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = spawnBullet,
+                Kind = PhaseEventKind.Timed,
+                TimeOffset = 0f,
+            });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateOrbSkillSummonAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "orb_skill_summon";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectSpawnSkillProxyCfg()
+                {
+                    CfgId = "orb_skill_v1",
+                    LifeTime = 15f,
+                },
+                Kind = PhaseEventKind.Timed,
+                TimeOffset = 0f,
+            });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerEnterExposeAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_enter_expose";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.NoTarget;
+
+            var chargePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Charge",
+                HoldingPhase = true,
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                ProgressSceneEffect = "Skill/player_shield",
+                ProgressEffectNormalizeDuration = 1.5f,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "99"
+                },
+            };
+
+            var chargeEndEffect = new MapFightEffectXuLiStageCfg()
+            {
+                CheckPhaseName = "Charge",
+                StageInfos =
+                {
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 1.5f,
+                        StageEffects = new()
+                        {
+                            new MapFightEffectEnterExposeCfg(),
+                        }
+                    },
+                    new MapFightEffectXuLiStageCfg.EStageInfo()
+                    {
+                        NeedTime = 0f,
+                        StageEffects = new()
+                        {
+                            new MapFightEffectInterruptCaster(),
+                        }
+                    },
+                }
+            };
+            chargePhase.Events.Add(new PhaseEffectEvent() { Effect = chargeEndEffect, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(chargePhase);
             return spec;
         }
 
