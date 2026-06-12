@@ -13,9 +13,9 @@ namespace My.Map.Entity
             {
                 _library = new();
 
-                _library["talent_expose_extra_charm"] = new BuffDefinition()
+                _library["talent_expose_extra_charm_1"] = new BuffDefinition()
                 {
-                    BuffId = "talent_expose_extra_charm",
+                    BuffId = "talent_expose_extra_charm_1",
                     LayerOverrideType = EBuffLayerOverrideType.Duplicate,
                     MaxStackLayer = 1,
                     ModifierAttrs = new()
@@ -25,12 +25,44 @@ namespace My.Map.Entity
                     {
                         DurationType = EBuffDurationType.RelativeExposeLevel,
                         ParamStr1 = AttrIdConsts.PlayerCharm_Static,
-                        ParamFloat1 = 1f,
-                        ParamFloat2 = 0.2f,
+                        ParamStr2 = "0:0,1:0,2:5000,3:5000,4:5000",
+                        CommonFlag1 = true,
                     },
-                    DefaultDuration = 3f,
-                    Icon = "fallback",
-                    HeadHintPriority = 80,
+                    DefaultDuration = -1,
+                };
+                _library["talent_expose_extra_charm_2"] = new BuffDefinition()
+                {
+                    BuffId = "talent_expose_extra_charm_2",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.RelativeExposeLevel,
+                        ParamStr1 = AttrIdConsts.PlayerCharm_Static,
+                        ParamStr2 = "0:0,1:0,2:10000,3:10000,4:10000",
+                        CommonFlag1 = true,
+                    },
+                    DefaultDuration = -1,
+                };
+                _library["talent_expose_extra_charm_3"] = new BuffDefinition()
+                {
+                    BuffId = "talent_expose_extra_charm_3",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.RelativeExposeLevel,
+                        ParamStr1 = AttrIdConsts.PlayerCharm_Static,
+                        ParamStr2 = "0:0,1:0,2:10000,3:10000,4:10000",
+                        CommonFlag1 = true,
+                    },
+                    DefaultDuration = -1,
                 };
 
                 _library["b_lamp_extra_vision"] = new BuffDefinition()

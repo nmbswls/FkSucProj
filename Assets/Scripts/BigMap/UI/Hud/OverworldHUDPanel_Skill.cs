@@ -171,12 +171,29 @@ namespace My.UI
                 return false;
             }
 
-            var caster = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
-            var skillConf = SkillLibrary.GetSkillConfig(skillId);
-            if (caster != null
-                && skillConf != null
-                && !SkillCastConditionUtil.CheckSkill(caster, skillConf))
+            if (!TryUseSkillWithDenyFeedback(skillId))
             {
+                return false;
+            }
+
+            return true;
+        }
+
+        bool TryUseSkillWithDenyFeedback(string skillId)
+        {
+            var caster = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (caster == null)
+            {
+                return false;
+            }
+
+            if (!SkillCastConditionUtil.TryEvaluateReadiness(
+                    caster,
+                    caster.ablilityManager,
+                    skillId,
+                    out var denyMessage))
+            {
+                SkillUseDenyFeedback.Show(denyMessage);
                 return false;
             }
 
@@ -189,6 +206,19 @@ namespace My.UI
             var skillConf = SkillLibrary.GetSkillConfig(skillId);
             if (skillConf == null)
             {
+                NotifySkillUseConfirmed(skillId, false, onConfirm);
+                return;
+            }
+
+            var caster = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (caster != null
+                && !SkillCastConditionUtil.TryEvaluateReadiness(
+                    caster,
+                    caster.ablilityManager,
+                    skillConf,
+                    out var denyMessage))
+            {
+                SkillUseDenyFeedback.Show(denyMessage);
                 NotifySkillUseConfirmed(skillId, false, onConfirm);
                 return;
             }

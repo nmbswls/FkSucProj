@@ -28,6 +28,13 @@ namespace My.UI
 
         public RectTransform shineRect;   // 高光图片的RectTransform
 
+        string _boundSkillId;
+        string _denyMessage;
+        static readonly Color UsableIconColor = Color.white;
+        static readonly Color DeniedIconColor = new(0.55f, 0.55f, 0.55f, 0.75f);
+
+        public string BoundSkillId => _boundSkillId;
+
         private Vector2 shineStartPos = new Vector2(-25, 25);
         private Vector2 shineEndPos = new Vector2(25, -25);
         private float shineDuration = 0.4f;// 扫光耗时
@@ -87,6 +94,7 @@ namespace My.UI
         public void BindingSkill(SkillRuntime skillData, bool hint = false)
         {
             this.skillData = skillData;
+            _boundSkillId = skillData?.cacheConfig?.SkillId;
 
             Sprite iconSprite = null;
             if (skillData.cacheConfig != null && !string.IsNullOrEmpty(skillData.cacheConfig.IconPath))
@@ -106,6 +114,8 @@ namespace My.UI
             {
                 button.interactable = true;
             }
+
+            RefreshUsability();
 
             if (hint)
             {
@@ -139,6 +149,7 @@ namespace My.UI
             }
 
             skillData = null;
+            _boundSkillId = skillId;
             emptyIcon.gameObject.SetActive(false);
             icon.gameObject.SetActive(true);
 
@@ -160,9 +171,53 @@ namespace My.UI
                 button.interactable = true;
             }
 
+            RefreshUsability();
+
             if (hint)
             {
                 DoRefreshHint();
+            }
+        }
+
+        public void RefreshUsability()
+        {
+            _denyMessage = null;
+            if (string.IsNullOrEmpty(_boundSkillId))
+            {
+                ApplyDenyVisual(false, null);
+                return;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            if (player == null)
+            {
+                ApplyDenyVisual(false, null);
+                return;
+            }
+
+            bool canUse = SkillCastConditionUtil.TryEvaluateReadiness(
+                player,
+                player.ablilityManager,
+                _boundSkillId,
+                out _denyMessage);
+            ApplyDenyVisual(!canUse, _denyMessage);
+        }
+
+        void ApplyDenyVisual(bool denied, string denyMessage)
+        {
+            if (lockOverlay != null)
+            {
+                lockOverlay.SetActive(denied);
+            }
+
+            if (icon != null)
+            {
+                icon.color = denied ? DeniedIconColor : UsableIconColor;
+            }
+
+            if (button)
+            {
+                button.interactable = true;
             }
         }
 
@@ -201,6 +256,8 @@ namespace My.UI
         public void Clear()
         {
             skillData = null;
+            _boundSkillId = null;
+            _denyMessage = null;
             if (emptyIcon)
             {
                 emptyIcon.gameObject.SetActive(true);

@@ -59,7 +59,6 @@ namespace My.UI
 
         public Button BtnZhaZhiSwitch;
 
-
         public enum EHudMode
         {
             None,

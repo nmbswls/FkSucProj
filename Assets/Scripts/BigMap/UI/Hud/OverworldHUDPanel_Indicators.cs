@@ -40,6 +40,10 @@ namespace My.UI
         TextMeshProUGUI _skillNameText;
         Material _pressedMaterial;
         CanvasGroup _viewCanvasGroup;
+        string _currentSkillId;
+        string _currentDenyMessage;
+        static readonly Color UsableIconColor = Color.white;
+        static readonly Color DeniedIconColor = new(0.55f, 0.55f, 0.55f, 0.75f);
 
         public void BindView()
         {
@@ -118,7 +122,15 @@ namespace My.UI
 
             bool isExposed = player.IsExposed;
             string activeSkillId = isExposed ? ReturnDisguiseSkillId : EnterExposeSkillId;
-            ApplySkillPresentation(activeSkillId, isExposed);
+            _currentSkillId = activeSkillId;
+
+            var skillCfg = SkillLibrary.GetSkillConfig(activeSkillId);
+            bool canUse = SkillCastConditionUtil.TryEvaluateReadiness(
+                player,
+                player.ablilityManager,
+                skillCfg,
+                out _currentDenyMessage);
+            ApplySkillPresentation(activeSkillId, isExposed, canUse, _currentDenyMessage);
 
             bool showActiveVisual = false;
             float progress = 0f;
@@ -144,27 +156,47 @@ namespace My.UI
             SetActiveVisual(showActiveVisual, progress, usePressedScale);
         }
 
-        void ApplySkillPresentation(string skillId, bool isExposed)
+        void ApplySkillPresentation(string skillId, bool isExposed, bool canUse, string denyMessage)
         {
             var cfg = SkillLibrary.GetSkillConfig(skillId);
+            string displayName;
+            if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
+            {
+                displayName = cfg.Desc;
+            }
+            else
+            {
+                displayName = isExposed ? "返回伪装" : "蓄力暴露";
+            }
+
             if (_skillNameText != null)
             {
-                if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
+                if (!canUse && !string.IsNullOrEmpty(denyMessage))
                 {
-                    _skillNameText.text = cfg.Desc;
+                    _skillNameText.text = $"{displayName}\n<color=#FF9A7A>{denyMessage}</color>";
                 }
                 else
                 {
-                    _skillNameText.text = isExposed ? "返回伪装" : "蓄力暴露";
+                    _skillNameText.text = displayName;
                 }
             }
 
-            if (_iconImage != null && cfg != null && !string.IsNullOrEmpty(cfg.IconPath))
+            if (_viewCanvasGroup != null)
             {
-                var iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
-                if (iconSprite != null)
+                _viewCanvasGroup.alpha = canUse ? 1f : 0.72f;
+            }
+
+            if (_iconImage != null)
+            {
+                _iconImage.color = canUse ? UsableIconColor : DeniedIconColor;
+
+                if (cfg != null && !string.IsNullOrEmpty(cfg.IconPath))
                 {
-                    _iconImage.sprite = iconSprite;
+                    var iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
+                    if (iconSprite != null)
+                    {
+                        _iconImage.sprite = iconSprite;
+                    }
                 }
             }
         }

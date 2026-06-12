@@ -1,5 +1,6 @@
 using My.Input;
 using My.Map;
+using My.Map.Entity;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
@@ -184,6 +185,18 @@ namespace My.UI
 
             if (string.IsNullOrEmpty(skillId))
             {
+                return;
+            }
+
+            var player = glm?.playerLogicEntity;
+            if (player != null
+                && !SkillCastConditionUtil.TryEvaluateReadiness(
+                    player,
+                    player.ablilityManager,
+                    skillId,
+                    out var denyMessage))
+            {
+                SkillUseDenyFeedback.Show(denyMessage);
                 return;
             }
 
