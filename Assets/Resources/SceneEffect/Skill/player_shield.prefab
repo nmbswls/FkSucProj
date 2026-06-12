@@ -58,11 +58,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2888944403890385009}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2e3d4c5a6b7c8d9e0f1a2b3c4d5e6f8, type: 3}
+  m_Script: {fileID: 11500000, guid: a3b4c5d6e7f890123456789abcdef0301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   particleSystems: []
-  simulationSpeedByProgress:
+  speedByProgress:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -86,7 +86,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  stages: []
 --- !u!1 &3285597820358646453
 GameObject:
   m_ObjectHideFlags: 0

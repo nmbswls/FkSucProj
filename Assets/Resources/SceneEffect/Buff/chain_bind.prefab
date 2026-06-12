@@ -64,6 +64,7 @@ MonoBehaviour:
   pointCount: 14
   bindRadius: 0.5
   chainBulge: 0.24
+  chainBulgeMul: 1
   lineWidth: 0.08
   sortingOrder: 7
   sortingLayerName: Normal
@@ -77,6 +78,7 @@ MonoBehaviour:
   spawnDuration: 0.45
   spawnStartRadiusScale: 1.25
   persistentTightenDuration: 0.35
-  previewInEditor: 0
+  previewInEditor: 1
   previewSeed: 12345
   previewRadiusScale: 1
+  previewHalfExtents: {x: 0.22, y: 0.32}

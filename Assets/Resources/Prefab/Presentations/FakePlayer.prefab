@@ -1629,6 +1629,7 @@ GameObject:
   - component: {fileID: 4993615622445561496}
   - component: {fileID: 7358391202987309545}
   - component: {fileID: 5309535767887573840}
+  - component: {fileID: 4048492158061488297}
   m_Layer: 19
   m_Name: FakePlayer
   m_TagString: Untagged
@@ -1807,6 +1808,23 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.0049888114}
   m_Size: {x: 0.4, y: 0.2}
   m_Direction: 1
+--- !u!114 &4048492158061488297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3532390953690996554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c3d9e1f2a4b5c6d8e9f0a1b2c3d4e5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  boundsInset: 0.88
+  halfExtentScale: {x: 1, y: 1}
+  centerOffsetLocal: {x: 0, y: 0}
+  hullPointsLocal: []
 --- !u!1 &3654103865470724178
 GameObject:
   m_ObjectHideFlags: 0

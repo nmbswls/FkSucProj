@@ -1873,6 +1873,54 @@ namespace My.Map
             return true;
         }
 
+        // 回归伪装技能起手门控（仅施放前检查，引导中不持续检查战斗态）
+        public bool CanStartReturnDisguiseSkill()
+        {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
+            if (!IsExposed)
+            {
+                return false;
+            }
+
+            if (!DisguiseIfPossible)
+            {
+                return false;
+            }
+
+            if (IsInCombat)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // 技能引导完成时退出暴露态（Z 键 / fix_clothes）
+        public bool TryExitExposeFromSkill(long restoreValue)
+        {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
+            if (!IsExposed)
+            {
+                return false;
+            }
+
+            if (!DisguiseIfPossible)
+            {
+                return false;
+            }
+
+            ExitExposeState(restoreValue);
+            return true;
+        }
+
         private void EnterExposeState(bool isBroken)
         {
             IsExposed = true;

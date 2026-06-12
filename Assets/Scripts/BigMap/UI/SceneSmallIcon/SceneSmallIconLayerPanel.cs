@@ -58,9 +58,13 @@ namespace My.UI
         [SerializeField]
         SceneUnitHpBarItem HpBarPrefab;
         [SerializeField]
+        SceneUnitChargeBarItem ChargeBarPrefab;
+        [SerializeField]
         float hpBarShowDuration = 3f;
         [SerializeField]
         float hpBarScreenOffsetY = 12f;
+        [SerializeField]
+        float chargeBarScreenOffsetY = -10f;
 
         const float BuffHeadHintScreenOffsetY = 28f;
 
@@ -92,6 +96,9 @@ namespace My.UI
         readonly Dictionary<long, SceneUnitHpBarItem> _activeHpBars = new Dictionary<long, SceneUnitHpBarItem>();
         readonly Queue<SceneUnitHpBarItem> _hpBarPool = new Queue<SceneUnitHpBarItem>();
 
+        readonly Dictionary<long, SceneUnitChargeBarItem> _activeChargeBars = new Dictionary<long, SceneUnitChargeBarItem>();
+        readonly Queue<SceneUnitChargeBarItem> _chargeBarPool = new Queue<SceneUnitChargeBarItem>();
+
         bool _bindingsSuspended;
 
         public void Awake()
@@ -101,6 +108,7 @@ namespace My.UI
             if (NPCHStatPrefab != null) NPCHStatPrefab.gameObject.SetActive(false);
             if (BuffHeadHintPrefab != null) BuffHeadHintPrefab.gameObject.SetActive(false);
             if (HpBarPrefab != null) HpBarPrefab.gameObject.SetActive(false);
+            if (ChargeBarPrefab != null) ChargeBarPrefab.gameObject.SetActive(false);
 
             TopCanvas = GetComponentInParent<Canvas>();
             _mainCam = Camera.main;
@@ -155,6 +163,11 @@ namespace My.UI
             foreach (var key in _activeHpBars.Keys.ToList())
             {
                 RecycleHpBarUI(key);
+            }
+
+            foreach (var key in _activeChargeBars.Keys.ToList())
+            {
+                RecycleChargeBarUI(key);
             }
 
             _hpBarTracks.Clear();
@@ -270,6 +283,20 @@ namespace My.UI
                 RecycleHpBarUI(oneId);
                 _hpBarTracks.Remove(oneId);
             }
+
+            _lowFreqCleanCaches.Clear();
+            foreach (var kv in _activeChargeBars)
+            {
+                if (kv.Value.Binding == null || !kv.Value.Binding.CheckValid())
+                {
+                    _lowFreqCleanCaches.Add(kv.Key);
+                }
+            }
+
+            foreach (var oneId in _lowFreqCleanCaches)
+            {
+                RecycleChargeBarUI(oneId);
+            }
         }
 
         private float _screenWidth;
@@ -320,6 +347,8 @@ namespace My.UI
                 CheckUpdateSceneUnitBuffHeadHint(p);
 
                 CheckUpdateSceneUnitHpBar(p);
+
+                CheckUpdateSceneUnitChargeBar(p);
             }
 
             RecycleStaleBuffHeadHints();
@@ -994,6 +1023,88 @@ namespace My.UI
 
         #endregion
 
+        #region Charge Bar UI
+
+        void CheckUpdateSceneUnitChargeBar(IScenePresentation presenter)
+        {
+            if (ChargeBarPrefab == null)
+            {
+                return;
+            }
+
+            long entityId = presenter.Id;
+            var entity = presenter.GetLogicEntity() as BaseUnitLogicEntity;
+            if (entity?.ablilityManager == null)
+            {
+                RecycleChargeBarUI(entityId);
+                return;
+            }
+
+            if (!entity.ablilityManager.TryGetActiveHoldViewState(out var holdState) || !holdState.IsActive)
+            {
+                RecycleChargeBarUI(entityId);
+                return;
+            }
+
+            var anchor = presenter.GetWorldPosition();
+            var screenPos = _mainCam.WorldToScreenPoint(anchor);
+            if (!IsOnScreen(screenPos, _screenWidth, _screenHeight, _bufferX, _bufferY))
+            {
+                RecycleChargeBarUI(entityId);
+                return;
+            }
+
+            if (!_activeChargeBars.TryGetValue(entityId, out var uiItem))
+            {
+                uiItem = AllocateChargeBarUI(presenter);
+            }
+
+            uiItem.SetFill(holdState.Progress01);
+            UpdateChargeBarUIPosition(uiItem, screenPos);
+        }
+
+        SceneUnitChargeBarItem AllocateChargeBarUI(IScenePresentation presenter)
+        {
+            SceneUnitChargeBarItem uiItem;
+            if (_chargeBarPool.Count > 0)
+            {
+                uiItem = _chargeBarPool.Dequeue();
+            }
+            else
+            {
+                uiItem = Instantiate(ChargeBarPrefab, transform);
+            }
+
+            uiItem.Bind(presenter);
+            _activeChargeBars[presenter.Id] = uiItem;
+            return uiItem;
+        }
+
+        void RecycleChargeBarUI(long entityId)
+        {
+            if (!_activeChargeBars.TryGetValue(entityId, out var uiItem))
+            {
+                return;
+            }
+
+            uiItem.Unbind();
+            _chargeBarPool.Enqueue(uiItem);
+            _activeChargeBars.Remove(entityId);
+        }
+
+        void UpdateChargeBarUIPosition(SceneUnitChargeBarItem uiItem, Vector3 screenPos)
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform.parent as RectTransform,
+                screenPos,
+                TopCanvas != null ? TopCanvas.worldCamera : null,
+                out Vector2 uiLocalPos);
+            uiLocalPos += Vector2.up * chargeBarScreenOffsetY;
+            uiItem.transform.localPosition = uiLocalPos;
+        }
+
+        #endregion
+
         /// <summary>
         /// 强制解绑
         /// </summary>
@@ -1012,6 +1123,7 @@ namespace My.UI
             RecycleBuffHeadHintUI(scenePresentation.Id);
             RecycleHpBarUI(scenePresentation.Id);
             _hpBarTracks.Remove(scenePresentation.Id);
+            RecycleChargeBarUI(scenePresentation.Id);
         }
 
         public override void Hide()

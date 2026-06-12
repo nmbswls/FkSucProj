@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using My.Map.Scene;
 using UnityEngine;
 
+// ChainBindEffectCtrl 通过 UnitPresentationVisualVolume 查询单位视觉范围
+
 // 锁链捆缚：锚点限制在绑定单位 sprite 可视范围内 + Bezier 链段
 [RequireComponent(typeof(MapSceneEffectCtrl))]
 public class ChainBindEffectCtrl : MonoBehaviour
@@ -15,9 +17,11 @@ public class ChainBindEffectCtrl : MonoBehaviour
 
     struct ChainLayoutRegion
     {
-        public Vector2 Center;
-        public Vector2 HalfExtents;
+        public FacingLocalVolume Volume;
         public float MaxBulge;
+
+        public Vector2 Center => Volume.Center;
+        public Vector2 HalfExtents => Volume.HalfExtents;
     }
 
     // 规范化锚点（local，+Y 为角色 forward）；运行时映射到 sprite 半宽/半高
@@ -47,8 +51,8 @@ public class ChainBindEffectCtrl : MonoBehaviour
     [SerializeField] int chainCount = 4;
     [SerializeField] int pointCount = 14;
     [SerializeField] float bindRadius = 0.5f;
-    [SerializeField][Range(0.5f, 1f)] float boundsInset = 0.88f;
     [SerializeField] float chainBulge = 0.24f;
+    [SerializeField][Range(0.3f, 1.2f)] float chainBulgeMul = 1f;
     [SerializeField] float lineWidth = 0.08f;
     [SerializeField] int sortingOrder = 7;
     [SerializeField] string sortingLayerName = "Normal";
@@ -221,115 +225,151 @@ public class ChainBindEffectCtrl : MonoBehaviour
     {
         if (_isEditorPreview)
         {
-            _layoutRegion = BuildFallbackRegion(previewHalfExtents, Vector2.zero, boundsInset, 1f);
+            _layoutRegion = BuildFallbackRegion(previewHalfExtents, Vector2.zero, chainBulgeMul);
             return;
         }
 
-        if (presenter == null)
+        float facingAngleDeg = ResolveFacingAngleDeg(presenter);
+
+        if (presenter != null)
         {
-            var half = Vector2.one * bindRadius;
-            _layoutRegion = BuildFallbackRegion(half, Vector2.zero, boundsInset, 1f);
-            return;
+            var volumeComp = presenter.GetComponent<UnitPresentationVisualVolume>();
+            if (volumeComp != null && volumeComp.TryGetVolume(facingAngleDeg, out var vol))
+            {
+                _layoutRegion = BuildRegionFromVolume(vol, chainBulgeMul);
+                return;
+            }
+
+            if (UnitPresentationVisualVolume.TryComputeSpriteAutoAabb(
+                    presenter,
+                    presenter.transform.position,
+                    facingAngleDeg,
+                    0.88f,
+                    Vector2.one,
+                    Vector2.zero,
+                    out vol))
+            {
+                _layoutRegion = BuildRegionFromVolume(vol, chainBulgeMul);
+                return;
+            }
         }
 
-        var overrideComp = presenter.GetComponent<ChainBindLayoutOverride>();
-        float insetMul = overrideComp != null ? overrideComp.insetMul : 1f;
-        Vector2 halfScale = overrideComp != null ? overrideComp.halfExtentScale : Vector2.one;
-        Vector2 centerOffset = overrideComp != null ? overrideComp.centerOffsetLocal : Vector2.zero;
-        float bulgeMul = overrideComp != null ? overrideComp.bulgeMul : 1f;
-
-        if (!TryComputeSpriteRegion(presenter, boundsInset * insetMul, halfScale, centerOffset, bulgeMul, out _layoutRegion))
-        {
-            var half = Vector2.one * bindRadius;
-            _layoutRegion = BuildFallbackRegion(half, centerOffset, 1f, bulgeMul);
-        }
+        var half = Vector2.one * bindRadius;
+        _layoutRegion = BuildFallbackRegion(half, Vector2.zero, chainBulgeMul);
     }
 
-    static ChainLayoutRegion BuildFallbackRegion(Vector2 halfExtents, Vector2 center, float inset, float bulgeMul)
+    static float ResolveFacingAngleDeg(SceneUnitPresenter presenter)
     {
-        halfExtents *= inset;
-        float maxBulge = Mathf.Min(halfExtents.x, halfExtents.y) * 0.35f * bulgeMul;
+        if (presenter?.UnitEntity == null)
+        {
+            return 0f;
+        }
+
+        var look = presenter.UnitEntity.CurrentLook;
+        if (look.sqrMagnitude < 1e-4f)
+        {
+            return 0f;
+        }
+
+        return Mathf.Atan2(look.y, look.x) * Mathf.Rad2Deg;
+    }
+
+    static ChainLayoutRegion BuildRegionFromVolume(in FacingLocalVolume vol, float bulgeMul)
+    {
+        float maxBulge = Mathf.Min(vol.HalfExtents.x, vol.HalfExtents.y) * 0.35f * bulgeMul;
         return new ChainLayoutRegion
         {
-            Center = center,
-            HalfExtents = halfExtents,
+            Volume = vol,
             MaxBulge = maxBulge,
         };
     }
 
-    bool TryComputeSpriteRegion(
-        SceneUnitPresenter presenter,
-        float inset,
-        Vector2 halfScale,
-        Vector2 centerOffset,
-        float bulgeMul,
-        out ChainLayoutRegion region)
+    static ChainLayoutRegion BuildFallbackRegion(Vector2 halfExtents, Vector2 center, float bulgeMul)
     {
-        region = default;
-        var root = presenter.AgentView != null ? presenter.AgentView : presenter.transform;
-        var renderers = root.GetComponentsInChildren<SpriteRenderer>(true);
-
-        bool hasBounds = false;
-        Bounds worldBounds = default;
-        for (int i = 0; i < renderers.Length; i++)
+        var vol = new FacingLocalVolume
         {
-            var sr = renderers[i];
-            if (sr == null || !sr.enabled || sr.sprite == null)
-            {
-                continue;
-            }
+            Mode = EVisualVolumeMode.AutoAabb,
+            Center = center,
+            HalfExtents = halfExtents,
+            Hull = null,
+        };
+        return BuildRegionFromVolume(vol, bulgeMul);
+    }
 
-            if (!hasBounds)
-            {
-                worldBounds = sr.bounds;
-                hasBounds = true;
-            }
-            else
-            {
-                worldBounds.Encapsulate(sr.bounds);
-            }
-        }
+#if UNITY_EDITOR
+    Transform _editorPreviewAnchor;
 
-        if (!hasBounds)
+    bool NeedsExternalEditorPreviewParent()
+    {
+        if (Application.isPlaying)
         {
             return false;
         }
 
-        Vector3 c = worldBounds.center;
-        Vector3 e = worldBounds.extents;
-        float minX = float.PositiveInfinity;
-        float maxX = float.NegativeInfinity;
-        float minY = float.PositiveInfinity;
-        float maxY = float.NegativeInfinity;
-
-        for (int sx = -1; sx <= 1; sx += 2)
+        if (UnityEditor.PrefabUtility.IsPartOfPrefabAsset(gameObject))
         {
-            for (int sy = -1; sy <= 1; sy += 2)
-            {
-                Vector3 corner = c + new Vector3(e.x * sx, e.y * sy, 0f);
-                Vector3 local = transform.InverseTransformPoint(corner);
-                minX = Mathf.Min(minX, local.x);
-                maxX = Mathf.Max(maxX, local.x);
-                minY = Mathf.Min(minY, local.y);
-                maxY = Mathf.Max(maxY, local.y);
-            }
+            return true;
         }
 
-        var center = new Vector2((minX + maxX) * 0.5f, (minY + maxY) * 0.5f) + centerOffset;
-        var half = new Vector2((maxX - minX) * 0.5f, (maxY - minY) * 0.5f);
-        half.x *= halfScale.x * inset;
-        half.y *= halfScale.y * inset;
-
-        region = new ChainLayoutRegion
-        {
-            Center = center,
-            HalfExtents = half,
-            MaxBulge = Mathf.Min(half.x, half.y) * 0.35f * bulgeMul,
-        };
-        return true;
+        var stage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        return stage != null && stage.IsPartOfPrefabContents(gameObject);
     }
 
-#if UNITY_EDITOR
+    void EnsureEditorPreviewAnchor()
+    {
+        if (_editorPreviewAnchor != null)
+        {
+            return;
+        }
+
+        var go = UnityEditor.EditorUtility.CreateGameObjectWithHideFlags(
+            $"__ChainBindPreview_{GetInstanceID()}",
+            HideFlags.HideAndDontSave);
+        _editorPreviewAnchor = go.transform;
+    }
+
+    void SyncEditorPreviewAnchorTransform()
+    {
+        if (_editorPreviewAnchor == null)
+        {
+            return;
+        }
+
+        _editorPreviewAnchor.SetPositionAndRotation(transform.position, transform.rotation);
+        _editorPreviewAnchor.localScale = transform.lossyScale;
+    }
+
+    void DestroyEditorPreviewAnchor()
+    {
+        if (_editorPreviewAnchor == null)
+        {
+            return;
+        }
+
+        Object.DestroyImmediate(_editorPreviewAnchor.gameObject);
+        _editorPreviewAnchor = null;
+    }
+
+    Transform ResolveLineParent()
+    {
+        if (NeedsExternalEditorPreviewParent())
+        {
+            EnsureEditorPreviewAnchor();
+            SyncEditorPreviewAnchorTransform();
+            return _editorPreviewAnchor;
+        }
+
+        return transform;
+    }
+
+    void OnDestroy()
+    {
+        if (!Application.isPlaying)
+        {
+            DestroyEditorPreviewAnchor();
+        }
+    }
+
     void OnValidate()
     {
         if (Application.isPlaying)
@@ -389,6 +429,11 @@ public class ChainBindEffectCtrl : MonoBehaviour
             return;
         }
 
+        if (_editorPreviewAnchor != null)
+        {
+            SyncEditorPreviewAnchorTransform();
+        }
+
         Gizmos.color = new Color(0.3f, 0.8f, 1f, 0.35f);
         DrawRegionGizmo(_layoutRegion, _radiusScale);
 
@@ -404,13 +449,56 @@ public class ChainBindEffectCtrl : MonoBehaviour
             var world = transform.TransformPoint(new Vector3(scaled.x, scaled.y, 0f));
             Gizmos.DrawSphere(world, 0.02f);
         }
+
+        DrawPreviewChainGizmos();
+    }
+
+    void DrawPreviewChainGizmos()
+    {
+        if (_basePoints.Count == 0)
+        {
+            return;
+        }
+
+        Gizmos.color = new Color(0.72f, 0.68f, 0.62f, 0.95f);
+        for (int i = 0; i < _basePoints.Count; i++)
+        {
+            var pts = _basePoints[i];
+            if (pts == null || pts.Length < 2)
+            {
+                continue;
+            }
+
+            for (int p = 1; p < pts.Length; p++)
+            {
+                var a = ScalePoint(pts[p - 1], _radiusScale);
+                var b = ScalePoint(pts[p], _radiusScale);
+                Gizmos.DrawLine(
+                    transform.TransformPoint(new Vector3(a.x, a.y, 0f)),
+                    transform.TransformPoint(new Vector3(b.x, b.y, 0f)));
+            }
+        }
     }
 
     void DrawRegionGizmo(ChainLayoutRegion region, float scale)
     {
-        Vector3 ToWorld(Vector2 local) {
+        Vector3 ToWorld(Vector2 local)
+        {
             var s = ScalePoint(local, scale);
             return transform.TransformPoint(new Vector3(s.x, s.y, 0f));
+        }
+
+        if (region.Volume.Mode == EVisualVolumeMode.ManualConvexHull
+            && region.Volume.Hull != null
+            && region.Volume.Hull.Length >= VisualVolumeConvexMath.MinHullPoints)
+        {
+            for (int i = 0; i < region.Volume.Hull.Length; i++)
+            {
+                int next = (i + 1) % region.Volume.Hull.Length;
+                Gizmos.DrawLine(ToWorld(region.Volume.Hull[i]), ToWorld(region.Volume.Hull[next]));
+            }
+
+            return;
         }
 
         Vector3 bl = ToWorld(region.Center + new Vector2(-region.HalfExtents.x, -region.HalfExtents.y));
@@ -510,10 +598,7 @@ public class ChainBindEffectCtrl : MonoBehaviour
 
     Vector2 ClampToRegion(Vector2 point)
     {
-        var d = point - _layoutRegion.Center;
-        d.x = Mathf.Clamp(d.x, -_layoutRegion.HalfExtents.x, _layoutRegion.HalfExtents.x);
-        d.y = Mathf.Clamp(d.y, -_layoutRegion.HalfExtents.y, _layoutRegion.HalfExtents.y);
-        return _layoutRegion.Center + d;
+        return UnitPresentationVisualVolume.ClampFacingLocal(point, _layoutRegion.Volume);
     }
 
     Vector2[] BuildAnchorChainPoints(int segments, Vector2 anchorA, Vector2 anchorB, float bulge, System.Random rng)
@@ -622,13 +707,15 @@ public class ChainBindEffectCtrl : MonoBehaviour
     LineRenderer CreateLineRenderer(int index, float arcLength)
     {
         var go = new GameObject($"chain_{index}");
-        go.transform.SetParent(transform, false);
+        Transform parent = transform;
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
+            parent = ResolveLineParent();
             go.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
         }
 #endif
+        go.transform.SetParent(parent, false);
 
         var lr = go.AddComponent<LineRenderer>();
         lr.useWorldSpace = false;
@@ -761,5 +848,11 @@ public class ChainBindEffectCtrl : MonoBehaviour
         _lines.Clear();
         _basePoints.Clear();
         _segments.Clear();
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            DestroyEditorPreviewAnchor();
+        }
+#endif
     }
 }

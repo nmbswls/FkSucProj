@@ -419,6 +419,7 @@ GameObject:
   - component: {fileID: 6462304013100160239}
   - component: {fileID: -5488420210160331190}
   - component: {fileID: 3593087959906674923}
+  - component: {fileID: 8812345678901234567}
   m_Layer: 20
   m_Name: slime_red
   m_TagString: Untagged
@@ -530,6 +531,23 @@ MonoBehaviour:
   MainFlasher: {fileID: 0}
   SpecialAnimClips: []
   highlightCtrl: {fileID: 0}
+--- !u!114 &8812345678901234567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716341979371502919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c3d9e1f2a4b5c6d8e9f0a1b2c3d4e5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 0
+  boundsInset: 0.88
+  halfExtentScale: {x: 1, y: 1}
+  centerOffsetLocal: {x: 0, y: 0}
+  hullPointsLocal: []
 --- !u!114 &-5488420210160331190
 MonoBehaviour:
   m_ObjectHideFlags: 0

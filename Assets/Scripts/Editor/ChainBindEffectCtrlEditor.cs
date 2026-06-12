@@ -25,20 +25,29 @@ public class ChainBindEffectCtrlEditor : UnityEditor.Editor
             return;
         }
 
+        if (PrefabUtility.IsPartOfPrefabAsset(ctrl.gameObject))
+        {
+            EditorGUILayout.HelpBox(
+                "Prefab Asset preview uses a temporary scene overlay. Chain lines are not saved into the prefab.",
+                MessageType.Info);
+        }
+
         using (new EditorGUILayout.HorizontalScope())
         {
             if (GUILayout.Button("Refresh Preview"))
             {
-                Undo.RegisterFullObjectHierarchyUndo(ctrl.gameObject, "Refresh Chain Preview");
+                Undo.RecordObject(ctrl, "Refresh Chain Preview");
                 ctrl.RebuildEditorPreview();
                 EditorUtility.SetDirty(ctrl);
+                SceneView.RepaintAll();
             }
 
             if (GUILayout.Button("Clear Preview"))
             {
-                Undo.RegisterFullObjectHierarchyUndo(ctrl.gameObject, "Clear Chain Preview");
+                Undo.RecordObject(ctrl, "Clear Chain Preview");
                 ctrl.ClearEditorPreview();
                 EditorUtility.SetDirty(ctrl);
+                SceneView.RepaintAll();
             }
 
             if (GUILayout.Button("Randomize Seed"))

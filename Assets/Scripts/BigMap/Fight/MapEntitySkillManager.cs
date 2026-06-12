@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Config;
 using cfg.demo;
+using My.Map;
 using My.UI;
 using Newtonsoft.Json;
 using UnityEditor.Experimental.GraphView;
@@ -18,6 +19,21 @@ using static UnityEngine.Rendering.VolumeComponent;
 
 namespace My.Map.Entity
 {
+    public readonly struct AbilityHoldViewState
+    {
+        public readonly bool IsActive;
+        public readonly bool IsKeyHeld;
+        public readonly float Progress01;
+        public readonly string SkillId;
+
+        public AbilityHoldViewState(bool isActive, bool isKeyHeld, float progress01, string skillId)
+        {
+            IsActive = isActive;
+            IsKeyHeld = isKeyHeld;
+            Progress01 = progress01;
+            SkillId = skillId;
+        }
+    }
 
     //public class InputBuffer
     //{
@@ -1112,6 +1128,15 @@ namespace My.Map.Entity
                 }
             }
 
+            if (skillId == "player_return_disguise" || skillId == "fix_clothes")
+            {
+                if (OwnerEntity is PlayerLogicEntity player
+                    && !player.CanStartReturnDisguiseSkill())
+                {
+                    return false;
+                }
+            }
+
             var overrideParams = MergeCastOverrides(
                 skillRuntime.RuntimeAbilityExtraVariables ?? SkillLibrary.CloneAbilityExtraMap(skillRuntime.cacheConfig),
                 castOverrides);
@@ -1330,6 +1355,51 @@ namespace My.Map.Entity
             {
                 Executor.CurrentCtx.LastPhaseHoldTime = 0;
             }
+        }
+
+        // UI 只读：当前 HoldingPhase 蓄力视图状态
+        public bool TryGetActiveHoldViewState(out AbilityHoldViewState state)
+        {
+            state = default;
+            if (Executor == null || !Executor.IsRunning || CurrentSkillId == null)
+            {
+                return false;
+            }
+
+            var phase = Executor.GetCurrentPhase();
+            var ctx = Executor.CurrentCtx;
+            if (phase == null || ctx == null)
+            {
+                return false;
+            }
+
+            if (phase.HoldingPhase)
+            {
+                float denom = phase.ProgressEffectNormalizeDuration > 0f
+                    ? phase.ProgressEffectNormalizeDuration
+                    : Mathf.Max(ctx.PhaseDuration, 1e-4f);
+                float progress01 = Mathf.Clamp01(ctx.PhaseElapsed / denom);
+
+                state = new AbilityHoldViewState(
+                    isActive: true,
+                    isKeyHeld: ctx.LastPhaseHoldTime > 0f,
+                    progress01: progress01,
+                    skillId: CurrentSkillId);
+                return true;
+            }
+
+            if (phase.WithProgress)
+            {
+                float progress01 = Mathf.Clamp01(ctx.PhaseElapsed / Mathf.Max(ctx.PhaseDuration, 1e-4f));
+                state = new AbilityHoldViewState(
+                    isActive: true,
+                    isKeyHeld: false,
+                    progress01: progress01,
+                    skillId: CurrentSkillId);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

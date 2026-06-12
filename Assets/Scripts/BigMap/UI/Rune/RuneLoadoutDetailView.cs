@@ -41,11 +41,7 @@ namespace My.UI.Rune
         [SerializeField] GameObject lockOverlay;
 
         [SerializeField] TextMeshProUGUI titleText;
-
-        [SerializeField] TextMeshProUGUI placeholderBodyText;
-
         [SerializeField] TextMeshProUGUI runeDescText;
-
 
 
         [SerializeField] GameObject layoutHostRoot;
@@ -532,7 +528,14 @@ namespace My.UI.Rune
 
             SetLockOverlayVisible(locked);
 
-
+            if(locked)
+            {
+                lockOverlay.gameObject.SetActive(false);
+            }
+            else
+            {
+                lockOverlay.gameObject.SetActive(true);
+            }
 
             if (locked)
 
@@ -596,16 +599,6 @@ namespace My.UI.Rune
 
 
 
-            if (placeholderBodyText != null)
-
-            {
-
-                placeholderBodyText.gameObject.SetActive(false);
-
-            }
-
-
-
             ShowLayoutForRune(runeId);
 
             RefreshSelectedUpgradeDetail();
@@ -645,17 +638,6 @@ namespace My.UI.Rune
             }
 
 
-
-            if (placeholderBodyText != null)
-
-            {
-
-                placeholderBodyText.gameObject.SetActive(false);
-
-                placeholderBodyText.text = string.Empty;
-
-            }
-
         }
 
 
@@ -681,40 +663,6 @@ namespace My.UI.Rune
                 lockOverlay.SetActive(visible);
 
             }
-
-        }
-
-
-
-        void ShowPlaceholder(string message)
-
-        {
-
-            if (runeDescText != null)
-
-            {
-
-                runeDescText.text = string.Empty;
-
-            }
-
-
-
-            if (placeholderBodyText != null)
-
-            {
-
-                placeholderBodyText.gameObject.SetActive(true);
-
-                placeholderBodyText.text = message ?? string.Empty;
-
-            }
-
-
-
-            HideLayout();
-
-            ClearUpgradeDetail();
 
         }
 

@@ -276,6 +276,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreatePlayerReturnDisguiseAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDefaultDashSlash();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -2196,7 +2201,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
-                ProgressSceneEffect = "Skill/player_shield",
+                ProgressSceneEffect = "Skill/enter_expose_xuli",
                 ProgressEffectNormalizeDuration = 1.5f,
                 DurationValue = new()
                 {
@@ -2230,6 +2235,38 @@ namespace My.Map.Entity
             };
             chargePhase.Events.Add(new PhaseEffectEvent() { Effect = chargeEndEffect, Kind = PhaseEventKind.OnExit });
             spec.Phases.Add(chargePhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreatePlayerReturnDisguiseAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "player_return_disguise";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.NoTarget;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                InterruptMask = EAbilityInterruptMask.Hit,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "5"
+                },
+            };
+
+            var effect = new MapFightEffectFixExposeCfg()
+            {
+                RestoreValue = 80000,
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
+
+            spec.Phases.Add(mainPhase);
             return spec;
         }
 

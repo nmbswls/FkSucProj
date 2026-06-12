@@ -1,6 +1,8 @@
+using cfg.demo;
+using DG.Tweening;
+using My.Map;
 using My.Map.Entity;
 using UnityEngine;
-using UnityEngine.UI;
 using static My.GameLogicManager;
 
 namespace My.UI
@@ -14,24 +16,6 @@ namespace My.UI
                 PlayerHpText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP) * 0.001f)).ToString();
 
                 PleasureBar.fillAmount = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f / 100;
-
-                if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsRetreating)
-                {
-                    float pastTime = LogicTime.time - MainGameManager.Instance.gameLogicManager.playerLogicEntity.RetreatingStartTime;
-                    float maxTime = PlayerLogicEntity.RetreatDuration;
-
-                    float rate = pastTime / maxTime;
-                    rate = Mathf.Clamp(rate, 0f, 1f);
-
-                    RetreatHintBar.fillAmount = rate;
-                    RetreatHintText.text = ((int)(rate * 100) * 0.01f).ToString();
-
-                    RetreatHint.gameObject.SetActive(true);
-                }
-                else
-                {
-                    RetreatHint.gameObject.SetActive(false);
-                }
 
                 var jingyuVal = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerJingYu);
                 int layer = (int)(jingyuVal / 1000);
@@ -64,6 +48,8 @@ namespace My.UI
             }
 
             AlertHintIndicator?.RefreshView();
+            RetreatHintIndicator?.RefreshView();
+            ExposeSkillIndicator?.RefreshView();
 
             CheckDisguiseState();
 

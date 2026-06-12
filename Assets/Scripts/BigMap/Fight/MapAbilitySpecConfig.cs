@@ -127,7 +127,7 @@ namespace My.Map.Entity
         public bool ShowRangePreview = false;
         public MapPreviewIntent PreviewIntent = new();
 
-        // 进度驱动身上光效：Resources/SceneEffect/{name}，prefab 需 MapSceneEffectCtrl（持 progress）+ SceneEffectProgressPresentation（订阅 progress）
+        // 进度驱动身上光效：Resources/SceneEffect/{name}，prefab 需 MapSceneEffectCtrl + 按需挂载 SceneEffectProgress* 驱动组件
         public string ProgressSceneEffect;
         // 进度归一化满档时间；<=0 时用 PhaseDuration（Holding 长阶段请单独配置，如 3）
         public float ProgressEffectNormalizeDuration;

@@ -89,6 +89,7 @@ namespace My.Player
             "player_mortar_acquire_01",
             "player_enter_queen",
             "player_enter_expose",
+            "player_return_disguise",
             "player_quit_queen",
             "queen_dash_down",
             "h_mode_execute",

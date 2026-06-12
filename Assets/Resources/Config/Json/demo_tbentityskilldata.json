@@ -1285,5 +1285,26 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "player_return_disguise",
+    "main_ability_id": "player_return_disguise",
+    "desc": "引导返回伪装",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "cool_down": 2,
+    "stack_count": 1,
+    "icon_path": "fix_clothes",
+    "priority": 1,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

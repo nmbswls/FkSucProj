@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using cfg.demo;
 using DG.Tweening;
 using My.Map;
+using My.Map.Entity;
+using My.Quest;
 using UnityEngine;
 using UnityEngine.UI;
 using static My.GameLogicManager;

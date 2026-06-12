@@ -1950,7 +1950,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            playerEntity.ExitExposeState(realCfg.RestoreValue);
+            playerEntity.TryExitExposeFromSkill(realCfg.RestoreValue);
         }
     }
 

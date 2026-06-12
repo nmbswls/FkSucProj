@@ -396,20 +396,20 @@ public class ConsoleGM : MonoBehaviour
                 long targetId = player.Id;
                 float bestDist = float.MaxValue;
 
-                foreach (var entity in player.FindEntityInRange(player.Pos, 8f))
-                {
-                    if (entity.Id == player.Id || entity is not My.Map.BaseUnitLogicEntity)
-                    {
-                        continue;
-                    }
+                //foreach (var entity in player.FindEntityInRange(player.Pos, 8f))
+                //{
+                //    if (entity.Id == player.Id || entity is not My.Map.BaseUnitLogicEntity)
+                //    {
+                //        continue;
+                //    }
 
-                    float dist = (entity.Pos - player.Pos).sqrMagnitude;
-                    if (dist < bestDist)
-                    {
-                        bestDist = dist;
-                        targetId = entity.Id;
-                    }
-                }
+                //    float dist = (entity.Pos - player.Pos).sqrMagnitude;
+                //    if (dist < bestDist)
+                //    {
+                //        bestDist = dist;
+                //        targetId = entity.Id;
+                //    }
+                //}
 
                 glm.globalBuffManager.RequestAddBuff(targetId, "chain_bind", overrideDuration: dur);
                 Log($"chain_bind applied to entity {targetId}, duration={dur}s");
