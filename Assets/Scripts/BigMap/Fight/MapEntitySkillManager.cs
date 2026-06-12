@@ -1081,6 +1081,10 @@ namespace My.Map.Entity
                 return false;
             }
 
+            if (!SkillCastConditionUtil.CheckAll(OwnerEntity, skillRuntime.cacheConfig.CastConditions))
+            {
+                return false;
+            }
 
             // 不能放技能 
             if (!OwnerEntity.CanActiveUseSkill())
@@ -1130,15 +1134,6 @@ namespace My.Map.Entity
             {
                 realAbilityId = skillRuntime.cacheConfig.MainAbilityId;
                 if (!IsSkillReady(skillId))
-                {
-                    return false;
-                }
-            }
-
-            if (skillId == "player_return_disguise" || skillId == "fix_clothes")
-            {
-                if (OwnerEntity is PlayerLogicEntity player
-                    && !player.CanStartReturnDisguiseSkill())
                 {
                     return false;
                 }
@@ -1503,6 +1498,11 @@ namespace My.Map.Entity
                 {
                     return false;
                 }
+            }
+
+            if (!SkillCastConditionUtil.CheckAll(OwnerEntity, skillRuntime.cacheConfig.CastConditions))
+            {
+                return false;
             }
 
             return true;

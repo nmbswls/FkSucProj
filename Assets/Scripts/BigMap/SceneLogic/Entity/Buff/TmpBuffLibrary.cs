@@ -13,6 +13,26 @@ namespace My.Map.Entity
             {
                 _library = new();
 
+                _library["talent_expose_extra_charm"] = new BuffDefinition()
+                {
+                    BuffId = "talent_expose_extra_charm",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    MaxStackLayer = 1,
+                    ModifierAttrs = new()
+                    {
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.RelativeExposeLevel,
+                        ParamStr1 = AttrIdConsts.PlayerCharm_Static,
+                        ParamFloat1 = 1f,
+                        ParamFloat2 = 0.2f,
+                    },
+                    DefaultDuration = 3f,
+                    Icon = "fallback",
+                    HeadHintPriority = 80,
+                };
+
                 _library["b_lamp_extra_vision"] = new BuffDefinition()
                 {
                     BuffId = "b_lamp_extra_vision",

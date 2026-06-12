@@ -17,6 +17,8 @@ namespace cfg.demo
         HMode = 1,
         QueenMode = 2,
         NoQueenMode = 3,
+        NotInBattle = 4,
+        InBattle = 5,
     }
 
 } 

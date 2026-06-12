@@ -163,18 +163,19 @@ namespace My.UI
                 {
                     return false;
                 }
-
-                if (player.IsExposed)
-                {
-                    if (!player.CanStartReturnDisguiseSkill())
-                    {
-                        return false;
-                    }
-                }
             }
 
             var skillId = GetSkillIdByKey(keyName);
             if (string.IsNullOrEmpty(skillId))
+            {
+                return false;
+            }
+
+            var caster = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            var skillConf = SkillLibrary.GetSkillConfig(skillId);
+            if (caster != null
+                && skillConf != null
+                && !SkillCastConditionUtil.CheckSkill(caster, skillConf))
             {
                 return false;
             }

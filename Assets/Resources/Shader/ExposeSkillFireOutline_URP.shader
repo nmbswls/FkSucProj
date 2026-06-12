@@ -2,7 +2,12 @@ Shader "UI/ExposeSkillFireOutline_URP"
 {
 Properties
 {
-    _MainTex ("Mask (A=Shape)", 2D) = "white" {}
+    [KeywordEnum(Circle, Square)] _ShapeType ("Shape", Float) = 1
+    _ShapeHalfWidth ("Shape Half Width (0-0.5 UV)", Range(0.01, 0.5)) = 0.46
+    _ShapeHalfHeight ("Shape Half Height (0-0.5 UV)", Range(0.01, 0.5)) = 0.46
+    _CornerRadius ("Square Corner Radius (UV)", Range(0, 0.2)) = 0.06
+    _RectWidthPx ("Rect Width (px)", Float) = 52
+    _RectHeightPx ("Rect Height (px)", Float) = 52
     _Color ("Tint", Color) = (1,1,1,1)
     [HDR] _OutlineColor ("Outline Color", Color) = (2.5, 1.1, 0.15, 1)
     [HDR] _FlowHighlightColor ("Flow Highlight", Color) = (4, 2.2, 0.4, 1)
@@ -33,6 +38,7 @@ SubShader
         HLSLPROGRAM
         #pragma vertex vert
         #pragma fragment frag
+        #pragma shader_feature_local _SHAPETYPE_CIRCLE _SHAPETYPE_SQUARE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
         struct Attributes
@@ -49,14 +55,15 @@ SubShader
             float4 color       : COLOR;
         };
 
-        TEXTURE2D(_MainTex);
-        SAMPLER(sampler_MainTex);
-        float4 _MainTex_ST;
-        float4 _MainTex_TexelSize;
         float4 _Color;
         float4 _OutlineColor;
         float4 _FlowHighlightColor;
         float4 _InnerGlowColor;
+        float  _ShapeHalfWidth;
+        float  _ShapeHalfHeight;
+        float  _CornerRadius;
+        float  _RectWidthPx;
+        float  _RectHeightPx;
         float  _OutlineWidth;
         float  _Softness;
         float  _InnerGlowStrength;
@@ -75,14 +82,9 @@ SubShader
         {
             Varyings o;
             o.positionHCS = TransformObjectToHClip(v.positionOS);
-            o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+            o.uv = v.uv;
             o.color = v.color * _Color;
             return o;
-        }
-
-        float sampleAlpha(float2 uv)
-        {
-            return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv).a;
         }
 
         float hash21(float2 p)
@@ -118,6 +120,50 @@ SubShader
             return v;
         }
 
+        float2 aspectUv(float2 uv)
+        {
+            float aspect = _RectWidthPx / max(_RectHeightPx, 1.0);
+            float2 p = uv - 0.5;
+            p.x *= aspect;
+            return p;
+        }
+
+        float2 uvTexel()
+        {
+            return float2(
+                1.0 / max(_RectWidthPx, 1.0),
+                1.0 / max(_RectHeightPx, 1.0));
+        }
+
+        float sdRoundedBox(float2 p, float2 halfSize, float radius)
+        {
+            float2 q = abs(p) - halfSize + radius;
+            return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - radius;
+        }
+
+        float shapeFillAlpha(float2 uv)
+        {
+            float2 p = aspectUv(uv);
+            float aa = max(uvTexel().x, uvTexel().y) * 1.5;
+
+            #if defined(_SHAPETYPE_CIRCLE)
+                float2 halfSize = float2(_ShapeHalfWidth, _ShapeHalfHeight);
+                float radius = min(halfSize.x, halfSize.y);
+                float d = length(p) - radius;
+                return 1.0 - smoothstep(-aa, aa, d);
+            #else
+                float2 halfSize = float2(_ShapeHalfWidth, _ShapeHalfHeight);
+                float radius = clamp(_CornerRadius, 0.0, min(halfSize.x, halfSize.y) - aa);
+                float d = sdRoundedBox(p, halfSize, radius);
+                return 1.0 - smoothstep(-aa, aa, d);
+            #endif
+        }
+
+        float sampleAlpha(float2 uv)
+        {
+            return shapeFillAlpha(uv);
+        }
+
         float edgeStrength(float2 uv, float2 texel, float px)
         {
             float2 d = texel * px;
@@ -137,7 +183,7 @@ SubShader
 
         float4 frag (Varyings i) : SV_Target
         {
-            float2 texel = _MainTex_TexelSize.xy;
+            float2 texel = uvTexel();
             float w = max(0.0, _OutlineWidth);
             float s = max(0.0, _Softness);
             float holdBoost = lerp(0.85, 1.35, saturate(_HoldProgress));
@@ -158,7 +204,7 @@ SubShader
                 edge = saturate(edge + 0.35 * max(0.0, edgeSoft - edge));
             }
 
-            float2 centered = i.uv - 0.5;
+            float2 centered = aspectUv(i.uv);
             float polar = atan2(centered.y, centered.x);
             float flowPhase = polar * _FlowSwirl + time * _FlowSpeed + _FlowOffset;
             float flowWave = pow(saturate(sin(flowPhase) * 0.5 + 0.5), _FlowSharpness);

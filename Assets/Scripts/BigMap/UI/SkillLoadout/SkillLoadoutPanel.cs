@@ -76,6 +76,11 @@ namespace My.UI.SkillLoadout
             {
                 RefreshAll();
             }
+
+            if(skillCellTemplate != null)
+            {
+                skillCellTemplate.gameObject.SetActive(false);
+            }
         }
 
         public override void Show()

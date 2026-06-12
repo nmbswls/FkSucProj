@@ -106,7 +106,15 @@
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
     "ability_extra": [],
-    "cast_conditions": []
+    "cast_conditions": [
+      {
+        "type": 4,
+        "param1": 0,
+        "param2": 0,
+        "param3": "",
+        "param4": ""
+      }
+    ]
   },
   {
     "skill_id": "queen_dash",
@@ -1278,7 +1286,7 @@
     "is_derived": false,
     "cool_down": 2,
     "stack_count": 1,
-    "icon_path": "icon_01",
+    "icon_path": "player_enter_expose",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
@@ -1289,7 +1297,7 @@
   {
     "skill_id": "player_return_disguise",
     "main_ability_id": "player_return_disguise",
-    "desc": "引导返回伪装",
+    "desc": "蓄力退出暴露",
     "is_passive": false,
     "passive_buff_ids": [],
     "passive_buff_level_variable_key": "",
@@ -1299,12 +1307,20 @@
     "is_derived": false,
     "cool_down": 2,
     "stack_count": 1,
-    "icon_path": "fix_clothes",
+    "icon_path": "player_return_disguise",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
     "ability_extra": [],
-    "cast_conditions": []
+    "cast_conditions": [
+      {
+        "type": 4,
+        "param1": 0,
+        "param2": 0,
+        "param3": "",
+        "param4": ""
+      }
+    ]
   }
 ]

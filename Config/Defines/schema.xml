@@ -135,6 +135,8 @@
         <var name="HMode" value="1"/>
         <var name="QueenMode" value="2"/>
         <var name="NoQueenMode" value="3"/>
+		<var name="NotInBattle" value="4"/>
+		<var name="InBattle" value="5"/>
     </enum>
 
     <bean name="SkillAbilityExtraPair" tags="sep=,">

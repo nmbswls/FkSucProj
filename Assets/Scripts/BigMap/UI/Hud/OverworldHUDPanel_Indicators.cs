@@ -10,15 +10,32 @@ namespace My.UI
 {
     public class OverworldHudExposeSkillIndicator : MonoBehaviour
     {
+        public enum ExposeSkillGlowShape
+        {
+            Circle = 0,
+            Square = 1,
+        }
+
         const string EnterExposeSkillId = "player_enter_expose";
         const string ReturnDisguiseSkillId = "player_return_disguise";
         const float PressedScale = 0.94f;
 
         static readonly int HoldProgressId = Shader.PropertyToID("_HoldProgress");
+        static readonly int ShapeHalfWidthId = Shader.PropertyToID("_ShapeHalfWidth");
+        static readonly int ShapeHalfHeightId = Shader.PropertyToID("_ShapeHalfHeight");
+        static readonly int CornerRadiusId = Shader.PropertyToID("_CornerRadius");
+        static readonly int RectWidthPxId = Shader.PropertyToID("_RectWidthPx");
+        static readonly int RectHeightPxId = Shader.PropertyToID("_RectHeightPx");
+
+        [SerializeField] ExposeSkillGlowShape _pressedGlowShape = ExposeSkillGlowShape.Square;
+        [Tooltip("火光描边形状半宽/半高（像素），不填 icon 时生效")]
+        [SerializeField] Vector2 _pressedGlowSize = new Vector2(48f, 48f);
+        [SerializeField] float _pressedGlowCornerRadius = 0.06f;
 
         RectTransform _viewRoot;
+        RectTransform _iconRect;
         GameObject _pressedOverlay;
-        Image _pressedImage;
+        ExposeSkillFireOutlineGraphic _pressedGraphic;
         Image _iconImage;
         TextMeshProUGUI _skillNameText;
         Material _pressedMaterial;
@@ -40,6 +57,7 @@ namespace My.UI
                 var iconTr = viewTr.Find("icon");
                 if (iconTr != null)
                 {
+                    _iconRect = iconTr as RectTransform;
                     _iconImage = iconTr.GetComponent<Image>();
                 }
 
@@ -47,17 +65,19 @@ namespace My.UI
                 if (pressedTr != null)
                 {
                     _pressedOverlay = pressedTr.gameObject;
-                    _pressedImage = pressedTr.GetComponent<Image>();
-                    if (_pressedImage != null)
+                    _pressedGraphic = pressedTr.GetComponent<ExposeSkillFireOutlineGraphic>();
+                    if (_pressedGraphic != null)
                     {
-                        _pressedImage.raycastTarget = false;
-                        if (_pressedImage.material != null)
+                        _pressedGraphic.raycastTarget = false;
+                        if (_pressedGraphic.material != null)
                         {
-                            _pressedMaterial = _pressedImage.material;
+                            _pressedMaterial = _pressedGraphic.material;
                         }
                     }
                 }
             }
+
+            SyncGlowShapeMaterial();
 
             var skillNameTr = transform.Find("SkillName");
             if (skillNameTr != null)
@@ -156,15 +176,60 @@ namespace My.UI
                 _pressedOverlay.SetActive(active);
             }
 
-            if (active && _pressedMaterial != null)
+            if (_pressedMaterial != null)
             {
-                _pressedMaterial.SetFloat(HoldProgressId, Mathf.Clamp01(progress));
+                SyncGlowShapeMaterial();
+                if (active)
+                {
+                    _pressedMaterial.SetFloat(HoldProgressId, Mathf.Clamp01(progress));
+                }
             }
 
             if (_viewRoot != null)
             {
                 _viewRoot.localScale = active && usePressedScale ? Vector3.one * PressedScale : Vector3.one;
             }
+        }
+
+        void SyncGlowShapeMaterial()
+        {
+            if (_pressedMaterial == null || _pressedGraphic == null)
+            {
+                return;
+            }
+
+            var pressedRect = _pressedGraphic.rectTransform.rect;
+            float rectW = Mathf.Max(pressedRect.width, 1f);
+            float rectH = Mathf.Max(pressedRect.height, 1f);
+
+            Vector2 glowSize = _pressedGlowSize;
+            if (_iconRect != null)
+            {
+                var iconSize = _iconRect.rect.size;
+                if (iconSize.x > 0f && iconSize.y > 0f)
+                {
+                    glowSize = iconSize;
+                }
+            }
+
+            if (_pressedGlowShape == ExposeSkillGlowShape.Circle)
+            {
+                _pressedMaterial.EnableKeyword("_SHAPETYPE_CIRCLE");
+                _pressedMaterial.DisableKeyword("_SHAPETYPE_SQUARE");
+                float radius = Mathf.Min(glowSize.x, glowSize.y) * 0.5f;
+                glowSize = new Vector2(radius * 2f, radius * 2f);
+            }
+            else
+            {
+                _pressedMaterial.EnableKeyword("_SHAPETYPE_SQUARE");
+                _pressedMaterial.DisableKeyword("_SHAPETYPE_CIRCLE");
+            }
+
+            _pressedMaterial.SetFloat(ShapeHalfWidthId, Mathf.Clamp(glowSize.x * 0.5f / rectW, 0.01f, 0.5f));
+            _pressedMaterial.SetFloat(ShapeHalfHeightId, Mathf.Clamp(glowSize.y * 0.5f / rectH, 0.01f, 0.5f));
+            _pressedMaterial.SetFloat(CornerRadiusId, _pressedGlowCornerRadius);
+            _pressedMaterial.SetFloat(RectWidthPxId, rectW);
+            _pressedMaterial.SetFloat(RectHeightPxId, rectH);
         }
     }
 
