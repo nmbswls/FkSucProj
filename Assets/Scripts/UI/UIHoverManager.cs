@@ -48,6 +48,8 @@ namespace My.UI
         Item,
         Talent,
         BodyPartProgress,
+        RuneUpgrade,
+        SkillInSchool,
     }
 
 

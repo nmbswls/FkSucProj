@@ -32,7 +32,7 @@ namespace My.UI.Rune
 
         const string DetailBgResourceRoot = "Sprites/Rune/detail/";
 
-        const string LockedPlaceholder = "???";
+        const string LockedPlaceholder = "";
 
         const float SlideDuration = 0.22f;
 
@@ -1099,7 +1099,7 @@ namespace My.UI.Rune
 
                     bool isInitial = RuneUpgradeCatalog.IsInitialUpgrade(def);
 
-                    slotView.Bind(def.LayoutSlot, nodeView, isInitial, OnLayoutSlotClicked);
+                    slotView.Bind(def.LayoutSlot, nodeView, isInitial, _runeSystem, OnLayoutSlotClicked);
 
                     _slotViews[def.LayoutSlot] = slotView;
 

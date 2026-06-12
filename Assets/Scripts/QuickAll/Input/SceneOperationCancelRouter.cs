@@ -29,17 +29,16 @@ namespace My.Input
                 return true;
             }
 
-            var hunting = HuntingModeManager.Instance;
-            if (hunting != null && hunting.Active && hunting.HasPinnedTarget)
-            {
-                hunting.ClearPinnedTarget();
-                return true;
-            }
-
             var hud = OverworldHUDPanel.Instance;
             if (hud != null && hud.HudMode == OverworldHUDPanel.EHudMode.PreviewSkill)
             {
                 hud.CancelSkillCast();
+                return true;
+            }
+
+            var player = glm.playerLogicEntity;
+            if (player?.ablilityManager != null && player.ablilityManager.TryCancelActiveHoldBySceneCancel())
+            {
                 return true;
             }
 

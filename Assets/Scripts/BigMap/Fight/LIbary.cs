@@ -2198,11 +2198,12 @@ namespace My.Map.Entity
             {
                 PhaseName = "Charge",
                 HoldingPhase = true,
+                CancelableBySceneCancel = true,
                 LockMovement = true,
                 LockRotation = true,
                 ImmuneKnock = true,
                 ProgressSceneEffect = "Skill/enter_expose_xuli",
-                ProgressEffectNormalizeDuration = 1.5f,
+                ProgressEffectNormalizeDuration = 3f,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -2217,7 +2218,7 @@ namespace My.Map.Entity
                 {
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
-                        NeedTime = 1.5f,
+                        NeedTime = 3f,
                         StageEffects = new()
                         {
                             new MapFightEffectEnterExposeCfg(),

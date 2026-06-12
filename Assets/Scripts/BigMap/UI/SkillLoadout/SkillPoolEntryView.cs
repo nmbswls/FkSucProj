@@ -1,7 +1,6 @@
 using cfg.demo;
 using My.Map.Entity;
 using My.Player;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,28 +11,47 @@ namespace My.UI.SkillLoadout
     {
         static readonly Color LearnedBg = new Color(0.22f, 0.26f, 0.34f, 1f);
         static readonly Color UnlearnedBg = new Color(0.14f, 0.14f, 0.18f, 0.85f);
+        static readonly Color SelectedBg = new Color(0.32f, 0.42f, 0.55f, 1f);
 
-        public TMP_Text label;
         public Image icon;
         public Image background;
+        public Button btnLearn;
 
         string _skillId;
         int _entryId;
+        bool _isLearned;
+        bool _isSelected;
         bool _canDrag;
         bool _canLearn;
         ISkillDropBehavior _skillDropBehavior;
+        System.Action<int> _onSelected;
         System.Action<int> _onLearnClicked;
+
+        public int EntryId => _entryId;
+
+        void Awake()
+        {
+            if (btnLearn != null)
+            {
+                btnLearn.onClick.AddListener(OnLearnButtonClicked);
+            }
+        }
 
         public void Bind(
             SkillLearnEntry entry,
             bool isLearned,
+            bool isSelected,
             ISkillDropBehavior skillDropBehavior,
+            System.Action<int> onSelected,
             System.Action<int> onLearnClicked)
         {
             _skillId = entry?.SkillId;
             _entryId = entry?.EntryId ?? 0;
+            _isLearned = isLearned;
+            _isSelected = isSelected;
             _canDrag = isLearned && !string.IsNullOrEmpty(_skillId);
             _skillDropBehavior = skillDropBehavior;
+            _onSelected = onSelected;
             _onLearnClicked = onLearnClicked;
 
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
@@ -41,23 +59,6 @@ namespace My.UI.SkillLoadout
                         _entryId > 0 &&
                         mgr != null &&
                         mgr.CanLearnSkillFromEntry(_entryId, out _);
-
-            if (label != null)
-            {
-                string display = ResolveDisplayName(entry);
-                if (!isLearned)
-                {
-                    display += _canLearn ? "\n点击学习" : "\n(未学)";
-                }
-
-                label.text = display;
-                label.alpha = isLearned ? 1f : _canLearn ? 0.85f : 0.55f;
-            }
-
-            if (background != null)
-            {
-                background.color = isLearned ? LearnedBg : UnlearnedBg;
-            }
 
             if (icon != null)
             {
@@ -75,42 +76,78 @@ namespace My.UI.SkillLoadout
                     icon.enabled = false;
                 }
             }
+
+            RefreshSelectionVisual();
+            EnsureHoverProvider();
         }
 
-        static string ResolveDisplayName(SkillLearnEntry entry)
+        public void SetSelected(bool selected)
         {
-            if (entry == null)
-            {
-                return string.Empty;
-            }
+            _isSelected = selected;
+            RefreshSelectionVisual();
+        }
 
-            if (!string.IsNullOrEmpty(entry.DisplayName))
+        void RefreshSelectionVisual()
+        {
+            if (background != null)
             {
-                return entry.DisplayName;
-            }
-
-            if (!string.IsNullOrEmpty(entry.SkillId))
-            {
-                var cfg = SkillLibrary.GetSkillConfig(entry.SkillId);
-                if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
+                if (_isSelected && !_isLearned)
                 {
-                    return cfg.Desc;
+                    background.color = SelectedBg;
                 }
-
-                return entry.SkillId;
+                else
+                {
+                    background.color = _isLearned ? LearnedBg : UnlearnedBg;
+                }
             }
 
-            return string.Empty;
+            if (btnLearn != null)
+            {
+                bool showLearn = _isSelected && !_isLearned;
+                btnLearn.gameObject.SetActive(showLearn);
+                btnLearn.interactable = _canLearn;
+            }
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        void EnsureHoverProvider()
         {
-            if (eventData.button != PointerEventData.InputButton.Left || _canDrag || !_canLearn)
+            if (_entryId <= 0 || string.IsNullOrEmpty(_skillId))
+            {
+                return;
+            }
+
+            var hover = GetComponent<SkillInSchoolHoverProvider>();
+            if (hover == null)
+            {
+                hover = gameObject.AddComponent<SkillInSchoolHoverProvider>();
+            }
+
+            hover.Configure(_entryId, _skillId, _isLearned);
+
+            if (background != null)
+            {
+                background.raycastTarget = true;
+            }
+        }
+
+        void OnLearnButtonClicked()
+        {
+            if (_isLearned || !_isSelected || _entryId <= 0)
             {
                 return;
             }
 
             _onLearnClicked?.Invoke(_entryId);
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Left || _canDrag || _isLearned || _entryId <= 0)
+            {
+                return;
+            }
+
+            _onSelected?.Invoke(_entryId);
         }
 
         public void OnBeginDrag(PointerEventData eventData)

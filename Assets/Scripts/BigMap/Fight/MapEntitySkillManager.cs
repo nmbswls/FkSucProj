@@ -25,13 +25,20 @@ namespace My.Map.Entity
         public readonly bool IsKeyHeld;
         public readonly float Progress01;
         public readonly string SkillId;
+        public readonly bool CancelableBySceneCancel;
 
-        public AbilityHoldViewState(bool isActive, bool isKeyHeld, float progress01, string skillId)
+        public AbilityHoldViewState(
+            bool isActive,
+            bool isKeyHeld,
+            float progress01,
+            string skillId,
+            bool cancelableBySceneCancel = false)
         {
             IsActive = isActive;
             IsKeyHeld = isKeyHeld;
             Progress01 = progress01;
             SkillId = skillId;
+            CancelableBySceneCancel = cancelableBySceneCancel;
         }
     }
 
@@ -1307,6 +1314,24 @@ namespace My.Map.Entity
             }
         }
 
+        // SceneCancel（X 键）：当前 Holding 阶段且阶段配置了 CancelableBySceneCancel 时打断蓄力
+        public bool TryCancelActiveHoldBySceneCancel()
+        {
+            if (!Executor.IsRunning || CurrentSkillId == null)
+            {
+                return false;
+            }
+
+            var phase = Executor.GetCurrentPhase();
+            if (phase == null || !phase.HoldingPhase || !phase.CancelableBySceneCancel)
+            {
+                return false;
+            }
+
+            Executor.Cancel();
+            return true;
+        }
+
         /// <summary>
         /// 持续按键
         /// </summary>
@@ -1384,7 +1409,8 @@ namespace My.Map.Entity
                     isActive: true,
                     isKeyHeld: ctx.LastPhaseHoldTime > 0f,
                     progress01: progress01,
-                    skillId: CurrentSkillId);
+                    skillId: CurrentSkillId,
+                    cancelableBySceneCancel: phase.CancelableBySceneCancel);
                 return true;
             }
 
@@ -1395,7 +1421,8 @@ namespace My.Map.Entity
                     isActive: true,
                     isKeyHeld: false,
                     progress01: progress01,
-                    skillId: CurrentSkillId);
+                    skillId: CurrentSkillId,
+                    cancelableBySceneCancel: phase.CancelableBySceneCancel);
                 return true;
             }
 

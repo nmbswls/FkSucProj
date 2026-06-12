@@ -24,6 +24,13 @@ public class ChainBindEffectCtrl : MonoBehaviour
         public Vector2 HalfExtents => Volume.HalfExtents;
     }
 
+    struct ChainLine
+    {
+        public LineRenderer Renderer;
+        public int BasePointIndex;
+        public bool IsGlow;
+    }
+
     // 规范化锚点（local，+Y 为角色 forward）；运行时映射到 sprite 半宽/半高
     static readonly Vector2[] DefaultBodyAnchors =
     {
@@ -57,6 +64,10 @@ public class ChainBindEffectCtrl : MonoBehaviour
     [SerializeField] int sortingOrder = 7;
     [SerializeField] string sortingLayerName = "Normal";
     [SerializeField] Material chainMaterial;
+    [SerializeField] bool enableGlowLine = true;
+    [SerializeField] Material chainGlowMaterial;
+    [SerializeField][Range(1f, 4f)] float glowWidthMul = 2.2f;
+    [SerializeField][Range(0f, 1f)] float glowAlphaMul = 0.65f;
     [SerializeField] float textureTilesPerUnit = 4f;
     [SerializeField] bool rotateWithUnitFacing = true;
 
@@ -77,7 +88,7 @@ public class ChainBindEffectCtrl : MonoBehaviour
     [SerializeField][Range(0f, 1f)] float previewRadiusScale = 1f;
     [SerializeField] Vector2 previewHalfExtents = new(0.22f, 0.32f);
 
-    readonly List<LineRenderer> _lines = new();
+    readonly List<ChainLine> _lines = new();
     readonly List<Vector2[]> _basePoints = new();
     readonly List<ChainSegment> _segments = new();
     Vector2[] _scaledAnchors;
@@ -555,7 +566,13 @@ public class ChainBindEffectCtrl : MonoBehaviour
                 rng);
             float arcLength = ComputePolylineLength(points);
             _basePoints.Add(points);
-            _lines.Add(CreateLineRenderer(i, arcLength));
+            int pointsIndex = _basePoints.Count - 1;
+            if (enableGlowLine)
+            {
+                _lines.Add(CreateLineRenderer(i, pointsIndex, arcLength, true));
+            }
+
+            _lines.Add(CreateLineRenderer(i, pointsIndex, arcLength, false));
         }
     }
 
@@ -704,9 +721,9 @@ public class ChainBindEffectCtrl : MonoBehaviour
         return u * u * a + 2f * u * t * control + t * t * b;
     }
 
-    LineRenderer CreateLineRenderer(int index, float arcLength)
+    ChainLine CreateLineRenderer(int index, int basePointIndex, float arcLength, bool isGlow)
     {
-        var go = new GameObject($"chain_{index}");
+        var go = new GameObject(isGlow ? $"chain_glow_{index}" : $"chain_core_{index}");
         Transform parent = transform;
 #if UNITY_EDITOR
         if (!Application.isPlaying)
@@ -724,19 +741,35 @@ public class ChainBindEffectCtrl : MonoBehaviour
         lr.numCapVertices = 0;
         lr.alignment = LineAlignment.TransformZ;
         lr.textureMode = LineTextureMode.Tile;
-        lr.startWidth = lineWidth;
-        lr.endWidth = lineWidth;
+        float width = isGlow ? lineWidth * glowWidthMul : lineWidth;
+        lr.startWidth = width;
+        lr.endWidth = width;
         lr.sortingLayerName = sortingLayerName;
-        lr.sortingOrder = sortingOrder;
-        lr.material = chainMaterial != null ? chainMaterial : CreateFallbackMaterial();
+        lr.sortingOrder = isGlow ? sortingOrder - 1 : sortingOrder;
+        lr.material = ResolveLineMaterial(isGlow);
         lr.textureScale = new Vector2(arcLength * textureTilesPerUnit, 1f);
-        ApplyLineAlpha(lr, 1f);
-        return lr;
+        ApplyLineAlpha(lr, 1f, isGlow);
+        return new ChainLine
+        {
+            Renderer = lr,
+            BasePointIndex = basePointIndex,
+            IsGlow = isGlow,
+        };
     }
 
-    static void ApplyLineAlpha(LineRenderer lr, float alpha)
+    Material ResolveLineMaterial(bool isGlow)
     {
-        var c = new Color(1f, 1f, 1f, alpha);
+        if (isGlow && chainGlowMaterial != null)
+        {
+            return chainGlowMaterial;
+        }
+
+        return chainMaterial != null ? chainMaterial : CreateFallbackMaterial();
+    }
+
+    void ApplyLineAlpha(LineRenderer lr, float alpha, bool isGlow)
+    {
+        var c = new Color(1f, 1f, 1f, isGlow ? alpha * glowAlphaMul : alpha);
         lr.startColor = c;
         lr.endColor = c;
     }
@@ -758,10 +791,16 @@ public class ChainBindEffectCtrl : MonoBehaviour
     {
         for (int i = 0; i < _lines.Count; i++)
         {
-            var lr = _lines[i];
-            var basePts = _basePoints[i];
+            var line = _lines[i];
+            var lr = line.Renderer;
+            if (lr == null || line.BasePointIndex < 0 || line.BasePointIndex >= _basePoints.Count)
+            {
+                continue;
+            }
+
+            var basePts = _basePoints[line.BasePointIndex];
             lr.positionCount = basePts.Length;
-            ApplyLineAlpha(lr, _alpha);
+            ApplyLineAlpha(lr, _alpha, line.IsGlow);
 
             float arcLength = 0f;
             Vector3 prev = default;
@@ -790,16 +829,22 @@ public class ChainBindEffectCtrl : MonoBehaviour
 
         for (int i = 0; i < _lines.Count; i++)
         {
-            var lr = _lines[i];
-            var basePts = _basePoints[i];
+            var line = _lines[i];
+            var lr = line.Renderer;
+            if (lr == null || line.BasePointIndex < 0 || line.BasePointIndex >= _basePoints.Count)
+            {
+                continue;
+            }
+
+            var basePts = _basePoints[line.BasePointIndex];
             lr.positionCount = basePts.Length;
-            ApplyLineAlpha(lr, _alpha);
+            ApplyLineAlpha(lr, _alpha, line.IsGlow);
 
             float arcLength = 0f;
             Vector3 prev = default;
             for (int p = 0; p < basePts.Length; p++)
             {
-                float phase = i * 1.7f + p * 0.55f;
+                float phase = line.BasePointIndex * 1.7f + p * 0.55f;
                 float jx = Mathf.Sin(time + phase) * amp;
                 float jy = Mathf.Cos(time * 0.85f + phase) * amp;
                 var scaled = ScalePoint(basePts[p], _radiusScale);
@@ -839,9 +884,9 @@ public class ChainBindEffectCtrl : MonoBehaviour
     {
         for (int i = 0; i < _lines.Count; i++)
         {
-            if (_lines[i] != null)
+            if (_lines[i].Renderer != null)
             {
-                DestroyLineObject(_lines[i].gameObject);
+                DestroyLineObject(_lines[i].Renderer.gameObject);
             }
         }
 

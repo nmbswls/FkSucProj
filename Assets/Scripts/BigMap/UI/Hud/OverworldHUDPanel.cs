@@ -40,6 +40,8 @@ namespace My.UI
 
         // 搬运提示根节点：屏幕中下，默认 Inactive；子物体可放 TMP「搬运中，按 X 放下」
         public GameObject carryBodyHintRoot;
+        // 可 SceneCancel 打断的蓄力提示：屏幕底部，默认 Inactive
+        public GameObject holdCancelHintRoot;
 
 
         public OverworldSkillBar SkilBar;
@@ -84,6 +86,22 @@ namespace My.UI
             {
                 carryBodyHintRoot.SetActive(visible);
             }
+        }
+
+        public void RefreshHoldCancelHint()
+        {
+            if (holdCancelHintRoot == null)
+            {
+                return;
+            }
+
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            bool show = player?.ablilityManager != null
+                && player.ablilityManager.TryGetActiveHoldViewState(out var holdState)
+                && holdState.IsActive
+                && holdState.CancelableBySceneCancel;
+
+            holdCancelHintRoot.SetActive(show);
         }
 
         void Awake()

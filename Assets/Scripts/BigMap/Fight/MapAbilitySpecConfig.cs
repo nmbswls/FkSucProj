@@ -103,7 +103,8 @@ namespace My.Map.Entity
         public bool AffectByAtkSpeed;
         public OneVariaty DurationValue;
         public bool HoldingPhase; // 持续施法的phase不会自然结束
-        
+        // 为 true 时，SceneCancel（X 键）可打断当前 Holding 阶段（Cancel，不走 OnExit/Complete）
+        public bool CancelableBySceneCancel;
         public string AnimTag; // 可用于驱动动画状态
 
         // 为 0 时使用运行时默认（阶段结束 / 技能结束 / 片段结束）

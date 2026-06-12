@@ -50,6 +50,7 @@ namespace My.UI
             AlertHintIndicator?.RefreshView();
             RetreatHintIndicator?.RefreshView();
             ExposeSkillIndicator?.RefreshView();
+            RefreshHoldCancelHint();
 
             CheckDisguiseState();
 

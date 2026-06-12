@@ -1,6 +1,7 @@
 using System;
 using cfg.demo;
 using My.Config;
+using My.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,8 @@ namespace My.UI.Rune
 
         RuneUpgradeInfo _def;
         int _layoutSlot;
+        bool _isInitial;
+        PlayerRuneSystem _runeSystem;
         Action<int, string> _onClicked;
 
         public int LayoutSlot => _layoutSlot;
@@ -38,10 +41,13 @@ namespace My.UI.Rune
             int layoutSlot,
             RuneUpgradeNodeView nodeView,
             bool isInitial,
+            PlayerRuneSystem runeSystem,
             Action<int, string> onClicked)
         {
             _layoutSlot = layoutSlot;
             _def = nodeView?.Def;
+            _isInitial = isInitial;
+            _runeSystem = runeSystem;
             _onClicked = onClicked;
 
             if (labelText != null)
@@ -74,6 +80,7 @@ namespace My.UI.Rune
             }
 
             Refresh(state, false);
+            EnsureHoverProvider(state);
         }
 
         public void Refresh(ERuneUpgradeNodeState state, bool selected)
@@ -101,6 +108,29 @@ namespace My.UI.Rune
             if (clickButton != null)
             {
                 clickButton.interactable = state != ERuneUpgradeNodeState.Locked;
+            }
+
+            EnsureHoverProvider(state);
+        }
+
+        void EnsureHoverProvider(ERuneUpgradeNodeState state)
+        {
+            if (_def == null || string.IsNullOrEmpty(_def.UpgradeId))
+            {
+                return;
+            }
+
+            var hover = GetComponent<RuneUpgradeHoverProvider>();
+            if (hover == null)
+            {
+                hover = gameObject.AddComponent<RuneUpgradeHoverProvider>();
+            }
+
+            hover.Configure(_def.UpgradeId, state, _isInitial, _runeSystem);
+
+            if (nodeBackground != null)
+            {
+                nodeBackground.raycastTarget = true;
             }
         }
 

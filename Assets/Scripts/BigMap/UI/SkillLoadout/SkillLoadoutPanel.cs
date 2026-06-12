@@ -36,6 +36,7 @@ namespace My.UI.SkillLoadout
 
         int _tabCount;
         int _activeTabIndex;
+        int _selectedEntryId;
 
         public int ActiveSchoolId { get; private set; }
 
@@ -223,6 +224,7 @@ namespace My.UI.SkillLoadout
 
             _activeTabIndex = tabIndex;
             ActiveSchoolId = schools[tabIndex].SchoolId;
+            _selectedEntryId = 0;
             UpdateTabVisuals(tabIndex);
 
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
@@ -288,7 +290,8 @@ namespace My.UI.SkillLoadout
                     cellGo.SetActive(true);
                     var cell = cellGo.GetComponent<SkillPoolEntryView>();
                     bool learned = sys != null && sys.IsSkillLearned(entry.SkillId);
-                    cell.Bind(entry, learned, _skillDropBehavior, OnLearnEntryClicked);
+                    bool selected = !learned && entry.EntryId == _selectedEntryId;
+                    cell.Bind(entry, learned, selected, _skillDropBehavior, OnSkillEntrySelected, OnLearnEntryClicked);
                     _skillGridObjects.Add(cellGo);
                     _skillGridCells.Add(cell);
                 }
@@ -314,7 +317,60 @@ namespace My.UI.SkillLoadout
             _skillGridCells.Clear();
         }
 
+        void OnSkillEntrySelected(int entryId)
+        {
+            if (entryId <= 0)
+            {
+                return;
+            }
+
+            _selectedEntryId = _selectedEntryId == entryId ? 0 : entryId;
+            RefreshSkillGridSelection();
+        }
+
+        void RefreshSkillGridSelection()
+        {
+            for (var i = 0; i < _skillGridCells.Count; i++)
+            {
+                var cell = _skillGridCells[i];
+                if (cell == null)
+                {
+                    continue;
+                }
+
+                cell.SetSelected(cell.EntryId == _selectedEntryId);
+            }
+        }
+
         void OnLearnEntryClicked(int entryId)
+        {
+            var entry = SkillLearnCatalog.TryGetLearnEntry(entryId);
+            if (entry == null)
+            {
+                return;
+            }
+
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            if (mgr == null)
+            {
+                return;
+            }
+
+            if (!mgr.CanLearnSkillFromEntry(entryId, out var reason))
+            {
+                Debug.LogWarning("Learn skill failed: " + reason);
+                return;
+            }
+
+            string skillName = ResolveSkillDisplayName(entry);
+            YesNoMsgBox.Show(
+                "学习技能",
+                $"确定要学习「{skillName}」吗？",
+                () => ConfirmLearnSkill(entryId),
+                null);
+        }
+
+        void ConfirmLearnSkill(int entryId)
         {
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             if (mgr == null)
@@ -325,9 +381,37 @@ namespace My.UI.SkillLoadout
             if (!mgr.TryLearnSkillFromEntry(entryId, out var reason))
             {
                 Debug.LogWarning("Learn skill failed: " + reason);
+                return;
             }
 
+            _selectedEntryId = 0;
             RefreshAll();
+        }
+
+        static string ResolveSkillDisplayName(SkillLearnEntry entry)
+        {
+            if (entry == null)
+            {
+                return string.Empty;
+            }
+
+            if (!string.IsNullOrEmpty(entry.DisplayName))
+            {
+                return entry.DisplayName;
+            }
+
+            if (!string.IsNullOrEmpty(entry.SkillId))
+            {
+                var cfg = My.Map.Entity.SkillLibrary.GetSkillConfig(entry.SkillId);
+                if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
+                {
+                    return cfg.Desc;
+                }
+
+                return entry.SkillId;
+            }
+
+            return string.Empty;
         }
 
         void RefreshSlotDisplays(PlayerSkillSystem sys)

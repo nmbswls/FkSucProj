@@ -63,11 +63,18 @@ MonoBehaviour:
   chainCount: 3
   pointCount: 14
   bindRadius: 0.55
-  lineWidth: 0.09
-  sortingOrder: 8
+  chainBulge: 0.24
+  chainBulgeMul: 1
+  lineWidth: 0.095
+  sortingOrder: 10
   sortingLayerName: Normal
-  chainMaterial: {fileID: 2100000, guid: a57419bb57ed47d7ad35bc1e217fc1f7, type: 2}
+  chainMaterial: {fileID: 2100000, guid: 54b7c9d2e3f14a6bb8c0d1e2f3a40516, type: 2}
+  enableGlowLine: 1
+  chainGlowMaterial: {fileID: 2100000, guid: 68c0e1f2a3b44d5c9e0f1a2b3c4d5e6f, type: 2}
+  glowWidthMul: 2.55
+  glowAlphaMul: 0.82
   textureTilesPerUnit: 4
+  rotateWithUnitFacing: 1
   enableStruggleJitter: 0
   jitterAmplitude: 0.03
   jitterSpeed: 8

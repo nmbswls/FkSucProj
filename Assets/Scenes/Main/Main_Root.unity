@@ -3217,6 +3217,10 @@ MonoBehaviour:
     TipPanelName: TalentTip
   - TipType: 5
     TipPanelName: BodyPartProgressTip
+  - TipType: 6
+    TipPanelName: RuneUpgradeTip
+  - TipType: 7
+    TipPanelName: SkillInSchoolTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

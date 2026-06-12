@@ -60,15 +60,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e52eabb46584d7987485456be8812d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chainCount: 6
+  chainCount: 4
   pointCount: 14
   bindRadius: 0.5
   chainBulge: 0.24
   chainBulgeMul: 1
-  lineWidth: 0.08
-  sortingOrder: 7
+  lineWidth: 0.075
+  sortingOrder: 9
   sortingLayerName: Normal
-  chainMaterial: {fileID: 2100000, guid: a57419bb57ed47d7ad35bc1e217fc1f7, type: 2}
+  chainMaterial: {fileID: 2100000, guid: 3c7f2a9b1d6e4f0aa8b9c2d3e4f50617, type: 2}
+  enableGlowLine: 1
+  chainGlowMaterial: {fileID: 2100000, guid: 40a8d3e7216f4c88b0a7d9e3f5c61234, type: 2}
+  glowWidthMul: 2.35
+  glowAlphaMul: 0.72
   textureTilesPerUnit: 4
   rotateWithUnitFacing: 1
   enableStruggleJitter: 1
