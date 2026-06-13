@@ -24,6 +24,7 @@ namespace My.Map.Entity
         public string OwnerLinkMarkBuffId = "orb_skill_owner_link";
         public string PeriodicAbilityId = "orb_skill_cast";
         public float CastInterval = 1.2f;
+        public float CastAcquireRadius = 8f;
         public Vector2 CastDirOffset = Vector2.right;
         public float DefaultLifetime = 15f;
         public string PrefabName;
@@ -38,11 +39,13 @@ namespace My.Map.Entity
             Register(new SkillProxySpec
             {
                 Id = "orb_skill_v1",
-                AnchorMode = ESkillProxyAnchorMode.OrbitOwner,
+                AnchorMode = ESkillProxyAnchorMode.FollowOwner,
+                AnchorOffset = new Vector2(0f, 0.55f),
                 OrbitRadius = 1.2f,
-                OrbitAngularSpeed = 1.8f,
+                OrbitAngularSpeed = 120f,
                 MaxAmmo = 3,
                 CastInterval = 1.2f,
+                CastAcquireRadius = 8f,
                 DefaultLifetime = 15f,
                 PrefabName = "orb_skill_v1",
             });

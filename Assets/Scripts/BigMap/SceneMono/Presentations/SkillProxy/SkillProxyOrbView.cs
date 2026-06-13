@@ -3,11 +3,12 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    // orb 专属表现组件，与 SkillProxyPresenter 平级挂在同一根 GameObject。
-    // 订阅 Presenter 暴露的事件，自行管理子节点的弹药槽显示，不影响 Presenter 逻辑。
+    // orb 专属表现：本体跟随玩家（逻辑层 FollowOwner），子节点 orbitRoot 做视觉公转。
     [RequireComponent(typeof(SkillProxyPresenter))]
     public class SkillProxyOrbView : MonoBehaviour
     {
+        [SerializeField] private Transform orbitRoot;
+        [SerializeField] private float visualOrbitDegPerSec = 120f;
         [SerializeField] private SkillProxyOrbSlotView[] orbSlots;
 
         SkillProxyPresenter _presenter;
@@ -15,6 +16,11 @@ namespace My.Map.Scene
         void Awake()
         {
             _presenter = GetComponent<SkillProxyPresenter>();
+
+            if (orbitRoot == null)
+            {
+                orbitRoot = transform.Find("orbitRoot");
+            }
 
             if (orbSlots == null || orbSlots.Length == 0)
             {
@@ -33,6 +39,9 @@ namespace My.Map.Scene
             _presenter.EvUnbound += OnUnbound;
             _presenter.EvAmmoChanged += OnAmmoChanged;
             _presenter.EvPeriodicCast += OnPeriodicCast;
+
+            // 对象池复用时 Bind 可能早于 OnEnable，补一次同步避免 slot 全灭。
+            TryRefreshIfAlreadyBound();
         }
 
         void OnDisable()
@@ -46,6 +55,24 @@ namespace My.Map.Scene
             _presenter.EvUnbound -= OnUnbound;
             _presenter.EvAmmoChanged -= OnAmmoChanged;
             _presenter.EvPeriodicCast -= OnPeriodicCast;
+        }
+
+        void Update()
+        {
+            if (orbitRoot == null)
+            {
+                return;
+            }
+
+            orbitRoot.Rotate(0f, 0f, visualOrbitDegPerSec * Time.deltaTime);
+        }
+
+        void TryRefreshIfAlreadyBound()
+        {
+            if (_presenter.GetLogicEntity() is SkillProxyLogicEntity logic)
+            {
+                OnBound(logic);
+            }
         }
 
         void OnBound(SkillProxyLogicEntity logic)

@@ -194,6 +194,12 @@ namespace My.Map.Entity
                 return;
             }
 
+            var target = FindNearestEnemyInCastRange();
+            if (target == null)
+            {
+                return;
+            }
+
             var abilityCfg = AbilityLibrary.GetAbilityConfig(Cfg.PeriodicAbilityId);
             var castCosts = SkillCostUtil.ResolveAbilityCastCosts(abilityCfg);
             if (!SkillCostUtil.CanPay(this, castCosts))
@@ -201,13 +207,59 @@ namespace My.Map.Entity
                 return;
             }
 
-            Vector2 castHint = Pos + Cfg.CastDirOffset;
-            if (AbilityController.TryUseAbility(Cfg.PeriodicAbilityId, castVec: castHint, target: null))
+            if (AbilityController.TryUseAbility(
+                    Cfg.PeriodicAbilityId,
+                    castVec: target.Pos,
+                    target: target))
             {
                 SkillCostUtil.Pay(this, OwnerEntityId, castCosts);
                 _nextCastTime = LogicTime.time + Cfg.CastInterval;
                 EventOnPeriodicCast?.Invoke();
             }
+        }
+
+        BaseUnitLogicEntity FindNearestEnemyInCastRange()
+        {
+            if (_owner == null || Cfg == null)
+            {
+                return null;
+            }
+
+            float radius = Cfg.CastAcquireRadius > 0.01f ? Cfg.CastAcquireRadius : 8f;
+            BaseUnitLogicEntity best = null;
+            float bestSqr = float.MaxValue;
+
+            foreach (var one in _owner.FindEntityInRange(Pos, radius))
+            {
+                if (one is not BaseUnitLogicEntity unit)
+                {
+                    continue;
+                }
+
+                if (unit.Id == _owner.Id || unit.Id == Id)
+                {
+                    continue;
+                }
+
+                if (unit.FactionId == _owner.FactionId)
+                {
+                    continue;
+                }
+
+                if (unit.MarkDestroyed || unit.IsDead)
+                {
+                    continue;
+                }
+
+                float sqr = (unit.Pos - Pos).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = unit;
+                }
+            }
+
+            return best;
         }
 
         public override void DoEntityDestroyed(string reason)

@@ -2384,10 +2384,10 @@ namespace My.Map.Entity
 
             var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
             {
-                BulletId = "player_trace_bullet_01",
+                BulletId = "orb_skill_bullet",
                 MotionData = new LinearMotionData()
                 {
-                    speed = 10f,
+                    speed = 12f,
                 },
                 SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
                 SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming,
@@ -2395,7 +2395,7 @@ namespace My.Map.Entity
                 homingSelectPolicy = ETargetSelectPolicy.NearestEnemyInRadius,
                 nearestEnemyAcquireRadius = 8f,
                 bulletMaxPenetration = 1,
-                lifeTime = 4f,
+                lifeTime = 3f,
                 TriggerOnCollide = true,
                 BulletHitResult = new HitResult()
                 {
@@ -2404,7 +2404,7 @@ namespace My.Map.Entity
                         new MapAbilityEffectHitBoxCfg()
                         {
                             Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
-                            Radius = 0.6f,
+                            Radius = 0.45f,
                             CampFilterType = ECampFilterType.NotSelf,
                             MaxCatchCount = 1,
                             HitResult = new HitResult()

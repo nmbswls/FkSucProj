@@ -182,8 +182,17 @@ namespace My.Map.Entity
             Vector2? homingTargetPos = null;
             if(realCfg.isHoming)
             {
+                if (ctx.TargetId != 0)
+                {
+                    var explicitTarget = ctx.Env.GetLogicEntity(ctx.TargetId, false) as BaseUnitLogicEntity;
+                    if (explicitTarget != null && !explicitTarget.MarkDestroyed && !explicitTarget.IsDead)
+                    {
+                        homingTarget = ctx.TargetId;
+                    }
+                }
+
                 var casterUnit = caster as BaseUnitLogicEntity;
-                if (realCfg.homingSelectPolicy == ETargetSelectPolicy.CastPoint)
+                if (homingTarget == null && realCfg.homingSelectPolicy == ETargetSelectPolicy.CastPoint)
                 {
                     if (ctx.CastVec1.HasValue)
                     {
@@ -195,7 +204,7 @@ namespace My.Map.Entity
                         return;
                     }
                 }
-                else if (casterUnit != null)
+                else if (homingTarget == null && casterUnit != null)
                 {
                     switch(realCfg.homingSelectPolicy)
                     {

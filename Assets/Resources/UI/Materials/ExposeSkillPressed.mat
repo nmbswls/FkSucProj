@@ -32,7 +32,7 @@ Material:
     - _FlowSharpness: 3.5
     - _FlowSpeed: 4.8
     - _FlowSwirl: 5
-    - _HoldProgress: 1
+    - _HoldProgress: 0.9983265
     - _InnerGlowStrength: 0.4
     - _NoiseScale: 38
     - _NoiseSpeed: 2.4
