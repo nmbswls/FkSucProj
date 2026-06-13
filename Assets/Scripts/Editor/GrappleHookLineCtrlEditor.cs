@@ -27,7 +27,9 @@ public class GrappleHookLineCtrlEditor : UnityEditor.Editor
         }
 
         EditorGUILayout.Space();
-        DrawDerivedInfo(ctrl);
+        var previewLenProp = serializedObject.FindProperty("editorPreviewLength");
+        float previewLen = previewLenProp != null ? previewLenProp.floatValue : 3f;
+        DrawDerivedInfo(ctrl, previewLen);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("预览", EditorStyles.boldLabel);
@@ -85,9 +87,8 @@ public class GrappleHookLineCtrlEditor : UnityEditor.Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    static void DrawDerivedInfo(GrappleHookLineCtrl ctrl)
+    static void DrawDerivedInfo(GrappleHookLineCtrl ctrl, float previewLen)
     {
-        var previewLen = serializedObject.FindProperty("editorPreviewLength")?.floatValue ?? 3f;
         float linkLen = ctrl.LinkLengthWorld;
         float repeats = previewLen / Mathf.Max(linkLen, 0.01f);
 

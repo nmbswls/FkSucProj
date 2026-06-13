@@ -42,11 +42,6 @@ namespace My.UI.SkillLoadout
             System.Action<int> onSelected,
             System.Action<int> onDetailClicked)
         {
-            if (!ValidatePrefabRefs())
-            {
-                return;
-            }
-
             _skillId = entry?.SkillId;
             _entryId = entry?.EntryId ?? 0;
             _isLearned = isLearned;
@@ -83,49 +78,6 @@ namespace My.UI.SkillLoadout
         {
             _isSelected = selected;
             RefreshSelectionVisual();
-        }
-
-        bool ValidatePrefabRefs()
-        {
-            bool ok = true;
-
-            if (icon == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing icon reference.", this);
-                ok = false;
-            }
-
-            if (background == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing background reference.", this);
-                ok = false;
-            }
-
-            if (frame == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing frame reference.", this);
-                ok = false;
-            }
-
-            if (unlearnOverlay == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing unlearnOverlay reference.", this);
-                ok = false;
-            }
-
-            if (unlearnHintText == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing unlearnHintText reference.", this);
-                ok = false;
-            }
-
-            if (hoverProvider == null)
-            {
-                Debug.LogError("[SkillPoolEntryView] Missing hoverProvider reference.", this);
-                ok = false;
-            }
-
-            return ok;
         }
 
         void RefreshLearnedVisual()

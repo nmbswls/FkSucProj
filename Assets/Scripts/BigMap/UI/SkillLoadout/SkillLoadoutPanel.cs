@@ -474,11 +474,6 @@ namespace My.UI.SkillLoadout
             HideSkillDetail();
             ClearSkillGrid();
 
-            if (entryPanel != null)
-            {
-                entryPanel.SetActive(true);
-            }
-
             if (schoolLabel != null)
             {
                 schoolLabel.gameObject.SetActive(false);
@@ -510,11 +505,6 @@ namespace My.UI.SkillLoadout
         void EnterEquippedScreen(int schoolId)
         {
             _screen = ESkillLoadoutScreen.Equipped;
-
-            if (entryPanel != null)
-            {
-                entryPanel.SetActive(false);
-            }
 
             if (equippedPanel != null)
             {
@@ -613,16 +603,19 @@ namespace My.UI.SkillLoadout
 
         void ClearSkillGrid()
         {
-            for (int i = 0; i < _skillGridObjects.Count; i++)
-            {
-                if (_skillGridObjects[i] != null)
-                {
-                    Destroy(_skillGridObjects[i]);
-                }
-            }
-
             _skillGridObjects.Clear();
             _skillGridCells.Clear();
+
+            if (skillGridContent == null)
+            {
+                return;
+            }
+
+            // 清除 prefab 中用于编辑器预览的占位 cell
+            for (int i = skillGridContent.childCount - 1; i >= 0; i--)
+            {
+                Destroy(skillGridContent.GetChild(i).gameObject);
+            }
         }
 
         void OnSkillEntrySelected(int entryId)

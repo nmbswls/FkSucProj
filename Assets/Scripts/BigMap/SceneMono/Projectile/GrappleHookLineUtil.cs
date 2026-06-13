@@ -4,9 +4,11 @@ using UnityEngine;
 
 public static class GrappleHookLineUtil
 {
-    public static float CalcChainTextureScale(float ropeLengthWorld, float linkLengthWorld)
+    // Unity LineRenderer Tile 模式：UV = 世界长度 × textureScale.x
+    // 要让每节固定占 linkLengthWorld 米，textureScale.x 必须是常数 1/linkLength，与绳长无关
+    public static float CalcChainTextureScale(float linkLengthWorld)
     {
-        return ropeLengthWorld / Mathf.Max(linkLengthWorld, 0.01f);
+        return 1f / Mathf.Max(linkLengthWorld, 0.01f);
     }
 
     public static void ApplyLineAlpha(LineRenderer lr, float alpha)

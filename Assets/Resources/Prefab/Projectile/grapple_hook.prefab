@@ -75,8 +75,8 @@ LineRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Positions:
+  - {x: 5.638156, y: 2.0521207, z: 0}
   - {x: 0, y: 0, z: 0}
-  - {x: 3, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1.82
@@ -129,7 +129,7 @@ LineRenderer:
     numCapVertices: 0
     alignment: 1
     textureMode: 1
-    textureScale: {x: 3.75, y: 1}
+    textureScale: {x: 1.25, y: 1}
     shadowBias: 0
     generateLightingData: 0
   m_MaskInteraction: 0
@@ -161,8 +161,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6004916971912370882}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.1736482, w: 0.9848078}
+  m_LocalPosition: {x: 5.638156, y: 2.0521207, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -323,9 +323,9 @@ MonoBehaviour:
   hookTipRotationOffset: 0
   pullDuration: 0.35
   pullFadeDuration: 0.12
-  previewInEditor: 0
-  editorPreviewLength: 3
-  editorPreviewAngle: 0
+  previewInEditor: 1
+  editorPreviewLength: 6
+  editorPreviewAngle: 20
 --- !u!1 &7209630276675025286
 GameObject:
   m_ObjectHideFlags: 0

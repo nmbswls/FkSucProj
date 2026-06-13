@@ -43,6 +43,8 @@ public class GrappleHookLineCtrl : MonoBehaviour
     [SerializeField][Range(0f, GrappleHookSpecs.MaxLength)] float editorPreviewLength = 3f;
     [SerializeField][Range(-180f, 180f)] float editorPreviewAngle;
 #endif
+
+    MapProjectile _proj;
     long _casterId;
     Vector2 _fireDir = Vector2.right;
 
@@ -109,7 +111,7 @@ public class GrappleHookLineCtrl : MonoBehaviour
 
         if (previewInEditor)
         {
-            ApplyEditorPreview(editorPreviewLength);
+            ApplyEditorPreviewInternal(editorPreviewLength);
         }
     }
 #endif
@@ -192,9 +194,7 @@ public class GrappleHookLineCtrl : MonoBehaviour
             return;
         }
 
-#if UNITY_EDITOR
         _isEditorPreview = false;
-#endif
 
         _casterId = _proj.bindingProjInfo.ownerEntity?.Id ?? 0;
         var dir = _proj.bindingProjInfo.initialDir;
@@ -432,16 +432,17 @@ public class GrappleHookLineCtrl : MonoBehaviour
     {
         if (lengthWorld <= 0.01f)
         {
-            ropeLine.SetPosition(0, anchorWorld);
-            ropeLine.SetPosition(1, anchorWorld);
+            ropeLine.SetPosition(0, tipWorld);
+            ropeLine.SetPosition(1, tipWorld);
             ropeLine.textureScale = Vector2.zero;
             return;
         }
 
-        ropeLine.SetPosition(0, anchorWorld);
-        ropeLine.SetPosition(1, tipWorld);
+        // pos0 = 钩爪头（UV=0），纹理固定在钩头处；pos1 = 玩家锚点，绳子从玩家侧生长
+        ropeLine.SetPosition(0, tipWorld);
+        ropeLine.SetPosition(1, anchorWorld);
         ropeLine.textureScale = new Vector2(
-            GrappleHookLineUtil.CalcChainTextureScale(lengthWorld, linkLengthWorld),
+            GrappleHookLineUtil.CalcChainTextureScale(linkLengthWorld),
             1f);
     }
 
@@ -460,10 +461,54 @@ public class GrappleHookLineCtrl : MonoBehaviour
         }
     }
 
-#if UNITY_EDITOR
     public void ApplyEditorPreview(float length)
     {
-        if (Application.isPlaying || ropeLine == null)
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            ApplyEditorPreviewInternal(length);
+        }
+#endif
+    }
+
+    public void ClearEditorPreview()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            ClearEditorPreviewInternal();
+        }
+#endif
+    }
+
+    public bool StepEditorPreview(float deltaTime)
+    {
+#if UNITY_EDITOR
+        if (Application.isPlaying || deltaTime <= 0f)
+        {
+            return false;
+        }
+
+        return StepEditorPreviewInternal(deltaTime);
+#else
+        return false;
+#endif
+    }
+
+    public void ResetEditorPreviewCycle()
+    {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            ResetEditorPreviewCycleInternal();
+        }
+#endif
+    }
+
+#if UNITY_EDITOR
+    void ApplyEditorPreviewInternal(float length)
+    {
+        if (ropeLine == null)
         {
             return;
         }
@@ -486,13 +531,8 @@ public class GrappleHookLineCtrl : MonoBehaviour
         DrawEditorPreview(clamped);
     }
 
-    public void ClearEditorPreview()
+    void ClearEditorPreviewInternal()
     {
-        if (Application.isPlaying)
-        {
-            return;
-        }
-
         _isEditorPreview = false;
         _editorAnimLength = 0f;
         _editorAnimRetracting = false;
@@ -510,9 +550,9 @@ public class GrappleHookLineCtrl : MonoBehaviour
         }
     }
 
-    public bool StepEditorPreview(float deltaTime)
+    bool StepEditorPreviewInternal(float deltaTime)
     {
-        if (Application.isPlaying || ropeLine == null || deltaTime <= 0f)
+        if (ropeLine == null)
         {
             return false;
         }
@@ -526,7 +566,7 @@ public class GrappleHookLineCtrl : MonoBehaviour
             _editorAnimLength = Mathf.MoveTowards(_editorAnimLength, 0f, retractSpeed * deltaTime);
             if (_editorAnimLength <= 0.01f)
             {
-                ClearEditorPreview();
+                ClearEditorPreviewInternal();
                 return false;
             }
         }
@@ -550,11 +590,11 @@ public class GrappleHookLineCtrl : MonoBehaviour
         return true;
     }
 
-    public void ResetEditorPreviewCycle()
+    void ResetEditorPreviewCycleInternal()
     {
         _editorAnimLength = 0f;
         _editorAnimRetracting = false;
-        ApplyEditorPreview(0f);
+        ApplyEditorPreviewInternal(0f);
     }
 
     void DrawEditorPreview(float length)
