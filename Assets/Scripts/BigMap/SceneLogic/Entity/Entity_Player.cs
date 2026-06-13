@@ -404,7 +404,27 @@ namespace My.Map
                 case AttrIdConsts.PlayerClothes:
                     _dirst_clothes = true;
                     break;
+
+                case AttrIdConsts.PlayerKnockDown:
+                    {
+                        var knockDownMax = GetResourceMax(AttrIdConsts.PlayerKnockDown);
+                        if (before < knockDownMax && after >= knockDownMax)
+                        {
+                            HandlePlayerKnockDownFull();
+                        }
+                    }
+                    break;
             }
+        }
+
+        void HandlePlayerKnockDownFull()
+        {
+            if (!LogicManager.globalBuffManager.CheckHasBuff(Id, "player_knocked_down"))
+            {
+                LogicManager.globalBuffManager.RequestAddBuff(Id, "player_knocked_down");
+            }
+
+            ForceSetResource(AttrIdConsts.PlayerKnockDown, 0);
         }
 
 

@@ -456,7 +456,11 @@ namespace My.Map
             public bool EndOnCollideWall;
             public bool EndOnHitUnit;
 
+            // 无武器 hitbox 时，通过近体半径检测单位碰撞后派发
             public List<MapFightEffectCfg> OnHitUnitEffects;
+            public float DashHitRadius;
+            // 由表现层 Physics2D 扫射写入，逻辑层在下一个 UpdateControlledMove 消费
+            public long? PendingContactHitEntityId;
 
             public float timeLeft = 0f;
 
@@ -477,13 +481,26 @@ namespace My.Map
         }
         public ControlledMoveCtx? controlledMoveCtx;
 
+        // 由表现层订阅：bool=是否激活，float=检测半径
+        public event Action<bool, float> EventDashContactSensorChanged;
+
+        // 表现层在 Physics2D 扫射命中后调用，将结果写入当前移动上下文
+        public void NotifyDashContactHit(long entityId)
+        {
+            if (controlledMoveCtx != null && controlledMoveCtx.OnHitUnitEffects != null)
+            {
+                controlledMoveCtx.PendingContactHitEntityId = entityId;
+            }
+        }
+
         // 冲锋
-        public ControlledMoveCtx StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onHitEffects, 
-            bool withEffect = false, 
-            bool withGhost = false, 
-            string dashWeaponName = "", 
+        public ControlledMoveCtx StartDash(Vector2 dashDir, float dashTime, float speed, List<MapFightEffectCfg> onHitEffects,
+            bool withEffect = false,
+            bool withGhost = false,
+            string dashWeaponName = "",
             bool stopOnWall = false,
-            bool stopOnUnit = false)
+            bool stopOnUnit = false,
+            float dashHitRadius = 0.6f)
         {
             ApplyControlledMove(ControlledMoveCtx.EType.Dash, dashDir, dashTime, speed);
             controlledMoveCtx.WithEffect = withEffect;
@@ -495,6 +512,14 @@ namespace My.Map
                 var hitId = ApplyUseWeapon(dashWeaponName, "0", dashTime, onHitEffects);
                 controlledMoveCtx.WeaponName = dashWeaponName;
                 controlledMoveCtx.HitId = hitId;
+            }
+            else if (onHitEffects != null && onHitEffects.Count > 0)
+            {
+                // 无武器时，使用近体检测路径
+                controlledMoveCtx.OnHitUnitEffects = onHitEffects;
+                controlledMoveCtx.DashHitRadius = dashHitRadius > 0f ? dashHitRadius : 0.6f;
+                // 通知表现层开启 Physics2D 扫射传感器
+                EventDashContactSensorChanged?.Invoke(true, controlledMoveCtx.DashHitRadius);
             }
 
             controlledMoveCtx.EndOnHitUnit = stopOnUnit;
@@ -566,6 +591,31 @@ namespace My.Map
                 HitWindowRegistry.activeHitWindows.TryGetValue(controlledMoveCtx.HitId.Value, out var window);
                 if(window != null && window.HitRecord.Count > 0)
                 {
+                    EndControlledMove(2);
+                    return;
+                }
+            }
+            else if (controlledMoveCtx.EndOnHitUnit && controlledMoveCtx.OnHitUnitEffects != null && controlledMoveCtx.OnHitUnitEffects.Count > 0)
+            {
+                // 由表现层 Physics2D 扫射写入，此处消费
+                if (controlledMoveCtx.PendingContactHitEntityId.HasValue)
+                {
+                    var hitEntityId = controlledMoveCtx.PendingContactHitEntityId.Value;
+                    var srcInfo = new GameLogicManager.EffectSourceInfo()
+                    {
+                        SrcType = GameLogicManager.ESourceType.Ability,
+                        SrcEntityId = this.Id,
+                    };
+                    var effectsToFire = controlledMoveCtx.OnHitUnitEffects;
+                    controlledMoveCtx.OnHitUnitEffects = null;
+                    foreach (var effect in effectsToFire)
+                    {
+                        var newCtx = new GameLogicManager.LogicFightEffectContext(LogicManager, GameLogicManager.EFightCtxType.HitBox, srcInfo);
+                        newCtx.TargetId = hitEntityId;
+                        newCtx.TriggerPos = Pos;
+                        newCtx.CastVec1 = FinalLook;
+                        LogicManager.HandleLogicFightEffect(effect, newCtx);
+                    }
                     EndControlledMove(2);
                     return;
                 }
@@ -670,6 +720,12 @@ namespace My.Map
             if(controlledMoveCtx == null)
             {
                 return;
+            }
+
+            // 如果无武器接触传感器处于激活状态，通知表现层关闭
+            if (controlledMoveCtx.OnHitUnitEffects != null)
+            {
+                EventDashContactSensorChanged?.Invoke(false, 0f);
             }
 
             if(!string.IsNullOrEmpty(controlledMoveCtx.WeaponName))

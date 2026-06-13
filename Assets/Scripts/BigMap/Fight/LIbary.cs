@@ -2049,7 +2049,7 @@ namespace My.Map.Entity
 
             var dashEffect = new MapAbilityEffectDashStartCfg()
             {
-                DashMode = EDashMode.ToTarget,
+                DashMode = EDashMode.FixDistance,
                 DirMode = EDirMode.LookDir,
                 DashSpeed = 8f,
                 MaxDistance = 5f,
@@ -2129,34 +2129,12 @@ namespace My.Map.Entity
             {
                 OnHitEffects = new()
                 {
-                    // 累积推倒进度
+                    // 累积推倒进度；满条判定在 Entity_Player.OnResourceAttriChanged 中统一处理
                     new MapAbilityEffectAddResourceCfg()
                     {
                         ResourceId = AttrIdConsts.PlayerKnockDown,
                         AddValue = 35_000,
                         IsEnmity = true,
-                    },
-                    // 推倒条满时触发被推倒状态并重置进度
-                    new MapAbilityEffectIfBranchCfg()
-                    {
-                        CheckType = MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater,
-                        Param1 = AttrIdConsts.PlayerKnockDown,
-                        Param3 = 99_000,
-                        TrueBranchEffects = new List<MapFightEffectCfg>
-                        {
-                            new MapAbilityEffectAddBuffCfg()
-                            {
-                                BuffId = "player_knocked_down",
-                                Duration = 3f,
-                            },
-                            // 重置推倒条
-                            new MapAbilityEffectAddResourceCfg()
-                            {
-                                ResourceId = AttrIdConsts.PlayerKnockDown,
-                                AddValue = -100_000,
-                                IsEnmity = false,
-                            },
-                        },
                     },
                 },
             };

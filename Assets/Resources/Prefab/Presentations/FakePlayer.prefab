@@ -444,6 +444,9 @@ MonoBehaviour:
   - Name: player_force_grapple
     Clip: {fileID: 7400000, guid: 8f2fadca2215dda4ca23a9627272787e, type: 2}
     Speed: 1
+  - Name: knocked_down
+    Clip: {fileID: 7400000, guid: d1a7248b1e72fbe4495685370d9343fe, type: 2}
+    Speed: 1
 --- !u!212 &7672229108084523351
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1733,9 +1736,13 @@ MonoBehaviour:
   pushPriority: 1
   maxExternalSpeed: 20
   blendDelta: 0.6
+  dashContactLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   wallsLayer:
     serializedVersion: 2
     m_Bits: 0
+  autoBindViewHierarchy: 1
   BindEffectRoot: {fileID: 4203489501796133219}
   MainAgentAnimator: {fileID: 6428733477164974139}
   AnimHolder: {fileID: 4275466162928593809}

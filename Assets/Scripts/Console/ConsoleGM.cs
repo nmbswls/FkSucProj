@@ -290,6 +290,41 @@ public class ConsoleGM : MonoBehaviour
                 player.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, 40_000, false, FightStruct.EDmgFlag.None, null);
             });
 
+        Register("knockdown_add", "增加玩家推倒进度，100=满条",
+            new[] { new CmdParam("val", "int，刻度值，100=满条") },
+            args =>
+            {
+                if (args.Count < 1) { LogError("用法：knockdown_add <val>"); return; }
+                if (!int.TryParse(args[0], out var rawVal)) { LogError("参数需为 int"); return; }
+
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                if (player == null) { LogError("player not found"); return; }
+
+                var val = rawVal * 1000;
+                player.ApplyResourceChange(AttrIdConsts.PlayerKnockDown, val, true, FightStruct.EDmgFlag.None, null);
+                Log($"PlayerKnockDown +{val}, current={player.GetAttr(AttrIdConsts.PlayerKnockDown)}");
+            });
+
+        Register("knockdown_full", "填满推倒条并触发被推倒",
+            null,
+            args =>
+            {
+                var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                if (player == null) { LogError("player not found"); return; }
+
+                var max = player.GetResourceMax(AttrIdConsts.PlayerKnockDown);
+                var cur = player.GetAttr(AttrIdConsts.PlayerKnockDown);
+                var delta = max - cur;
+                if (delta <= 0)
+                {
+                    Log("PlayerKnockDown already full or above max");
+                    return;
+                }
+
+                player.ApplyResourceChange(AttrIdConsts.PlayerKnockDown, delta, true, FightStruct.EDmgFlag.None, null);
+                Log($"PlayerKnockDown filled to max, current={player.GetAttr(AttrIdConsts.PlayerKnockDown)}");
+            });
+
 
         Register("gptest", "创建测试用gather point",
             null,
@@ -413,6 +448,32 @@ public class ConsoleGM : MonoBehaviour
 
                 glm.globalBuffManager.RequestAddBuff(targetId, "chain_bind", overrideDuration: dur);
                 Log($"chain_bind applied to entity {targetId}, duration={dur}s");
+            });
+
+        Register("orb_skill_summon", "Debug：召唤 orb SkillProxy 跟随球",
+            null,
+            args =>
+            {
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var player = glm?.playerLogicEntity;
+                if (player == null)
+                {
+                    LogError("player not found");
+                    return;
+                }
+
+                const string skillId = "orb_skill_summon";
+                if (!player.ablilityManager.SkillRuntimes.ContainsKey(skillId))
+                {
+                    if (!player.ablilityManager.RegisterSkill(skillId))
+                    {
+                        LogError($"RegisterSkill failed: {skillId}");
+                        return;
+                    }
+                }
+
+                bool ok = player.ablilityManager.UseSkill(skillId);
+                Log(ok ? $"UseSkill ok: {skillId}" : $"UseSkill failed: {skillId}");
             });
 
         Register("wanted", "通缉",

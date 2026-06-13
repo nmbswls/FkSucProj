@@ -131,6 +131,7 @@ namespace My.Map
                 case AttrIdConsts.PlayerSanity:
                 case AttrIdConsts.PlayerClothes:
                 case AttrIdConsts.PlayerEstrusProgrss:
+                case AttrIdConsts.PlayerKnockDown:
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerOriginPower:
                 case AttrIdConsts.PlayerJingYu:

@@ -164,6 +164,8 @@ namespace My.Map.Scene
             // 提取出来
             UpdateVisible(dt);
 
+            TickDashContactSensor();
+
             //if (UnitEntity.MarkDead || UnitEntity.GetAttr(AttrIdConsts.Unmovable) > 0
             //    || UnitEntity.dashIntent != null || UnitEntity.knockBackIntent != null)
             //{
@@ -446,6 +448,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnInvisibleChange += OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister += OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister += OnEventBuffUnregister;
+            UnitEntity.EventDashContactSensorChanged += OnDashContactSensorChanged;
 
             //UnitEntity.onNewDashIntent += (intent) =>
             //{
@@ -473,6 +476,7 @@ namespace My.Map.Scene
             UnitEntity.EventOnInvisibleChange -= OnEventInvisibleChange;
             UnitEntity.EventOnBuffRegister -= OnEventBuffRegister;
             UnitEntity.EventOnBuffUnregister -= OnEventBuffUnregister;
+            UnitEntity.EventDashContactSensorChanged -= OnDashContactSensorChanged;
         }
 
 
@@ -488,6 +492,62 @@ namespace My.Map.Scene
             {
                 WeaponCtrl.HandleClearWeapon(weaponName);
             };
+        }
+
+        private void OnDashContactSensorChanged(bool active, float radius)
+        {
+            _dashSensorActive = active;
+            _dashSensorRadius = radius;
+            if (active)
+            {
+                _sensorPrevPhysicsPos = rb != null ? rb.position : (Vector2)transform.position;
+            }
+        }
+
+        private void TickDashContactSensor()
+        {
+            if (!_dashSensorActive || UnitEntity == null) return;
+
+            var curPos = rb != null ? rb.position : (Vector2)transform.position;
+            var prevPos = _sensorPrevPhysicsPos;
+            _sensorPrevPhysicsPos = curPos;
+
+            var delta = curPos - prevPos;
+            var deltaMag = delta.magnitude;
+
+            LayerMask mask = dashContactLayerMask != 0 ? dashContactLayerMask : Physics2D.DefaultRaycastLayers;
+
+            Vector2 castDir;
+            float castDist;
+            if (deltaMag > 0.01f)
+            {
+                // 帧间位移扫射，防止高速单位隧穿
+                castDir = delta / deltaMag;
+                castDist = deltaMag;
+            }
+            else
+            {
+                // 位移极小时，以朝向做零距离投射（等价于原地圆形检测）
+                var look = UnitEntity.FinalLook;
+                castDir = look.sqrMagnitude > 0.01f ? look.normalized : Vector2.right;
+                castDist = 0f;
+            }
+
+            int hitCount = Physics2D.CircleCastNonAlloc(prevPos, _dashSensorRadius, castDir, _dashSensorHitBuf, castDist, mask);
+            for (int i = 0; i < hitCount; i++)
+            {
+                var col = _dashSensorHitBuf[i].collider;
+                if (col == null) continue;
+
+                var presenter = col.GetComponentInParent<SceneUnitPresenter>();
+                if (presenter == null || presenter == this) continue;
+
+                var entity = presenter.GetLogicEntity();
+                if (entity == null) continue;
+
+                UnitEntity.NotifyDashContactHit(entity.Id);
+                return;
+            }
         }
 
         #region 监听
@@ -679,6 +739,13 @@ namespace My.Map.Scene
 
         // 推挤缓存
         private readonly Collider2D[] neighborBuffer = new Collider2D[32];
+
+        // 无武器冲刺接触传感器（由逻辑层事件驱动，表现层做 Physics2D 扫射）
+        [SerializeField] LayerMask dashContactLayerMask;
+        private bool _dashSensorActive;
+        private float _dashSensorRadius;
+        private Vector2 _sensorPrevPhysicsPos;
+        private readonly RaycastHit2D[] _dashSensorHitBuf = new RaycastHit2D[8];
 
 
         #endregion
