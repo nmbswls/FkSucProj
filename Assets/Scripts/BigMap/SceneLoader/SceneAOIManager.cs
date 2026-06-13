@@ -523,8 +523,15 @@ public class SceneAOIManager : MonoBehaviour
         // 逻辑层可自行触发状态事件；可选：若已在AOI，Presenter位置会通过事件或下一帧刷新
     }
 
+    // AOI 的 enter/exit 计时器只是视觉防抖，不需要跟随真实物理时间。
+    // 将 dt 限制在合理上限，防止切后台/长加载时第一帧的巨大 unscaledDeltaTime
+    // 在一帧内把所有 exitTimer 打爆，导致正在异步创建中的 Presenter 全部被 cancel。
+    private const float _aoiDtCap = 0.1f;
+
     private void RefreshDynamicAOI(List<AoiCenter> centers, float dt, bool noEnterGrace = false)
     {
+        dt = Mathf.Min(dt, _aoiDtCap);
+
         if (centers == null || centers.Count == 0)
         {
             return;
@@ -639,24 +646,31 @@ public class SceneAOIManager : MonoBehaviour
                     entry.exitTimer += dt;
                     if (entry.exitTimer >= exitGraceSeconds)
                     {
-                        // === 修改: 触发离开，若正在创建则标记取消 ===
                         entry.isShown = false;
                         entry.enterTimer = 0f;
 
                         if (entry.pres != null)
                         {
-                            HideAndRecyclePresentation(entry); // === 修改 ===
+                            HideAndRecyclePresentation(entry);
                         }
                         else if (entry.creating)
                         {
-                            entry.canceledDuringCreate = true; // === 新增 ===
+                            entry.canceledDuringCreate = true;
                         }
-                        // === 修改结束 ===
                     }
                 }
                 else
                 {
                     entry.exitTimer = 0f;
+
+                    // isShown=true 但 pres 丢失（SpawnAsync 曾抛异常）且未在创建中时重试。
+                    // 若不重试，实体会永久卡在 isShown=true/pres=null/creating=false 的死状态。
+                    if (entry.pres == null && !entry.creating && !entry.entity.MarkDestroyed)
+                    {
+                        entry.creating = true;
+                        entry.canceledDuringCreate = false;
+                        _ = SpawnPresentationAsync(entry);
+                    }
                 }
             }
 
