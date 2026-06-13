@@ -38,10 +38,10 @@ Material:
     - _NoiseSpeed: 2.4
     - _NoiseStrength: 0.58
     - _OutlineWidth: 9
-    - _RectHeightPx: 52
-    - _RectWidthPx: 52
-    - _ShapeHalfHeight: 0.46
-    - _ShapeHalfWidth: 0.46
+    - _RectHeightPx: 54
+    - _RectWidthPx: 54
+    - _ShapeHalfHeight: 0.44444445
+    - _ShapeHalfWidth: 0.44444445
     - _ShapeType: 1
     - _Softness: 4.5
     - _SparkleThreshold: 0.7

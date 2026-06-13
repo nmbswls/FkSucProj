@@ -855,16 +855,34 @@ namespace My.Map.Entity
                 return;
             }
 
-            if (ctx.CastVec1 == null)
+            Vector2? targetPosOpt = null;
+            if (realCfg.UseTriggerPos && ctx.TriggerPos.HasValue)
+            {
+                targetPosOpt = ctx.TriggerPos.Value;
+            }
+            else if (ctx.CastVec1 != null)
+            {
+                targetPosOpt = ctx.CastVec1.Value;
+            }
+
+            if (targetPosOpt == null)
             {
                 Debug.LogError("AbilityEffectExecutor4ControlledMove move cast vel");
                 return;
             }
-            Vector2 targetPos = ctx.CastVec1.Value;
-            float duration = realCfg.FixedDuration;
 
+            Vector2 targetPos = targetPosOpt.Value;
+            if (realCfg.StopOffset > 0f)
+            {
+                var toTarget = targetPos - unitEntity.Pos;
+                if (toTarget.sqrMagnitude > 1e-6f)
+                {
+                    targetPos -= toTarget.normalized * realCfg.StopOffset;
+                }
+            }
+
+            float duration = realCfg.FixedDuration;
             var diff = targetPos - unitEntity.Pos;
-            var speed = diff.magnitude / duration;
             unitEntity.ApplyControlledMove(ControlledMoveCtx.EType.Pull, diff.normalized, originSpeed: diff.magnitude * 8f, onHitEffects: null, minEndSpeed : 0.1f);
         }
     }

@@ -105,6 +105,7 @@ namespace My.Player
             "player_push_surround",
             "player_trace_bullet_01",
             "player_summon_ally_turret",
+            "grapple_hook",
 
             "player_naishou_to_jianshang",
 
@@ -112,6 +113,10 @@ namespace My.Player
             "player_burst_milk",
 
             "force_dash_push_down",
+
+            // 变身/解除变身
+            "player_enter_expose",
+            "player_return_disguise",
         };
 
         public PlayerSkillSystem()

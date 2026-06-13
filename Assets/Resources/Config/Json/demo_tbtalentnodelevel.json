@@ -26,7 +26,7 @@
         "val": 5000
       }
     ],
-    "passive_skill_id": ""
+    "passive_skill_id": "talent_expose_charm"
   },
   {
     "node_id": 2,
@@ -55,7 +55,7 @@
         "val": 10000
       }
     ],
-    "passive_skill_id": ""
+    "passive_skill_id": "talent_expose_charm"
   },
   {
     "node_id": 3,
@@ -84,7 +84,7 @@
         "val": 15000
       }
     ],
-    "passive_skill_id": ""
+    "passive_skill_id": "talent_expose_charm"
   },
   {
     "node_id": 4,
@@ -113,7 +113,7 @@
         "val": 20000
       }
     ],
-    "passive_skill_id": ""
+    "passive_skill_id": "talent_expose_charm"
   },
   {
     "node_id": 5,
@@ -142,7 +142,7 @@
         "val": 25000
       }
     ],
-    "passive_skill_id": ""
+    "passive_skill_id": "talent_expose_charm"
   },
   {
     "node_id": 2,

@@ -21,7 +21,7 @@ public sealed partial class SkillSchool : Luban.BeanBase
         { if(!_buf["school_id"].IsNumber) { throw new SerializationException(); }  SchoolId = _buf["school_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["icon_path"].IsString) { throw new SerializationException(); }  IconPath = _buf["icon_path"]; }
-        { if(!_buf["sort_order"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["sort_order"]; }
+        { var __json0 = _buf["unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  UnlockConds.Add(__v0); }   }
     }
 
     public static SkillSchool DeserializeSkillSchool(JSONNode _buf)
@@ -42,15 +42,16 @@ public sealed partial class SkillSchool : Luban.BeanBase
     /// </summary>
     public string IconPath;
     /// <summary>
-    /// sort_order
+    /// unlock_conds
     /// </summary>
-    public int SortOrder;
+    public System.Collections.Generic.List<demo.CommonCheckCond> UnlockConds;
    
     public const int __ID__ = 1896214906;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
+        foreach (var _e in UnlockConds) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -59,7 +60,7 @@ public sealed partial class SkillSchool : Luban.BeanBase
         + "schoolId:" + SchoolId + ","
         + "displayName:" + DisplayName + ","
         + "iconPath:" + IconPath + ","
-        + "sortOrder:" + SortOrder + ","
+        + "unlockConds:" + Luban.StringUtil.CollectionToString(UnlockConds) + ","
         + "}";
     }
 }

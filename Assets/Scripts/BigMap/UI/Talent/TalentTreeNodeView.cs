@@ -10,8 +10,10 @@ namespace My.UI.Talent
     public sealed class TalentTreeNodeView : MonoBehaviour
     {
         public int talentNodeId { get; private set; }
+        [SerializeField] Button selectButton;
         [SerializeField] Button unlockButton;
         [SerializeField] Image nodeBackground;
+        [SerializeField] Image selectionFrame;
         [SerializeField] Color lockedColor = new Color(0.35f, 0.35f, 0.4f, 1f);
         [SerializeField] Color unlockableColor = new Color(0.9f, 0.75f, 0.2f, 1f);
         [SerializeField] Color unlockedColor = new Color(0.35f, 0.85f, 0.45f, 1f);
@@ -34,6 +36,12 @@ namespace My.UI.Talent
                 _hoverProvider = gameObject.AddComponent<TalentNodeHoverProvider>();
             }
 
+            if (selectButton != null)
+            {
+                selectButton.onClick.RemoveListener(OnSelectClicked);
+                selectButton.onClick.AddListener(OnSelectClicked);
+            }
+
             if (unlockButton != null)
             {
                 unlockButton.onClick.RemoveListener(OnUnlockClicked);
@@ -41,10 +49,10 @@ namespace My.UI.Talent
             }
         }
 
-        public void Refresh(PlayerProgressionSystem progression, int nodeId)
+        public void Refresh(PlayerProgressionSystem progression, int nodeId, bool isSelected = false)
         {
             talentNodeId = nodeId;
-            _hoverProvider?.SetNodeId(nodeId);
+            _hoverProvider?.Configure(nodeId, progression);
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
             int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
             int max = row != null ? row.MaxLevel : 1;
@@ -70,6 +78,7 @@ namespace My.UI.Talent
             if (progression == null)
             {
                 ApplyVisual(PlayerTalentManager.TalentNodeVisualState.Locked, false, "解锁");
+                SetSelected(false);
                 return;
             }
 
@@ -77,6 +86,15 @@ namespace My.UI.Talent
             bool canClick = st == PlayerTalentManager.TalentNodeVisualState.Unlockable;
             string btnText = cur <= 0 ? "解锁" : (cur < max ? "升级" : "满级");
             ApplyVisual(st, canClick, btnText);
+            SetSelected(isSelected);
+        }
+
+        public void SetSelected(bool selected)
+        {
+            if (selectionFrame != null)
+            {
+                selectionFrame.gameObject.SetActive(selected);
+            }
         }
 
         void ApplyVisual(PlayerTalentManager.TalentNodeVisualState st, bool canClick, string btnText)
@@ -99,6 +117,14 @@ namespace My.UI.Talent
             if (unlockButton != null)
             {
                 unlockButton.interactable = canClick;
+            }
+        }
+
+        void OnSelectClicked()
+        {
+            if (_host != null && talentNodeId > 0)
+            {
+                _host.OnNodeSelected(talentNodeId);
             }
         }
 

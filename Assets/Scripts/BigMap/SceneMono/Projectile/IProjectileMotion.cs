@@ -204,6 +204,7 @@ namespace My
                 //_hitCD[id] = _time + PD.hitCooldown;
 
                 ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, hitDir: _dir, unitPresent);
+                ownerProj.NotifyEntityHit(ownerProj.transform.position);
 
                 _penetrationLeft--;
                 if (_penetrationLeft <= 0) return true;

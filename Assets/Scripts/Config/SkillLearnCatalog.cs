@@ -17,7 +17,6 @@ namespace My.Config
             }
 
             var list = new List<SkillSchool>(CfgMgr.Cfgs.TbSkillSchool.DataList);
-            list.Sort((a, b) => a.SortOrder.CompareTo(b.SortOrder));
             return list;
         }
 

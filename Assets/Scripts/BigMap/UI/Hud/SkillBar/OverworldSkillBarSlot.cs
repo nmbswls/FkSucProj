@@ -1,6 +1,7 @@
 
 using DG.Tweening;
 using My.Map.Entity;
+using My.UI.SkillLoadout;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -39,6 +40,9 @@ namespace My.UI
         private Vector2 shineEndPos = new Vector2(25, -25);
         private float shineDuration = 0.4f;// 扫光耗时
 
+        Image _frameImage;
+        [SerializeField] SkillEquippedHoverProvider hoverProvider;
+
         public void Setup(OverworldSkillBar bar, int slotIdx)
         {
             this.OwnerBar = bar;
@@ -59,7 +63,23 @@ namespace My.UI
                 });
             }
 
+            EnsureFrameImage();
             ApplyKeyHint(slotIdx, false);
+            RefreshHover(_boundSkillId);
+        }
+
+        void EnsureFrameImage()
+        {
+            if (_frameImage != null)
+            {
+                return;
+            }
+
+            var frameTr = transform.Find("SlotFrame");
+            if (frameTr != null)
+            {
+                _frameImage = frameTr.GetComponent<Image>();
+            }
         }
 
         public void ApplyKeyHint(int slotIdx, bool humanQuickBar)
@@ -116,6 +136,7 @@ namespace My.UI
             }
 
             RefreshUsability();
+            RefreshHover(_boundSkillId);
 
             if (hint)
             {
@@ -172,11 +193,18 @@ namespace My.UI
             }
 
             RefreshUsability();
+            RefreshHover(_boundSkillId);
 
             if (hint)
             {
                 DoRefreshHint();
             }
+        }
+
+        void RefreshHover(string skillId)
+        {
+            EnsureFrameImage();
+            SkillEquippedHoverSupport.Apply(this, hoverProvider, skillId, icon, _frameImage);
         }
 
         public void RefreshUsability()
@@ -258,6 +286,7 @@ namespace My.UI
             skillData = null;
             _boundSkillId = null;
             _denyMessage = null;
+            RefreshHover(null);
             if (emptyIcon)
             {
                 emptyIcon.gameObject.SetActive(true);

@@ -547,14 +547,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7f8e9d0c1b2a3948576d5e4f3020102, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unlockButton: {fileID: 7320458400637931861}
+  selectButton: {fileID: 7320458400637931861}
+  unlockButton: {fileID: 4578530348034828354}
   nodeBackground: {fileID: 8342751892171388005}
+  selectionFrame: {fileID: 0}
   lockedColor: {r: 0.35, g: 0.35, b: 0.4, a: 1}
   unlockableColor: {r: 0.9, g: 0.75, b: 0.2, a: 1}
   unlockedColor: {r: 0.35, g: 0.85, b: 0.45, a: 1}
   titleText: {fileID: 7225915096223150712}
   levelText: {fileID: 0}
-  unlockButtonText: {fileID: 0}
+  unlockButtonText: {fileID: 1293660017064775795}
   descText: {fileID: 0}
 --- !u!1 &7225915096223150719
 GameObject:

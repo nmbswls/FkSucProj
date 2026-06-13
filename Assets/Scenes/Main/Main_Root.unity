@@ -3221,6 +3221,8 @@ MonoBehaviour:
     TipPanelName: RuneUpgradeTip
   - TipType: 7
     TipPanelName: SkillInSchoolTip
+  - TipType: 8
+    TipPanelName: SkillEquippedTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

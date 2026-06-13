@@ -124,6 +124,10 @@ namespace My.UI
                 skillSLotIdx = 7;
                 isSkillSlot = true;
             }
+            else if (keyName == EInputKey.Skill_02.ToString())
+            {
+                return "grapple_hook";
+            }
             else if (keyName == EInputKey.EnterExpose.ToString())
             {
                 var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;

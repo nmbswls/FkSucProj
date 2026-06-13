@@ -106,15 +106,7 @@
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
     "ability_extra": [],
-    "cast_conditions": [
-      {
-        "type": 4,
-        "param1": 0,
-        "param2": 0,
-        "param3": "",
-        "param4": ""
-      }
-    ]
+    "cast_conditions": []
   },
   {
     "skill_id": "queen_dash",
@@ -155,6 +147,27 @@
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
+    "ability_extra": [],
+    "cast_conditions": []
+  },
+  {
+    "skill_id": "grapple_hook",
+    "main_ability_id": "grapple_hook",
+    "desc": "",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "cool_down": 4,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 10,
+    "desired_use_angle": 0,
+    "desired_use_distance": 6,
+    "buffer_cache_time": 0.15,
     "ability_extra": [],
     "cast_conditions": []
   },
@@ -1265,7 +1278,7 @@
     "is_derived": false,
     "cool_down": 8,
     "stack_count": 1,
-    "icon_path": "icon_01",
+    "icon_path": "orb_skill_summon",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
@@ -1322,5 +1335,28 @@
         "param4": ""
       }
     ]
+  },
+  {
+    "skill_id": "talent_expose_charm",
+    "main_ability_id": "",
+    "desc": "",
+    "is_passive": true,
+    "passive_buff_ids": [
+      "talent_expose_extra_charm_1"
+    ],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": false,
+    "is_derived": false,
+    "cool_down": 0,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 0,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0,
+    "buffer_cache_time": 0,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

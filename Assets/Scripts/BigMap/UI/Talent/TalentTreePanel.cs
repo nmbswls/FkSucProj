@@ -18,6 +18,9 @@ namespace My.UI.Talent
         public Dictionary<int, TalentTreeNodeView> NodeViewMap { get; private set; } = new();
         [SerializeField] Button closeButton;
         [SerializeField] TextMeshProUGUI debugTipText;
+        [SerializeField] TalentDetailView detailView;
+
+        int _selectedNodeId;
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
         {
@@ -81,10 +84,16 @@ namespace My.UI.Talent
             RefreshFromRuntime();
         }
 
+        public void OnNodeSelected(int nodeId)
+        {
+            _selectedNodeId = nodeId;
+            RefreshNodeSelectionVisuals();
+            RefreshDetail();
+        }
+
         public void RefreshFromRuntime()
         {
-            var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
-            var progression = glm?.playerDataManager?.ProgressionSystem;
+            var progression = ResolveProgression();
 
             EnsureNodeViewContainer();
             if (NodeViewContainer != null)
@@ -105,10 +114,12 @@ namespace My.UI.Talent
                         continue;
                     }
 
-                    view.Refresh(progression, binder.TalentNodeId);
+                    view.Refresh(progression, binder.TalentNodeId, binder.TalentNodeId == _selectedNodeId);
                     NodeViewMap[binder.TalentNodeId] = view;
                 }
             }
+
+            RefreshDetail(progression);
 
             if (debugTipText != null)
             {
@@ -116,6 +127,37 @@ namespace My.UI.Talent
                     ? "黄色节点可解锁或升级；灰色按钮表示条件未满足或已满级。"
                     : "未进入游戏上下文，无法读取养成数据。";
             }
+        }
+
+        void RefreshDetail(PlayerProgressionSystem progression = null)
+        {
+            progression ??= ResolveProgression();
+            if (detailView == null)
+            {
+                return;
+            }
+
+            if (_selectedNodeId <= 0)
+            {
+                detailView.Clear();
+                return;
+            }
+
+            detailView.ShowNode(_selectedNodeId, progression);
+        }
+
+        void RefreshNodeSelectionVisuals()
+        {
+            foreach (var kv in NodeViewMap)
+            {
+                kv.Value.SetSelected(kv.Key == _selectedNodeId);
+            }
+        }
+
+        static PlayerProgressionSystem ResolveProgression()
+        {
+            var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+            return glm?.playerDataManager?.ProgressionSystem;
         }
 
         void OnCloseClicked()

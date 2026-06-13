@@ -1,20 +1,20 @@
 [
   {
     "school_id": 1,
-    "display_name": "近战通用",
+    "display_name": "愤怒",
     "icon_path": "",
-    "sort_order": 10
+    "unlock_conds": []
   },
   {
     "school_id": 2,
-    "display_name": "女王体系",
-    "icon_path": "icon_01",
-    "sort_order": 20
+    "display_name": "幻惑",
+    "icon_path": "",
+    "unlock_conds": []
   },
   {
     "school_id": 3,
-    "display_name": "特殊与被动",
+    "display_name": "夜幕",
     "icon_path": "",
-    "sort_order": 30
+    "unlock_conds": []
   }
 ]

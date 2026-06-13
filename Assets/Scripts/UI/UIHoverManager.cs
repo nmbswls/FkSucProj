@@ -50,6 +50,7 @@ namespace My.UI
         BodyPartProgress,
         RuneUpgrade,
         SkillInSchool,
+        SkillEquipped,
     }
 
 
@@ -380,7 +381,11 @@ namespace My.UI
                     yield break;
                 }
 
-                var request = Resources.LoadAsync<GameObject>($"UI/Prefabs/Tips/{p.TipPanelName}");
+                var request = Resources.LoadAsync<GameObject>($"UI/Prefabs/Skill/Tips/{p.TipPanelName}");
+                if (request.asset == null)
+                {
+                    request = Resources.LoadAsync<GameObject>($"UI/Prefabs/Tips/{p.TipPanelName}");
+                }
                 while(!request.isDone)
                 {
                     yield return null;

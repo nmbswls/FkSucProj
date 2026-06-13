@@ -78,9 +78,21 @@ namespace My
             var projectilePrefab = Resources.Load<GameObject>($"Prefab/Projectile/{logicProjectile.pData.id}");
             // var firstPrefab = PrefabList.FirstOrDefault();
             var newGo = GameObject.Instantiate(projectilePrefab, transform);
-            //newGo.name = "Projectile";
-            //var go = new GameObject($"Projectile_{logicProjectile.pData.id}");
-            var p = newGo.GetOrAddComponent<MapProjectile>();
+            MapProjectile p;
+            if (logicProjectile.pData.id == GrappleHookSpecs.BulletId)
+            {
+                p = newGo.GetComponent<MapProjectile>();
+                if (p == null)
+                {
+                    Debug.LogError($"Projectile prefab {logicProjectile.pData.id} must include MapProjectile on root.");
+                    Destroy(newGo);
+                    return null;
+                }
+            }
+            else
+            {
+                p = newGo.GetOrAddComponent<MapProjectile>();
+            }
 
             p.Launch(logicProjectile);
             return p;

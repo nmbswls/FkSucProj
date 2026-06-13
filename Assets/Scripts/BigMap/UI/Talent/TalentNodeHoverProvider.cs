@@ -1,4 +1,4 @@
-using My.Config;
+using My.Player;
 using My.UI;
 using UnityEngine;
 
@@ -7,6 +7,7 @@ namespace My.UI.Talent
     public sealed class TalentNodeHoverProvider : BaseUIHoverProvider
     {
         int _nodeId;
+        PlayerProgressionSystem _progression;
 
         protected override void Awake()
         {
@@ -18,10 +19,18 @@ namespace My.UI.Talent
             };
         }
 
+        public void Configure(int nodeId, PlayerProgressionSystem progression)
+        {
+            _nodeId = nodeId;
+            _progression = progression;
+        }
+
         public void SetNodeId(int nodeId)
         {
             _nodeId = nodeId;
         }
+
+        public PlayerProgressionSystem Progression => _progression;
 
         public int NodeId => _nodeId;
 
@@ -33,55 +42,6 @@ namespace My.UI.Talent
             }
 
             return InnerParams;
-        }
-
-        public string GetDisplayName()
-        {
-            var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(_nodeId);
-            if (row != null && !string.IsNullOrEmpty(row.DisplayName))
-            {
-                return row.DisplayName;
-            }
-
-            return $"Node {_nodeId}";
-        }
-
-        public string GetDetailText()
-        {
-            var node = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(_nodeId);
-            if (node == null)
-            {
-                return string.Empty;
-            }
-
-            var levelRow = CfgMgr.Cfgs?.TbTalentNodeLevel?.Get(_nodeId, 1);
-            if (levelRow == null)
-            {
-                return $"最大等级: {node.MaxLevel}";
-            }
-
-            var lines = new System.Text.StringBuilder();
-            lines.AppendLine($"最大等级: {node.MaxLevel}");
-            if (levelRow.StatBonuses != null && levelRow.StatBonuses.Count > 0)
-            {
-                lines.AppendLine("属性加成:");
-                foreach (var bonus in levelRow.StatBonuses)
-                {
-                    if (bonus == null)
-                    {
-                        continue;
-                    }
-
-                    lines.AppendLine($"  属性{bonus.AttrId}: +{bonus.Val}");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(levelRow.PassiveSkillId))
-            {
-                lines.AppendLine($"被动: {levelRow.PassiveSkillId}");
-            }
-
-            return lines.ToString().TrimEnd();
         }
     }
 }

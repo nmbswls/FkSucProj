@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using My.Map.Fight;
 using UnityEngine;
 
 namespace My
@@ -13,6 +14,8 @@ namespace My
 
         public Transform ViewRoot;
 
+        public event System.Action<Vector2> EventEntityHit;
+
         private IMapProjectileMotion _motion;
         private Transform _body;
         private Transform _shadow;           // 仅抛物用
@@ -20,6 +23,12 @@ namespace My
 
         private float _lifetime;
         private bool _despawned;
+        private bool _motionFrozen;
+
+        public void SetMotionFrozen(bool frozen)
+        {
+            _motionFrozen = frozen;
+        }
 
         private void Awake()
         {
@@ -72,6 +81,17 @@ namespace My
 
             _lifetime = info.pData.maxLifetime;
             _despawned = false;
+
+            if (info.pData.id == GrappleHookSpecs.BulletId)
+            {
+                var hookCtrl = GetComponent<GrappleHookLineCtrl>();
+                hookCtrl?.InitFromLaunch();
+            }
+        }
+
+        public void NotifyEntityHit(Vector2 hitWorldPos)
+        {
+            EventEntityHit?.Invoke(hitWorldPos);
         }
 
         private void FixedUpdate()
@@ -79,29 +99,36 @@ namespace My
             if (_despawned || _motion == null) return;
 
             float dt = Time.fixedDeltaTime;
-            _motion.Tick(dt);
 
-            //// 更新本体可视（非抛物：直接贴 Position）
-            //if (!(_motion is MapProjectileParabolaMotion))
-            //{
-            //    Vector2 pos = _motion.Position;
-            //    transform.position = pos;
-            //    if (_body != null) _body.position = pos;
-            //    if (bindingProjInfo.pData.rotateBodyToVelocity && _body != null)
-            //    {
-            //        var fwd = _motion.Forward;
-            //        if (fwd.sqrMagnitude > 0.0001f) _body.right = fwd;
-            //    }
-            //}
-
+            if (!_motionFrozen)
             {
+                _motion.Tick(dt);
                 transform.position = _motion.Position;
             }
 
-            if (_motion.IsFinished)
+            if (_motionFrozen || _motion.IsFinished)
             {
-                Despawn();
+                if (TryDeferDespawn())
+                {
+                    return;
+                }
+
+                if (_motion.IsFinished)
+                {
+                    Despawn();
+                }
             }
+        }
+
+        bool TryDeferDespawn()
+        {
+            var hookCtrl = GetComponent<GrappleHookLineCtrl>();
+            if (hookCtrl == null)
+            {
+                return false;
+            }
+
+            return hookCtrl.TryDeferDespawn();
         }
 
 

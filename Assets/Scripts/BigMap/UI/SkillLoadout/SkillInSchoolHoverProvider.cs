@@ -49,19 +49,7 @@ namespace My.UI.SkillLoadout
 
         public string GetDisplayName()
         {
-            var entry = Entry;
-            if (entry != null && !string.IsNullOrEmpty(entry.DisplayName))
-            {
-                return entry.DisplayName;
-            }
-
-            var cfg = SkillConfig;
-            if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
-            {
-                return cfg.Desc;
-            }
-
-            return _skillId;
+            return SkillLearnEntryTextUtil.ResolveDisplayName(Entry, SkillConfig);
         }
 
         public string GetSummaryText()
@@ -111,7 +99,7 @@ namespace My.UI.SkillLoadout
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             if (mgr != null && mgr.CanLearnSkillFromEntry(_entryId, out _))
             {
-                return "点击选中后，按学习按钮确认";
+                return "点击查看详情并学习";
             }
 
             return "满足学习条件后可学习";

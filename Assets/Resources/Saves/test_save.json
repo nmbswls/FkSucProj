@@ -20,7 +20,8 @@
       { "PartId": 1, "EquippedIndex": 0, "ItemId": "part_mouth_lollipop", "ItemInstanceId": 201, "EquipAuxData": 0 },
       { "PartId": 2, "EquippedIndex": 0, "ItemId": "part_breast_brooch", "ItemInstanceId": 202, "EquipAuxData": 0 },
       { "PartId": 3, "EquippedIndex": 0, "ItemId": "part_womb_bead", "ItemInstanceId": 203, "EquipAuxData": 0 }
-    ]
+    ],
+	"OwnedRuneIds" :["rune_lady"],
   },
   "MainInventorySlots": [
     { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },

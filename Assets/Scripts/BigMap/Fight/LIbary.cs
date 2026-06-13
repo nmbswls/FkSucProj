@@ -12,7 +12,6 @@ using static My.Config.LogicInteractOutput;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Entity.MapAbilitySpecConfig;
 using static My.Map.Fight.FightStruct;
-using static System.Net.WebRequestMethods;
 
 
 namespace My.Map.Entity
@@ -143,6 +142,10 @@ namespace My.Map.Entity
 
                 {
                     var ab = CreateShootKnifeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateGrappleHookAbility();
                     _abilityDict[ab.Id] = ab;
                 }
                 {
@@ -766,6 +769,105 @@ namespace My.Map.Entity
             //});
 
             spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateGrappleHookAbility()
+        {
+            const float hookMaxRange = GrappleHookSpecs.MaxLength;
+            const float hookFlySpeed = GrappleHookSpecs.FlySpeed;
+            const float hookFlyTime = hookMaxRange / hookFlySpeed;
+
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "grapple_hook";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.AdjustFaceDir = true;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+            spec.DesiredUseDistance = hookMaxRange;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1",
+                },
+            });
+
+            var firePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Fire",
+                LockMovement = true,
+                PhaseBuff = new() { "phase_move" },
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.5",
+                },
+            };
+
+            var spawnHook = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = GrappleHookSpecs.BulletId,
+                MotionData = new LinearMotionData()
+                {
+                    speed = hookFlySpeed,
+                    useCCD = true,
+                    radius = 0.12f,
+                },
+                lockViewAngle = false,
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                lifeTime = hookFlyTime,
+                bulletMaxPenetration = 1,
+                TriggerOnCollide = true,
+                TriggerOnLifeEnd = true,
+                BulletHitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapAbilityEffectControlledMoveCfg()
+                        {
+                            TargetType = 1,
+                            UseTriggerPos = true,
+                            FixedDuration = GrappleHookSpecs.PullDuration,
+                            StopOffset = 0.55f,
+                        },
+                        new MapAbilityEffectNextPhaseCfg()
+                        {
+                            MatchSkill = "grapple_hook",
+                            MatchPhase = "Fire",
+                        },
+                    },
+                },
+                ExplodeEffects = new()
+                {
+                    new MapAbilityEffectNextPhaseCfg()
+                    {
+                        MatchSkill = "grapple_hook",
+                        MatchPhase = "Fire",
+                    },
+                },
+            };
+            firePhase.Events.Add(new PhaseEffectEvent() { Effect = spawnHook, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(firePhase);
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Recovery",
+                InterruptMask = EAbilityInterruptMask.Move | EAbilityInterruptMask.Cast,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15",
+                },
+            });
+
             return spec;
         }
 
