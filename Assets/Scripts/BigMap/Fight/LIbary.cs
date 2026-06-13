@@ -449,6 +449,11 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
 
+                {
+                    var ab = CreateNpcCloseKnockdown();
+                    _abilityDict[ab.Id] = ab;
+                }
+
 
                 {
                     var ab = CreatePlayerDarkDance();
@@ -5478,6 +5483,49 @@ namespace My.Map.Entity
                 addEffect1.AddValue = 3000;
                 mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addEffect1, Kind = PhaseEventKind.OnEnter });
             }
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateNpcCloseKnockdown()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "close_knockdown";
+            spec.TypeTag = AbilityTypeTag.Utility;
+
+            spec.CastType = ECastType.LockTarget;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Execute",
+                LockRotation = true,
+                LockMovement = true,
+                ImmuneKnock = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+            spec.Phases.Add(mainPhase);
+
+            {
+                var closeupCfg = new MapFightEffectShowCloseupWindowCfg();
+                closeupCfg.WindowType = "knockdown";
+                closeupCfg.Duration = 3.0f;
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = closeupCfg, Kind = PhaseEventKind.OnEnter });
+            }
+
+            {
+                var addBuff = new MapAbilityEffectAddBuffCfg();
+                addBuff.BuffId = "immune_knockdown_closeup";
+                addBuff.Duration = 10.0f;
+
+                mainPhase.Events.Add(new PhaseEffectEvent() { Effect = addBuff, Kind = PhaseEventKind.OnEnter });
+            }
+
             return spec;
         }
 

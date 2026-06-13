@@ -835,6 +835,11 @@ namespace My.Map.Unit
 
         public override void OnUpdate()
         {
+            if (TryTransitionToKnockdownFollowup())
+            {
+                return;
+            }
+
             // 检查是否退出战斗状态
             if(CheckLeaveCombat())
             {
@@ -1125,6 +1130,24 @@ namespace My.Map.Unit
             return Vector2.Angle(diff.normalized, _brain.NpcEntity.CurrentLook) <= halfAngle;
         }
 
+        private bool TryTransitionToKnockdownFollowup()
+        {
+            var targetId = _brain.Aggro.CurrentTargetId;
+            var entity = _brain.LogicManager.GetLogicEntity(targetId, false) as BaseUnitLogicEntity;
+            if (entity == null)
+            {
+                return false;
+            }
+
+            if (!PlayerGamePlayRule.ShouldNpcEnterHKnockdownFollowup(_brain.NpcEntity, entity))
+            {
+                return false;
+            }
+
+            _brain.ChangeState(_brain.StateHKnockdownFollowup);
+            return true;
+        }
+
         private void HandleTargetLost()
         {
             // 关键逻辑：连接 Search 状态
@@ -1144,6 +1167,131 @@ namespace My.Map.Unit
                 // 完全没头绪，只能回家
                 _brain.ChangeState(_brain.StateReturn);
             }
+        }
+    }
+
+    // H 倒地 follow-up：玩家被推倒时靠近并触发 Closeup，暂停普通 H 技能选择
+    public class AIStateHKnockdownFollowup : AIBaseState
+    {
+        private BaseUnitLogicEntity _currentTarget;
+        private PlayerLogicEntity _playerTarget;
+
+        public override string StateName => "HKnockdownFollowup";
+        public override bool CanEnterCombat => false;
+
+        public AIStateHKnockdownFollowup(AIBrainV2 brain) : base(brain) { }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            _brain.NpcEntity.StopMove();
+            _brain.NpcEntity.TryInterrupt(new InterruptRequest()
+            {
+                source = EInterruptSource.Stun,
+                priority = 10,
+            });
+            ResolveTarget();
+        }
+
+        void ResolveTarget()
+        {
+            var targetId = _brain.Aggro.CurrentTargetId;
+            _currentTarget = _brain.LogicManager.GetLogicEntity(targetId, false) as BaseUnitLogicEntity;
+            _playerTarget = _currentTarget as PlayerLogicEntity;
+        }
+
+        bool CheckShouldLeave(out bool targetLost, out bool outOfChaseRange)
+        {
+            targetLost = false;
+            outOfChaseRange = false;
+            ResolveTarget();
+
+            if (_currentTarget == null || _playerTarget == null)
+            {
+                targetLost = true;
+                return true;
+            }
+
+            if (_brain.NpcEntity.IsTargetInvisibleFromSelf(_currentTarget.Id))
+            {
+                targetLost = true;
+                return true;
+            }
+
+            if (_brain.HomePos != null)
+            {
+                float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value);
+                float chaseRange = _brain.Config.ChaseRange;
+                if (_brain.NpcEntity.IsInHBehaveMode())
+                {
+                    chaseRange *= 0.6f;
+                }
+
+                if (distToHome > chaseRange)
+                {
+                    outOfChaseRange = true;
+                    return true;
+                }
+            }
+
+            if (!PlayerGamePlayRule.ShouldNpcEnterHKnockdownFollowup(_brain.NpcEntity, _currentTarget))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void OnUpdate()
+        {
+            if (CheckShouldLeave(out var targetLost, out var outOfChaseRange))
+            {
+                if (targetLost || outOfChaseRange)
+                {
+                    _brain.Aggro.ClearTarget();
+                    _brain.ChangeState(_brain.StateReturn);
+                }
+                else
+                {
+                    _brain.ChangeState(_brain.StateCombat);
+                }
+                return;
+            }
+
+            var diff = _playerTarget.Pos - _brain.NpcEntity.Pos;
+            if (diff.magnitude > PlayerGamePlayRule.HKnockdownFollowupApproachDistance)
+            {
+                _brain.NpcEntity.TryMoveTo(_playerTarget.Pos, moveSpeedRate: 0.8f);
+                return;
+            }
+
+            _brain.NpcEntity.StopMove();
+
+            if (LogicTime.time < _brain.KnockdownCloseupCdUntil)
+            {
+                return;
+            }
+
+            if (!_brain.NpcEntity.abilityController.IsActionable())
+            {
+                return;
+            }
+
+            if (_brain.NpcEntity.LogicManager.globalBuffManager.CheckHasBuff(_playerTarget.Id, "immune_knockdown_closeup"))
+            {
+                return;
+            }
+
+            if (_brain.NpcEntity.abilityController.TryUseAbility("close_knockdown", target: _playerTarget))
+            {
+                _brain.KnockdownCloseupCdUntil = LogicTime.time + PlayerGamePlayRule.HKnockdownFollowupTriggerCd;
+            }
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+            _brain.NpcEntity.StopMove();
         }
     }
 

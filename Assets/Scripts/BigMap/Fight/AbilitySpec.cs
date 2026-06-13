@@ -198,6 +198,8 @@ public interface ISceneAbilityViewer
 
     void ShowHTangleCloseupWindow(long srcEntityId);
 
+    void ShowKnockdownCloseupWindow(long srcEntityId, float duration);
+
     void ShowGcCloseupWindow(string showName, float duration);
 
     bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null);

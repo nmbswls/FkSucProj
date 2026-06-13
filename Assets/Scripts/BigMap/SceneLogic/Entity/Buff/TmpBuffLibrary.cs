@@ -1199,6 +1199,14 @@ namespace My.Map.Entity
                     IsHidden = false,
                 };
 
+                _library["immune_knockdown_closeup"] = new BuffDefinition()
+                {
+                    BuffId = "immune_knockdown_closeup",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DefaultDuration = 10f,
+                    IsHidden = true,
+                };
+
 
                 _library["jingyu"] = new BuffDefinition()
                 {

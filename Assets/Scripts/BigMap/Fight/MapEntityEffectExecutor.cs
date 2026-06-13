@@ -1317,6 +1317,12 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (realCfg.WindowType == "knockdown")
+            {
+                ctx.Env.viewer.ShowKnockdownCloseupWindow(ctx.SourceInfo.SrcEntityId, realCfg.Duration);
+                return;
+            }
+
             ctx.Env.viewer.ShowKaiYouCloseupWindow(ctx.SourceInfo.SrcEntityId, realCfg.WindowType, realCfg.Duration);
         }
     }

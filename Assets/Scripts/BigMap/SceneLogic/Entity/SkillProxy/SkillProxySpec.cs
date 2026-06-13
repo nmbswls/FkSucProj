@@ -24,7 +24,7 @@ namespace My.Map.Entity
         public string OwnerLinkMarkBuffId = "orb_skill_owner_link";
         public string PeriodicAbilityId = "orb_skill_cast";
         public float CastInterval = 1.2f;
-        public float CastAcquireRadius = 8f;
+        public float CastAcquireRadius = 1f;
         public Vector2 CastDirOffset = Vector2.right;
         public float DefaultLifetime = 15f;
         public string PrefabName;

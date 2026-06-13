@@ -41,6 +41,35 @@ namespace My.Map
         public const float MiniGcLiquidRadius = 0.55f;
         public const float MiniGcLiquidDuration = 12f;
 
+        // H 倒地 follow-up：敌人靠近并触发 Closeup 的距离与 per-NPC CD
+        public const float HKnockdownFollowupApproachDistance = 0.8f;
+        public const float HKnockdownFollowupTriggerCd = 5f;
+
+        public static bool ShouldNpcEnterHKnockdownFollowup(NpcUnitLogicEntity npc, BaseUnitLogicEntity target)
+        {
+            if (npc == null || target == null)
+            {
+                return false;
+            }
+
+            if (!npc.IsInHBehaveMode())
+            {
+                return false;
+            }
+
+            if (target is not PlayerLogicEntity player)
+            {
+                return false;
+            }
+
+            if (npc.IsTargetInvisibleFromSelf(player.Id))
+            {
+                return false;
+            }
+
+            return npc.LogicManager.globalBuffManager.CheckHasBuff(player.Id, "player_knocked_down");
+        }
+
         public static bool ShouldRearmMiniGcThreshold(long pleasure, long threshold)
         {
             return pleasure < threshold - MiniGcOscillationGap;

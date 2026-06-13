@@ -325,6 +325,38 @@ public class ConsoleGM : MonoBehaviour
                 Log($"PlayerKnockDown filled to max, current={player.GetAttr(AttrIdConsts.PlayerKnockDown)}");
             });
 
+        Register("knockdown_followup_test", "触发玩家被推倒并在附近刷 AlwaysHMode 敌人",
+            null,
+            args =>
+            {
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var player = glm.playerLogicEntity;
+                if (player == null) { LogError("player not found"); return; }
+
+                var max = player.GetResourceMax(AttrIdConsts.PlayerKnockDown);
+                var cur = player.GetAttr(AttrIdConsts.PlayerKnockDown);
+                var delta = max - cur;
+                if (delta > 0)
+                {
+                    player.ApplyResourceChange(AttrIdConsts.PlayerKnockDown, delta, true, FightStruct.EDmgFlag.None, null);
+                }
+
+                var spawnPos = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2f, 0f, 0f);
+                glm.AddNewEntityRecord(new LogicEntityRecord4Npc()
+                {
+                    Id = GameLogicManager.LogicEntityIdInst++,
+                    EntityType = EEntityType.Npc,
+                    CfgId = "h_spirit_small_01",
+                    Position = spawnPos,
+                    FactionId = EFactionId.HSprite,
+                    IsPeace = false,
+                    MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.Hunting,
+                    EnmityConfId = "h_spirit",
+                });
+
+                Log("Player knocked down + h_spirit_small_01 spawned nearby. Enter combat with enemy to test follow-up.");
+            });
+
 
         Register("gptest", "创建测试用gather point",
             null,

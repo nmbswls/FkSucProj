@@ -232,5 +232,44 @@
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 0
+  },
+  {
+    "id": 19,
+    "desc": "",
+    "filter_types": [
+      "KnockDown"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 15,
+    "coef_player": 1,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 0.5
+  },
+  {
+    "id": 20,
+    "desc": "",
+    "filter_types": [
+      "KnockDown"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": true,
+    "h_impulse_base": 22,
+    "coef_player": 1,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 0.5
+  },
+  {
+    "id": 21,
+    "desc": "",
+    "filter_types": [
+      "KnockDown"
+    ],
+    "player_min_desire": 2,
+    "is_player_passive": true,
+    "h_impulse_base": 30,
+    "coef_player": 1,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 0.5
   }
 ]

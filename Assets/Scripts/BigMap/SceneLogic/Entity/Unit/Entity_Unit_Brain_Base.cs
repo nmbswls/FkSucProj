@@ -122,6 +122,10 @@ namespace My.Map.Unit
         public AIStateCharmedFollow StateCharmedFollow;
         public AIStateScriptedMicroPlot StateScriptedMicroPlot;
         public AIStatePoisonBait StatePoisonBait;
+        public AIStateHKnockdownFollowup StateHKnockdownFollowup;
+
+        // per-NPC：H 倒地 Closeup 触发 CD
+        public float KnockdownCloseupCdUntil;
 
 
         // 黑板 (Blackboard) - 状态间共享数据
@@ -181,6 +185,7 @@ namespace My.Map.Unit
             StateCharmedFollow = new AIStateCharmedFollow(this);
             StateScriptedMicroPlot = new AIStateScriptedMicroPlot(this);
             StatePoisonBait = new AIStatePoisonBait(this);
+            StateHKnockdownFollowup = new AIStateHKnockdownFollowup(this);
 
             if (Config.IsGuard)
             {

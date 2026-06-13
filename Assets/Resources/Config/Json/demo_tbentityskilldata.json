@@ -1379,5 +1379,26 @@
     "buffer_cache_time": 0,
     "ability_extra": [],
     "cast_conditions": []
+  },
+  {
+    "skill_id": "close_knockdown",
+    "main_ability_id": "close_knockdown",
+    "desc": "",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": true,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "cool_down": 5,
+    "stack_count": 0,
+    "icon_path": "",
+    "priority": 20,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0.8,
+    "buffer_cache_time": 0.1,
+    "ability_extra": [],
+    "cast_conditions": []
   }
 ]

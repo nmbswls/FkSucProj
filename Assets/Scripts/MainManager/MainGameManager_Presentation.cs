@@ -83,6 +83,11 @@ namespace My
             PauseCloseupKaiYouWindow.Show(srcEntityId, showName, duration);
         }
 
+        public void ShowKnockdownCloseupWindow(long srcEntityId, float duration)
+        {
+            PauseCloseupKnockdownWindow.Show(srcEntityId, duration);
+        }
+
         public void ShowGcCloseupWindow(string showName, float duration)
         {
             PauseCloseupWindow.Show(showName, duration);
