@@ -79,7 +79,7 @@ namespace My.Map.Entity
         public const string HP_MAX = "HP.Max";
 
         // SkillProxy 弹药资源（current/max 由 RegisterResource fixMax 管理）
-        public const string SkillProxyOrbAmmo = "orb_skill_ammo";
+        public const string SkillProxyOrbAmmo = "SkillProxyOrbAmmo";
 
         public const string NPCHVal = "NPCHVal";
         public const string NPCHVal_Max = "NPCHVal.Max";

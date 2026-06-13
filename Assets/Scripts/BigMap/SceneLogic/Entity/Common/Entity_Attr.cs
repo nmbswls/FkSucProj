@@ -140,6 +140,8 @@ namespace My.Map
                 case AttrIdConsts.UnitHShield:
                 case AttrIdConsts.UnitKnockDown:
 
+                case AttrIdConsts.SkillProxyOrbAmmo:
+
                     return EAttrType.Resource;
 
                 default:

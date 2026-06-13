@@ -21,14 +21,14 @@ namespace My
 {
     public partial class MainGameManager
     {
-        public long ShowBottomProgress(string hintText, float progressTime)
+        public void ShowBottomProgress(string hintText, float duration, float phaseStartLogicTime)
         {
-            return OverworldHUDPanel.Instance?.ShowBottomProgress(hintText, progressTime) ?? 0;
+            OverworldHUDPanel.Instance?.ShowBottomProgress(hintText, duration, phaseStartLogicTime);
         }
 
-        public void TryCancelButtomProgress(long showId)
+        public void TryCancelButtomProgress(float phaseStartLogicTime)
         {
-            OverworldHUDPanel.Instance?.TryCancelProgressComplete(showId);
+            OverworldHUDPanel.Instance?.TryCancelProgressComplete(phaseStartLogicTime);
         }
 
         public void ShowFakeFxEffect(string hintText, Vector2 logicPos)

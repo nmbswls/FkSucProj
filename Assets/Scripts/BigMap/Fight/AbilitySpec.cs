@@ -153,9 +153,10 @@ namespace Map.Entity
 
 public interface ISceneAbilityViewer
 {
-    long ShowBottomProgress(string hintText, float progressTime);
+    // phaseStartLogicTime 由逻辑层传入，作为本次进度条的幂等标识；UI 层自持状态，不回传 ID
+    void ShowBottomProgress(string hintText, float duration, float phaseStartLogicTime);
 
-    void TryCancelButtomProgress(long showId);
+    void TryCancelButtomProgress(float phaseStartLogicTime);
 
     void ShowSceneFxEffect(string effectName, Vector2 pos, Vector2 dir);
 

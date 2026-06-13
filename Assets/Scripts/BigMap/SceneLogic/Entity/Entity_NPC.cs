@@ -157,9 +157,20 @@ namespace My.Map
 
             if (NpcConfig != null)
             {
-                ablilityManager.ReconcileRegisteredSkills(NpcConfig.SkillList);
+                // 合并普通技能与H行为技能后一次性 Reconcile，避免两次调用互相覆盖
+                var allSkills = new List<string>();
+                if (NpcConfig.SkillList != null)
+                {
+                    allSkills.AddRange(NpcConfig.SkillList);
+                }
+                if (NpcConfig.HBehaveList != null)
+                {
+                    allSkills.AddRange(NpcConfig.HBehaveList);
+                }
+                ablilityManager.ReconcileRegisteredSkills(allSkills);
             }
 
+            // 通用H普攻：固定注册，不依赖配表
             ablilityManager.RegisterSkill("default_h_attack");
 
             abilityController.EventOnInputCancelPhaseStart += () =>

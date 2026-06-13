@@ -158,7 +158,7 @@ namespace My.UI.SkillLoadout
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!_canDrag)
+            if (!SkillDragSession.IsDragging)
             {
                 return;
             }

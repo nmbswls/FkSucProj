@@ -91,6 +91,11 @@ namespace My.UI.SkillLoadout
 
         public static void FollowScreenPoint(Vector2 screenPos)
         {
+            if (!IsDragging)
+            {
+                return;
+            }
+
             CacheGhostRects();
             if (_ghostRect == null || _ghostParentRect == null)
             {
@@ -130,10 +135,12 @@ namespace My.UI.SkillLoadout
 
             if (!_dropCommitted && eventData != null)
             {
-                TryCommitDropAtScreen(eventData.position);
+                if (TryFinalizeDropAtScreen(eventData.position))
+                {
+                    TryCommitDropEmpty();
+                }
             }
-
-            if (!_dropCommitted)
+            else if (!_dropCommitted)
             {
                 TryCommitDropEmpty();
             }
@@ -190,15 +197,18 @@ namespace My.UI.SkillLoadout
             _dropCommitted = true;
             panel.ApplyLoadoutToEntity();
             panel.RefreshAll();
+            // OnDrop 成功后会 RefreshAll 销毁拖拽源，OnEndDrag 可能不会再触发，此处必须清理 ghost。
+            Clear();
             return true;
         }
 
-        static void TryCommitDropAtScreen(Vector2 screenPos)
+        // 返回 true 表示指针未落在任何 DropZone 上，可尝试空投；落在 Zone 上但失败则返回 false。
+        static bool TryFinalizeDropAtScreen(Vector2 screenPos)
         {
             var eventSystem = EventSystem.current;
             if (eventSystem == null)
             {
-                return;
+                return true;
             }
 
             var pointerData = new PointerEventData(eventSystem)
@@ -216,11 +226,11 @@ namespace My.UI.SkillLoadout
                     continue;
                 }
 
-                if (TryCommitDropToZone(zone) || _dropCommitted)
-                {
-                    return;
-                }
+                TryCommitDropToZone(zone);
+                return false;
             }
+
+            return true;
         }
 
         static void TryCommitDropEmpty()

@@ -1,128 +1,98 @@
-using System.Collections;
-using System.Collections.Generic;
+using My.Map;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace My.UI
 {
+    // 底部进度条：由逻辑层传入 (startLogicTime, duration) 驱动，填充量通过 LogicTime 实时计算，
+    // 不再自持时间计数器，避免与逻辑时间不一致
     public class BottomProgressPanel : MonoBehaviour
     {
-        public static long ShowInstIdCounter = 10;
-
-        /// <summary>
-        /// 组件
-        /// </summary>
-
         public TextMeshProUGUI hintTextComp;
         public Image ProgressBar;
 
-        #region 参数
-
-        public long playingShowId;
-        public float TargetProgress;
-        public string HintText;
-
-        #endregion
-
-
-        private float valCounter = 0;
-        private bool isPlaying = false;
-
-        private bool isFading = false;
-        private float fadingTimer = 0;
-
+        private float _startLogicTime = -1f;
+        private float _duration = 1f;
+        private bool _isActive = false;
+        private bool _isCancelling = false;
+        private float _cancelFadeTimer = 0f;
 
         public void Update()
         {
-
-
-            if (isFading)
+            if (_isCancelling)
             {
-                fadingTimer -= Time.deltaTime;
-                if (fadingTimer < 0)
+                _cancelFadeTimer -= Time.deltaTime;
+                if (_cancelFadeTimer <= 0f)
                 {
-                    fadingTimer = -1;
-                    isFading = false;
-
-                    if (!isPlaying)
-                    {
-                        HideProgress(playingShowId);
-                    }
+                    _isCancelling = false;
+                    _isActive = false;
+                    gameObject.SetActive(false);
                 }
+                return;
             }
 
-
-            
-            if(isPlaying)
+            if (!_isActive)
             {
-                if (TargetProgress < 0)
-                {
-                    return;
-                }
-                valCounter += Time.deltaTime;
-                ProgressBar.fillAmount = valCounter / TargetProgress;
-                if (valCounter >= TargetProgress)
-                {
-                    OnProgressComplete();
-                }
+                return;
+            }
+
+            float elapsed = LogicTime.time - _startLogicTime;
+            float fill = Mathf.Clamp01(elapsed / _duration);
+            ProgressBar.fillAmount = fill;
+
+            if (fill >= 1f)
+            {
+                _isActive = false;
+                gameObject.SetActive(false);
             }
         }
 
-
-        public void Setup(long showId, string hintText, float targetProgress)
+        // 由 OverworldHUDPanel 调用；startLogicTime 作为幂等 key，重复调用相同 key 无副作用
+        public void Setup(string hintText, float duration, float startLogicTime)
         {
-            this.playingShowId = showId;
-            this.TargetProgress = targetProgress;
-            this.HintText = hintText;
+            _startLogicTime = startLogicTime;
+            _duration = Mathf.Max(duration, 0.01f);
+            _isActive = true;
+            _isCancelling = false;
+            _cancelFadeTimer = 0f;
 
-            valCounter = 0;
-            isPlaying = true;
-            isFading = false;
-            fadingTimer = -1;
-
-            hintTextComp.text = HintText;
-            ProgressBar.fillAmount = 0;
-
+            if (hintTextComp != null)
+            {
+                hintTextComp.text = hintText;
+            }
+            ProgressBar.fillAmount = 0f;
             gameObject.SetActive(true);
         }
 
-        public void HideProgress(long showId)
+        // 提前取消（打断/取消技能时）：短暂淡出后隐藏
+        public void TryCancel(float startLogicTime)
         {
-            if (playingShowId != showId)
+            if (!_isActive || !Mathf.Approximately(_startLogicTime, startLogicTime))
             {
                 return;
             }
 
-            playingShowId = 0;
-            isPlaying = false;
+            _isCancelling = true;
+            _cancelFadeTimer = 0.25f;
 
+            if (hintTextComp != null)
+            {
+                hintTextComp.text = "Cancel";
+            }
+        }
+
+        // 立即隐藏，不淡出
+        public void ForceHide(float startLogicTime)
+        {
+            if (!Mathf.Approximately(_startLogicTime, startLogicTime))
+            {
+                return;
+            }
+
+            _isActive = false;
+            _isCancelling = false;
             gameObject.SetActive(false);
         }
-
-        public void TryCancelProgressComplete(long showId, string cancelHint = "Cancel")
-        {
-            if(!isPlaying)
-            {
-                return;
-            }
-
-            if (playingShowId != showId)
-            {
-                return;
-            }
-
-            hintTextComp.text = cancelHint;
-            fadingTimer = 0.3f;
-            isFading = true;
-        }
-
-        public void OnProgressComplete()
-        {
-            HideProgress(playingShowId);
-        }
     }
-
 }
-
-

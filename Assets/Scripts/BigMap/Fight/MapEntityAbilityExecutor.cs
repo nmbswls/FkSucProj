@@ -185,7 +185,7 @@ namespace My.Map.Entity
 
             public List<ScheduledEvent> _scheduled = new();
 
-            public long ShowProgressShowId = 0;
+            public float PhaseStartLogicTime = 0f;
 
             // 变量集合
             public Dictionary<string, string> RunningVariables = new();
@@ -556,9 +556,11 @@ namespace My.Map.Entity
 
             if (EntityOwner.Type == EEntityType.Player && EntityOwner.viewer != null)
             {
+                float startTime = LogicTime.time;
                 if (phase.WithProgress)
                 {
-                    ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", ctx.PhaseDuration);
+                    ctx.PhaseStartLogicTime = startTime;
+                    EntityOwner.viewer.ShowBottomProgress("Checking", ctx.PhaseDuration, startTime);
                 }
                 else if (phase.HoldingPhase)
                 {
@@ -568,7 +570,8 @@ namespace My.Map.Entity
                         : ctx.PhaseDuration;
                     if (normalDur > 0f && normalDur < 50f)
                     {
-                        ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", normalDur);
+                        ctx.PhaseStartLogicTime = startTime;
+                        EntityOwner.viewer.ShowBottomProgress("Checking", normalDur, startTime);
                     }
                 }
             }
@@ -827,10 +830,10 @@ namespace My.Map.Entity
             }
 
             // 底部进度条清理（WithProgress 与 HoldingPhase 统一，仅玩家单位）
-            if (ctx.ShowProgressShowId != 0 && EntityOwner.Type == EEntityType.Player && EntityOwner.viewer != null)
+            if (ctx.PhaseStartLogicTime > 0f && EntityOwner.Type == EEntityType.Player && EntityOwner.viewer != null)
             {
-                EntityOwner.viewer.TryCancelButtomProgress(ctx.ShowProgressShowId);
-                ctx.ShowProgressShowId = 0;
+                EntityOwner.viewer.TryCancelButtomProgress(ctx.PhaseStartLogicTime);
+                ctx.PhaseStartLogicTime = 0f;
             }
         }
 

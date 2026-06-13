@@ -66,10 +66,6 @@ namespace My.Player
 
         public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
-        public string[] NormalSkillSlots => SkillSystem.NormalSkillSlots;
-
-        public string[] PassiveSkillSlots => SkillSystem.PassiveSkillSlots;
-
         readonly List<string> _registeredSkillIdScratch = new();
 
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离

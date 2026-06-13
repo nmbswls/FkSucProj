@@ -2,21 +2,14 @@ namespace My.UI
 {
     public partial class OverworldHUDPanel
     {
-        public long ShowBottomProgress(string hintText, float targetProgress)
+        public void ShowBottomProgress(string hintText, float duration, float phaseStartLogicTime)
         {
-            var showId = ++BottomProgressPanel.ShowInstIdCounter;
-            bottomProgressPanel.Setup(showId, hintText, targetProgress);
-            return showId;
+            bottomProgressPanel.Setup(hintText, duration, phaseStartLogicTime);
         }
 
-        public void HideBottomProgress(long showId)
+        public void TryCancelProgressComplete(float phaseStartLogicTime)
         {
-            bottomProgressPanel.HideProgress(showId);
-        }
-
-        public void TryCancelProgressComplete(long showId)
-        {
-            bottomProgressPanel.TryCancelProgressComplete(showId);
+            bottomProgressPanel.TryCancel(phaseStartLogicTime);
         }
     }
 }
