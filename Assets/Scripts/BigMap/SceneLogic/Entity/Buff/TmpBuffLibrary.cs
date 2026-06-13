@@ -1173,10 +1173,27 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
                     },
-                    DurationEffect = new BuffDurationEffet()
+                    // AnimOverride: ParamStr1=被替换的基础 locomotion 名，ParamStr2=目标 clip 名
+                    DurationEffects = new List<BuffDurationEffet>()
                     {
-                        DurationType = EBuffDurationType.AnimOverride,
-                        ParamStr1 = "knocked_down",
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.AnimOverride,
+                            ParamStr1 = "idle",
+                            ParamStr2 = "knocked_down",
+                        },
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.AnimOverride,
+                            ParamStr1 = "move",
+                            ParamStr2 = "knocked_down",
+                        },
+                        new BuffDurationEffet()
+                        {
+                            DurationType = EBuffDurationType.AnimOverride,
+                            ParamStr1 = "walk",
+                            ParamStr2 = "knocked_down",
+                        },
                     },
                     DefaultDuration = 3f,
                     IsHidden = false,

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 910000002}
   - component: {fileID: 910000003}
-  - component: {fileID: 910000004}
   m_Layer: 0
   m_Name: orb_skill_v1
   m_TagString: Untagged
@@ -52,18 +51,7 @@ MonoBehaviour:
   _shadowView: {fileID: 0}
   _mainSpriteArr: []
   pivotHeader: {fileID: 0}
---- !u!114 &910000004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1e2f3a4b5c6789012345678abcdef01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  orbitRoot: {fileID: 910000021}
   orbSlots:
   - {fileID: 910000102}
   - {fileID: 910000202}
