@@ -1963,12 +1963,12 @@ namespace My.Map
             // 叠加高潮条（快乐条
             if (climax > 0)
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, climax, intent?.isEnmity ?? false, EDmgFlag.None, intent.srcEntityId);
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerPleasure, climax, intent?.isEnmity ?? false, EDmgFlag.None, intent?.srcEntityId ?? 0);
             }
 
             if (estrus > 0)
             {
-                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, estrus, intent?.isEnmity ?? false, EDmgFlag.None, intent.srcEntityId);
+                attributeStore.ApplyResourceChange(AttrIdConsts.PlayerEstrusProgrss, estrus, intent?.isEnmity ?? false, EDmgFlag.None, intent?.srcEntityId ?? 0);
             }
         }
 

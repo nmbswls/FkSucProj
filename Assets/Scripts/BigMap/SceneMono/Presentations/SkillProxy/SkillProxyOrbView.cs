@@ -3,15 +3,20 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    // orb 专属表现：本体跟随玩家（逻辑层 FollowOwner），子节点 orbitRoot 做视觉公转。
+    // orb prefab 表现：逻辑层 FollowOwner，子节点 orbitRoot 按半径/角速度/初相做视觉公转。
     [RequireComponent(typeof(SkillProxyPresenter))]
     public class SkillProxyOrbView : MonoBehaviour
     {
+        [SerializeField] private string slotResourceId = "ammo";
         [SerializeField] private Transform orbitRoot;
-        [SerializeField] private float visualOrbitDegPerSec = 120f;
+        [SerializeField] private Transform orbitVisual;
+        [SerializeField] private float orbitRadius = 1.2f;
+        [SerializeField] private float orbitAngularSpeed = 120f;
+        [SerializeField] private float orbitInitialAngle;
         [SerializeField] private SkillProxyOrbSlotView[] orbSlots;
 
         SkillProxyPresenter _presenter;
+        float _orbitAngleDeg;
 
         void Awake()
         {
@@ -22,10 +27,18 @@ namespace My.Map.Scene
                 orbitRoot = transform.Find("orbitRoot");
             }
 
+            if (orbitVisual == null && orbitRoot != null && orbitRoot.childCount > 0)
+            {
+                orbitVisual = orbitRoot.GetChild(0);
+            }
+
             if (orbSlots == null || orbSlots.Length == 0)
             {
                 orbSlots = GetComponentsInChildren<SkillProxyOrbSlotView>(true);
             }
+
+            _orbitAngleDeg = orbitInitialAngle;
+            ApplyOrbitLayout();
         }
 
         void OnEnable()
@@ -37,10 +50,9 @@ namespace My.Map.Scene
 
             _presenter.EvBound += OnBound;
             _presenter.EvUnbound += OnUnbound;
-            _presenter.EvAmmoChanged += OnAmmoChanged;
+            _presenter.EvResourceChanged += OnResourceChanged;
             _presenter.EvPeriodicCast += OnPeriodicCast;
 
-            // 对象池复用时 Bind 可能早于 OnEnable，补一次同步避免 slot 全灭。
             TryRefreshIfAlreadyBound();
         }
 
@@ -53,7 +65,7 @@ namespace My.Map.Scene
 
             _presenter.EvBound -= OnBound;
             _presenter.EvUnbound -= OnUnbound;
-            _presenter.EvAmmoChanged -= OnAmmoChanged;
+            _presenter.EvResourceChanged -= OnResourceChanged;
             _presenter.EvPeriodicCast -= OnPeriodicCast;
         }
 
@@ -64,7 +76,21 @@ namespace My.Map.Scene
                 return;
             }
 
-            orbitRoot.Rotate(0f, 0f, visualOrbitDegPerSec * Time.deltaTime);
+            _orbitAngleDeg += orbitAngularSpeed * Time.deltaTime;
+            orbitRoot.localRotation = Quaternion.Euler(0f, 0f, _orbitAngleDeg);
+        }
+
+        void ApplyOrbitLayout()
+        {
+            if (orbitVisual != null)
+            {
+                orbitVisual.localPosition = new Vector3(orbitRadius, 0f, 0f);
+            }
+
+            if (orbitRoot != null)
+            {
+                orbitRoot.localRotation = Quaternion.Euler(0f, 0f, _orbitAngleDeg);
+            }
         }
 
         void TryRefreshIfAlreadyBound()
@@ -77,8 +103,12 @@ namespace My.Map.Scene
 
         void OnBound(SkillProxyLogicEntity logic)
         {
-            int current = (int)logic.GetAttr(logic.Cfg.AmmoResourceId);
-            RefreshSlots(current);
+            if (logic.Cfg.InitialResources != null &&
+                logic.Cfg.InitialResources.TryGetValue(slotResourceId, out _))
+            {
+                int current = (int)logic.GetAttr(slotResourceId);
+                RefreshSlots(current);
+            }
         }
 
         void OnUnbound()
@@ -86,8 +116,13 @@ namespace My.Map.Scene
             RefreshSlots(0);
         }
 
-        void OnAmmoChanged(int current, int max)
+        void OnResourceChanged(string resourceId, int current, int max)
         {
+            if (resourceId != slotResourceId)
+            {
+                return;
+            }
+
             RefreshSlots(current);
         }
 

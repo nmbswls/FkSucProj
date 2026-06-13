@@ -2372,7 +2372,7 @@ namespace My.Map.Entity
             spec.CastCosts.Add(new SkillCostEntry
             {
                 CostType = ESkillCostType.Resource,
-                ResourceId = AttrIdConsts.SkillProxyOrbAmmo,
+                ResourceId = AttrIdConsts.Ammo,
                 Amount = 1,
                 Target = ESkillCostTarget.HostEntity,
             });

@@ -99,9 +99,65 @@ namespace My
             _finished = false;
             _hitCD.Clear();
 
-            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg; // 与 +X 轴夹角
-            if (owner.ViewRoot != null)
-                owner.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward); // 绕 Z 轴
+            TryUpdateHomingDir();
+            SyncViewRotation();
+        }
+
+        void TryUpdateHomingDir()
+        {
+            if (!PD.isHoming || _time > PD.homingTime)
+            {
+                return;
+            }
+
+            var info = ownerProj.bindingProjInfo;
+            Vector2? targetPos = null;
+            if (info.homingTargetId != null && info.homingTargetId != 0)
+            {
+                var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(info.homingTargetId.Value, false);
+                if (target != null)
+                {
+                    targetPos = target.Pos;
+                }
+            }
+            else if (info.homingTargetPos.HasValue)
+            {
+                targetPos = info.homingTargetPos.Value;
+            }
+
+            if (!targetPos.HasValue)
+            {
+                if (_dir.sqrMagnitude < 1e-8f)
+                {
+                    _dir = Vector2.right;
+                }
+
+                return;
+            }
+
+            Vector2 to = targetPos.Value - _pos;
+            if (to.sqrMagnitude > 1e-8f)
+            {
+                _dir = to.normalized;
+            }
+            else if (_dir.sqrMagnitude < 1e-8f)
+            {
+                _dir = Vector2.right;
+            }
+        }
+
+        void SyncViewRotation()
+        {
+            if (_dir.sqrMagnitude < 1e-8f)
+            {
+                return;
+            }
+
+            float angle = Mathf.Atan2(_dir.y, _dir.x) * Mathf.Rad2Deg;
+            if (ownerProj.ViewRoot != null)
+            {
+                ownerProj.ViewRoot.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            }
         }
 
         public void Tick(float dt)
@@ -115,10 +171,12 @@ namespace My
                 if (ownerProj.bindingProjInfo.pData.TriggerOnLifeEnd)
                 {
                     MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
-                    //ProjectileUtil.HandleExplodeEffect(ownerProj.bindingProjInfo, ownerProj.transform.position, null);
                 }
                 return;
             }
+
+            TryUpdateHomingDir();
+            SyncViewRotation();
 
             _speed += D.acceleration * dt;
             if (_speed < 0f) _speed = 0f;

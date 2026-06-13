@@ -12,7 +12,7 @@ namespace My.Map.Scene
     {
         public event Action<SkillProxyLogicEntity> EvBound;
         public event Action EvUnbound;
-        public event Action<int, int> EvAmmoChanged;
+        public event Action<string, int, int> EvResourceChanged;
         public event Action EvPeriodicCast;
 
         public override void Bind(ILogicEntity logic)
@@ -23,7 +23,7 @@ namespace My.Map.Scene
                 return;
             }
 
-            _logic.EventOnAmmoResourceChanged += OnAmmoChanged;
+            _logic.EventOnResourceChanged += OnResourceChanged;
             _logic.EventOnPeriodicCast += OnPeriodicCast;
 
             EvBound?.Invoke(_logic);
@@ -33,7 +33,7 @@ namespace My.Map.Scene
         {
             if (_logic != null)
             {
-                _logic.EventOnAmmoResourceChanged -= OnAmmoChanged;
+                _logic.EventOnResourceChanged -= OnResourceChanged;
                 _logic.EventOnPeriodicCast -= OnPeriodicCast;
             }
 
@@ -52,7 +52,8 @@ namespace My.Map.Scene
             }
         }
 
-        void OnAmmoChanged(int current, int max) => EvAmmoChanged?.Invoke(current, max);
+        void OnResourceChanged(string resourceId, int current, int max) =>
+            EvResourceChanged?.Invoke(resourceId, current, max);
 
         void OnPeriodicCast() => EvPeriodicCast?.Invoke();
     }

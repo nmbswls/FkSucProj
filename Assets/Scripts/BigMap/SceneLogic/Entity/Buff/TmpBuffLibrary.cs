@@ -1815,7 +1815,7 @@ namespace My.Map.Entity
                             {
                                 new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId = AttrIdConsts.SkillProxyOrbAmmo,
+                                    ResourceId = "ammo",
                                     AddValue = 1,
                                     IsSelf = true,
                                 },

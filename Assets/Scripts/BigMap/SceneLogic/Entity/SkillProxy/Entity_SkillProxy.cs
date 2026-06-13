@@ -11,12 +11,11 @@ namespace My.Map.Entity
         public long OwnerEntityId { get; private set; }
         public SkillProxyAbilityExecutor AbilityController { get; private set; }
 
-        public event Action<int, int> EventOnAmmoResourceChanged;
+        public event Action<string, int, int> EventOnResourceChanged;
         public event Action EventOnPeriodicCast;
 
         BaseUnitLogicEntity _owner;
         float _nextCastTime;
-        float _orbitAngle;
         Vector2 _fixedWorldPos;
         bool _fixedWorldCaptured;
 
@@ -55,49 +54,64 @@ namespace My.Map.Entity
             }
 
             AbilityController = new SkillProxyAbilityExecutor(this, _owner);
-            _orbitAngle = Cfg.OrbitInitialAngle * Mathf.Deg2Rad;
             _nextCastTime = LogicTime.time;
 
-            InitAmmoResource();
+            InitResources();
             InitStartupBuffs();
         }
 
-        void InitAmmoResource()
+        void InitResources()
         {
-            attributeStore.RegisterResource(
-                Cfg.AmmoResourceId,
-                maxAttrId: null,
-                fixMaxValue: Cfg.MaxAmmo,
-                initialCurrent: Cfg.MaxAmmo);
+            if (Cfg.InitialResources == null)
+            {
+                return;
+            }
 
-            attributeStore.EvOnResourceAttrChanged += OnAmmoResourceChanged;
+            foreach (var kv in Cfg.InitialResources)
+            {
+                attributeStore.RegisterResource(
+                    kv.Key,
+                    maxAttrId: null,
+                    fixMaxValue: kv.Value,
+                    initialCurrent: kv.Value);
+            }
+
+            attributeStore.EvOnResourceAttrChanged += OnResourceChanged;
             attributeStore.Commit();
         }
 
         void InitStartupBuffs()
         {
-            if (!string.IsNullOrEmpty(Cfg.OrbRegenBuffId))
+            if (Cfg.SelfBuffIds != null)
             {
-                LogicManager.globalBuffManager.AddBuff(Id, Cfg.OrbRegenBuffId, casterId: OwnerEntityId);
+                foreach (var buffId in Cfg.SelfBuffIds)
+                {
+                    if (string.IsNullOrEmpty(buffId))
+                    {
+                        continue;
+                    }
+
+                    LogicManager.globalBuffManager.AddBuff(Id, buffId, casterId: OwnerEntityId);
+                }
             }
 
-            if (!string.IsNullOrEmpty(Cfg.OwnerLinkMarkBuffId))
+            if (!string.IsNullOrEmpty(Cfg.OwnerLinkBuffId))
             {
                 LogicManager.globalBuffManager.RequestAddBuff(
                     OwnerEntityId,
-                    Cfg.OwnerLinkMarkBuffId,
+                    Cfg.OwnerLinkBuffId,
                     casterId: Id);
             }
         }
 
-        void OnAmmoResourceChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
+        void OnResourceChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
         {
-            if (attrId != Cfg.AmmoResourceId)
+            if (Cfg.InitialResources == null || !Cfg.InitialResources.TryGetValue(attrId, out int max))
             {
                 return;
             }
 
-            EventOnAmmoResourceChanged?.Invoke((int)after, Cfg.MaxAmmo);
+            EventOnResourceChanged?.Invoke(attrId, (int)after, max);
         }
 
         protected override void OnTick(float dt)
@@ -130,7 +144,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(Cfg.OwnerLinkMarkBuffId) && !_owner.CheckHasBuff(Cfg.OwnerLinkMarkBuffId))
+            if (!string.IsNullOrEmpty(Cfg.OwnerLinkBuffId) && !_owner.CheckHasBuff(Cfg.OwnerLinkBuffId))
             {
                 DoEntityDestroyed("link_mark_lost");
                 return false;
@@ -153,15 +167,6 @@ namespace My.Map.Entity
                     break;
                 case ESkillProxyAnchorMode.MirrorOwnerFacing:
                     SetPosition(_owner.Pos + Cfg.AnchorOffset);
-                    break;
-                case ESkillProxyAnchorMode.OrbitOwner:
-                    {
-                        _orbitAngle += Cfg.OrbitAngularSpeed * dt;
-                        var offset = new Vector2(
-                            Mathf.Cos(_orbitAngle) * Cfg.OrbitRadius,
-                            Mathf.Sin(_orbitAngle) * Cfg.OrbitRadius);
-                        SetPosition(_owner.Pos + offset + Cfg.AnchorOffset);
-                    }
                     break;
                 case ESkillProxyAnchorMode.FixedWorld:
                     {
@@ -264,11 +269,11 @@ namespace My.Map.Entity
 
         public override void DoEntityDestroyed(string reason)
         {
-            if (_owner != null && !string.IsNullOrEmpty(Cfg?.OwnerLinkMarkBuffId))
+            if (_owner != null && !string.IsNullOrEmpty(Cfg?.OwnerLinkBuffId))
             {
                 LogicManager.globalBuffManager.RemoveAllBuffById(
                     _owner.Id,
-                    Cfg.OwnerLinkMarkBuffId,
+                    Cfg.OwnerLinkBuffId,
                     casterId: Id);
             }
 
@@ -279,7 +284,7 @@ namespace My.Map.Entity
         {
             if (attributeStore != null)
             {
-                attributeStore.EvOnResourceAttrChanged -= OnAmmoResourceChanged;
+                attributeStore.EvOnResourceAttrChanged -= OnResourceChanged;
             }
 
             base.OnDespawn(ref snapshot);

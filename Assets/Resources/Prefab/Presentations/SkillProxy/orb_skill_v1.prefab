@@ -63,8 +63,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e2f3a4b5c6789012345678abcdef01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slotResourceId: ammo
   orbitRoot: {fileID: 910000021}
-  visualOrbitDegPerSec: 120
+  orbitVisual: {fileID: 910000011}
+  orbitRadius: 1.2
+  orbitAngularSpeed: 120
+  orbitInitialAngle: 0
   orbSlots:
   - {fileID: 910000102}
   - {fileID: 910000202}

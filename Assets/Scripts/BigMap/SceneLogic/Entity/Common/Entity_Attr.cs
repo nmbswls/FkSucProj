@@ -140,8 +140,8 @@ namespace My.Map
                 case AttrIdConsts.NPCSJProgress:
                 case AttrIdConsts.UnitHShield:
                 case AttrIdConsts.UnitKnockDown:
-
-                case AttrIdConsts.SkillProxyOrbAmmo:
+                case AttrIdConsts.Ammo:
+                    
 
                     return EAttrType.Resource;
 
