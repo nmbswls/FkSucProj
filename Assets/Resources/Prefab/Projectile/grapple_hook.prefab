@@ -75,11 +75,11 @@ LineRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Positions:
-  - {x: 5.638156, y: 2.0521207, z: 0}
+  - {x: 4.576303, y: 1.665638, z: 0}
   - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1.82
+    widthMultiplier: 0.7109375
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -129,7 +129,7 @@ LineRenderer:
     numCapVertices: 0
     alignment: 1
     textureMode: 1
-    textureScale: {x: 1.25, y: 1}
+    textureScale: {x: 3.2, y: 1}
     shadowBias: 0
     generateLightingData: 0
   m_MaskInteraction: 0
@@ -162,7 +162,7 @@ Transform:
   m_GameObject: {fileID: 6004916971912370882}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.1736482, w: 0.9848078}
-  m_LocalPosition: {x: 5.638156, y: 2.0521207, z: 0}
+  m_LocalPosition: {x: 4.576303, y: 1.665638, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -314,17 +314,15 @@ MonoBehaviour:
   hookTipTransform: {fileID: 3843181342102996622}
   hookTipSprite: {fileID: 4744204886257871721}
   syncArtFromMaterial: 1
-  linkLengthWorld: 0.8
-  ropeThicknessWorld: 1.82
-  spritePixelsPerUnit: 100
+  linkLengthWorld: 0.3125
+  ropeThicknessWorld: 0.7109375
+  spritePixelsPerUnit: 256
   maxRopeLength: 6
   extendSpeed: 8
-  retractSpeed: 26
+  retractDuration: 0.25
   hookTipRotationOffset: 0
-  pullDuration: 0.35
-  pullFadeDuration: 0.12
   previewInEditor: 1
-  editorPreviewLength: 6
+  editorPreviewLength: 4.87
   editorPreviewAngle: 20
 --- !u!1 &7209630276675025286
 GameObject:

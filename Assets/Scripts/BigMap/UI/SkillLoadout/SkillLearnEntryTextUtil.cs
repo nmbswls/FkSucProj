@@ -9,7 +9,7 @@ namespace My.UI.SkillLoadout
 {
     public static class SkillLearnEntryTextUtil
     {
-        public static string ResolveDisplayName(SkillLearnEntry entry, EntitySkillData skillCfg)
+        public static string ResolveDisplayName(SkillLearnEntry entry, EntitySkillData skillCfg, string fallbackSkillId = null)
         {
             if (entry != null && !string.IsNullOrEmpty(entry.DisplayName))
             {
@@ -21,7 +21,22 @@ namespace My.UI.SkillLoadout
                 return skillCfg.Desc;
             }
 
+            if (!string.IsNullOrEmpty(fallbackSkillId))
+            {
+                return fallbackSkillId;
+            }
+
             return entry?.SkillId ?? string.Empty;
+        }
+
+        public static string BuildEquippedStatusLine(SkillLoadoutSlotKind slotKind, int slotIndex)
+        {
+            if (slotKind == SkillLoadoutSlotKind.Passive)
+            {
+                return $"已装备于被动槽 {slotIndex + 1}，点击下方可卸下";
+            }
+
+            return $"已装备于主动槽 {slotIndex + 1}，点击下方可卸下";
         }
 
         public static string BuildLearnCostLine(IReadOnlyList<CommonCheckCond> conds)

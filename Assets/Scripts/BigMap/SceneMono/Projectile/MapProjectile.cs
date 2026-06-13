@@ -16,6 +16,9 @@ namespace My
 
         public event System.Action<Vector2> EventEntityHit;
 
+        // 钩爪 bullet 发射后广播：(projectile, casterId)
+        public static event System.Action<MapProjectile, long> GrappleHookFired;
+
         private IMapProjectileMotion _motion;
         private Transform _body;
         private Transform _shadow;           // 仅抛物用
@@ -82,11 +85,12 @@ namespace My
             _lifetime = info.pData.maxLifetime;
             _despawned = false;
 
-            if (info.pData.id == GrappleHookSpecs.BulletId)
-            {
-                var hookCtrl = GetComponent<GrappleHookLineCtrl>();
-                hookCtrl?.InitFromLaunch();
-            }
+        if (info.pData.id == GrappleHookSpecs.BulletId)
+        {
+            var hookCtrl = GetComponent<GrappleHookLineCtrl>();
+            hookCtrl?.InitFromLaunch();
+            GrappleHookFired?.Invoke(this, info.ownerEntity?.Id ?? 0);
+        }
         }
 
         public void NotifyEntityHit(Vector2 hitWorldPos)

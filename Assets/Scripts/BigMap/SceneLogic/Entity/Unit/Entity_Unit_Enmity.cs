@@ -236,12 +236,17 @@ namespace My.Map.Unit
                 return true;
             }
 
-            var playerEntity = UnitEntity.LogicManager.playerLogicEntity;
+            var playerEntity = UnitEntity.LogicManager.LocalPlayerEntity;
 
             if (otherUnit.FactionId == EFactionId.Ally
                 && UnitEntity.IsInCombat)
             {
                 return true;
+            }
+
+            if(UnitEntity.LogicManager.GameSession.PlayerHumanMode)
+            {
+                return false;
             }
 
             if (UnitEntity.FactionId == EFactionId.Ally

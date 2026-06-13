@@ -7,13 +7,24 @@ using UnityEngine.UI;
 
 namespace My.UI.SkillLoadout
 {
-    public class SkillSlotView : MonoBehaviour, IPointerClickHandler
+    public class SkillSlotView : MonoBehaviour,
+        IPointerClickHandler,
+        IBeginDragHandler,
+        IDragHandler,
+        IEndDragHandler
     {
         public SkillLoadoutSlotKind slotKind = SkillLoadoutSlotKind.Active;
         public int SlotIndex;
         public TMP_Text label;
         public Image icon;
         [SerializeField] SkillEquippedHoverProvider hoverProvider;
+
+        string _boundSkillId;
+
+        // 主动槽 0-2 为固定槽不允许拖拽卸下，被动槽全部允许；槽位必须有技能
+        bool CanDragUnequip =>
+            !string.IsNullOrEmpty(_boundSkillId)
+            && (slotKind == SkillLoadoutSlotKind.Passive || SlotIndex >= 3);
 
         public void RefreshDisplay(PlayerSkillSystem sys)
         {
@@ -35,6 +46,8 @@ namespace My.UI.SkillLoadout
                 : (SlotIndex >= 0 && SlotIndex < sys.NormalSkillSlots.Length
                     ? sys.NormalSkillSlots[SlotIndex]
                     : null);
+
+            _boundSkillId = id;
 
             var cfg = !string.IsNullOrEmpty(id) ? SkillLibrary.GetSkillConfig(id) : null;
             if (label != null)
@@ -75,6 +88,22 @@ namespace My.UI.SkillLoadout
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            var panel = SkillLoadoutPanel.Current;
+            if (panel == null)
+            {
+                return;
+            }
+
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (!string.IsNullOrEmpty(_boundSkillId))
+                {
+                    panel.ShowEquippedSkillDetail(slotKind, SlotIndex, _boundSkillId);
+                }
+
+                return;
+            }
+
             if (eventData.button != PointerEventData.InputButton.Right)
             {
                 return;
@@ -85,13 +114,49 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            var panel = SkillLoadoutPanel.Current;
-            if (panel == null)
+            panel.TryClearPassiveSlotFromUi(SlotIndex);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (eventData.button != PointerEventData.InputButton.Left || !CanDragUnequip)
             {
                 return;
             }
 
-            panel.TryClearPassiveSlotFromUi(SlotIndex);
+            var sys = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.SkillSystem;
+            if (sys == null)
+            {
+                return;
+            }
+
+            if (sys.IsGrantedPassive(_boundSkillId) || sys.IsGrantedActive(_boundSkillId))
+            {
+                return;
+            }
+
+            var behavior = new SlotUnequipDragBehavior(slotKind, SlotIndex);
+            behavior.OnBeginDragFromPool(_boundSkillId);
+        }
+
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (!SkillDragSession.IsDragging)
+            {
+                return;
+            }
+
+            SkillDragSession.FollowScreenPoint(eventData.position);
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            if (!SkillDragSession.IsDragging)
+            {
+                return;
+            }
+
+            SkillDragSession.EndDrag(eventData);
         }
     }
 }

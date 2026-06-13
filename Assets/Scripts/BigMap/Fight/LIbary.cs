@@ -831,13 +831,7 @@ namespace My.Map.Entity
                 {
                     OnHitEffects = new()
                     {
-                        new MapAbilityEffectControlledMoveCfg()
-                        {
-                            TargetType = 1,
-                            UseTriggerPos = true,
-                            FixedDuration = GrappleHookSpecs.PullDuration,
-                            StopOffset = 0.55f,
-                        },
+                        // 命中后立即推进技能相位；玩家贴近由 PlayerGrappleController 驱动
                         new MapAbilityEffectNextPhaseCfg()
                         {
                             MatchSkill = "grapple_hook",

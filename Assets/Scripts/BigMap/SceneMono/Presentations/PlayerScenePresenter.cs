@@ -147,6 +147,11 @@ namespace My.Map.Scene
                     _humanWeaponView = gameObject.AddComponent<PlayerHumanWeaponView>();
                 }
             }
+
+            if (GetComponent<PlayerGrappleController>() == null)
+            {
+                gameObject.AddComponent<PlayerGrappleController>();
+            }
         }
 
         public PlayerLogicEntity PlayerEntity

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8960401252776488071}
   - component: {fileID: 418906178683047632}
   - component: {fileID: 548664485161855505}
-  - component: {fileID: 8309904710913787859}
   - component: {fileID: 9200005004}
   m_Layer: 0
   m_Name: SkillLoadoutActiveSlot
@@ -80,20 +79,6 @@ MonoBehaviour:
   label: {fileID: 2973683638458526847}
   icon: {fileID: 6573192301609403915}
   hoverProvider: {fileID: 9200005004}
---- !u!114 &8309904710913787859
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126985090801656618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68fb7d8f9d3bae54cae0f6677c46ebae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  view: {fileID: 548664485161855505}
-  mode: 1
 --- !u!114 &9200005004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68fb7d8f9d3bae54cae0f6677c46ebae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  view: {fileID: 0}
+  view: {fileID: 548664485161855505}
   mode: 0
 --- !u!1 &5503759607175872496
 GameObject:

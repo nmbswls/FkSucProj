@@ -119,6 +119,33 @@ namespace My.Player
             "player_return_disguise",
         };
 
+        // 默认槽位技能，卸下后回滚到此值（null 表示该槽位无默认）
+        static readonly string[] DefaultNormalSlotSkills =
+        {
+            "queen_attack",          // 0
+            "queen_attack_heavy",    // 1
+            "queen_dash",            // 2
+            null,        // 3
+            null,        // 4
+            null,        // 5
+            null,        // 6
+            null,        // 7
+        };
+
+        // 返回指定普通槽的默认技能 id，不存在则返回 null
+        public static string GetDefaultNormalSlotSkill(int slotIndex)
+        {
+            if (slotIndex < 0 || slotIndex >= DefaultNormalSlotSkills.Length)
+            {
+                return null;
+            }
+
+            return DefaultNormalSlotSkills[slotIndex];
+        }
+
+        // 被动槽没有预设默认，始终返回 null
+        public static string GetDefaultPassiveSlotSkill(int slotIndex) => null;
+
         public PlayerSkillSystem()
         {
             NormalSkillSlots[0] = "queen_attack";
@@ -711,6 +738,32 @@ namespace My.Player
             }
 
             PassiveSkillSlots[slotIndex] = null;
+            return true;
+        }
+
+        public bool TryClearNormalSlot(int slotIndex, out string failReason)
+        {
+            failReason = null;
+            if (slotIndex < 3 || slotIndex > 7)
+            {
+                failReason = "fixed_slot";
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(NormalSkillSlots[slotIndex]))
+            {
+                failReason = "empty_slot";
+                return false;
+            }
+
+            var skillId = NormalSkillSlots[slotIndex];
+            if (IsGrantedPassive(skillId) || IsGrantedActive(skillId))
+            {
+                failReason = "granted_not_slotable";
+                return false;
+            }
+
+            NormalSkillSlots[slotIndex] = null;
             return true;
         }
 

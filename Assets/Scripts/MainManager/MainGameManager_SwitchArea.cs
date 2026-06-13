@@ -268,7 +268,7 @@ namespace My
             const int lifecyclePumpsPerYield = 32;
             const float wallSeconds = 30f;
             float waitStart = Time.realtimeSinceStartup;
-
+            Debug.LogWarning("Area switch loading wait 1 " + Time.realtimeSinceStartup);
             while (true)
             {
                 if (Time.realtimeSinceStartup - waitStart > wallSeconds)
@@ -291,7 +291,7 @@ namespace My
 
                 await Task.Delay(16);
             }
-
+            Debug.LogWarning("Area switch loading wait 2 " + Time.realtimeSinceStartup);
             if (WorldAreaManager.Instance.cacheAreaOverlayInfo == null
                 || !WorldAreaManager.Instance.cacheAreaOverlayInfo.IsSecretBase)
             {

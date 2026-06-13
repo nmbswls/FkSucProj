@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Map.Entity;
 using My.Player;
 using My.UI;
 using TMPro;
@@ -44,6 +45,7 @@ namespace My.UI.SkillLoadout
 
         [SerializeField] TextMeshProUGUI schoolLabel;
         [SerializeField] Button schoolBackBtn;
+        [SerializeField] GameObject noSchoolUnlockedHint;
 
 
         IPlayerProgressionHubHost _progressionHubHost;
@@ -264,7 +266,17 @@ namespace My.UI.SkillLoadout
 
         void WireSkillDetailView()
         {
-            skillDetailView?.SetLearnHandler(OnLearnEntryClicked);
+            if (skillDetailView == null)
+            {
+                return;
+            }
+
+            skillDetailView.SetLearnHandler(OnLearnEntryClicked);
+            skillDetailView.SetUpgradeHandler(OnLearnEntryClicked);
+            skillDetailView.SetEquipHandler(OnEquipSkillClicked);
+            skillDetailView.SetUnequipHandler(OnUnequipEntryClicked);
+            skillDetailView.SetLocateHandler(OnLocateSkillClicked);
+            skillDetailView.SetCloseHandler(OnDetailViewClosed);
         }
 
         void WireUiEvents()
@@ -429,6 +441,32 @@ namespace My.UI.SkillLoadout
                 SkillSchool school = i < schools.Count ? schools[i] : null;
                 entryView.Bind(i, school, OnSchoolEntryClicked);
             }
+
+            RefreshNoSchoolHint(schools);
+        }
+
+        void RefreshNoSchoolHint(System.Collections.Generic.List<SkillSchool> schools)
+        {
+            if (noSchoolUnlockedHint == null)
+            {
+                return;
+            }
+
+            bool anyUnlocked = false;
+            for (var i = 0; i < schools.Count; i++)
+            {
+                if (schools[i] != null && SkillSchoolAccessUtil.IsSchoolUnlocked(schools[i].SchoolId))
+                {
+                    anyUnlocked = true;
+                    break;
+                }
+            }
+
+            noSchoolUnlockedHint.SetActive(!anyUnlocked);
+            if (schoolTabContainer != null)
+            {
+                schoolTabContainer.gameObject.SetActive(anyUnlocked);
+            }
         }
 
         void OnSchoolEntryClicked(int schoolId)
@@ -500,6 +538,28 @@ namespace My.UI.SkillLoadout
 
             RefreshSchoolEntries();
             RefreshEquippedSlots();
+
+            // 有已解锁学派时自动进入第一个
+            var firstUnlocked = FindFirstUnlockedSchoolId();
+            if (firstUnlocked > 0)
+            {
+                EnterEquippedScreen(firstUnlocked);
+            }
+        }
+
+        int FindFirstUnlockedSchoolId()
+        {
+            var schools = SkillLearnCatalog.GetSchoolsSorted();
+            for (var i = 0; i < schools.Count; i++)
+            {
+                var school = schools[i];
+                if (school != null && SkillSchoolAccessUtil.IsSchoolUnlocked(school.SchoolId))
+                {
+                    return school.SchoolId;
+                }
+            }
+
+            return 0;
         }
 
         void EnterEquippedScreen(int schoolId)
@@ -659,6 +719,26 @@ namespace My.UI.SkillLoadout
             skillDetailView.Show(entryId);
         }
 
+        public void ShowEquippedSkillDetail(SkillLoadoutSlotKind slotKind, int slotIndex, string skillId)
+        {
+            _selectedEntryId = 0;
+            RefreshSkillGridSelection();
+
+            EnsureSkillDetailView();
+            if (skillDetailView == null)
+            {
+                return;
+            }
+
+            var detailTr = skillDetailView.transform;
+            if (detailTr.parent != null)
+            {
+                detailTr.SetAsLastSibling();
+            }
+
+            skillDetailView.ShowEquipped(slotKind, slotIndex, skillId);
+        }
+
         void HideSkillDetail()
         {
             skillDetailView?.Hide();
@@ -722,6 +802,156 @@ namespace My.UI.SkillLoadout
 
             _selectedEntryId = 0;
             HideSkillDetail();
+            RefreshAll();
+        }
+
+        void OnEquipSkillClicked(string skillId)
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            if (sys == null || string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            var cfg = SkillLibrary.GetSkillConfig(skillId);
+            bool isPassive = cfg != null && cfg.IsPassive;
+
+            bool ok;
+            string reason;
+
+            if (isPassive)
+            {
+                int slot = FindEmptyPassiveSlot(sys);
+                if (slot < 0)
+                {
+                    ShowLearnFailedTip("被动槽已满，请先卸下一个被动技能");
+                    return;
+                }
+
+                ok = sys.TryAssignPassiveSlot(slot, skillId, false, out reason);
+            }
+            else
+            {
+                int slot = FindEmptyNormalSlot(sys);
+                if (slot < 0)
+                {
+                    ShowLearnFailedTip("技能槽已满，请先卸下一个主动技能");
+                    return;
+                }
+
+                ok = sys.TryAssignNormalSlot(slot, skillId, false, out reason);
+            }
+
+            if (!ok)
+            {
+                ShowLearnFailedTip(string.IsNullOrEmpty(reason) ? "无法装配该技能" : reason);
+                return;
+            }
+
+            HideSkillDetail();
+            ApplyLoadoutToEntity();
+            RefreshAll();
+        }
+
+        void OnLocateSkillClicked(int schoolId)
+        {
+            if (schoolId <= 0)
+            {
+                return;
+            }
+
+            HideSkillDetail();
+            EnterEquippedScreen(schoolId);
+        }
+
+        void OnDetailViewClosed()
+        {
+            _selectedEntryId = 0;
+            RefreshSkillGridSelection();
+        }
+
+        static int FindEmptyPassiveSlot(PlayerSkillSystem sys)
+        {
+            for (int i = 0; i < sys.PassiveSkillSlots.Length; i++)
+            {
+                if (string.IsNullOrEmpty(sys.PassiveSkillSlots[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        static int FindEmptyNormalSlot(PlayerSkillSystem sys)
+        {
+            for (int i = 3; i <= 7; i++)
+            {
+                if (string.IsNullOrEmpty(sys.NormalSkillSlots[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        void OnUnequipEntryClicked(SkillLoadoutSlotKind slotKind, int slotIndex)
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            if (sys == null)
+            {
+                return;
+            }
+
+            string skillId = slotKind == SkillLoadoutSlotKind.Passive
+                ? (slotIndex >= 0 && slotIndex < sys.PassiveSkillSlots.Length
+                    ? sys.PassiveSkillSlots[slotIndex]
+                    : null)
+                : (slotIndex >= 0 && slotIndex < sys.NormalSkillSlots.Length
+                    ? sys.NormalSkillSlots[slotIndex]
+                    : null);
+
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return;
+            }
+
+            var entry = SkillLearnCatalog.TryFindLearnEntryBySkillId(skillId);
+            string skillName = SkillLearnEntryTextUtil.ResolveDisplayName(
+                entry,
+                SkillLibrary.GetSkillConfig(skillId),
+                skillId);
+
+            YesNoMsgBox.Show(
+                "卸下技能",
+                $"确定要从槽位卸下「{skillName}」吗？",
+                () => ConfirmUnequipSkill(slotKind, slotIndex),
+                null);
+        }
+
+        void ConfirmUnequipSkill(SkillLoadoutSlotKind slotKind, int slotIndex)
+        {
+            var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
+            var sys = mgr?.SkillSystem;
+            if (sys == null)
+            {
+                return;
+            }
+
+            bool ok = slotKind == SkillLoadoutSlotKind.Passive
+                ? sys.TryClearPassiveSlot(slotIndex, out _)
+                : sys.TryClearNormalSlot(slotIndex, out _);
+
+            if (!ok)
+            {
+                return;
+            }
+
+            HideSkillDetail();
+            ApplyLoadoutToEntity();
             RefreshAll();
         }
 

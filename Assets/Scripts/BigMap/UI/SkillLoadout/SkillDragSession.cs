@@ -92,7 +92,7 @@ namespace My.UI.SkillLoadout
             _ghostRoot.transform.localPosition = local;
         }
 
-        // 拖拽源 OnEndDrag：未由 OnDrop 处理时，在指针下尝试一次落点。
+        // 拖拽源 OnEndDrag：未由 OnDrop 处理时，先尝试落点，再尝试空投。
         public static void EndDrag(PointerEventData eventData)
         {
             if (!IsDragging)
@@ -103,6 +103,11 @@ namespace My.UI.SkillLoadout
             if (!_dropCommitted && eventData != null)
             {
                 TryCommitDropAtScreen(eventData.position);
+            }
+
+            if (!_dropCommitted)
+            {
+                TryCommitDropEmpty();
             }
 
             Clear();
@@ -188,6 +193,18 @@ namespace My.UI.SkillLoadout
                     return;
                 }
             }
+        }
+
+        static void TryCommitDropEmpty()
+        {
+            var panel = SkillLoadoutPanel.Current;
+            var sys = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.SkillSystem;
+            if (panel == null || sys == null || ActiveDropBehavior == null)
+            {
+                return;
+            }
+
+            ActiveDropBehavior.OnDropToEmpty(panel, sys);
         }
 
         static void Clear()
