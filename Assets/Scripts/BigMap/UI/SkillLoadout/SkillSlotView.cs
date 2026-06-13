@@ -137,6 +137,7 @@ namespace My.UI.SkillLoadout
 
             var behavior = new SlotUnequipDragBehavior(slotKind, SlotIndex);
             behavior.OnBeginDragFromPool(_boundSkillId);
+            SkillDragSession.FollowScreenPoint(eventData.position);
         }
 
         public void OnDrag(PointerEventData eventData)

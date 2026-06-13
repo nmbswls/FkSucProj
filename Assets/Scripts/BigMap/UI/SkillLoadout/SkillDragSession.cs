@@ -12,9 +12,10 @@ namespace My.UI.SkillLoadout
     public static class SkillDragSession
     {
         static GameObject _ghostRoot;
+        static RectTransform _ghostRect;
+        static RectTransform _ghostParentRect;
         static Image _ghostIcon;
         static TextMeshProUGUI _ghostLabel;
-        static Canvas _rootCanvas;
 
         static bool _dropCommitted;
 
@@ -29,14 +30,17 @@ namespace My.UI.SkillLoadout
             _ghostRoot = ghostRoot;
             _ghostIcon = ghostIcon;
             _ghostLabel = ghostLabel;
-            _rootCanvas = canvas;
+            CacheGhostRects();
             if (_ghostRoot != null)
             {
                 _ghostRoot.SetActive(false);
             }
         }
 
-        public static void SetCanvas(Canvas canvas) => _rootCanvas = canvas;
+        public static void SetCanvas(Canvas canvas)
+        {
+            // 保留接口兼容；ghost 坐标改由 ghost 父节点换算，不再依赖外部 canvas。
+        }
 
         public static void Begin(string skillId, ISkillDropBehavior dropBehavior)
         {
@@ -45,51 +49,75 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
+            if (IsDragging)
+            {
+                ClearGhostOnly();
+            }
+
             _dropCommitted = false;
             DraggingSkillId = skillId;
             ActiveDropBehavior = dropBehavior;
+            CacheGhostRects();
 
-            if (_ghostRoot != null)
+            if (_ghostRoot == null)
             {
-                _ghostRoot.SetActive(true);
-                if (_ghostLabel != null)
-                {
-                    _ghostLabel.text = skillId;
-                }
+                return;
+            }
 
-                if (_ghostIcon != null)
+            _ghostRoot.transform.SetAsLastSibling();
+            _ghostRoot.SetActive(true);
+
+            if (_ghostLabel != null)
+            {
+                _ghostLabel.text = skillId;
+            }
+
+            if (_ghostIcon != null)
+            {
+                var cfg = SkillLibrary.GetSkillConfig(skillId);
+                if (cfg != null && !string.IsNullOrEmpty(cfg.IconPath))
                 {
-                    var cfg = SkillLibrary.GetSkillConfig(skillId);
-                    if (cfg != null && !string.IsNullOrEmpty(cfg.IconPath))
-                    {
-                        var sp = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
-                        _ghostIcon.sprite = sp;
-                        _ghostIcon.enabled = sp != null;
-                    }
-                    else
-                    {
-                        _ghostIcon.sprite = null;
-                        _ghostIcon.enabled = false;
-                    }
+                    var sp = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
+                    _ghostIcon.sprite = sp;
+                    _ghostIcon.enabled = sp != null;
+                }
+                else
+                {
+                    _ghostIcon.sprite = null;
+                    _ghostIcon.enabled = false;
                 }
             }
         }
 
         public static void FollowScreenPoint(Vector2 screenPos)
         {
-            if (_ghostRoot == null || _rootCanvas == null)
+            CacheGhostRects();
+            if (_ghostRect == null || _ghostParentRect == null)
             {
                 return;
             }
 
-            var canvasRect = _rootCanvas.transform as RectTransform;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
-                screenPos,
-                _rootCanvas.worldCamera,
-                out var local);
+            if (!_ghostRoot.activeSelf)
+            {
+                _ghostRoot.SetActive(true);
+                _ghostRoot.transform.SetAsLastSibling();
+            }
 
-            _ghostRoot.transform.localPosition = local;
+            var canvas = _ghostParentRect.GetComponentInParent<Canvas>();
+            Camera cam = null;
+            if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            {
+                cam = canvas.worldCamera;
+            }
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    _ghostParentRect,
+                    screenPos,
+                    cam,
+                    out var local))
+            {
+                _ghostRect.localPosition = local;
+            }
         }
 
         // 拖拽源 OnEndDrag：未由 OnDrop 处理时，先尝试落点，再尝试空投。
@@ -207,15 +235,40 @@ namespace My.UI.SkillLoadout
             ActiveDropBehavior.OnDropToEmpty(panel, sys);
         }
 
+        static void CacheGhostRects()
+        {
+            if (_ghostRoot == null)
+            {
+                _ghostRect = null;
+                _ghostParentRect = null;
+                return;
+            }
+
+            if (_ghostRect == null)
+            {
+                _ghostRect = _ghostRoot.transform as RectTransform;
+            }
+
+            if (_ghostRect != null)
+            {
+                _ghostParentRect = _ghostRect.parent as RectTransform;
+            }
+        }
+
+        static void ClearGhostOnly()
+        {
+            if (_ghostRoot != null)
+            {
+                _ghostRoot.SetActive(false);
+            }
+        }
+
         static void Clear()
         {
             DraggingSkillId = null;
             ActiveDropBehavior = null;
             _dropCommitted = false;
-            if (_ghostRoot != null)
-            {
-                _ghostRoot.SetActive(false);
-            }
+            ClearGhostOnly();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace My.UI
         public ThrowContext ThrowCtx;
         public string Prompt;
         public Transform Follow;
+        public MapAbilityEffectThrowTimedInputCfg.EInputMode InputMode;
     }
 
     // 投技头顶时段输入提示：表现（跟随、圆环）与输入判定；生命周期由 UIManager + PanelBase 管理
@@ -46,6 +47,7 @@ namespace My.UI
         ThrowContext _throwCtx;
         TimelineHoldSession _session;
         Transform _follow;
+        MapAbilityEffectThrowTimedInputCfg.EInputMode _inputMode;
 
         void Awake()
         {
@@ -67,7 +69,8 @@ namespace My.UI
             }
         }
 
-        public static void ShowSession(ThrowContext throwCtx, string prompt, Transform follow)
+        public static void ShowSession(ThrowContext throwCtx, string prompt, Transform follow,
+            MapAbilityEffectThrowTimedInputCfg.EInputMode inputMode = MapAbilityEffectThrowTimedInputCfg.EInputMode.Space)
         {
             if (throwCtx?.ActiveHold == null || throwCtx.ActiveHold.Resolved)
             {
@@ -87,6 +90,7 @@ namespace My.UI
                     ThrowCtx = throwCtx,
                     Prompt = prompt,
                     Follow = follow,
+                    InputMode = inputMode,
                 });
         }
 
@@ -95,7 +99,7 @@ namespace My.UI
         {
             if (data is PlayerHeadThrowQteSessionData session)
             {
-                ApplySession(session.ThrowCtx, session.Prompt, session.Follow);
+                ApplySession(session.ThrowCtx, session.Prompt, session.Follow, session.InputMode);
             }
             else
             {
@@ -127,11 +131,13 @@ namespace My.UI
             base.Teardown();
         }
 
-        void ApplySession(ThrowContext throwCtx, string prompt, Transform follow)
+        void ApplySession(ThrowContext throwCtx, string prompt, Transform follow,
+            MapAbilityEffectThrowTimedInputCfg.EInputMode inputMode)
         {
             _throwCtx = throwCtx;
             _session = throwCtx.ActiveHold;
             _follow = follow;
+            _inputMode = inputMode;
 
             if (promptText != null)
             {
@@ -150,6 +156,7 @@ namespace My.UI
             _throwCtx = null;
             _session = null;
             _follow = null;
+            _inputMode = MapAbilityEffectThrowTimedInputCfg.EInputMode.Space;
         }
 
         void Update()
@@ -190,7 +197,7 @@ namespace My.UI
             var q = _session;
             float pNow = q.GetNormalizedProgress();
 
-            if (PollConfirmSpaceDown())
+            if (PollConfirmInput(_inputMode))
             {
                 bool inWin = q.IsInHitWindow(pNow)
                              || q.IsInHitWindow(q.LastSampledNormalizedProgress)
@@ -208,6 +215,22 @@ namespace My.UI
             }
 
             q.LastSampledNormalizedProgress = pNow;
+        }
+
+        static bool PollConfirmInput(MapAbilityEffectThrowTimedInputCfg.EInputMode mode)
+        {
+            switch (mode)
+            {
+                case MapAbilityEffectThrowTimedInputCfg.EInputMode.MouseLeftClick:
+                    if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                    {
+                        return true;
+                    }
+                    return UnityEngine.Input.GetMouseButtonDown(0);
+
+                default:
+                    return PollConfirmSpaceDown();
+            }
         }
 
         static bool PollConfirmSpaceDown()

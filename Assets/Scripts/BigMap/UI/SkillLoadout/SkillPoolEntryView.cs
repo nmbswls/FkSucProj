@@ -143,6 +143,7 @@ namespace My.UI.SkillLoadout
             }
 
             _skillDropBehavior.OnBeginDragFromPool(_skillId);
+            SkillDragSession.FollowScreenPoint(eventData.position);
         }
 
         public void OnDrag(PointerEventData eventData)

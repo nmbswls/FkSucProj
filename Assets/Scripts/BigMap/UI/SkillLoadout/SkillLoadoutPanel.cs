@@ -59,6 +59,11 @@ namespace My.UI.SkillLoadout
         ESkillLoadoutScreen _screen = ESkillLoadoutScreen.Entry;
         int _activeTabIndex = -1;
         int _selectedEntryId;
+        int _openDetailEntryId;
+        bool _openEquippedDetail;
+        SkillLoadoutSlotKind _openEquippedSlotKind;
+        int _openEquippedSlotIndex;
+        string _openEquippedSkillId;
 
         public int ActiveSchoolId { get; private set; }
 
@@ -603,14 +608,41 @@ namespace My.UI.SkillLoadout
 
             _activeTabIndex = tabIndex;
             ActiveSchoolId = schoolId;
-            _selectedEntryId = 0;
-            HideSkillDetail();
+
+            bool keepEntryDetail = _openDetailEntryId > 0;
+            bool keepEquippedDetail = _openEquippedDetail;
+            if (keepEntryDetail)
+            {
+                var detailEntry = SkillLearnCatalog.TryGetLearnEntry(_openDetailEntryId);
+                if (detailEntry == null || detailEntry.SchoolId != schoolId)
+                {
+                    keepEntryDetail = false;
+                    _openDetailEntryId = 0;
+                }
+            }
+
+            if (!keepEntryDetail && !keepEquippedDetail)
+            {
+                _selectedEntryId = 0;
+                HideSkillDetail();
+            }
 
             var mgr = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
             var sys = mgr?.SkillSystem;
             var entries = SkillLearnCatalog.GetLearnEntriesBySchool(ActiveSchoolId);
             RefreshSkillGrid(entries, sys);
             RefreshSlotDisplays(sys);
+
+            if (keepEntryDetail)
+            {
+                EnsureSkillDetailView();
+                skillDetailView?.Show(_openDetailEntryId);
+            }
+            else if (keepEquippedDetail)
+            {
+                EnsureSkillDetailView();
+                skillDetailView?.ShowEquipped(_openEquippedSlotKind, _openEquippedSlotIndex, _openEquippedSkillId);
+            }
         }
 
         void RefreshSkillGrid(IReadOnlyList<SkillLearnEntry> entries, PlayerSkillSystem sys)
@@ -704,6 +736,10 @@ namespace My.UI.SkillLoadout
 
         void ShowSkillDetail(int entryId)
         {
+            _openDetailEntryId = entryId;
+            _openEquippedDetail = false;
+            _openEquippedSkillId = null;
+
             EnsureSkillDetailView();
             if (skillDetailView == null)
             {
@@ -722,6 +758,11 @@ namespace My.UI.SkillLoadout
         public void ShowEquippedSkillDetail(SkillLoadoutSlotKind slotKind, int slotIndex, string skillId)
         {
             _selectedEntryId = 0;
+            _openDetailEntryId = 0;
+            _openEquippedDetail = true;
+            _openEquippedSlotKind = slotKind;
+            _openEquippedSlotIndex = slotIndex;
+            _openEquippedSkillId = skillId;
             RefreshSkillGridSelection();
 
             EnsureSkillDetailView();
@@ -741,6 +782,9 @@ namespace My.UI.SkillLoadout
 
         void HideSkillDetail()
         {
+            _openDetailEntryId = 0;
+            _openEquippedDetail = false;
+            _openEquippedSkillId = null;
             skillDetailView?.Hide();
         }
 
@@ -800,8 +844,7 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            _selectedEntryId = 0;
-            HideSkillDetail();
+            _openDetailEntryId = entryId;
             RefreshAll();
         }
 
@@ -814,44 +857,37 @@ namespace My.UI.SkillLoadout
                 return;
             }
 
-            var cfg = SkillLibrary.GetSkillConfig(skillId);
-            bool isPassive = cfg != null && cfg.IsPassive;
-
-            bool ok;
-            string reason;
-
-            if (isPassive)
+            var entry = SkillLearnCatalog.TryFindLearnEntryBySkillId(skillId);
+            var slotType = SkillLoadoutSlotTypeUtil.ResolveSlotType(entry, skillId);
+            int slotIndex = SkillLoadoutSlotTypeUtil.ResolveTargetSlot(sys, slotType, skillId);
+            if (slotIndex < 0)
             {
-                int slot = FindEmptyPassiveSlot(sys);
-                if (slot < 0)
-                {
-                    ShowLearnFailedTip("被动槽已满，请先卸下一个被动技能");
-                    return;
-                }
-
-                ok = sys.TryAssignPassiveSlot(slot, skillId, false, out reason);
-            }
-            else
-            {
-                int slot = FindEmptyNormalSlot(sys);
-                if (slot < 0)
-                {
-                    ShowLearnFailedTip("技能槽已满，请先卸下一个主动技能");
-                    return;
-                }
-
-                ok = sys.TryAssignNormalSlot(slot, skillId, false, out reason);
-            }
-
-            if (!ok)
-            {
-                ShowLearnFailedTip(string.IsNullOrEmpty(reason) ? "无法装配该技能" : reason);
+                string emptyReason = slotType == ESkillLoadoutSlotType.Passive ? "passive_full" : "active_full";
+                ShowLearnFailedTip(SkillLoadoutSlotTypeUtil.ResolveAssignFailTip(emptyReason));
                 return;
             }
 
-            HideSkillDetail();
+            var slotKind = slotType == ESkillLoadoutSlotType.Passive
+                ? SkillLoadoutSlotKind.Passive
+                : SkillLoadoutSlotKind.Active;
+
+            bool ok = slotKind == SkillLoadoutSlotKind.Passive
+                ? sys.TryAssignPassiveSlot(slotIndex, skillId, false, out var reason)
+                : sys.TryAssignNormalSlot(slotIndex, skillId, false, out reason);
+
+            if (!ok)
+            {
+                ShowLearnFailedTip(SkillLoadoutSlotTypeUtil.ResolveAssignFailTip(reason));
+                return;
+            }
+
             ApplyLoadoutToEntity();
             RefreshAll();
+
+            if (_openDetailEntryId > 0)
+            {
+                ShowSkillDetail(_openDetailEntryId);
+            }
         }
 
         void OnLocateSkillClicked(int schoolId)
@@ -868,33 +904,10 @@ namespace My.UI.SkillLoadout
         void OnDetailViewClosed()
         {
             _selectedEntryId = 0;
+            _openDetailEntryId = 0;
+            _openEquippedDetail = false;
+            _openEquippedSkillId = null;
             RefreshSkillGridSelection();
-        }
-
-        static int FindEmptyPassiveSlot(PlayerSkillSystem sys)
-        {
-            for (int i = 0; i < sys.PassiveSkillSlots.Length; i++)
-            {
-                if (string.IsNullOrEmpty(sys.PassiveSkillSlots[i]))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        static int FindEmptyNormalSlot(PlayerSkillSystem sys)
-        {
-            for (int i = 3; i <= 7; i++)
-            {
-                if (string.IsNullOrEmpty(sys.NormalSkillSlots[i]))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
         }
 
         void OnUnequipEntryClicked(SkillLoadoutSlotKind slotKind, int slotIndex)

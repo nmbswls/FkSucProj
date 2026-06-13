@@ -1133,7 +1133,7 @@ namespace My.Map.Entity
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
                         new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.NpcFcked, ModifierValue = 1 },
-                        
+
                     },
                     DurationEffect = new BuffDurationEffet()
                     {
@@ -1159,6 +1159,27 @@ namespace My.Map.Entity
                     },
                     DefaultDuration = -1,
                     IsHidden = true,
+                };
+
+                // 玩家被推倒状态：进入被推倒动画，完全无法行动，持续固定时长后自动结束
+                _library["player_knocked_down"] = new BuffDefinition()
+                {
+                    BuffId = "player_knocked_down",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Stun, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.Unmovable, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.LockFace, ModifierValue = 1 },
+                    },
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.AnimOverride,
+                        ParamStr1 = "knocked_down",
+                    },
+                    DefaultDuration = 3f,
+                    IsHidden = false,
                 };
 
 

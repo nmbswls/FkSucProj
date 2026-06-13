@@ -204,7 +204,11 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
                 {
-                    var ab = CreateDefaultEnemyQinfan();
+                    var ab = CreateDefaultEnemyHarass();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateDefaultEnemyKnockdownPush();
                     _abilityDict[ab.Id] = ab;
                 }
 
@@ -803,7 +807,6 @@ namespace My.Map.Entity
             {
                 PhaseName = "Fire",
                 LockMovement = true,
-                PhaseBuff = new() { "phase_move" },
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1887,35 +1890,227 @@ namespace My.Map.Entity
         }
 
 
-        private static MapAbilitySpecConfig CreateDefaultEnemyQinfan()
+        // 骚扰技能：向前冲刺接触主角后触发投技，3轮H冲击，每轮给玩家左键挣脱机会
+        private static MapAbilitySpecConfig CreateDefaultEnemyHarass()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
-            spec.Id = "default_enemy_qinfan";
+            spec.Id = "default_enemy_harass";
             spec.TypeTag = AbilityTypeTag.HMode;
-
             spec.CastType = ECastType.NoTarget;
             spec.DesiredUseDistance = 0.8f;
             spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
 
-            var mainPhase = new MapAbilityPhase()
+            var dashingPhase = new MapAbilityPhase()
             {
-                PhaseName = "Executing",
-                EnterDebugString = "准备抓取",
-                PhaseBuff = new() { "jian_su_self" },
-
-                ShowRangePreview = true,
-                PreviewIntent = new()
+                PhaseName = "Dashing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
                 {
-                    FaceOffset = new Vector2(0.3f, 0),
-                    ShapeInfo = new FightStruct.Shape()
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            };
+
+            var throwCfg = new MapAbilityEffectThrowStartCfg()
+            {
+                Priority = 1,
+                Duration = 5.0f,
+                OnTargetBreakFreeEffects = new List<MapFightEffectCfg>
+                {
+                    new MapFightEffectEasyEffect() { EffectText = "Harass interrupted by player." },
+                },
+                ThrowTimelineEvents = new List<ThrowTimelineEventSpec>
+                {
+                    // ---- 第1轮 ----
+                    new ThrowTimelineEventSpec
                     {
-                        Type = FightStruct.EShapeType.Square,
-                        Width = 0.8f,
-                        Length = 1.2f,
+                        TimeFromStart = 0f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputCfg
+                            {
+                                PromptText = "点击左键挣脱",
+                                ResultVarKey = "harass_qi_1",
+                                TimeoutSeconds = 1.4f,
+                                InputMode = MapAbilityEffectThrowTimedInputCfg.EInputMode.MouseLeftClick,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 0f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputBranchCfg
+                            {
+                                ResultVarKey = "harass_qi_1",
+                                // 玩家成功挣脱
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                                // 玩家未挣脱，施加H冲击
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.PlayerPleasure,
+                                        AddValue = 15_000,
+                                        IsEnmity = true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    // ---- 第2轮 ----
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 1.6f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputCfg
+                            {
+                                PromptText = "点击左键挣脱",
+                                ResultVarKey = "harass_qi_2",
+                                TimeoutSeconds = 1.4f,
+                                InputMode = MapAbilityEffectThrowTimedInputCfg.EInputMode.MouseLeftClick,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 1.6f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputBranchCfg
+                            {
+                                ResultVarKey = "harass_qi_2",
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.PlayerPleasure,
+                                        AddValue = 15_000,
+                                        IsEnmity = true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+
+                    // ---- 第3轮 ----
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 3.2f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputCfg
+                            {
+                                PromptText = "点击左键挣脱",
+                                ResultVarKey = "harass_qi_3",
+                                TimeoutSeconds = 1.4f,
+                                InputMode = MapAbilityEffectThrowTimedInputCfg.EInputMode.MouseLeftClick,
+                            },
+                        },
+                    },
+                    new ThrowTimelineEventSpec
+                    {
+                        TimeFromStart = 3.2f,
+                        Effects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectThrowTimedInputBranchCfg
+                            {
+                                ResultVarKey = "harass_qi_3",
+                                SuccessBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectThrowBreakFreeCfg(),
+                                },
+                                FailBranchEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapAbilityEffectAddResourceCfg()
+                                    {
+                                        ResourceId = AttrIdConsts.PlayerPleasure,
+                                        AddValue = 15_000,
+                                        IsEnmity = true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
+            };
 
+            var dashEffect = new MapAbilityEffectDashStartCfg()
+            {
+                DashMode = EDashMode.ToTarget,
+                DirMode = EDirMode.LookDir,
+                DashSpeed = 8f,
+                MaxDistance = 5f,
+                DashOverrideHitRadius = 0.6f,
+                EndOnHitUnit = true,
+                StopOnWall = true,
+                EndAbilityPhaseWhenEnds = true,
+                OnHitEffects = new() { throwCfg },
+            };
+
+            dashingPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+            spec.Phases.Add(dashingPhase);
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Post",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.8"
+                },
+            });
+
+            return spec;
+        }
+
+        // 推倒技能：蓄力后向前范围释放，累积玩家推倒进度，满后进入被推倒状态
+        private static MapAbilitySpecConfig CreateDefaultEnemyKnockdownPush()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "default_enemy_knockdown_push";
+            spec.TypeTag = AbilityTypeTag.HMode;
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.5f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            // 蓄力阶段：固定时长，显示进度，受击可被打断
+            var chargePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Charge",
+                WithProgress = true,
+                LockMovement = true,
+                LockRotation = true,
+                InterruptMask = EAbilityInterruptMask.Hit,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.5"
+                },
+            };
+            spec.Phases.Add(chargePhase);
+
+            // 释放阶段：向前矩形打击盒
+            var releasePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Release",
+                LockMovement = true,
+                LockRotation = true,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -1927,37 +2122,49 @@ namespace My.Map.Entity
             hitCfg.CenterPosType = 0;
             hitCfg.EffectType = EAbilityEffectType.HitBox;
             hitCfg.Shape = MapAbilityEffectHitBoxCfg.EShape.Square;
-            hitCfg.Width = 0.9f;
-            hitCfg.Length = 1.2f;
+            hitCfg.Width = 1.5f;
+            hitCfg.Length = 2.5f;
             hitCfg.TargetEntityType = EEntityType.Player;
-
+            hitCfg.HitResult = new()
             {
-
-                var failEffect = new MapAbilityEffectCostResourceCfg();
-                failEffect.ResourceId = AttrIdConsts.HP;
-                failEffect.CostValue = 5;
-                failEffect.IsEnmity = true;
-
-                var throwEffect = new MapAbilityEffectThrowStartCfg();
-
-                throwEffect.ThrowMainBuffId = "be_fcked";
-                throwEffect.Priority = 1;
-                throwEffect.Duration = 20f;
-                throwEffect.ThrowFailEffect = failEffect;
-
-                hitCfg.HitResult = new()
+                OnHitEffects = new()
                 {
-                    OnHitEffects = new() { throwEffect },
-                };
-                
-            }
+                    // 累积推倒进度
+                    new MapAbilityEffectAddResourceCfg()
+                    {
+                        ResourceId = AttrIdConsts.PlayerKnockDown,
+                        AddValue = 35_000,
+                        IsEnmity = true,
+                    },
+                    // 推倒条满时触发被推倒状态并重置进度
+                    new MapAbilityEffectIfBranchCfg()
+                    {
+                        CheckType = MapAbilityEffectIfBranchCfg.ECheckType.AttrGreater,
+                        Param1 = AttrIdConsts.PlayerKnockDown,
+                        Param3 = 99_000,
+                        TrueBranchEffects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectAddBuffCfg()
+                            {
+                                BuffId = "player_knocked_down",
+                                Duration = 3f,
+                            },
+                            // 重置推倒条
+                            new MapAbilityEffectAddResourceCfg()
+                            {
+                                ResourceId = AttrIdConsts.PlayerKnockDown,
+                                AddValue = -100_000,
+                                IsEnmity = false,
+                            },
+                        },
+                    },
+                },
+            };
 
-            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
+            releasePhase.Events.Add(new PhaseEffectEvent() { Effect = hitCfg, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(releasePhase);
 
-
-            spec.Phases.Add(mainPhase);
-
-            var postPhase = new MapAbilityPhase()
+            spec.Phases.Add(new MapAbilityPhase()
             {
                 PhaseName = "Post",
                 LockMovement = true,
@@ -1965,11 +2172,9 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.9"
+                    RawVal = "0.8"
                 },
-            };
-
-            spec.Phases.Add(postPhase);
+            });
 
             return spec;
         }

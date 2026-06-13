@@ -2452,7 +2452,7 @@ namespace My.Map.Entity
                 follow = My.MainGameManager.Instance.playerScenePresenter.transform;
             }
 
-            My.UI.PlayerHeadThrowQteHud.ShowSession(tctx, cfg.PromptText, follow);
+            My.UI.PlayerHeadThrowQteHud.ShowSession(tctx, cfg.PromptText, follow, cfg.InputMode);
         }
     }
 

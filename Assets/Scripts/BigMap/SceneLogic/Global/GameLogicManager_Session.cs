@@ -148,7 +148,7 @@ namespace My
 
             foreach (var one in AreaManager.FindEntityInRange(playerLogicEntity.Pos, SavePointPeaceScanRadius))
             {
-                if (one is NpcUnitLogicEntity npcUnit && npcUnit.IsInCombat)
+                if (one is NpcUnitLogicEntity npcUnit && !npcUnit.IsDead && npcUnit.IsInCombat)
                 {
                     GameSession.IsPeaceful = false;
                     return;

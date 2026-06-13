@@ -554,9 +554,23 @@ namespace My.Map.Entity
                 EntityOwner.viewer.ShowFakeFxEffect(phase.EnterDebugString, EntityOwner.Pos);
             }
 
-            if (phase.WithProgress)
+            if (EntityOwner.Type == EEntityType.Player && EntityOwner.viewer != null)
             {
-                ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", ctx.PhaseDuration);
+                if (phase.WithProgress)
+                {
+                    ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", ctx.PhaseDuration);
+                }
+                else if (phase.HoldingPhase)
+                {
+                    // HoldingPhase 使用 ProgressEffectNormalizeDuration 作为底部进度条满时长
+                    float normalDur = phase.ProgressEffectNormalizeDuration > 0f
+                        ? phase.ProgressEffectNormalizeDuration
+                        : ctx.PhaseDuration;
+                    if (normalDur > 0f && normalDur < 50f)
+                    {
+                        ctx.ShowProgressShowId = EntityOwner.viewer.ShowBottomProgress("Checking", normalDur);
+                    }
+                }
             }
 
             if(!string.IsNullOrEmpty(phase.UsePhaseHitAsTarget))
@@ -812,10 +826,11 @@ namespace My.Map.Entity
                 ctx.PhaseIntentIsProgressEffect = false;
             }
 
-            if (!isInterrupt)
+            // 底部进度条清理（WithProgress 与 HoldingPhase 统一，仅玩家单位）
+            if (ctx.ShowProgressShowId != 0 && EntityOwner.Type == EEntityType.Player && EntityOwner.viewer != null)
             {
-                //尝试进行cancel
-                //EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
+                EntityOwner.viewer.TryCancelButtomProgress(ctx.ShowProgressShowId);
+                ctx.ShowProgressShowId = 0;
             }
         }
 
@@ -1043,14 +1058,6 @@ namespace My.Map.Entity
             {
                 var effectCtx = GenerateEfffectContextByAbility(CurrentCtx);
                 EntityOwner.LogicManager.HandleLogicFightEffect(e, effectCtx);
-            }
-
-            var phase = CurrentCtx.AbilityConfig.Phases[CurrentCtx.PhaseIndex];
-
-            //尝试进行cancel
-            if (phase != null && phase.WithProgress && CurrentCtx.ShowProgressShowId != 0)
-            {
-                EntityOwner.viewer.TryCancelButtomProgress(CurrentCtx.ShowProgressShowId);
             }
 
             CleanupPhase(CurrentCtx);

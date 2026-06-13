@@ -260,7 +260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 548664485161855505}
-  mode: 0
+  mode: 1
 --- !u!1 &5503759607175872496
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,6 +24,7 @@ public sealed partial class SkillLearnEntry : Luban.BeanBase
         { var __json0 = _buf["learn_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } LearnConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  LearnConds.Add(__v0); }   }
         { if(!_buf["skill_id"].IsString) { throw new SerializationException(); }  SkillId = _buf["skill_id"]; }
         { if(!_buf["skill_level"].IsNumber) { throw new SerializationException(); }  SkillLevel = _buf["skill_level"]; }
+        { if(!_buf["loadout_slot_type"].IsNumber) { throw new SerializationException(); }  LoadoutSlotType = (demo.ESkillLoadoutSlotType)_buf["loadout_slot_type"].AsInt; }
     }
 
     public static SkillLearnEntry DeserializeSkillLearnEntry(JSONNode _buf)
@@ -55,6 +56,10 @@ public sealed partial class SkillLearnEntry : Luban.BeanBase
     /// skill_level
     /// </summary>
     public int SkillLevel;
+    /// <summary>
+    /// loadout_slot_type
+    /// </summary>
+    public demo.ESkillLoadoutSlotType LoadoutSlotType;
    
     public const int __ID__ = -272156780;
     public override int GetTypeId() => __ID__;
@@ -73,6 +78,7 @@ public sealed partial class SkillLearnEntry : Luban.BeanBase
         + "learnConds:" + Luban.StringUtil.CollectionToString(LearnConds) + ","
         + "skillId:" + SkillId + ","
         + "skillLevel:" + SkillLevel + ","
+        + "loadoutSlotType:" + LoadoutSlotType + ","
         + "}";
     }
 }

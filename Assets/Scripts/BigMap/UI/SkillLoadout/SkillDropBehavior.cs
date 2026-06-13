@@ -1,3 +1,4 @@
+using My.Config;
 using My.Map.Entity;
 using My.Player;
 using UnityEngine;
@@ -35,23 +36,16 @@ namespace My.UI.SkillLoadout
                 return false;
             }
 
-            var cfg = SkillLibrary.GetSkillConfig(skillId);
-            var isPassive = cfg != null && cfg.IsPassive;
-            if (slotKind == SkillLoadoutSlotKind.Active)
+            var entry = SkillLearnCatalog.TryFindLearnEntryBySkillId(skillId);
+            var slotType = SkillLoadoutSlotTypeUtil.ResolveSlotType(entry, skillId);
+            if (!SkillLoadoutSlotTypeUtil.CanAssignToSlot(slotType, slotKind, slotIndex, out failReason))
             {
-                if (isPassive)
-                {
-                    failReason = "wrong_skill_kind";
-                    return false;
-                }
-
-                return sys.TryAssignNormalSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);
+                return false;
             }
 
-            if (!isPassive)
+            if (slotKind == SkillLoadoutSlotKind.Active)
             {
-                failReason = "wrong_skill_kind";
-                return false;
+                return sys.TryAssignNormalSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);
             }
 
             return sys.TryAssignPassiveSlot(slotIndex, skillId, allowDuplicateSwap: true, out failReason);

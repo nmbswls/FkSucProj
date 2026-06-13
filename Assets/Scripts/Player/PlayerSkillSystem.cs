@@ -49,7 +49,7 @@ namespace My.Player
 
         readonly LearnedSkillIdView _learnedSkillIdsView;
 
-        public const int PassiveSlotCount = 3;
+        public const int PassiveSlotCount = 8;
 
         // 暴露形态 / 特定 HUD 使用的 8 槽技能栏
         public readonly string[] NormalSkillSlots = new string[8];
@@ -151,9 +151,6 @@ namespace My.Player
             NormalSkillSlots[0] = "queen_attack";
             NormalSkillSlots[1] = "queen_attack_heavy";
             NormalSkillSlots[2] = "queen_dash";
-            NormalSkillSlots[3] = "queen_dash_down";
-            NormalSkillSlots[4] = "queen_pull_all";
-            NormalSkillSlots[5] = "player_mortar_acquire_01";
 
             _learnedSkillIdsView = new LearnedSkillIdView(learnedSkills);
             SeedInnateSkills();
@@ -670,7 +667,7 @@ namespace My.Player
         public bool TryAssignNormalSlot(int slotIndex, string skillId, bool allowDuplicateSwap, out string failReason)
         {
             failReason = null;
-            if (slotIndex < 3 || slotIndex > 7)
+            if (slotIndex < 0 || slotIndex > 7)
             {
                 failReason = "invalid_slot";
                 return false;
@@ -703,7 +700,7 @@ namespace My.Player
 
             if (!allowDuplicateSwap)
             {
-                for (int i = 3; i <= 7; i++)
+                for (int i = 0; i <= 7; i++)
                 {
                     if (i != slotIndex && NormalSkillSlots[i] == skillId)
                     {
@@ -714,7 +711,7 @@ namespace My.Player
             }
             else
             {
-                for (int i = 3; i <= 7; i++)
+                for (int i = 0; i <= 7; i++)
                 {
                     if (i != slotIndex && NormalSkillSlots[i] == skillId)
                     {
