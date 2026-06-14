@@ -1,7 +1,9 @@
 using My;
+using My.Config;
 using My.Player;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace My.UI
 {
@@ -57,6 +59,28 @@ namespace My.UI
         [SerializeField]
         TextMeshProUGUI _disableHintText;
 
+        // ---- 折叠/展开模式相关 ----
+        // 折叠态根节点：仅显示当前激活消耗品图标 + [Q] 提示
+        // 在 Prefab 中拖拽赋值；若未赋值则跳过视觉切换
+        [SerializeField]
+        GameObject _collapsedRoot;
+
+        // 折叠态图标（显示当前激活消耗品的 icon）
+        [SerializeField]
+        Image _collapsedItemIcon;
+
+        // 折叠态按键提示文字（例如 "[Q] 使用"）
+        [SerializeField]
+        TextMeshProUGUI _collapsedKeyHint;
+
+        // 展开态根节点：包含消耗品轮盘 + 武器列等完整内容
+        // 若未赋值，默认用自身 RectTransform 作为展开视图
+        [SerializeField]
+        GameObject _expandedRoot;
+
+        enum EItemBarMode { Collapsed, Expanded }
+        EItemBarMode _barMode = EItemBarMode.Collapsed;
+
         WeaponQuickSlotCell[] _weaponSlots = new WeaponQuickSlotCell[HumanQuickBarDefs.WeaponSlotCount];
         ConsumableQuickSlotCell[] _consumableSlots = new ConsumableQuickSlotCell[HumanQuickBarDefs.ConsumableSlotCount];
 
@@ -109,45 +133,65 @@ namespace My.UI
 
         public static void ShowCompanionForBagIfNeeded()
         {
-            if (!ShouldUseBagCompanionMode())
+            if (ShouldUseBagCompanionMode())
             {
-                return;
-            }
-
-            if (UIManager.Instance == null)
-            {
-                return;
-            }
-
-            s_bagCompanionShowPending = true;
-            try
-            {
-                var panel = UIManager.Instance.ShowPanel(PanelIdConst, null, UILayer.Popup) as PlayerHumanItemBarPanel;
-                if (panel != null)
+                // 秘密基地上下文：以 Popup 层显示
+                if (UIManager.Instance == null)
                 {
-                    panel._bagCompanionMode = true;
-                    panel.Refresh();
+                    return;
+                }
+
+                s_bagCompanionShowPending = true;
+                try
+                {
+                    var panel = UIManager.Instance.ShowPanel(PanelIdConst, null, UILayer.Popup) as PlayerHumanItemBarPanel;
+                    if (panel != null)
+                    {
+                        panel._bagCompanionMode = true;
+                        panel.ApplyBarMode(EItemBarMode.Expanded);
+                        panel.Refresh();
+                    }
+                }
+                finally
+                {
+                    s_bagCompanionShowPending = false;
                 }
             }
-            finally
+            else
             {
-                s_bagCompanionShowPending = false;
+                // 普通大地图：面板已作为 HUD 显示，只需切换到展开态
+                var inst = Instance;
+                if (inst != null)
+                {
+                    inst._bagCompanionMode = true;
+                    inst.ApplyBarMode(EItemBarMode.Expanded);
+                    inst.Refresh();
+                }
             }
         }
 
         public static void HideCompanionForBagIfNeeded()
         {
-            if (!ShouldUseBagCompanionMode())
+            if (ShouldUseBagCompanionMode())
             {
-                return;
+                // 秘密基地：整体隐藏
+                if (Instance != null)
+                {
+                    Instance._bagCompanionMode = false;
+                }
+                TryHide();
             }
-
-            if (Instance != null)
+            else
             {
-                Instance._bagCompanionMode = false;
+                // 普通大地图：收回展开态，恢复折叠
+                var inst = Instance;
+                if (inst != null)
+                {
+                    inst._bagCompanionMode = false;
+                    inst.ApplyBarMode(EItemBarMode.Collapsed);
+                    inst.Refresh();
+                }
             }
-
-            TryHide();
         }
 
         static bool ShouldUseBagCompanionMode()
@@ -173,6 +217,11 @@ namespace My.UI
         {
             base.Show();
             EnsureSlots();
+            // 正常 HUD 显示时，始终从折叠态开始；背包打开后由 ShowCompanionForBagIfNeeded 切换
+            if (!_bagCompanionMode && !s_bagCompanionShowPending)
+            {
+                ApplyBarMode(EItemBarMode.Collapsed);
+            }
             Refresh();
         }
 
@@ -381,6 +430,90 @@ namespace My.UI
                     qb.ResolveLeftClickSkillId(),
                     skillSystem != null && skillSystem.HasTempSkill,
                     remainingSec);
+            }
+
+            // 折叠态图标同步
+            if (_barMode == EItemBarMode.Collapsed)
+            {
+                RefreshCollapsedIcon(qb);
+            }
+        }
+
+        // 切换折叠/展开模式并重新定位面板
+        void ApplyBarMode(EItemBarMode mode)
+        {
+            _barMode = mode;
+
+            bool expanded = mode == EItemBarMode.Expanded;
+
+            // 切换视图根节点可见性
+            if (_collapsedRoot != null)
+            {
+                _collapsedRoot.SetActive(!expanded);
+            }
+            if (_expandedRoot != null)
+            {
+                _expandedRoot.SetActive(expanded);
+            }
+
+            // 若未设置独立根节点，则直接切换轮盘和武器列的活跃状态
+            if (_expandedRoot == null)
+            {
+                if (_consumableWheelParent != null)
+                {
+                    _consumableWheelParent.gameObject.SetActive(expanded);
+                }
+                if (_weaponColumnParent != null)
+                {
+                    _weaponColumnParent.gameObject.SetActive(expanded);
+                }
+                if (_centerSkillView != null)
+                {
+                    _centerSkillView.gameObject.SetActive(expanded);
+                }
+            }
+
+            // 根据模式移动面板到对应锚点
+            MoveToAnchor(expanded);
+        }
+
+        void MoveToAnchor(bool expanded)
+        {
+            var hud = OverworldHUDPanel.Instance;
+            if (hud == null)
+            {
+                return;
+            }
+
+            var anchor = expanded ? hud.ItemAnchor2 : hud.ItemAnchor;
+            if (anchor == null)
+            {
+                return;
+            }
+
+            // 直接赋世界坐标，在同一 Canvas 下等效于对齐锚点位置
+            transform.position = anchor.position;
+        }
+
+        // 刷新折叠态的消耗品图标
+        void RefreshCollapsedIcon(PlayerHumanQuickBarSystem qb)
+        {
+            if (_collapsedItemIcon == null)
+            {
+                return;
+            }
+
+            var slots = qb.ConsumableSlots;
+            int activeIdx = qb.ActiveConsumableIndex;
+            if (activeIdx >= 0 && activeIdx < slots.Length && !slots[activeIdx].IsEmpty)
+            {
+                var icon = ItemCatalog.GetIcon(slots[activeIdx].ItemId);
+                _collapsedItemIcon.sprite = icon;
+                _collapsedItemIcon.enabled = icon != null;
+            }
+            else
+            {
+                _collapsedItemIcon.enabled = false;
             }
         }
     }

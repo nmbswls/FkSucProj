@@ -1,0 +1,524 @@
+[
+  {
+    "skill_id": "player_naishou_to_jianshang",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_desire_charm_01",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_attack",
+    "level": 1,
+    "cool_down": 0.2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_attack_heavy",
+    "level": 1,
+    "cool_down": 0.2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "fix_clothes",
+    "level": 1,
+    "cool_down": 0.5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_dash",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_shoot",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_push",
+    "level": 1,
+    "cool_down": 0.6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_dash_slash",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_push_surround",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_trace_bullet_01",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_mortar_acquire_01",
+    "level": 1,
+    "cool_down": 6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_small_staggering",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "basic_aoe_slash",
+    "level": 1,
+    "cool_down": 6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "guard_attack",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "crazy_fire",
+    "level": 1,
+    "cool_down": 21,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_counter",
+    "level": 1,
+    "cool_down": 10,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "spawn_attract",
+    "level": 1,
+    "cool_down": 10,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_ziwei",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "queen_pull_all",
+    "level": 1,
+    "cool_down": 3,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "evil_child_attach",
+    "level": 1,
+    "cool_down": 6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "evil_child_insertion",
+    "level": 1,
+    "cool_down": 6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_normal_defend",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_enter_queen",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "h_mode_execute",
+    "level": 1,
+    "cool_down": 10,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_dark_dance",
+    "level": 1,
+    "cool_down": 20,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_npc_attack",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_normal_attack",
+    "level": 1,
+    "cool_down": 2,
+    "ability_extra": [
+      {
+        "key": "DefaultAttackPre",
+        "val": "0.5"
+      },
+      {
+        "key": "DefaultAttackTime",
+        "val": "0.4"
+      }
+    ],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "force_dash_push_down",
+    "level": 1,
+    "cool_down": 2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_h_attack",
+    "level": 1,
+    "cool_down": 2,
+    "ability_extra": [
+      {
+        "key": "DefaultAttackPre",
+        "val": "0.5"
+      },
+      {
+        "key": "DefaultAttackTime",
+        "val": "0.4"
+      }
+    ],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_enemy_harass",
+    "level": 1,
+    "cool_down": 6,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "default_enemy_knockdown_push",
+    "level": 1,
+    "cool_down": 12,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "npc_shoot_01",
+    "level": 1,
+    "cool_down": 10,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "npc_shoot_02",
+    "level": 1,
+    "cool_down": 10,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "chongzhuang_slime",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "h_spirit_immune",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_burst_h_voice",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_burst_milk",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "npc_grapple_push_player",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "shoot_knife",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "item_throw_smoke_grenade",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_fq_normal_ziwei",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_fq_crazy_ziwei",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_fq_hit_hop",
+    "level": 1,
+    "cool_down": 4,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_fq_hit_breast",
+    "level": 1,
+    "cool_down": 4,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_fq_dash_assult",
+    "level": 1,
+    "cool_down": 4,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "ex_zhazhi_01",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "ex_zhazhi_02",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "ex_zhazhi_03",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "use_human_weapon",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_summon_ally_turret",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "harvest_green",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "cannon_shoot_01",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "lamp_extra_vision",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "rune_weiyi_regen_ooc",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "rune_weiyi_more_layer",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "rune_perfect_dodge_weiyi",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "orb_skill_summon",
+    "level": 1,
+    "cool_down": 8,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_enter_expose",
+    "level": 1,
+    "cool_down": 2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "player_return_disguise",
+    "level": 1,
+    "cool_down": 2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "talent_expose_charm",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "grapple_hook",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "close_knockdown",
+    "level": 1,
+    "cool_down": 5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  }
+]

@@ -101,6 +101,7 @@ public partial class Tables
     public demo.TbPartGear TbPartGear {get; }
     public demo.TbRuneUpgradeInfo TbRuneUpgradeInfo {get; }
     public demo.TbRuneEquipSlot TbRuneEquipSlot {get; }
+    public demo.TbEntitySkillLevel TbEntitySkillLevel {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -179,6 +180,7 @@ public partial class Tables
         TbPartGear = new demo.TbPartGear(loader("demo_tbpartgear"));
         TbRuneUpgradeInfo = new demo.TbRuneUpgradeInfo(loader("demo_tbruneupgradeinfo"));
         TbRuneEquipSlot = new demo.TbRuneEquipSlot(loader("demo_tbruneequipslot"));
+        TbEntitySkillLevel = new demo.TbEntitySkillLevel(loader("demo_tbentityskilllevel"));
         ResolveRef();
     }
     
@@ -259,6 +261,7 @@ public partial class Tables
         TbPartGear.ResolveRef(this);
         TbRuneUpgradeInfo.ResolveRef(this);
         TbRuneEquipSlot.ResolveRef(this);
+        TbEntitySkillLevel.ResolveRef(this);
     }
 }
 

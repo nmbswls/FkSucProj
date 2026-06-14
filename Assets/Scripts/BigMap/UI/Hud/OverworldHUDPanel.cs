@@ -49,7 +49,16 @@ namespace My.UI
         public OverworldPlayerBuffBar PlayerBuffBar;
 
         public TextMeshProUGUI PlayerHpText;
+        // 血量进度条（PlayerCoreCircle/HPBar/bar），需在 Inspector 重新绑定
+        public Image HpBar;
+        // 高潮进度条（PlayerCoreCircle/PleasureBar/bar），需在 Inspector 重新绑定
         public Image PleasureBar;
+        // 发情值进度条（PlayerCoreCircle/HeadProfile/DesireBar），需在 Inspector 重新绑定
+        public Image DesireBar;
+
+        // HUD 内的位置锚点，供 PlayerHumanItemBarPanel 折叠/展开定位使用
+        public RectTransform ItemAnchor;
+        public RectTransform ItemAnchor2;
 
         public OverworldWantedIndicator WantedIndicator;
 
@@ -131,9 +140,19 @@ namespace My.UI
             var estrusObj = transform.Find("EstrusIndicator");
             if (estrusObj != null)
             {
+                // 将爱心粒子移到 HeadProfile 附近，使效果浮现在头像圆区域上
+                var headProfileTr = transform.Find("PlayerCoreCircle/HeadProfile");
+                if (headProfileTr != null)
+                {
+                    estrusObj.SetParent(headProfileTr, false);
+                    estrusObj.localPosition = Vector3.zero;
+                }
                 EstrusIndicator = estrusObj.AddComponent<OverworldHudEstrusIndicator>();
                 EstrusIndicator.Init();
             }
+
+            ItemAnchor = transform.Find("ItemAnchor") as RectTransform;
+            ItemAnchor2 = transform.Find("ItemAnchor2") as RectTransform;
 
             var alertObj = transform.Find("AlertProgress");
             if (alertObj != null)

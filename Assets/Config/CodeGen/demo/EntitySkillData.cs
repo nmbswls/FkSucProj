@@ -28,14 +28,12 @@ public sealed partial class EntitySkillData : Luban.BeanBase
         { if(!_buf["need_h_mode"].IsBoolean) { throw new SerializationException(); }  NeedHMode = _buf["need_h_mode"]; }
         { if(!_buf["interrupt_combo"].IsBoolean) { throw new SerializationException(); }  InterruptCombo = _buf["interrupt_combo"]; }
         { if(!_buf["is_derived"].IsBoolean) { throw new SerializationException(); }  IsDerived = _buf["is_derived"]; }
-        { if(!_buf["cool_down"].IsNumber) { throw new SerializationException(); }  CoolDown = _buf["cool_down"]; }
         { if(!_buf["stack_count"].IsNumber) { throw new SerializationException(); }  StackCount = _buf["stack_count"]; }
         { if(!_buf["icon_path"].IsString) { throw new SerializationException(); }  IconPath = _buf["icon_path"]; }
         { if(!_buf["priority"].IsNumber) { throw new SerializationException(); }  Priority = _buf["priority"]; }
         { if(!_buf["desired_use_angle"].IsNumber) { throw new SerializationException(); }  DesiredUseAngle = _buf["desired_use_angle"]; }
         { if(!_buf["desired_use_distance"].IsNumber) { throw new SerializationException(); }  DesiredUseDistance = _buf["desired_use_distance"]; }
         { if(!_buf["buffer_cache_time"].IsNumber) { throw new SerializationException(); }  BufferCacheTime = _buf["buffer_cache_time"]; }
-        { var __json0 = _buf["ability_extra"]; if(!__json0.IsArray) { throw new SerializationException(); } AbilityExtra = new System.Collections.Generic.List<demo.SkillAbilityExtraPair>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.SkillAbilityExtraPair __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.SkillAbilityExtraPair.DeserializeSkillAbilityExtraPair(__e0);  }  AbilityExtra.Add(__v0); }   }
         { var __json0 = _buf["cast_conditions"]; if(!__json0.IsArray) { throw new SerializationException(); } CastConditions = new System.Collections.Generic.List<demo.SkillCastCondition>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.SkillCastCondition __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.SkillCastCondition.DeserializeSkillCastCondition(__e0);  }  CastConditions.Add(__v0); }   }
     }
 
@@ -85,10 +83,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
     /// </summary>
     public bool IsDerived;
     /// <summary>
-    /// cool_down
-    /// </summary>
-    public float CoolDown;
-    /// <summary>
     /// stack_count
     /// </summary>
     public int StackCount;
@@ -113,10 +107,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
     /// </summary>
     public float BufferCacheTime;
     /// <summary>
-    /// ability_extra
-    /// </summary>
-    public System.Collections.Generic.List<demo.SkillAbilityExtraPair> AbilityExtra;
-    /// <summary>
     /// cast_conditions
     /// </summary>
     public System.Collections.Generic.List<demo.SkillCastCondition> CastConditions;
@@ -126,7 +116,6 @@ public sealed partial class EntitySkillData : Luban.BeanBase
 
     public  void ResolveRef(Tables tables)
     {
-        foreach (var _e in AbilityExtra) { _e?.ResolveRef(tables); }
         foreach (var _e in CastConditions) { _e?.ResolveRef(tables); }
     }
 
@@ -143,14 +132,12 @@ public sealed partial class EntitySkillData : Luban.BeanBase
         + "needHMode:" + NeedHMode + ","
         + "interruptCombo:" + InterruptCombo + ","
         + "isDerived:" + IsDerived + ","
-        + "coolDown:" + CoolDown + ","
         + "stackCount:" + StackCount + ","
         + "iconPath:" + IconPath + ","
         + "priority:" + Priority + ","
         + "desiredUseAngle:" + DesiredUseAngle + ","
         + "desiredUseDistance:" + DesiredUseDistance + ","
         + "bufferCacheTime:" + BufferCacheTime + ","
-        + "abilityExtra:" + Luban.StringUtil.CollectionToString(AbilityExtra) + ","
         + "castConditions:" + Luban.StringUtil.CollectionToString(CastConditions) + ","
         + "}";
     }

@@ -41,14 +41,15 @@ namespace My.Map.Scene
             base.Unbind();
         }
 
-        // SkillProxy 在逻辑层通过 SetPosition 每帧更新位置（轨道/跟随），
-        // 但 SetPosition 不触发 EventOnEntityMove，需在 Tick 中主动同步 Transform。
+        // 逻辑 Pos 与 Owner 脚底同步；FollowOffset 仅在此叠加为表现位置。
         public override void Tick(float dt)
         {
             base.Tick(dt);
-            if (_logic != null)
+            if (_logic != null && _logic.Cfg != null)
             {
-                transform.position = MapLogicPosition.LogicToWorld(_logic);
+                var worldPos = MapLogicPosition.LogicToWorld(_logic);
+                worldPos += (Vector3)_logic.Cfg.FollowOffset;
+                transform.position = worldPos;
             }
         }
 

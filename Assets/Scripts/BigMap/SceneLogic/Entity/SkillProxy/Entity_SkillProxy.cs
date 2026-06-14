@@ -21,6 +21,7 @@ namespace My.Map.Entity
         bool _fixedWorldCaptured;
 
         public float OrbitStartLogicTime => _orbitStartLogicTime;
+        public Vector2 PendingBulletSpawnPos { get; private set; }
         public float PendingParabolaLaunchZ { get; private set; }
 
         public SkillProxyLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
@@ -66,6 +67,7 @@ namespace My.Map.Entity
             AbilityController = new SkillProxyAbilityExecutor(this, _owner);
             _nextCastTime = LogicTime.time;
             _orbitStartLogicTime = LogicTime.time;
+            PendingBulletSpawnPos = Vector2.zero;
             PendingParabolaLaunchZ = 0f;
 
             InitStartupBuffs();
@@ -107,8 +109,9 @@ namespace My.Map.Entity
 
         void PrepareCastFromConsumableOrb()
         {
-            var offset = ComputeConsumableOrbLocalOffset();
-            PendingParabolaLaunchZ = SkillProxyOrbLayout.ResolveParabolaLaunchZ(offset);
+            var orbOffset = ComputeConsumableOrbLocalOffset();
+            PendingBulletSpawnPos = SkillProxyOrbLayout.ResolveBulletSpawnGroundPos(_owner.Pos, orbOffset);
+            PendingParabolaLaunchZ = SkillProxyOrbLayout.ResolveParabolaLaunchZ(Cfg.FollowOffset, orbOffset);
         }
 
         protected override void InitAttribute()
@@ -246,10 +249,8 @@ namespace My.Map.Entity
             switch (Cfg.AnchorMode)
             {
                 case ESkillProxyAnchorMode.FollowOwner:
-                    SetPosition(_owner.Pos + Cfg.FollowOffset);
-                    break;
                 case ESkillProxyAnchorMode.MirrorOwnerFacing:
-                    SetPosition(_owner.Pos + Cfg.FollowOffset);
+                    SetPosition(_owner.Pos);
                     break;
                 case ESkillProxyAnchorMode.FixedWorld:
                     {
@@ -318,7 +319,7 @@ namespace My.Map.Entity
             return EntityAbilityHelper.FindNearestEnemyInRadius(
                 LogicManager,
                 _owner,
-                Pos,
+                _owner.Pos,
                 Cfg.CastAcquireRadius,
                 _owner.Id,
                 Id);

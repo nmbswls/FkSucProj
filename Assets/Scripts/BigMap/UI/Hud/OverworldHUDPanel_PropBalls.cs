@@ -28,69 +28,123 @@ namespace My.UI
 
         void InitializePropBalls()
         {
-            var hungerGo = PropLineContainer.Find("PlayerHunger");
-            {
-                var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerHunger;
-                ball.Root = hungerGo as RectTransform;
-                ball.CG = hungerGo.GetComponent<CanvasGroup>();
-                ball.BarValue = hungerGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerHunger, ball);
-                ball.Root.gameObject.SetActive(false);
-            }
-            var sanGo = PropLineContainer.Find("PlayerSan");
-            {
-                var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerSanity;
-                ball.Root = sanGo as RectTransform;
-                ball.CG = sanGo.GetComponent<CanvasGroup>();
-                ball.BarValue = sanGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerSanity, ball);
+            PlayerBallMap.Clear();
 
-                ball.Root.gameObject.SetActive(false);
-            }
-            var clothesGo = PropLineContainer.Find("PlayerClothes");
-            {
-                var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerClothes;
-                ball.Root = clothesGo as RectTransform;
-                ball.CG = clothesGo.GetComponent<CanvasGroup>();
-                ball.BarValue = clothesGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerClothes, ball);
+            var manager = PropLineContainer != null
+                ? PropLineContainer.GetComponent<PropBallsDataManager>()
+                : null;
 
-                ball.Root.gameObject.SetActive(false);
-            }
-            var cexposeGo = PropLineContainer.Find("PlayerExpose");
+            if (manager != null)
             {
-                var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerOriginPower;
-                ball.Root = cexposeGo as RectTransform;
-                ball.CG = cexposeGo.GetComponent<CanvasGroup>();
-                ball.BarValue = cexposeGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerOriginPower, ball);
-
-                ball.Root.gameObject.SetActive(false);
+                foreach (var def in manager.AllBalls)
+                {
+                    if (def.Root == null || string.IsNullOrEmpty(def.AttrId))
+                    {
+                        continue;
+                    }
+                    RegisterPropBall(def.AttrId, def.Root);
+                }
             }
-            var jingyuGo = PropLineContainer.Find("PlayerJingYu");
+            else
             {
-                var ball = new PlayerPropBall();
-                ball.AttrId = AttrIdConsts.PlayerJingYu;
-                ball.Root = jingyuGo as RectTransform;
-                ball.CG = jingyuGo.GetComponent<CanvasGroup>();
-                ball.BarValue = jingyuGo.Find("Bar").GetComponent<Image>();
-                PlayerBallMap.Add(AttrIdConsts.PlayerJingYu, ball);
-
-                ball.Root.gameObject.SetActive(false);
+                RegisterBallByFind(PropLineContainer, "PlayerHunger", AttrIdConsts.PlayerHunger);
+                RegisterBallByFind(PropLineContainer, "PlayerSan", AttrIdConsts.PlayerSanity);
+                RegisterBallByFind(PropLineContainer, "PlayerClothes", AttrIdConsts.PlayerClothes);
+                RegisterBallByFind(PropLineContainer, "PlayerExpose", AttrIdConsts.PlayerOriginPower);
             }
+
+            // JingYu 位于 HUD 根节点下，独立查找
+            RegisterBallByFind(transform, "PlayerJingYu", AttrIdConsts.PlayerJingYu);
+        }
+
+        void RegisterBallByFind(Transform parent, string childName, string attrId)
+        {
+            if (parent == null)
+            {
+                return;
+            }
+            var go = parent.Find(childName);
+            if (go == null)
+            {
+                Debug.LogWarning($"[PropBalls] Child '{childName}' not found under '{parent.name}'");
+                return;
+            }
+            RegisterPropBall(attrId, go as RectTransform);
+        }
+
+        void RegisterPropBall(string attrId, RectTransform root)
+        {
+            var ball = CreatePropBall(attrId, root);
+            if (ball == null)
+            {
+                return;
+            }
+            PlayerBallMap[attrId] = ball;
+            ball.Root.gameObject.SetActive(false);
+        }
+
+        // 从 Root 自动解析 CG 与 Bar 子节点
+        static PlayerPropBall CreatePropBall(string attrId, RectTransform root)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            var cg = root.GetComponent<CanvasGroup>();
+            if (cg == null)
+            {
+                Debug.LogWarning($"[PropBalls] CanvasGroup missing on '{root.name}' (attrId={attrId})");
+            }
+
+            Image barValue = null;
+            var barTr = root.Find("Bar");
+            if (barTr != null)
+            {
+                barValue = barTr.GetComponent<Image>();
+            }
+            else
+            {
+                Debug.LogWarning($"[PropBalls] Bar child missing on '{root.name}' (attrId={attrId})");
+            }
+
+            return new PlayerPropBall
+            {
+                AttrId = attrId,
+                Root = root,
+                CG = cg,
+                BarValue = barValue,
+            };
+        }
+
+        void RefreshPropBallBar(string attrId, LogicEntityBase player)
+        {
+            if (player == null
+                || !PlayerBallMap.TryGetValue(attrId, out var ball)
+                || ball.BarValue == null
+                || ball.Root == null
+                || !ball.Root.gameObject.activeSelf)
+            {
+                return;
+            }
+
+            long max = player.GetResourceMax(attrId);
+            if (max <= 0)
+            {
+                return;
+            }
+
+            ball.BarValue.fillAmount = Mathf.Clamp01((float)player.GetAttr(attrId) / max);
         }
 
         void ShowBallAppearEffect(string attrId)
         {
-            if (PlayerBallMap.TryGetValue(attrId, out var ball))
+            if (!PlayerBallMap.TryGetValue(attrId, out var ball) || ball.CG == null)
             {
-                ball.CG.alpha = 0;
-                ball.CG.DOFade(1.0f, 1.0f);
+                return;
             }
+            ball.CG.alpha = 0;
+            ball.CG.DOFade(1.0f, 1.0f);
         }
 
         void HandleOnPlayerFuncOpen(PlayerFuncUnlockEvent e)

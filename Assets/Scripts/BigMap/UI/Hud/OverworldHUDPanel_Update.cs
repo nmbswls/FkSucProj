@@ -11,22 +11,52 @@ namespace My.UI
     {
         public void Update()
         {
-            if (MainGameManager.Instance.gameLogicManager.playerLogicEntity != null)
+            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            if (player != null)
             {
-                PlayerHpText.text = ((int)(MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.HP) * 0.001f)).ToString();
+                // 血量文本
+                long hp = player.GetAttr(AttrIdConsts.HP);
+                if (PlayerHpText != null)
+                {
+                    PlayerHpText.text = ((int)(hp * 0.001f)).ToString();
+                }
 
-                PleasureBar.fillAmount = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f / 100;
+                // 血量进度条（HPBar → 血量）
+                if (HpBar != null)
+                {
+                    long hpMax = player.GetAttr(AttrIdConsts.HP_MAX);
+                    HpBar.fillAmount = hpMax > 0
+                        ? Mathf.Clamp01((float)hp / hpMax)
+                        : 0f;
+                }
 
-                var jingyuVal = MainGameManager.Instance.gameLogicManager.playerLogicEntity.GetAttr(AttrIdConsts.PlayerJingYu);
+                // 高潮进度条（PleasureBar → PlayerPleasure，0-100000 对应 0-1）
+                if (PleasureBar != null)
+                {
+                    PleasureBar.fillAmount = Mathf.Clamp01(
+                        player.GetAttr(AttrIdConsts.PlayerPleasure) * 0.001f / 100f);
+                }
+
+                // 发情值进度条（DesireBar → PlayerEstrusProgrss，max level 5 对应 100000）
+                if (DesireBar != null)
+                {
+                    const float EstrusMaxRaw = 100000f;
+                    DesireBar.fillAmount = Mathf.Clamp01(
+                        player.GetAttr(AttrIdConsts.PlayerEstrusProgrss) / EstrusMaxRaw);
+                }
+
+                // 精浴层数显隐
+                var jingyuVal = player.GetAttr(AttrIdConsts.PlayerJingYu);
                 int layer = (int)(jingyuVal / 1000);
-                if (layer > 0)
+                if (PlayerBallMap.TryGetValue(AttrIdConsts.PlayerJingYu, out var jingyuBall) && jingyuBall.Root != null)
                 {
-                    PlayerBallMap[AttrIdConsts.PlayerJingYu].Root.gameObject.SetActive(true);
+                    jingyuBall.Root.gameObject.SetActive(layer > 0);
                 }
-                else
-                {
-                    PlayerBallMap[AttrIdConsts.PlayerJingYu].Root.gameObject.SetActive(false);
-                }
+
+                RefreshPropBallBar(AttrIdConsts.PlayerHunger, player);
+                RefreshPropBallBar(AttrIdConsts.PlayerSanity, player);
+                RefreshPropBallBar(AttrIdConsts.PlayerClothes, player);
+                RefreshPropBallBar(AttrIdConsts.PlayerOriginPower, player);
             }
 
             if (WantedIndicator != null)

@@ -125,11 +125,33 @@ namespace My.Map.Scene
 
             KillAllFadeTweens();
             _relayoutActive = false;
+            // 对象池回收时确保下次 OnBound 走 firstBind 路径
+            _firstBind = true;
         }
 
         void Update()
         {
+            PollAmmoSync();
             ApplyOrbitLayout();
+        }
+
+        // 兜底轮询：每隔几帧从 logic 层直接读取 ammo，防止事件链遗漏或时序问题导致计数错误
+        int _pollFrame;
+        void PollAmmoSync()
+        {
+            if (_firstBind || _relayoutActive) return;
+            if ((_pollFrame++ & 7) != 0) return; // 每 8 帧检查一次
+
+            var logic = _presenter?.GetLogicEntity() as SkillProxyLogicEntity;
+            if (logic == null) return;
+
+            if (!TryReadAmmoState(logic, out int current, out int max)) return;
+
+            int expected = Mathf.Clamp(current, 0, max);
+            if (expected != _displayOrbCount)
+            {
+                RefreshOrbs(current, max);
+            }
         }
 
         void ApplyOrbitLayout()

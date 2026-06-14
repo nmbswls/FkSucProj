@@ -12,14 +12,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -35,14 +33,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -56,14 +52,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0.2,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0.8,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -77,14 +71,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0.2,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0.8,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -98,14 +90,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0.5,
     "stack_count": 0,
     "icon_path": "fix_clothes",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -119,14 +109,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 999,
     "buffer_cache_time": 0.2,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -140,14 +128,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -161,14 +147,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0.6,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -182,14 +166,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 2,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -203,14 +185,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -224,14 +204,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -245,14 +223,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 6,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 10,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -266,14 +242,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "cost_yellow",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -287,14 +261,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 6,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -308,14 +280,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0.8,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -329,14 +299,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 21,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 2000,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -350,14 +318,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 10,
     "stack_count": 0,
     "icon_path": "",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -371,14 +337,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 10,
     "stack_count": 5,
     "icon_path": "icon_01",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -392,14 +356,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "cost_yellow",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": [
       {
         "type": 3,
@@ -421,14 +383,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 3,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -442,14 +402,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 6,
     "stack_count": 0,
     "icon_path": "",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -463,14 +421,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 6,
     "stack_count": 0,
     "icon_path": "",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0.3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -484,14 +440,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -505,14 +459,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 1,
     "stack_count": 0,
     "icon_path": "",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": [
       {
         "type": 3,
@@ -534,14 +486,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 10,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -555,14 +505,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 20,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -576,14 +524,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -597,23 +543,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 2,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [
-      {
-        "key": "DefaultAttackPre",
-        "val": "0.5"
-      },
-      {
-        "key": "DefaultAttackTime",
-        "val": "0.4"
-      }
-    ],
     "cast_conditions": []
   },
   {
@@ -627,14 +562,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 2,
     "stack_count": 0,
     "icon_path": "icon_01",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -648,23 +581,12 @@
     "need_h_mode": true,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 2,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [
-      {
-        "key": "DefaultAttackPre",
-        "val": "0.5"
-      },
-      {
-        "key": "DefaultAttackTime",
-        "val": "0.4"
-      }
-    ],
     "cast_conditions": []
   },
   {
@@ -678,14 +600,12 @@
     "need_h_mode": true,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 6,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 2,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -699,14 +619,12 @@
     "need_h_mode": true,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 12,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -720,14 +638,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 10,
     "stack_count": 0,
     "icon_path": "",
     "priority": 5,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -741,14 +657,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 10,
     "stack_count": 0,
     "icon_path": "",
     "priority": 5,
     "desired_use_angle": 0,
     "desired_use_distance": 5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -762,14 +676,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "",
     "priority": 5,
     "desired_use_angle": 0,
     "desired_use_distance": 1.5,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -785,14 +697,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -808,14 +718,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -831,14 +739,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -852,14 +758,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 1,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -873,14 +777,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -894,14 +796,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "smoke_grenade",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -915,14 +815,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "player_fq_normal_ziwei",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -936,14 +834,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "player_fq_normal_ziwei",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -957,14 +853,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 4,
     "stack_count": 0,
     "icon_path": "player_fq_hit_hop",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -978,14 +872,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 4,
     "stack_count": 0,
     "icon_path": "player_fq_hit_breast",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -999,14 +891,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 4,
     "stack_count": 0,
     "icon_path": "player_fq_dash_assult",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 3,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1025,14 +915,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1051,14 +939,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1077,14 +963,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1098,14 +982,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1119,14 +1001,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 3,
     "icon_path": "icon_01",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 6,
     "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1142,14 +1022,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1163,14 +1041,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "",
     "priority": 10,
     "desired_use_angle": 60,
     "desired_use_distance": 12,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1186,14 +1062,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1209,14 +1083,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1232,14 +1104,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1255,14 +1125,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1276,14 +1144,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 8,
     "stack_count": 1,
     "icon_path": "orb_skill_summon",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1297,14 +1163,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 2,
     "stack_count": 1,
     "icon_path": "player_enter_expose",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1318,14 +1182,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 2,
     "stack_count": 1,
     "icon_path": "player_return_disguise",
     "priority": 1,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": [
       {
         "type": 4,
@@ -1349,14 +1211,12 @@
     "need_h_mode": false,
     "interrupt_combo": false,
     "is_derived": false,
-    "cool_down": 0,
     "stack_count": 0,
     "icon_path": "",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
     "cast_conditions": []
   },
   {
@@ -1370,35 +1230,12 @@
     "need_h_mode": false,
     "interrupt_combo": true,
     "is_derived": false,
-    "cool_down": 5,
     "stack_count": 0,
     "icon_path": "grapple_hook",
     "priority": 0,
     "desired_use_angle": 0,
     "desired_use_distance": 0,
     "buffer_cache_time": 0,
-    "ability_extra": [],
-    "cast_conditions": []
-  },
-  {
-    "skill_id": "close_knockdown",
-    "main_ability_id": "close_knockdown",
-    "desc": "",
-    "is_passive": false,
-    "passive_buff_ids": [],
-    "passive_buff_level_variable_key": "",
-    "is_combo": false,
-    "need_h_mode": true,
-    "interrupt_combo": true,
-    "is_derived": false,
-    "cool_down": 5,
-    "stack_count": 0,
-    "icon_path": "",
-    "priority": 20,
-    "desired_use_angle": 0,
-    "desired_use_distance": 0.8,
-    "buffer_cache_time": 0.1,
-    "ability_extra": [],
     "cast_conditions": []
   }
 ]
