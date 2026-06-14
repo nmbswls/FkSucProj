@@ -1815,7 +1815,7 @@ namespace My.Map.Entity
                             {
                                 new MapAbilityEffectAddResourceCfg()
                                 {
-                                    ResourceId = "ammo",
+                                    ResourceId = AttrIdConsts.Ammo,
                                     AddValue = 1,
                                     IsSelf = true,
                                 },

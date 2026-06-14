@@ -465,7 +465,9 @@ namespace My
 
             float g = Mathf.Max(0.01f, D.gravity);
             float vzFromArc = Mathf.Sqrt(Mathf.Max(0.0001f, 2f * g * Mathf.Max(0f, D.arcHeight)));
-            _zLaunch = 0.12f;
+            _zLaunch = owner.bindingProjInfo.parabolaLaunchZ > 0f
+                ? owner.bindingProjInfo.parabolaLaunchZ
+                : 0.12f;
             _z = _zLaunch;
             _peakZ = _z;
 
@@ -672,6 +674,7 @@ namespace My
         public Vector2 initialDir;
         public long? homingTargetId;
         public Vector2? homingTargetPos;
+        public float parabolaLaunchZ;
 
     }
 }

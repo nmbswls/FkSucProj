@@ -26,6 +26,79 @@ namespace My.Map.Entity
 
     public static class EntityAbilityHelper
     {
+        // 圆形范围内最近敌对单位，使用物理圆查询 + 精确距离过滤。
+        public static BaseUnitLogicEntity FindNearestEnemyInRadius(
+            GameLogicManager logicManager,
+            BaseUnitLogicEntity factionRef,
+            Vector2 center,
+            float acquireRadius,
+            params long[] excludeIds)
+        {
+            if (logicManager == null || factionRef == null || logicManager.visionSenser == null)
+            {
+                return null;
+            }
+
+            float radius = acquireRadius > 0.01f ? acquireRadius : 8f;
+            float radiusSqr = radius * radius;
+            var filter = new EntityFilterParam
+            {
+                CampFilterType = ECampFilterType.NotSelf,
+                SelfCampId = factionRef.FactionId,
+            };
+
+            BaseUnitLogicEntity best = null;
+            float bestSqr = float.MaxValue;
+
+            foreach (var one in logicManager.visionSenser.OverlapCircleAllEntity(
+                         center,
+                         radius,
+                         filter,
+                         MapLogicPosition.ResolveAttackHitHeight(factionRef)))
+            {
+                if (one is not BaseUnitLogicEntity unit)
+                {
+                    continue;
+                }
+
+                if (excludeIds != null)
+                {
+                    bool excluded = false;
+                    for (int i = 0; i < excludeIds.Length; i++)
+                    {
+                        if (unit.Id == excludeIds[i])
+                        {
+                            excluded = true;
+                            break;
+                        }
+                    }
+
+                    if (excluded)
+                    {
+                        continue;
+                    }
+                }
+
+                if (unit.MarkDestroyed || unit.IsDead)
+                {
+                    continue;
+                }
+
+                float sqr = (unit.Pos - center).sqrMagnitude;
+                if (sqr > radiusSqr)
+                {
+                    continue;
+                }
+
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = unit;
+                }
+            }
+
+            return best;
+        }
 
         /// <summary>
         /// 根据目标筛选类型 
@@ -76,39 +149,12 @@ namespace My.Map.Entity
                     break;
                 case ETargetSelectPolicy.NearestEnemyInRadius:
                     {
-                        float r = acquireRadius > 0.01f ? acquireRadius : 8f;
-                        BaseUnitLogicEntity best = null;
-                        float bestSqr = float.MaxValue;
-                        foreach (var oneEntity in casterUnit.FindEntityInRange(casterUnit.Pos, r))
-                        {
-                            if (oneEntity is not BaseUnitLogicEntity unitEntity)
-                            {
-                                continue;
-                            }
-
-                            if (unitEntity.Id == casterUnit.Id)
-                            {
-                                continue;
-                            }
-
-                            if (unitEntity.FactionId == casterUnit.FactionId)
-                            {
-                                continue;
-                            }
-
-                            if (unitEntity.MarkDestroyed || unitEntity.IsDead)
-                            {
-                                continue;
-                            }
-
-                            float sqr = (unitEntity.Pos - casterUnit.Pos).sqrMagnitude;
-                            if (sqr < bestSqr)
-                            {
-                                bestSqr = sqr;
-                                best = unitEntity;
-                            }
-                        }
-
+                        var best = FindNearestEnemyInRadius(
+                            casterUnit.LogicManager,
+                            casterUnit,
+                            casterUnit.Pos,
+                            acquireRadius,
+                            casterUnit.Id);
                         return best != null ? best.Id : 0;
                     }
                     break;
@@ -837,7 +883,7 @@ namespace My.Map.Entity
             }
         }
 
-        public GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility(AbilityRunningContext abilityCtx)
+        public virtual GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility(AbilityRunningContext abilityCtx)
         {
             var combatSource = GetCombatSource();
             var spatialHost = GetSpatialHost();

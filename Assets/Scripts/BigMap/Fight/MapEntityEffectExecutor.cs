@@ -231,7 +231,22 @@ namespace My.Map.Entity
                     return;
                 }
             }
-            ctx.Env.projectileHolder.CreateLogicProjectile(pData, caster, bornPos.Value, dir.Value, homingTarget: homingTarget, homingTargetPos: homingTargetPos);
+
+            float parabolaLaunchZ = 0f;
+            if (realCfg.MotionData is ParabolaMotionData &&
+                ctx.RunningStorage.TryGetValue(SkillProxyOrbLayout.ParabolaLaunchZStorageKey, out var launchZFixed))
+            {
+                parabolaLaunchZ = launchZFixed / 1000f;
+            }
+
+            ctx.Env.projectileHolder.CreateLogicProjectile(
+                pData,
+                caster,
+                bornPos.Value,
+                dir.Value,
+                homingTarget: homingTarget,
+                homingTargetPos: homingTargetPos,
+                parabolaLaunchZ: parabolaLaunchZ);
         }
     }
     

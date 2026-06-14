@@ -749,6 +749,66 @@ namespace My.Map.Entity
         }
 
         // subtractLayer：0 整实例移除（Classic）或按规则摘层（Independent 见实现）；>0 减层
+        // 销毁实体时同步清理 Buff：先摘本实体作为 caster 施加的，再清空宿主身上剩余 Buff
+        public void TearDownEntityBuffs(ILogicEntity entity, bool removeBuffsCastByEntity = true)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+
+            _addRequests.RemoveAll(req => req.target == entity.Id);
+
+            if (removeBuffsCastByEntity)
+            {
+                RemoveAllBuffsCastBy(entity.Id);
+            }
+
+            if (entity is IEntityBuffOwner owner)
+            {
+                ClearBuffsOnOwner(owner);
+            }
+        }
+
+        public void RemoveAllBuffsCastBy(long casterId)
+        {
+            foreach (var buffInst in _buffs.Values.ToList())
+            {
+                if (buffInst.CasterId != casterId)
+                {
+                    continue;
+                }
+
+                RemoveBuffInstanceImmediate(buffInst);
+            }
+        }
+
+        void ClearBuffsOnOwner(IEntityBuffOwner owner)
+        {
+            foreach (var buffInst in owner.BuffContainer.Values.ToList())
+            {
+                RemoveBuffInstanceImmediate(buffInst);
+            }
+        }
+
+        void RemoveBuffInstanceImmediate(BuffInstance buffInst)
+        {
+            if (buffInst == null || buffInst.MarkedForRemove)
+            {
+                return;
+            }
+
+            buffInst.MarkedForRemove = true;
+            buffInst.OnBuffRemove();
+
+            if (buffInst.BuffOwner != null)
+            {
+                buffInst.BuffOwner.UnregisterBuff(buffInst);
+            }
+
+            _buffs.Remove(buffInst.InstanceId);
+        }
+
         public void RemoveAllBuffById(long entityId, string buffId, int subtractLayer = 0, long? casterId = null, long? srcBuffId = null)
         {
             var targetEntity = logicManager.AreaManager.GetLogicEntiy(entityId, false);

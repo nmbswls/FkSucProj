@@ -154,6 +154,7 @@ namespace My.Map.Entity
         public const string DamageXiXue = "DamageXiXue";
 
         public const string Ammo = "ammo";
+        public const string AmmoMax = "Ammo.Max";
         public const string HValYiShang = "HValYiShang";
 
         #region 特殊状态、视觉等

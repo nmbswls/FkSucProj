@@ -418,6 +418,19 @@ namespace My.Map
             attributeStore.UpdateModifier(m);
         }
 
+        // 销毁前是否清理本实体 Buff，以及本实体作为 caster 施加的 Buff
+        protected virtual bool ShouldTearDownBuffsOnDestroy => false;
+
+        protected virtual void OnBeforeEntityDestroyed(string reason)
+        {
+            if (!ShouldTearDownBuffsOnDestroy || LogicManager?.globalBuffManager == null)
+            {
+                return;
+            }
+
+            LogicManager.globalBuffManager.TearDownEntityBuffs(this, removeBuffsCastByEntity: true);
+        }
+
         /// <summary>
         /// �??��?�???毁并请�??��??管�??��???��??
         /// </summary>
@@ -429,6 +442,8 @@ namespace My.Map
                 Debug.Log("DoEntityDestroyed already mark dead");
                 return;
             }
+
+            OnBeforeEntityDestroyed(reason);
 
             // �??��?��?�?已�??�?
             MarkDestroyed = true;

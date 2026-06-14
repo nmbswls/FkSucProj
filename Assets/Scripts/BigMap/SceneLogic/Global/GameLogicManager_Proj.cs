@@ -15,7 +15,14 @@ namespace My
 
         public event Action<LogicProjectileInfo> EventOnLogicProjectileSpawn;
 
-        public LogicProjectileInfo CreateLogicProjectile(ProjectileData pData, ILogicEntity caster, Vector2 bornPos, Vector2 dir, long? homingTarget = null, Vector2? homingTargetPos = null)
+        public LogicProjectileInfo CreateLogicProjectile(
+            ProjectileData pData,
+            ILogicEntity caster,
+            Vector2 bornPos,
+            Vector2 dir,
+            long? homingTarget = null,
+            Vector2? homingTargetPos = null,
+            float parabolaLaunchZ = 0f)
         {
             var projectilInfo = new LogicProjectileInfo
             {
@@ -24,6 +31,7 @@ namespace My
                 pData = pData,
                 spawnPos = bornPos,
                 initialDir = dir,
+                parabolaLaunchZ = parabolaLaunchZ,
             };
 
             projectilInfo.homingTargetId = homingTarget;

@@ -2390,9 +2390,13 @@ namespace My.Map.Entity
             var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
             {
                 BulletId = "orb_skill_bullet",
-                MotionData = new LinearMotionData()
+                MotionData = new ParabolaMotionData()
                 {
-                    speed = 12f,
+                    horizontalSpeed = 10f,
+                    arcHeight = 1.2f,
+                    gravity = 22f,
+                    hitRadius = 0.45f,
+                    minFlightTime = 0.25f,
                 },
                 SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
                 SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming,

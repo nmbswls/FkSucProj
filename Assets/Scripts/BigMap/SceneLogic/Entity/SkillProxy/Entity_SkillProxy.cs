@@ -16,8 +16,12 @@ namespace My.Map.Entity
 
         BaseUnitLogicEntity _owner;
         float _nextCastTime;
+        float _orbitStartLogicTime;
         Vector2 _fixedWorldPos;
         bool _fixedWorldCaptured;
+
+        public float OrbitStartLogicTime => _orbitStartLogicTime;
+        public float PendingParabolaLaunchZ { get; private set; }
 
         public SkillProxyLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
             : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -30,11 +34,17 @@ namespace My.Map.Entity
 
         public override EEntityType Type => EEntityType.SkillProxy;
 
+        protected override bool ShouldTearDownBuffsOnDestroy => true;
+
+        protected override void LoadCfg()
+        {
+            Cfg = SkillProxySpecRuntimeMap.Get(CfgId);
+        }
+
         public override void Initialize()
         {
             base.Initialize();
 
-            Cfg = SkillProxySpecRuntimeMap.Get(CfgId);
             if (Cfg == null)
             {
                 Debug.LogError($"SkillProxyLogicEntity spec missing: {CfgId}");
@@ -55,29 +65,111 @@ namespace My.Map.Entity
 
             AbilityController = new SkillProxyAbilityExecutor(this, _owner);
             _nextCastTime = LogicTime.time;
+            _orbitStartLogicTime = LogicTime.time;
+            PendingParabolaLaunchZ = 0f;
 
-            InitResources();
             InitStartupBuffs();
         }
 
-        void InitResources()
+        public float GetOrbitAngleDeg()
         {
-            if (Cfg.InitialResources == null)
+            if (Cfg == null)
+            {
+                return 0f;
+            }
+
+            return SkillProxyOrbLayout.ComputeOrbitAngleDeg(
+                Cfg.OrbitInitialAngle,
+                Cfg.OrbitAngularSpeed,
+                _orbitStartLogicTime);
+        }
+
+        public Vector2 ComputeConsumableOrbLocalOffset()
+        {
+            if (Cfg == null)
+            {
+                return Vector2.zero;
+            }
+
+            int currentAmmo = (int)GetAttr(AttrIdConsts.Ammo);
+            if (currentAmmo <= 0)
+            {
+                return Vector2.zero;
+            }
+
+            int slotIndex = SkillProxyOrbLayout.ResolveConsumableSlotIndex(currentAmmo);
+            return SkillProxyOrbLayout.ComputeSlotLocalOffset(
+                slotIndex,
+                currentAmmo,
+                GetOrbitAngleDeg(),
+                Cfg.OrbitRadius);
+        }
+
+        void PrepareCastFromConsumableOrb()
+        {
+            var offset = ComputeConsumableOrbLocalOffset();
+            PendingParabolaLaunchZ = SkillProxyOrbLayout.ResolveParabolaLaunchZ(offset);
+        }
+
+        protected override void InitAttribute()
+        {
+            RegisterSpecAttrs();
+            attributeStore.Commit();
+        }
+
+        void RegisterSpecAttrs()
+        {
+            if (Cfg?.InitialAttrs == null || Cfg.InitialAttrs.Count == 0)
             {
                 return;
             }
 
-            foreach (var kv in Cfg.InitialResources)
+            foreach (var kv in Cfg.InitialAttrs)
             {
-                attributeStore.RegisterResource(
-                    kv.Key,
-                    maxAttrId: null,
-                    fixMaxValue: kv.Value,
-                    initialCurrent: kv.Value);
+                if (AttrUtils.GetAttrType(kv.Key) != EAttrType.Num)
+                {
+                    continue;
+                }
+
+                attributeStore.RegisterNumeric(kv.Key, initialBase: kv.Value);
             }
 
-            attributeStore.EvOnResourceAttrChanged += OnResourceChanged;
-            attributeStore.Commit();
+            foreach (var kv in Cfg.InitialAttrs)
+            {
+                if (AttrUtils.GetAttrType(kv.Key) != EAttrType.Resource)
+                {
+                    continue;
+                }
+
+                attributeStore.RegisterResource(
+                    kv.Key,
+                    ResolveResourceMaxAttrId(kv.Key),
+                    fixMaxValue: null,
+                    initialCurrent: kv.Value);
+            }
+        }
+
+        static string ResolveResourceMaxAttrId(string resourceId)
+        {
+            if (resourceId == AttrIdConsts.Ammo)
+            {
+                return AttrIdConsts.AmmoMax;
+            }
+
+            return null;
+        }
+
+        public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
+        {
+            base.OnResourceAttriChanged(attrId, before, after, intent);
+
+            if (attrId != AttrIdConsts.Ammo)
+            {
+                return;
+            }
+
+            int max = (int)GetResourceMax(AttrIdConsts.Ammo);
+            EventOnResourceChanged?.Invoke(attrId, (int)after, max);
         }
 
         void InitStartupBuffs()
@@ -104,15 +196,6 @@ namespace My.Map.Entity
             }
         }
 
-        void OnResourceChanged(string attrId, long before, long after, ResourceDeltaIntent intent)
-        {
-            if (Cfg.InitialResources == null || !Cfg.InitialResources.TryGetValue(attrId, out int max))
-            {
-                return;
-            }
-
-            EventOnResourceChanged?.Invoke(attrId, (int)after, max);
-        }
 
         protected override void OnTick(float dt)
         {
@@ -129,8 +212,8 @@ namespace My.Map.Entity
             }
 
             ApplyAnchor(dt);
-            AbilityController?.Tick(dt);
             TickPeriodicCast();
+            AbilityController?.Tick(dt);
 
             base.OnTick(dt);
         }
@@ -163,10 +246,10 @@ namespace My.Map.Entity
             switch (Cfg.AnchorMode)
             {
                 case ESkillProxyAnchorMode.FollowOwner:
-                    SetPosition(_owner.Pos + Cfg.AnchorOffset);
+                    SetPosition(_owner.Pos + Cfg.FollowOffset);
                     break;
                 case ESkillProxyAnchorMode.MirrorOwnerFacing:
-                    SetPosition(_owner.Pos + Cfg.AnchorOffset);
+                    SetPosition(_owner.Pos + Cfg.FollowOffset);
                     break;
                 case ESkillProxyAnchorMode.FixedWorld:
                     {
@@ -212,6 +295,8 @@ namespace My.Map.Entity
                 return;
             }
 
+            PrepareCastFromConsumableOrb();
+
             if (AbilityController.TryUseAbility(
                     Cfg.PeriodicAbilityId,
                     castVec: target.Pos,
@@ -230,64 +315,20 @@ namespace My.Map.Entity
                 return null;
             }
 
-            float radius = Cfg.CastAcquireRadius > 0.01f ? Cfg.CastAcquireRadius : 8f;
-            BaseUnitLogicEntity best = null;
-            float bestSqr = float.MaxValue;
-
-            foreach (var one in _owner.FindEntityInRange(Pos, radius))
-            {
-                if (one is not BaseUnitLogicEntity unit)
-                {
-                    continue;
-                }
-
-                if (unit.Id == _owner.Id || unit.Id == Id)
-                {
-                    continue;
-                }
-
-                if (unit.FactionId == _owner.FactionId)
-                {
-                    continue;
-                }
-
-                if (unit.MarkDestroyed || unit.IsDead)
-                {
-                    continue;
-                }
-
-                float sqr = (unit.Pos - Pos).sqrMagnitude;
-                if (sqr < bestSqr)
-                {
-                    bestSqr = sqr;
-                    best = unit;
-                }
-            }
-
-            return best;
+            return EntityAbilityHelper.FindNearestEnemyInRadius(
+                LogicManager,
+                _owner,
+                Pos,
+                Cfg.CastAcquireRadius,
+                _owner.Id,
+                Id);
         }
 
-        public override void DoEntityDestroyed(string reason)
+        protected override void OnBeforeEntityDestroyed(string reason)
         {
-            if (_owner != null && !string.IsNullOrEmpty(Cfg?.OwnerLinkBuffId))
-            {
-                LogicManager.globalBuffManager.RemoveAllBuffById(
-                    _owner.Id,
-                    Cfg.OwnerLinkBuffId,
-                    casterId: Id);
-            }
-
-            base.DoEntityDestroyed(reason);
-        }
-
-        public override void OnDespawn(ref LogicEntityRecord? snapshot)
-        {
-            if (attributeStore != null)
-            {
-                attributeStore.EvOnResourceAttrChanged -= OnResourceChanged;
-            }
-
-            base.OnDespawn(ref snapshot);
+            // 先停掉周期施法/被动 tick，再反注册 Buff，避免销毁过程中 Buff 仍触发
+            AbilityController?.Cancel();
+            base.OnBeforeEntityDestroyed(reason);
         }
     }
 }
