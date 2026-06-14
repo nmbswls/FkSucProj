@@ -1810,7 +1810,7 @@ namespace My.Map.Entity
                         new BuffTriggerRuleConfig()
                         {
                             TriggerType = ETriggerType.Tick,
-                            TriggerInterval = 4f,
+                            TriggerParam1 = 4000,
                             OutputFightEffects = new()
                             {
                                 new MapAbilityEffectAddResourceCfg()

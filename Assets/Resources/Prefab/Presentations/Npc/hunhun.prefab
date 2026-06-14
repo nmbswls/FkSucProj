@@ -364,6 +364,9 @@ MonoBehaviour:
   pushPriority: 1
   maxExternalSpeed: 20
   blendDelta: 0.6
+  dashContactLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   wallsLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -941,6 +944,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3326938578291675276}
   - component: {fileID: 5444736661789311617}
+  - component: {fileID: 141557808217802725}
   m_Layer: 12
   m_Name: target
   m_TagString: Untagged
@@ -998,6 +1002,22 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.13}
   m_Size: {x: 0.25, y: 0.36}
   m_Direction: 0
+--- !u!114 &141557808217802725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8827776686763438421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9179022c9968ee4e965d5d6d0c31f86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CenterHight: 0
+  SpecialTag: 
+  IsInteract: 0
+  Collider: {fileID: 0}
 --- !u!1 &9142082666380213813
 GameObject:
   m_ObjectHideFlags: 0

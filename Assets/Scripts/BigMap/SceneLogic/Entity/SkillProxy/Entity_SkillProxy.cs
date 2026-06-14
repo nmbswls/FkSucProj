@@ -99,7 +99,8 @@ namespace My.Map.Entity
                     kv.Key,
                     ResolveResourceMaxAttrId(kv.Key),
                     fixMaxValue: null,
-                    initialCurrent: kv.Value);
+                    initialCurrent: kv.Value,
+                    policy: MaxChangePolicy.ClampOnly);
             }
         }
 
@@ -242,6 +243,11 @@ namespace My.Map.Entity
 
             var abilityCfg = AbilityLibrary.GetAbilityConfig(Cfg.PeriodicAbilityId);
             var castCosts = SkillCostUtil.ResolveAbilityCastCosts(abilityCfg);
+            if (castCosts == null || castCosts.Count == 0)
+            {
+                return;
+            }
+
             if (!SkillCostUtil.CanPay(this, castCosts))
             {
                 return;

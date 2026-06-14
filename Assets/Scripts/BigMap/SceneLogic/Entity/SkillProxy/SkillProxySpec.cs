@@ -54,7 +54,7 @@ namespace My.Map.Entity
                 OwnerLinkBuffId = "orb_skill_owner_link",
                 PeriodicAbilityId = "orb_skill_cast",
                 CastInterval = 1.2f,
-                CastAcquireRadius = 2f,
+                CastAcquireRadius = 5f,
                 DefaultLifetime = 15f,
                 PrefabName = "orb_skill_v1",
             });

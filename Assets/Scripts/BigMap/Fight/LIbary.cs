@@ -2447,7 +2447,7 @@ namespace My.Map.Entity
                 MotionData = new ParabolaMotionData()
                 {
                     horizontalSpeed = 10f,
-                    arcHeight = 1.2f,
+                    arcHeight = 5f,
                     gravity = 22f,
                     hitRadius = 0.45f,
                     minFlightTime = 0.25f,

@@ -49,12 +49,12 @@ namespace My.Map.Entity
 
             BaseUnitLogicEntity best = null;
             float bestSqr = float.MaxValue;
-
-            foreach (var one in logicManager.visionSenser.OverlapCircleAllEntity(
+            var entities = logicManager.visionSenser.OverlapCircleAllEntity(
                          center,
                          radius,
                          filter,
-                         MapLogicPosition.ResolveAttackHitHeight(factionRef)))
+                         MapLogicPosition.ResolveAttackHitHeight(factionRef));
+            foreach (var one in entities)
             {
                 if (one is not BaseUnitLogicEntity unit)
                 {
