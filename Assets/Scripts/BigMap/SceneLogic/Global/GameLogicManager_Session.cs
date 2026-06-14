@@ -347,7 +347,7 @@ namespace My
             }
 
             playerDataManager?.SyncLearnedSkillsToPlayerEntity();
-            My.UI.OverworldHUDPanel.Instance?.MainBottomBar?.Refresh(true);
+            My.UI.OverworldHUDPanel.Instance?.MainBottomBar?.Refresh(true, forceLayoutRebuild: true);
             My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
         }
     }

@@ -215,10 +215,16 @@ namespace My.Map.Entity
                             break;
                         case ETargetSelectPolicy.NearestEnemyInRadius:
                             {
-                                homingTarget = EntityAbilityHelper.GetTargetByPolicy(
-                                    realCfg.homingSelectPolicy,
+                                float acquireRadius = realCfg.nearestEnemyAcquireRadius > 0.01f
+                                    ? realCfg.nearestEnemyAcquireRadius
+                                    : 8f;
+                                var best = EntityAbilityHelper.FindNearestEnemyInRadius(
+                                    casterUnit.LogicManager,
                                     casterUnit,
-                                    realCfg.nearestEnemyAcquireRadius);
+                                    bornPos.Value,
+                                    acquireRadius,
+                                    casterUnit.Id);
+                                homingTarget = best != null ? best.Id : 0;
                             }
                             break;
                     }
@@ -1984,18 +1990,39 @@ namespace My.Map.Entity
 
             if (realCfg == null)
             {
-                Debug.LogError("AbilityEffectExecutor4FixExpose err");
+                Debug.LogError("AbilityEffectExecutor4FixExpose cfg error");
                 return;
             }
 
             var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
-            if (caster == null || caster is not PlayerLogicEntity playerEntity)
+            if (caster is not PlayerLogicEntity playerEntity)
             {
-                Debug.LogError("AbilityEffectExecutor4HModeBlurt unit not found.");
+                Debug.LogError("AbilityEffectExecutor4FixExpose player not found.");
                 return;
             }
 
-            playerEntity.TryExitExposeFromSkill(realCfg.RestoreValue);
+            playerEntity.TryFixClothesFromSkill(realCfg.RestoreValue);
+        }
+    }
+
+    public class AbilityEffectExecutor4ReDisguise : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            if (effectConf is not MapFightEffectReDisguiseCfg realCfg)
+            {
+                Debug.LogError("AbilityEffectExecutor4ReDisguise cfg error");
+                return;
+            }
+
+            var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId);
+            if (caster is not PlayerLogicEntity playerEntity)
+            {
+                Debug.LogError("AbilityEffectExecutor4ReDisguise player not found.");
+                return;
+            }
+
+            playerEntity.TryReturnDisguiseFromSkill(realCfg.InitialClothes);
         }
     }
 

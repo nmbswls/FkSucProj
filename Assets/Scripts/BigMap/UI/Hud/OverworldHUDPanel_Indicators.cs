@@ -8,97 +8,43 @@ using static My.GameLogicManager;
 
 namespace My.UI
 {
+    // 暴露技能槽：按下蓄力时显示 Pressed 特效，松开时隐藏；其余样式由 prefab 配置。
     public class OverworldHudExposeSkillIndicator : MonoBehaviour
     {
-        public enum ExposeSkillGlowShape
-        {
-            Circle = 0,
-            Square = 1,
-        }
-
         const string EnterExposeSkillId = "player_enter_expose";
         const string ReturnDisguiseSkillId = "player_return_disguise";
-        const float PressedScale = 0.94f;
-        const float PressedGlowPadding = 24f;
-
         static readonly int HoldProgressId = Shader.PropertyToID("_HoldProgress");
-        static readonly int ShapeHalfWidthId = Shader.PropertyToID("_ShapeHalfWidth");
-        static readonly int ShapeHalfHeightId = Shader.PropertyToID("_ShapeHalfHeight");
-        static readonly int CornerRadiusId = Shader.PropertyToID("_CornerRadius");
-        static readonly int RectWidthPxId = Shader.PropertyToID("_RectWidthPx");
-        static readonly int RectHeightPxId = Shader.PropertyToID("_RectHeightPx");
 
-        [SerializeField] ExposeSkillGlowShape _pressedGlowShape = ExposeSkillGlowShape.Circle;
-        [Tooltip("火光描边形状半宽/半高（像素），不填 icon 时生效")]
-        [SerializeField] Vector2 _pressedGlowSize = new Vector2(48f, 48f);
-        [SerializeField] float _pressedGlowCornerRadius = 0.06f;
-
-        RectTransform _viewRoot;
-        RectTransform _iconRect;
         GameObject _pressedOverlay;
-        ExposeSkillFireOutlineGraphic _pressedGraphic;
+        Material _pressedMaterial;
         Image _iconImage;
         TextMeshProUGUI _skillNameText;
-        Material _pressedMaterial;
-        CanvasGroup _viewCanvasGroup;
-        string _currentSkillId;
-        string _currentDenyMessage;
-        static readonly Color UsableIconColor = Color.white;
-        static readonly Color DeniedIconColor = new(0.55f, 0.55f, 0.55f, 0.75f);
 
         public void BindView()
         {
-            var viewTr = transform.Find("view");
-            if (viewTr != null)
-            {
-                _viewRoot = viewTr as RectTransform;
-                _viewCanvasGroup = viewTr.GetComponent<CanvasGroup>();
-                if (_viewCanvasGroup == null)
-                {
-                    _viewCanvasGroup = viewTr.gameObject.AddComponent<CanvasGroup>();
-                }
-                _viewCanvasGroup.blocksRaycasts = false;
-
-                var iconTr = viewTr.Find("icon");
-                if (iconTr != null)
-                {
-                    _iconRect = iconTr as RectTransform;
-                    _iconImage = iconTr.GetComponent<Image>();
-                }
-
-            }
-
-            // Pressed 是 view 的兄弟节点（ExposeSkill 根节点的直接子节点），在 Mask 之外渲染
             var pressedTr = transform.Find("Pressed");
             if (pressedTr != null)
             {
                 _pressedOverlay = pressedTr.gameObject;
-                _pressedGraphic = pressedTr.GetComponent<ExposeSkillFireOutlineGraphic>();
-                if (_pressedGraphic != null)
+                var graphic = pressedTr.GetComponent<Graphic>();
+                if (graphic != null)
                 {
-                    _pressedGraphic.raycastTarget = false;
-                    _pressedGraphic.maskable = false;
-                    _pressedMaterial = _pressedGraphic.material;
+                    _pressedMaterial = graphic.material;
                 }
+
+                _pressedOverlay.SetActive(false);
             }
 
-            SetupPressedLayout();
-            SyncGlowShapeMaterial();
+            var iconTr = transform.Find("view/icon");
+            if (iconTr != null)
+            {
+                _iconImage = iconTr.GetComponent<Image>();
+            }
 
             var skillNameTr = transform.Find("SkillName");
             if (skillNameTr != null)
             {
                 _skillNameText = skillNameTr.GetComponent<TextMeshProUGUI>();
-            }
-
-            if (_pressedOverlay != null)
-            {
-                _pressedOverlay.SetActive(false);
-            }
-
-            if (_viewRoot != null)
-            {
-                _viewRoot.localScale = Vector3.one;
             }
         }
 
@@ -106,201 +52,70 @@ namespace My.UI
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
             var player = glm?.playerLogicEntity;
-            if (player == null || glm == null)
+            if (player == null || glm == null || glm.PlayerHumanMode || !player.DisguiseIfPossible)
             {
                 gameObject.SetActive(false);
-                return;
-            }
-
-            bool canShow = !glm.PlayerHumanMode && player.DisguiseIfPossible;
-            if (!canShow)
-            {
-                gameObject.SetActive(false);
-                SetActiveVisual(false);
+                SetChargeVisual(false, 0);
                 return;
             }
 
             gameObject.SetActive(true);
 
             bool isExposed = player.IsExposed;
-            string activeSkillId = isExposed ? ReturnDisguiseSkillId : EnterExposeSkillId;
-            _currentSkillId = activeSkillId;
+            string skillId = isExposed ? ReturnDisguiseSkillId : EnterExposeSkillId;
+            RefreshSkillLabel(skillId, isExposed);
 
-            var skillCfg = SkillLibrary.GetSkillConfig(activeSkillId);
-            bool canUse = SkillCastConditionUtil.TryEvaluateReadiness(
-                player,
-                player.ablilityManager,
-                skillCfg,
-                out _currentDenyMessage);
-            ApplySkillPresentation(activeSkillId, isExposed, canUse, _currentDenyMessage);
-
-            bool showActiveVisual = false;
+            bool showCharge = false;
             float progress = 0f;
-            bool usePressedScale = false;
-            if (player.ablilityManager != null
+            if (!isExposed
+                && player.ablilityManager != null
                 && player.ablilityManager.TryGetActiveHoldViewState(out var holdState)
-                && holdState.SkillId == activeSkillId
-                && holdState.IsActive)
+                && holdState.IsActive
+                && holdState.SkillId == EnterExposeSkillId
+                && holdState.IsKeyHeld)
             {
-                if (!isExposed && holdState.IsKeyHeld)
-                {
-                    showActiveVisual = true;
-                    progress = holdState.Progress01;
-                    usePressedScale = true;
-                }
-                else if (isExposed)
-                {
-                    showActiveVisual = true;
-                    progress = holdState.Progress01;
-                }
+                showCharge = true;
+                progress = holdState.Progress01;
             }
 
-            SetActiveVisual(showActiveVisual, progress, usePressedScale);
+            SetChargeVisual(showCharge, progress);
         }
 
-        void ApplySkillPresentation(string skillId, bool isExposed, bool canUse, string denyMessage)
+        void RefreshSkillLabel(string skillId, bool isExposed)
         {
             var cfg = SkillLibrary.GetSkillConfig(skillId);
-            string displayName;
-            if (cfg != null && !string.IsNullOrEmpty(cfg.Desc))
-            {
-                displayName = cfg.Desc;
-            }
-            else
-            {
-                displayName = isExposed ? "返回伪装" : "蓄力暴露";
-            }
-
             if (_skillNameText != null)
             {
-                if (!canUse && !string.IsNullOrEmpty(denyMessage))
-                {
-                    _skillNameText.text = $"{displayName}\n<color=#FF9A7A>{denyMessage}</color>";
-                }
-                else
-                {
-                    _skillNameText.text = displayName;
-                }
+                _skillNameText.text = cfg != null && !string.IsNullOrEmpty(cfg.Desc)
+                    ? cfg.Desc
+                    : (isExposed ? "返回伪装" : "蓄力暴露");
             }
 
-            if (_viewCanvasGroup != null)
+            if (_iconImage == null || cfg == null || string.IsNullOrEmpty(cfg.IconPath))
             {
-                _viewCanvasGroup.alpha = canUse ? 1f : 0.72f;
+                return;
             }
 
-            if (_iconImage != null)
+            var iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
+            if (iconSprite != null)
             {
-                _iconImage.color = canUse ? UsableIconColor : DeniedIconColor;
-
-                if (cfg != null && !string.IsNullOrEmpty(cfg.IconPath))
-                {
-                    var iconSprite = SimpleResManager.Load<Sprite>($"Sprites/Skill/{cfg.IconPath}");
-                    if (iconSprite != null)
-                    {
-                        _iconImage.sprite = iconSprite;
-                    }
-                }
+                _iconImage.sprite = iconSprite;
             }
         }
 
-        void SetActiveVisual(bool active, float progress = 0f, bool usePressedScale = false)
+        void SetChargeVisual(bool active, float progress)
         {
             if (_pressedOverlay != null)
             {
                 _pressedOverlay.SetActive(active);
             }
 
-            if (_pressedMaterial != null)
-            {
-                SyncGlowShapeMaterial();
-                if (active)
-                {
-                    _pressedMaterial.SetFloat(HoldProgressId, Mathf.Clamp01(progress));
-                }
-                _pressedGraphic?.MarkMaterialDirty();
-            }
-
-            if (_viewRoot != null)
-            {
-                _viewRoot.localScale = active && usePressedScale ? Vector3.one * PressedScale : Vector3.one;
-            }
-        }
-
-        void SyncGlowShapeMaterial()
-        {
-            if (_pressedMaterial == null || _pressedGraphic == null)
+            if (_pressedMaterial == null)
             {
                 return;
             }
 
-            var pressedRect = _pressedGraphic.rectTransform.rect;
-            float rectW = Mathf.Max(pressedRect.width, 1f);
-            float rectH = Mathf.Max(pressedRect.height, 1f);
-
-            // glowSize = view 的可见圆形区域尺寸（被 Mask 裁出的部分）
-            Vector2 glowSize = _pressedGlowSize;
-            if (_viewRoot != null)
-            {
-                var viewSize = _viewRoot.sizeDelta;
-                if (viewSize.x > 0f && viewSize.y > 0f)
-                {
-                    glowSize = viewSize;
-                }
-            }
-
-            if (_pressedGlowShape == ExposeSkillGlowShape.Circle)
-            {
-                _pressedMaterial.EnableKeyword("_SHAPETYPE_CIRCLE");
-                _pressedMaterial.DisableKeyword("_SHAPETYPE_SQUARE");
-                float radius = Mathf.Min(glowSize.x, glowSize.y) * 0.5f;
-                glowSize = new Vector2(radius * 2f, radius * 2f);
-            }
-            else
-            {
-                _pressedMaterial.EnableKeyword("_SHAPETYPE_SQUARE");
-                _pressedMaterial.DisableKeyword("_SHAPETYPE_CIRCLE");
-            }
-
-            _pressedMaterial.SetFloat(ShapeHalfWidthId, Mathf.Clamp(glowSize.x * 0.5f / rectW, 0.01f, 0.5f));
-            _pressedMaterial.SetFloat(ShapeHalfHeightId, Mathf.Clamp(glowSize.y * 0.5f / rectH, 0.01f, 0.5f));
-            _pressedMaterial.SetFloat(CornerRadiusId, _pressedGlowCornerRadius);
-            _pressedMaterial.SetFloat(RectWidthPxId, rectW);
-            _pressedMaterial.SetFloat(RectHeightPxId, rectH);
-            _pressedGraphic?.MarkMaterialDirty();
-        }
-
-        void SetupPressedLayout()
-        {
-            if (_pressedOverlay == null || _viewRoot == null)
-            {
-                return;
-            }
-
-            // Pressed 是 view 的兄弟节点，居中叠放在 view 上方，不受 view Mask 截断
-            var pressedRect = _pressedOverlay.transform as RectTransform;
-            if (pressedRect == null)
-            {
-                return;
-            }
-
-            // 让 Pressed 在 ExposeSkill 根节点中排第一，view 排第二，确保 view+icon 显示在 Pressed 上面
-            pressedRect.SetAsFirstSibling();
-
-            pressedRect.anchorMin = pressedRect.anchorMax = new Vector2(0.5f, 0.5f);
-            pressedRect.pivot = new Vector2(0.5f, 0.5f);
-            // 与 view 同坐标原点
-            pressedRect.anchoredPosition = _viewRoot.anchoredPosition;
-
-            // 基准尺寸：使用 view 的 sizeDelta（被 Mask 裁出的可见圆形区域）
-            var baseSize = _viewRoot.sizeDelta;
-            if (baseSize.x <= 0f || baseSize.y <= 0f)
-            {
-                baseSize = _pressedGlowSize;
-            }
-
-            // 两侧各留 PressedGlowPadding 像素供火焰向外飘动（每轴 2×padding）
-            float pad = PressedGlowPadding * 2f;
-            pressedRect.sizeDelta = new Vector2(baseSize.x + pad, baseSize.y + pad);
+            _pressedMaterial.SetFloat(HoldProgressId, active ? Mathf.Clamp01(progress) : 0f);
         }
     }
 
@@ -353,7 +168,7 @@ namespace My.UI
     {
         public ParticleSystem MainPs;
 
-        private int cachedPlayerEstrusLevel = -1;
+        private int cachedPlayerDesireLevel = -1;
 
         public void Init()
         {
@@ -362,21 +177,21 @@ namespace My.UI
 
         public void CheckEstrusUpdate()
         {
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            var player = MainGameManager.Instance.gameLogicManager.LocalPlayerEntity;
             if (player == null)
             {
                 return;
             }
 
-            int level = (int)(player.GetAttr(AttrIdConsts.PlayerEstrusProgrss) / 1000 / 20);
-            if (cachedPlayerEstrusLevel == level)
+            int level = player.DesireLevel;
+            if (cachedPlayerDesireLevel == level)
             {
                 return;
             }
 
-            cachedPlayerEstrusLevel = level;
+            cachedPlayerDesireLevel = level;
 
-            switch (cachedPlayerEstrusLevel)
+            switch (cachedPlayerDesireLevel)
             {
                 case 0:
                     ModifyParticleStyle(null, 0.7f, 0, 0, 2.0f);

@@ -61,7 +61,12 @@ namespace My.UI
             Refresh();
         }
 
-        public void Refresh(bool hint = false)
+        public void InvalidateLayout()
+        {
+            _layoutSignature = int.MinValue;
+        }
+
+        public void Refresh(bool hint = false, bool forceLayoutRebuild = false)
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
             var player = glm?.playerLogicEntity;
@@ -78,8 +83,14 @@ namespace My.UI
                 return;
             }
 
+            if (forceLayoutRebuild)
+            {
+                InvalidateLayout();
+            }
+
             _layout = MainBottomBarLayout.Build(glm, pdm);
-            EnsureBuiltSlots(_layout);
+            int barMode = MainBottomBarLayout.GetBarMode(glm, pdm);
+            EnsureBuiltSlots(_layout, barMode);
 
             bool humanQuickBar = glm.IsHumanQuickBarAvailable() && !pdm.IsUsingFaQingSkillBar();
             var qb = pdm.HumanQuickBar;
@@ -90,9 +101,9 @@ namespace My.UI
             }
         }
 
-        void EnsureBuiltSlots(IReadOnlyList<MainBottomBarSlotDef> layout)
+        void EnsureBuiltSlots(IReadOnlyList<MainBottomBarSlotDef> layout, int barMode)
         {
-            int sig = MainBottomBarLayout.ComputeLayoutSignature(layout);
+            int sig = MainBottomBarLayout.ComputeLayoutSignature(layout, barMode);
             if (sig == _layoutSignature && _slots.Count == layout.Count)
             {
                 return;

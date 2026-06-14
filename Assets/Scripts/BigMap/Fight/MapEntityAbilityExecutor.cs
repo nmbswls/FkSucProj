@@ -1099,6 +1099,7 @@ namespace My.Map.Entity
 
         private void Complete()
         {
+            if (CurrentCtx == null) return; ;
             var abName = CurrentCtx.AbilityConfig.Id;
 
             foreach (var e in CurrentCtx.AbilityConfig.OnCompleteEffects)

@@ -57,14 +57,16 @@ namespace My
 
     public class ParabolaMotionData : MotionDataBase
     {
-        // 仅非制导抛物使用；制导时水平速率由「目标距离 / 飞行时间」推出，不看本字段
+        // 非制导抛物线的水平速度；isHoming 时仅作初速/失靶时的速率下限
         public float horizontalSpeed = 7f;
         public float gravity = 20f;
         public float arcHeight = 2f;
         public float hitRadius = 0.55f;
         public float lift = 0.6f;
-        // 制导：竖直估算落地时间若短于此值，则抬到该时间并重算 vz，使与水平 dist/T 同一条轨迹自洽
+        // 制导初速：竖直估算落地时间若短于此值，则抬到该时间并重算 vz
         public float minFlightTime = 0.3f;
+        // isHoming 飞行中水平转向速率（度/秒），0 表示每帧瞬时对准目标
+        public float homingTurnDegPerSec = 720f;
     }
 
     public class MapProjectileLinearMotion : IMapProjectileMotion
@@ -527,6 +529,66 @@ namespace My
             return d.sqrMagnitude > 0.0001f ? d.normalized : Vector2.right;
         }
 
+        bool TryResolveHomingTargetPos(out Vector2 targetPos)
+        {
+            targetPos = default;
+            if (!PD.isHoming || _time > PD.homingTime)
+            {
+                return false;
+            }
+
+            var info = Owner.bindingProjInfo;
+            if (info.homingTargetId != null && info.homingTargetId != 0)
+            {
+                var target = MainGameManager.Instance.gameLogicManager.GetLogicEntity(info.homingTargetId.Value, false);
+                if (target != null)
+                {
+                    targetPos = target.Pos;
+                    return true;
+                }
+            }
+            else if (info.homingTargetPos.HasValue)
+            {
+                targetPos = info.homingTargetPos.Value;
+                return true;
+            }
+
+            return false;
+        }
+
+        void TrySteerHoming(float dt)
+        {
+            if (!TryResolveHomingTargetPos(out var targetPos))
+            {
+                return;
+            }
+
+            Vector2 to = targetPos - _pos;
+            if (to.sqrMagnitude < 1e-8f)
+            {
+                return;
+            }
+
+            Vector2 desired = to.normalized;
+            float speed = _vxy.magnitude;
+            if (speed < 0.15f)
+            {
+                speed = Mathf.Max(0.15f, D.horizontalSpeed);
+            }
+
+            if (D.homingTurnDegPerSec <= 0f || _vxy.sqrMagnitude < 1e-8f)
+            {
+                _vxy = desired * speed;
+                return;
+            }
+
+            float currentDeg = Mathf.Atan2(_vxy.y, _vxy.x) * Mathf.Rad2Deg;
+            float desiredDeg = Mathf.Atan2(desired.y, desired.x) * Mathf.Rad2Deg;
+            float nextDeg = Mathf.MoveTowardsAngle(currentDeg, desiredDeg, D.homingTurnDegPerSec * dt);
+            float rad = nextDeg * Mathf.Deg2Rad;
+            _vxy = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * speed;
+        }
+
         public void Tick(float dt)
         {
             if (_finished) return;
@@ -537,6 +599,8 @@ namespace My
                 DoTimeoutFinishWithoutGroundHit();
                 return;
             }
+
+            TrySteerHoming(dt);
 
             _pos += _vxy * dt;
             _vz -= D.gravity * dt;

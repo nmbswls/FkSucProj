@@ -62,6 +62,11 @@ namespace My.UI
                 return;
             }
 
+            if (BoundSkillId != skillName)
+            {
+                _skillRuntime = null;
+            }
+
             // 优先从 player runtime 绑定（含冷却等实时状态）
             if (player != null
                 && player.ablilityManager.SkillRuntimes.TryGetValue(skillName, out var rt)
@@ -71,7 +76,6 @@ namespace My.UI
             }
             else
             {
-                // runtime 不存在时退回 config 层展示
                 _skillRuntime = null;
                 BindByConfig(skillName);
                 RefreshUsability(null, skillName);

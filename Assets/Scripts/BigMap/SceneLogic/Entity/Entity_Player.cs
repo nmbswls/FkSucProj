@@ -1201,24 +1201,14 @@ namespace My.Map
             // 检查进入发情
             else
             {
-
-                bool checkEnter = false;
-
-                //var faqingVal = GetAttr(AttrIdConsts.PlayerFaQingVal);
-                //if(faqingVal >= 100_000)
-                //{
-                //    checkEnter = true;
-                //}
-
-                if(checkEnter)
+                long curEstrus = GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+                if (curEstrus >= 100_000)
                 {
-                    LogicManager.globalBuffManager.RequestAddBuff(Id, "player_faqing");
+                    LogicManager.globalBuffManager.AddBuff(Id, "player_faqing");
                     IsFaQing = true;
                     Debug.Log("player enter faqing");
 
                     EventOnFaQingStateChange?.Invoke();
-
-                    //attributeStore.SetResource(AttrIdConsts.PlayerFaQingVal, 0);
                 }
             }
         }
@@ -1689,16 +1679,20 @@ namespace My.Map
             }
         }
 
-        public void SwitchZhaZHiMode()
+        // 返回切换后的预期状态（Remove 走延迟队列，不可立刻读 IsZhaZhiMode）
+        public bool SwitchZhaZHiMode()
         {
-            if (IsZhaZhiMode)
-            {
-                LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_zhazhi");
-            }
-            else
+            bool turnOn = !IsZhaZhiMode;
+            if (turnOn)
             {
                 LogicManager.globalBuffManager.AddBuff(Id, "player_zhazhi");
             }
+            else
+            {
+                LogicManager.globalBuffManager.RemoveAllBuffById(Id, "player_zhazhi");
+            }
+
+            return turnOn;
         }
 
         public override string  GetAnimOverride(string rawAnimName)
@@ -1910,8 +1904,20 @@ namespace My.Map
             return true;
         }
 
-        // 技能引导完成时退出暴露态（Z 键 / fix_clothes）
-        public bool TryExitExposeFromSkill(long restoreValue)
+        // 技能引导完成时补满衣装值；不改变暴露态
+        public bool TryFixClothesFromSkill(long restoreValue)
+        {
+            if (LogicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
+            attributeStore.SetResource(AttrIdConsts.PlayerClothes, restoreValue);
+            return true;
+        }
+
+        // 技能引导完成时退出暴露态并恢复伪装衣装（player_return_disguise）
+        public bool TryReturnDisguiseFromSkill(long initialClothes)
         {
             if (LogicManager.PlayerHumanMode)
             {
@@ -1928,7 +1934,7 @@ namespace My.Map
                 return false;
             }
 
-            ExitExposeState(restoreValue);
+            ExitExposeState(initialClothes);
             return true;
         }
 

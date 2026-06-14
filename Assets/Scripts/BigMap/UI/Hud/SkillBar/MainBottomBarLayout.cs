@@ -99,9 +99,30 @@ namespace My.UI
             return (barSlotIndex - weaponCount + 1).ToString();
         }
 
-        public static int ComputeLayoutSignature(IReadOnlyList<MainBottomBarSlotDef> layout)
+        public static int GetBarMode(GameLogicManager glm, PlayerSystemManager pdm)
         {
-            int sig = layout.Count;
+            if (pdm == null)
+            {
+                return 0;
+            }
+
+            if (pdm.IsUsingFaQingSkillBar())
+            {
+                return 2;
+            }
+
+            if (glm != null && glm.IsHumanQuickBarAvailable())
+            {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        public static int ComputeLayoutSignature(IReadOnlyList<MainBottomBarSlotDef> layout, int barMode)
+        {
+            int sig = barMode * 1009;
+            sig = sig * 31 + layout.Count;
             for (int i = 0; i < layout.Count; i++)
             {
                 sig = sig * 31 + (int)layout[i].Kind;

@@ -2456,9 +2456,9 @@ namespace My.Map.Entity
                 SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.AlignHoming,
                 isHoming = true,
                 homingSelectPolicy = ETargetSelectPolicy.NearestEnemyInRadius,
-                nearestEnemyAcquireRadius = 8f,
+                nearestEnemyAcquireRadius = 4f,
                 bulletMaxPenetration = 1,
-                lifeTime = 3f,
+                lifeTime = 6f,
                 TriggerOnCollide = true,
                 BulletHitResult = new HitResult()
                 {
@@ -2603,9 +2603,9 @@ namespace My.Map.Entity
                 },
             };
 
-            var effect = new MapFightEffectFixExposeCfg()
+            var effect = new MapFightEffectReDisguiseCfg()
             {
-                RestoreValue = 80000,
+                InitialClothes = 80000,
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = effect, Kind = PhaseEventKind.OnExit });
 

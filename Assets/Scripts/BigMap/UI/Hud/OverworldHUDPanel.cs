@@ -121,7 +121,6 @@ namespace My.UI
                 DoSwitchZhaZhiMode();
             });
 
-
             InitializePropBalls();
             PlayerEventBus.Subscribe<PlayerTempSkillChangedEvent>(OnTempSkillChanged);
 
@@ -147,7 +146,7 @@ namespace My.UI
                 if (headProfileTr != null)
                 {
                     estrusObj.SetParent(headProfileTr, false);
-                    estrusObj.localPosition = Vector3.zero;
+                    estrusObj.localPosition = new Vector3(0, 15, 0);
                 }
                 EstrusIndicator = estrusObj.AddComponent<OverworldHudEstrusIndicator>();
                 EstrusIndicator.Init();
@@ -232,6 +231,23 @@ namespace My.UI
             PlayerBuffBar?.RefreshFromPlayer();
         }
 
+        void OnPlayerFaQingStateChange()
+        {
+            RefreshMainBottomBarForPlayerState();
+        }
+
+        void OnPlayerExposeStateChange(bool isBroken)
+        {
+            RefreshMainBottomBarForPlayerState();
+        }
+
+        void RefreshMainBottomBarForPlayerState()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            glm?.playerDataManager?.SyncLearnedSkillsToPlayerEntity();
+            MainBottomBar?.Refresh(true, forceLayoutRebuild: true);
+        }
+
         void TrySubscribePlayerBuffEvents()
         {
             UnsubscribePlayerBuffEvents();
@@ -244,19 +260,23 @@ namespace My.UI
 
             player.EventOnBuffRegister += OnPlayerBuffRegister;
             player.EventOnBuffUnregister += OnPlayerBuffUnregister;
+            player.EventOnFaQingStateChange += OnPlayerFaQingStateChange;
+            player.EventOnExposeStateChange += OnPlayerExposeStateChange;
             _buffEventsPlayer = player;
             PlayerBuffBar?.RefreshFromPlayer();
         }
 
         void UnsubscribePlayerBuffEvents()
         {
-            if (_buffEventsPlayer == null)
+            if (_buffEventsPlayer is not PlayerLogicEntity player)
             {
                 return;
             }
 
-            _buffEventsPlayer.EventOnBuffRegister -= OnPlayerBuffRegister;
-            _buffEventsPlayer.EventOnBuffUnregister -= OnPlayerBuffUnregister;
+            player.EventOnBuffRegister -= OnPlayerBuffRegister;
+            player.EventOnBuffUnregister -= OnPlayerBuffUnregister;
+            player.EventOnFaQingStateChange -= OnPlayerFaQingStateChange;
+            player.EventOnExposeStateChange -= OnPlayerExposeStateChange;
             _buffEventsPlayer = null;
         }
 
@@ -302,11 +322,11 @@ namespace My.UI
                 hungerBall.Root.gameObject.SetActive(hungerOpen);
             }
 
-            bool desireOpen = MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire);
-            if (PlayerBallMap.TryGetValue(AttrIdConsts.PlayerSanity, out var sanityBall) && sanityBall.Root != null)
-            {
-                sanityBall.Root.gameObject.SetActive(desireOpen);
-            }
+            //bool desireOpen = MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire);
+            //if (PlayerBallMap.TryGetValue(AttrIdConsts.PlayerSanity, out var sanityBall) && sanityBall.Root != null)
+            //{
+            //    sanityBall.Root.gameObject.SetActive(desireOpen);
+            //}
 
             CheckDisguiseState();
 
@@ -323,9 +343,9 @@ namespace My.UI
 
         public void DoSwitchZhaZhiMode()
         {
-            MainGameManager.Instance.gameLogicManager.playerLogicEntity.SwitchZhaZHiMode();
+            bool isOn = MainGameManager.Instance.gameLogicManager.playerLogicEntity.SwitchZhaZHiMode();
 
-            if (MainGameManager.Instance.gameLogicManager.playerLogicEntity.IsZhaZhiMode)
+            if (isOn)
             {
                 var sprite = SimpleResManager.Load<Sprite>("Sprites/red_tip_01");
                 zhaZhiSwitchOne.sprite = sprite;

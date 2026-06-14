@@ -277,6 +277,16 @@ namespace My
                             executor = new AbilityEffectExecutor4EnterExpose();
                         }
                         break;
+                    case MapFightEffectFixExposeCfg:
+                        {
+                            executor = new AbilityEffectExecutor4FixExpose();
+                        }
+                        break;
+                    case MapFightEffectReDisguiseCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ReDisguise();
+                        }
+                        break;
                     case MapFightEffectShowEffect:
                         {
                             executor = new AbilityFightExecutor4ShowEffect();

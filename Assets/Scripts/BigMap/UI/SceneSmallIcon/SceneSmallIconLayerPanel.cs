@@ -87,7 +87,6 @@ namespace My.UI
         struct UnitHpBarTrackState
         {
             public long LastHp;
-            public long LastShield;
             public bool Initialized;
             public float ShowUntil;
         }
@@ -858,14 +857,6 @@ namespace My.UI
                 return false;
             }
 
-            long shieldMax = entity.GetResourceMax(AttrIdConsts.UnitHShield);
-            if (shieldMax > 0)
-            {
-                current = entity.GetAttr(AttrIdConsts.UnitHShield);
-                max = shieldMax;
-                return true;
-            }
-
             max = entity.GetResourceMax(AttrIdConsts.HP);
             if (max <= 0)
             {
@@ -878,40 +869,32 @@ namespace My.UI
             }
 
             current = entity.GetAttr(AttrIdConsts.HP);
+            if (entity is BaseUnitLogicEntity unit && (unit.IsDead || current <= 0))
+            {
+                current = 0;
+            }
+
             return true;
         }
 
-        static void ReadRawHpAndShield(ILogicEntity entity, out long hp, out long hpMax, out long shield, out long shieldMax)
+        static void ReadRawHp(ILogicEntity entity, out long hp, out long hpMax)
         {
             hp = entity != null ? entity.GetAttr(AttrIdConsts.HP) : 0;
-            shield = entity != null ? entity.GetAttr(AttrIdConsts.UnitHShield) : 0;
             hpMax = entity != null ? entity.GetResourceMax(AttrIdConsts.HP) : 0;
             if (hpMax <= 0 && entity != null)
             {
                 hpMax = entity.GetAttr(AttrIdConsts.HP_MAX);
             }
-
-            shieldMax = entity != null ? entity.GetResourceMax(AttrIdConsts.UnitHShield) : 0;
         }
 
-        static bool DidLoseHealth(long hp, long hpMax, long shield, long shieldMax, ref UnitHpBarTrackState track)
+        static bool DidLoseHealth(long hp, long hpMax, ref UnitHpBarTrackState track)
         {
             if (!track.Initialized)
             {
                 return false;
             }
 
-            if (hpMax > 0 && hp < track.LastHp)
-            {
-                return true;
-            }
-
-            if (shieldMax > 0 && shield < track.LastShield)
-            {
-                return true;
-            }
-
-            return false;
+            return hpMax > 0 && hp < track.LastHp;
         }
 
         static Vector3 GetHpBarAnchor(IScenePresentation presenter)
@@ -939,7 +922,7 @@ namespace My.UI
                 return;
             }
 
-            ReadRawHpAndShield(entity, out var hp, out var hpMax, out var shield, out var shieldMax);
+            ReadRawHp(entity, out var hp, out var hpMax);
 
             long entityId = presenter.Id;
             if (!_hpBarTracks.TryGetValue(entityId, out var track))
@@ -947,13 +930,12 @@ namespace My.UI
                 track = new UnitHpBarTrackState();
             }
 
-            if (DidLoseHealth(hp, hpMax, shield, shieldMax, ref track))
+            if (DidLoseHealth(hp, hpMax, ref track))
             {
                 track.ShowUntil = LogicTime.time + hpBarShowDuration;
             }
 
             track.LastHp = hp;
-            track.LastShield = shield;
             track.Initialized = true;
             _hpBarTracks[entityId] = track;
 

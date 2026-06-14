@@ -904,7 +904,7 @@ namespace My.UI
 
                         if (OverworldHUDPanel.Instance != null)
                         {
-                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true);
+                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true, forceLayoutRebuild: true);
                         }
 
                     }
@@ -917,7 +917,7 @@ namespace My.UI
 
                         if (OverworldHUDPanel.Instance != null)
                         {
-                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true);
+                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true, forceLayoutRebuild: true);
                         }
 
                     }
