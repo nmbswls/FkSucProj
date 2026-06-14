@@ -33,16 +33,16 @@ Material:
     - _FlowSharpness: 3.5
     - _FlowSpeed: 4.8
     - _FlowSwirl: 5
-    - _HoldProgress: 0.22105564
+    - _HoldProgress: 1
     - _InnerGlowStrength: 0.4
     - _NoiseScale: 38
     - _NoiseSpeed: 2.4
     - _NoiseStrength: 0.58
     - _OutlineWidth: 9
-    - _RectHeightPx: 68
-    - _RectWidthPx: 68
-    - _ShapeHalfHeight: 0.3529412
-    - _ShapeHalfWidth: 0.3529412
+    - _RectHeightPx: 90
+    - _RectWidthPx: 90
+    - _ShapeHalfHeight: 0.23333333
+    - _ShapeHalfWidth: 0.23333333
     - _ShapeType: 0
     - _Softness: 4.5
     - _SparkleThreshold: 0.7

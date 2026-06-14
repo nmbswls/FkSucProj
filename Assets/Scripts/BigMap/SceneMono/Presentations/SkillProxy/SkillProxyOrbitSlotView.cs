@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    // 单个弹药槽显示：active/inactive 两态切换 + alpha 淡入淡出。
-    public class SkillProxyOrbSlotView : MonoBehaviour
+    // 单个轨道弹药槽显示：active/inactive 两态切换 + alpha 淡入淡出。
+    public class SkillProxyOrbitSlotView : MonoBehaviour
     {
         [SerializeField] private GameObject activeVisual;
         [SerializeField] private GameObject inactiveVisual;

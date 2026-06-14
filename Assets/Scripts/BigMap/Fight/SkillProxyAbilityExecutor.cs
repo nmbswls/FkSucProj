@@ -19,19 +19,5 @@ namespace My.Map.Entity
         protected override bool IsDetachedHost() => true;
 
         protected override IEntityBuffOwner GetBuffCheckOwner() => _proxy;
-
-        public override GameLogicManager.LogicFightEffectContext GenerateEfffectContextByAbility(AbilityRunningContext abilityCtx)
-        {
-            var ctx = base.GenerateEfffectContextByAbility(abilityCtx);
-            ctx.TriggerPos = _proxy.PendingBulletSpawnPos;
-
-            if (_proxy.PendingParabolaLaunchZ > 0f)
-            {
-                ctx.RunningStorage[SkillProxyOrbLayout.ParabolaLaunchZStorageKey] =
-                    (long)(_proxy.PendingParabolaLaunchZ * 1000f);
-            }
-
-            return ctx;
-        }
     }
 }

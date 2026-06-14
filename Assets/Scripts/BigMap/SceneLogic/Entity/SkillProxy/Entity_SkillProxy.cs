@@ -16,13 +16,8 @@ namespace My.Map.Entity
 
         BaseUnitLogicEntity _owner;
         float _nextCastTime;
-        float _orbitStartLogicTime;
         Vector2 _fixedWorldPos;
         bool _fixedWorldCaptured;
-
-        public float OrbitStartLogicTime => _orbitStartLogicTime;
-        public Vector2 PendingBulletSpawnPos { get; private set; }
-        public float PendingParabolaLaunchZ { get; private set; }
 
         public SkillProxyLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord)
             : base(logicManager, instId, cfgId, orgPos, bindingRecord)
@@ -66,52 +61,8 @@ namespace My.Map.Entity
 
             AbilityController = new SkillProxyAbilityExecutor(this, _owner);
             _nextCastTime = LogicTime.time;
-            _orbitStartLogicTime = LogicTime.time;
-            PendingBulletSpawnPos = Vector2.zero;
-            PendingParabolaLaunchZ = 0f;
 
             InitStartupBuffs();
-        }
-
-        public float GetOrbitAngleDeg()
-        {
-            if (Cfg == null)
-            {
-                return 0f;
-            }
-
-            return SkillProxyOrbLayout.ComputeOrbitAngleDeg(
-                Cfg.OrbitInitialAngle,
-                Cfg.OrbitAngularSpeed,
-                _orbitStartLogicTime);
-        }
-
-        public Vector2 ComputeConsumableOrbLocalOffset()
-        {
-            if (Cfg == null)
-            {
-                return Vector2.zero;
-            }
-
-            int currentAmmo = (int)GetAttr(AttrIdConsts.Ammo);
-            if (currentAmmo <= 0)
-            {
-                return Vector2.zero;
-            }
-
-            int slotIndex = SkillProxyOrbLayout.ResolveConsumableSlotIndex(currentAmmo);
-            return SkillProxyOrbLayout.ComputeSlotLocalOffset(
-                slotIndex,
-                currentAmmo,
-                GetOrbitAngleDeg(),
-                Cfg.OrbitRadius);
-        }
-
-        void PrepareCastFromConsumableOrb()
-        {
-            var orbOffset = ComputeConsumableOrbLocalOffset();
-            PendingBulletSpawnPos = SkillProxyOrbLayout.ResolveBulletSpawnGroundPos(_owner.Pos, orbOffset);
-            PendingParabolaLaunchZ = SkillProxyOrbLayout.ResolveParabolaLaunchZ(Cfg.FollowOffset, orbOffset);
         }
 
         protected override void InitAttribute()
@@ -296,8 +247,6 @@ namespace My.Map.Entity
                 return;
             }
 
-            PrepareCastFromConsumableOrb();
-
             if (AbilityController.TryUseAbility(
                     Cfg.PeriodicAbilityId,
                     castVec: target.Pos,
@@ -316,10 +265,11 @@ namespace My.Map.Entity
                 return null;
             }
 
+            // 以 proxy 自身位置为圆心搜索，owner 只用于提供阵营参考
             return EntityAbilityHelper.FindNearestEnemyInRadius(
                 LogicManager,
                 _owner,
-                _owner.Pos,
+                Pos,
                 Cfg.CastAcquireRadius,
                 _owner.Id,
                 Id);

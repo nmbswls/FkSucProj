@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    // orb prefab 表现：逻辑层 FollowOwner，轨道球数量与间距由 ammo 资源驱动。
+    // 轨道弹药槽表现：逻辑层 FollowOwner，槽位数量与间距由 ammo 资源驱动。
     [RequireComponent(typeof(SkillProxyPresenter))]
-    public class SkillProxyOrbView : MonoBehaviour
+    public class SkillProxyOrbitView : MonoBehaviour
     {
         [SerializeField] private Transform orbitRoot;
         [SerializeField] private Transform orbitVisual;
         [SerializeField] private Transform slotOrbitRoot;
-        [SerializeField] private SkillProxyOrbSlotView slotTemplate;
+        [SerializeField] private SkillProxyOrbitSlotView slotTemplate;
         [SerializeField] private float orbitRadius = 1.2f;
         [SerializeField] private float orbitAngularSpeed = 120f;
         [SerializeField] private float orbitInitialAngle;
@@ -21,9 +21,10 @@ namespace My.Map.Scene
         [SerializeField] private float fadeDuration = 0.18f;
 
         SkillProxyPresenter _presenter;
-        readonly List<SkillProxyOrbSlotView> _runtimeSlots = new();
-        int _displayOrbCount;
+        readonly List<SkillProxyOrbitSlotView> _runtimeSlots = new();
+        int _displaySlotCount;
         bool _slotUpright = true;
+        float _orbitStartTime;
 
         // 过渡状态
         bool _relayoutActive;
@@ -31,7 +32,7 @@ namespace My.Map.Scene
         float _relayoutStepFromDeg;
         float _relayoutStepToDeg;
         // 正在执行淡出动画（消耗场景）的槽，过渡期间跳过其位置更新
-        SkillProxyOrbSlotView _fadingOutSlot;
+        SkillProxyOrbitSlotView _fadingOutSlot;
         // 是否是首次绑定（首次跳过动画直接布局）
         bool _firstBind = true;
 
@@ -67,12 +68,12 @@ namespace My.Map.Scene
         {
             if (slotTemplate == null && slotOrbitRoot != null)
             {
-                slotTemplate = slotOrbitRoot.Find("slot_template")?.GetComponent<SkillProxyOrbSlotView>();
+                slotTemplate = slotOrbitRoot.Find("slot_template")?.GetComponent<SkillProxyOrbitSlotView>();
             }
 
             if (slotTemplate == null && slotOrbitRoot != null)
             {
-                slotTemplate = slotOrbitRoot.GetComponentInChildren<SkillProxyOrbSlotView>(true);
+                slotTemplate = slotOrbitRoot.GetComponentInChildren<SkillProxyOrbitSlotView>(true);
             }
 
             if (slotTemplate == null)
@@ -81,7 +82,7 @@ namespace My.Map.Scene
             }
 
             // 清理 prefab 遗留的静态预设槽，只保留 template
-            var legacySlots = slotOrbitRoot.GetComponentsInChildren<SkillProxyOrbSlotView>(true);
+            var legacySlots = slotOrbitRoot.GetComponentsInChildren<SkillProxyOrbitSlotView>(true);
             for (int i = 0; i < legacySlots.Length; i++)
             {
                 var slot = legacySlots[i];
@@ -148,9 +149,9 @@ namespace My.Map.Scene
             if (!TryReadAmmoState(logic, out int current, out int max)) return;
 
             int expected = Mathf.Clamp(current, 0, max);
-            if (expected != _displayOrbCount)
+            if (expected != _displaySlotCount)
             {
-                RefreshOrbs(current, max);
+                RefreshSlots(current, max);
             }
         }
 
@@ -167,18 +168,13 @@ namespace My.Map.Scene
                 orbitVisual.localRotation = Quaternion.identity;
             }
 
-            if (_displayOrbCount <= 0)
+            if (_displaySlotCount <= 0)
             {
                 return;
             }
 
-            float orbitAngleDeg = orbitInitialAngle;
+            float orbitAngleDeg = GetOrbitAngleDeg();
             float layoutRadius = orbitRadius;
-            if (_presenter != null && _presenter.GetLogicEntity() is SkillProxyLogicEntity logic && logic.Cfg != null)
-            {
-                orbitAngleDeg = logic.GetOrbitAngleDeg();
-                layoutRadius = logic.Cfg.OrbitRadius;
-            }
 
             float stepDeg;
             if (_relayoutActive)
@@ -194,10 +190,10 @@ namespace My.Map.Scene
             }
             else
             {
-                stepDeg = _displayOrbCount > 0 ? 360f / _displayOrbCount : 0f;
+                stepDeg = _displaySlotCount > 0 ? 360f / _displaySlotCount : 0f;
             }
 
-            for (int i = 0; i < _displayOrbCount; i++)
+            for (int i = 0; i < _displaySlotCount; i++)
             {
                 var slot = _runtimeSlots[i];
                 if (slot == null || slot == _fadingOutSlot)
@@ -205,7 +201,7 @@ namespace My.Map.Scene
                     continue;
                 }
 
-                Vector2 localOffset = SkillProxyOrbLayout.ComputeSlotLocalOffsetWithStep(
+                Vector2 localOffset = SkillProxyOrbitLayout.ComputeSlotLocalOffsetWithStep(
                     i,
                     stepDeg,
                     orbitAngleDeg,
@@ -231,14 +227,15 @@ namespace My.Map.Scene
         void OnBound(SkillProxyLogicEntity logic)
         {
             _firstBind = true;
+            _orbitStartTime = Time.time;
 
             if (!TryReadAmmoState(logic, out int current, out int max))
             {
-                RefreshOrbs(0, 0);
+                RefreshSlots(0, 0);
                 return;
             }
 
-            RefreshOrbs(current, max);
+            RefreshSlots(current, max);
         }
 
         void OnUnbound()
@@ -247,8 +244,9 @@ namespace My.Map.Scene
             _relayoutActive = false;
             _fadingOutSlot = null;
             ClearRuntimeSlots();
-            _displayOrbCount = 0;
+            _displaySlotCount = 0;
             _firstBind = true;
+            _orbitStartTime = 0f;
             ApplyOrbitLayout();
         }
 
@@ -259,10 +257,18 @@ namespace My.Map.Scene
                 return;
             }
 
-            RefreshOrbs(current, max);
+            RefreshSlots(current, max);
         }
 
         void OnPeriodicCast() { }
+
+        float GetOrbitAngleDeg()
+        {
+            return SkillProxyOrbitLayout.ComputeOrbitAngleDeg(
+                orbitInitialAngle,
+                orbitAngularSpeed,
+                _orbitStartTime);
+        }
 
         bool TryReadAmmoState(SkillProxyLogicEntity logic, out int current, out int max)
         {
@@ -282,10 +288,10 @@ namespace My.Map.Scene
             return true;
         }
 
-        void RefreshOrbs(int current, int max)
+        void RefreshSlots(int current, int max)
         {
             int newCount = Mathf.Clamp(current, 0, max);
-            int oldCount = _displayOrbCount;
+            int oldCount = _displaySlotCount;
 
             EnsureRuntimeSlots(max);
 
@@ -293,7 +299,7 @@ namespace My.Map.Scene
             if (_firstBind)
             {
                 _firstBind = false;
-                _displayOrbCount = newCount;
+                _displaySlotCount = newCount;
                 KillAllFadeTweens();
                 _relayoutActive = false;
                 _fadingOutSlot = null;
@@ -306,7 +312,7 @@ namespace My.Map.Scene
                         continue;
                     }
 
-                    bool visible = i < _displayOrbCount;
+                    bool visible = i < _displaySlotCount;
                     slot.gameObject.SetActive(visible);
                     if (visible)
                     {
@@ -336,7 +342,7 @@ namespace My.Map.Scene
             _relayoutActive = false;
             _fadingOutSlot = null;
 
-            _displayOrbCount = newCount;
+            _displaySlotCount = newCount;
             _relayoutStepFromDeg = currentStepDeg;
             _relayoutStepToDeg = newCount > 0 ? 360f / newCount : 0f;
             _relayoutTimer = 0f;

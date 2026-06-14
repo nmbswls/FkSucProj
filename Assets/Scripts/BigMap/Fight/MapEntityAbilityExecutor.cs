@@ -729,9 +729,12 @@ namespace My.Map.Entity
             }
         }
 
-        private void ExitPhase(int index)
+        private void ExitPhase(int index, AbilityRunningContext ctx)
         {
-            var ctx = CurrentCtx;
+            if (ctx == null)
+            {
+                return;
+            }
             var phase = ctx.AbilityConfig.Phases[index];
 
             string phaseName = phase.PhaseName;
@@ -748,6 +751,7 @@ namespace My.Map.Entity
             }
             ctx._scheduled.Clear();
 
+            // 如果能力已被打断（Cancel 已调用 CleanupPhase），此处是幂等的二次清理，安全
             CleanupPhase(ctx);
         }
 
@@ -954,20 +958,19 @@ namespace My.Map.Entity
             }
 
             // 执行定时事件（相对当前阶段时间）
+            bool interruptedByEvent = false;
             for (int i = 0; i < ctx._scheduled.Count; ++i)
             {
                 var s = ctx._scheduled[i];
                 while (s.Left > 0 && ctx.PhaseElapsed >= s.FireTime)
                 {
-                    //var executor = GetExecutor(s.Source.Effect);
-                    //executor?.Apply(s.Source.Effect, CurrentCtx);
                     var buffCheckOwner = GetBuffCheckOwner();
                     if(!string.IsNullOrEmpty(s.Source.CheckNeedBuff))
                     {
                         if (!buffCheckOwner.CheckHasBuff(s.Source.CheckNeedBuff))
                         {
                             Debug.Log($"tick ability skip need buff :{s.Source.Effect.EffectType}");
-                            continue;
+                            break;
                         }
                     }
 
@@ -976,12 +979,13 @@ namespace My.Map.Entity
                         if (buffCheckOwner.CheckHasBuff(s.Source.CheckNoBuff))
                         {
                             Debug.Log($"tick ability skip no buff :{s.Source.Effect.EffectType}");
-                            continue;
+                            break;
                         }
                     }
 
                     var effectCtx = GenerateEfffectContextByAbility(ctx);
                     EntityOwner.LogicManager.HandleLogicFightEffect(s.Source.Effect, effectCtx);
+
                     s.Left--;
                     s.FireTime += s.NextInterval > 0 ? s.NextInterval : float.MaxValue;
 
@@ -989,9 +993,28 @@ namespace My.Map.Entity
                     {
                         ctx.phaseHitWindows.AddRange(effectCtx.OutHitWindowIds);
                     }
+
+                    // 效果执行后检查是否被打断（如 InterruptCaster 调用了 Cancel）
+                    if (CurrentCtx == null)
+                    {
+                        interruptedByEvent = true;
+                        break;
+                    }
+                }
+
+                if (interruptedByEvent)
+                {
+                    break;
                 }
             }
 
+            // 被打断时仍需走 ExitPhase（触发 OnExit 事件、记录蓄力信息等），
+            // 但不进入下一阶段或 Complete
+            if (interruptedByEvent)
+            {
+                ExitPhase(ctx.PhaseIndex, ctx);
+                return;
+            }
 
             // 检查是否是引导
             var phase = ctx.AbilityConfig.Phases[ctx.PhaseIndex];
@@ -1042,7 +1065,7 @@ namespace My.Map.Entity
             // 阶段结束
             if (phaseFinish)
             {
-                ExitPhase(ctx.PhaseIndex);
+                ExitPhase(ctx.PhaseIndex, ctx);
                 var next = ctx.PhaseIndex + 1;
                 if (next < ctx.AbilityConfig.Phases.Count)
                 {

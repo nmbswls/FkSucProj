@@ -32,11 +32,6 @@ namespace My.Map.Entity
         public Vector2 CastDirOffset = Vector2.right;
         public float DefaultLifetime = 15f;
         public string PrefabName;
-
-        // 轨道弹药球布局（逻辑/表现共用）
-        public float OrbitRadius = 0.4f;
-        public float OrbitAngularSpeed = 120f;
-        public float OrbitInitialAngle;
     }
 
     public static class SkillProxySpecRuntimeMap

@@ -233,11 +233,6 @@ namespace My.Map.Entity
             }
 
             float parabolaLaunchZ = 0f;
-            if (realCfg.MotionData is ParabolaMotionData &&
-                ctx.RunningStorage.TryGetValue(SkillProxyOrbLayout.ParabolaLaunchZStorageKey, out var launchZFixed))
-            {
-                parabolaLaunchZ = launchZFixed / 1000f;
-            }
 
             ctx.Env.projectileHolder.CreateLogicProjectile(
                 pData,
