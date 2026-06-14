@@ -7,6 +7,25 @@ namespace My.UI
     [RequireComponent(typeof(CanvasRenderer))]
     public class ExposeSkillFireOutlineGraphic : MaskableGraphic
     {
+        protected override void Awake()
+        {
+            base.Awake();
+            raycastTarget = false;
+            maskable = false;
+            color = Color.white;
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            SetMaterialDirty();
+        }
+
+        public void MarkMaterialDirty()
+        {
+            SetMaterialDirty();
+        }
+
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();

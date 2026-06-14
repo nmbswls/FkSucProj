@@ -25,6 +25,12 @@ Properties
     _SparkleThreshold ("Sparkle Threshold", Range(0, 1)) = 0.72
     _HoldProgress ("Hold Progress", Range(0, 1)) = 0
     _FlowOffset ("Flow Offset", Float) = 0
+    _StencilComp ("Stencil Comparison", Float) = 8
+    _Stencil ("Stencil ID", Float) = 0
+    _StencilOp ("Stencil Operation", Float) = 0
+    _StencilWriteMask ("Stencil Write Mask", Float) = 255
+    _StencilReadMask ("Stencil Read Mask", Float) = 255
+    _ColorMask ("Color Mask", Float) = 15
 }
 SubShader
 {
@@ -33,12 +39,23 @@ SubShader
     ZWrite Off
     Blend SrcAlpha OneMinusSrcAlpha
 
+    Stencil
+    {
+        Ref [_Stencil]
+        Comp [_StencilComp]
+        Pass [_StencilOp]
+        ReadMask [_StencilReadMask]
+        WriteMask [_StencilWriteMask]
+    }
+    ColorMask [_ColorMask]
+
     Pass
     {
         HLSLPROGRAM
         #pragma vertex vert
         #pragma fragment frag
         #pragma shader_feature_local _SHAPETYPE_CIRCLE _SHAPETYPE_SQUARE
+        #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
         struct Attributes
@@ -53,6 +70,7 @@ SubShader
             float4 positionHCS : SV_POSITION;
             float2 uv          : TEXCOORD0;
             float4 color       : COLOR;
+            float4 worldPosition : TEXCOORD1;
         };
 
         float4 _Color;
@@ -77,14 +95,33 @@ SubShader
         float  _SparkleThreshold;
         float  _HoldProgress;
         float  _FlowOffset;
+        float4 _ClipRect;
+        float  _UIMaskSoftnessX;
+        float  _UIMaskSoftnessY;
 
         Varyings vert (Attributes v)
         {
             Varyings o;
-            o.positionHCS = TransformObjectToHClip(v.positionOS);
+            float3 worldPos = TransformObjectToWorld(v.positionOS.xyz);
+            o.positionHCS = TransformWorldToHClip(worldPos);
             o.uv = v.uv;
             o.color = v.color * _Color;
+            o.worldPosition = float4(worldPos.xy, 0, 0);
             return o;
+        }
+
+        float ApplyUiClipRect(float alpha, float2 worldPos)
+        {
+            #ifdef UNITY_UI_CLIP_RECT
+            float2 mask = saturate((_ClipRect.zw - worldPos) * (worldPos - _ClipRect.xy));
+            float2 softness = float2(_UIMaskSoftnessX, _UIMaskSoftnessY);
+            if (softness.x > 0.0 || softness.y > 0.0)
+            {
+                mask = saturate(((_ClipRect.zw - worldPos) + softness) * ((worldPos - _ClipRect.xy) + softness));
+            }
+            alpha *= mask.x * mask.y;
+            #endif
+            return alpha;
         }
 
         float hash21(float2 p)
@@ -223,6 +260,7 @@ SubShader
 
             float alpha = saturate(edge * _OutlineColor.a + innerGlow * _InnerGlowColor.a + sparkle * 0.6);
             alpha *= i.color.a;
+            alpha = ApplyUiClipRect(alpha, i.worldPosition.xy);
 
             return float4(rgb * i.color.rgb, alpha);
         }

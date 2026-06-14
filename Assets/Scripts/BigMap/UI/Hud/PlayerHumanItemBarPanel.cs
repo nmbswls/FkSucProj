@@ -4,6 +4,7 @@ using My.Map;
 using My.Player;
 using UnityEngine;
 using DG.Tweening;
+using My.Player.Bag;
 
 namespace My.UI
 {

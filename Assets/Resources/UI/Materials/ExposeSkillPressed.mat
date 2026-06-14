@@ -12,7 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _SHAPETYPE_SQUARE
+  - _SHAPETYPE_CIRCLE
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -26,25 +26,31 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _ColorMask: 15
     - _CornerRadius: 0.06
     - _FlowIntensity: 1.15
     - _FlowOffset: 0
     - _FlowSharpness: 3.5
     - _FlowSpeed: 4.8
     - _FlowSwirl: 5
-    - _HoldProgress: 1
+    - _HoldProgress: 0.22105564
     - _InnerGlowStrength: 0.4
     - _NoiseScale: 38
     - _NoiseSpeed: 2.4
     - _NoiseStrength: 0.58
     - _OutlineWidth: 9
-    - _RectHeightPx: 44
-    - _RectWidthPx: 44
-    - _ShapeHalfHeight: 0.5
-    - _ShapeHalfWidth: 0.5
-    - _ShapeType: 1
+    - _RectHeightPx: 68
+    - _RectWidthPx: 68
+    - _ShapeHalfHeight: 0.3529412
+    - _ShapeHalfWidth: 0.3529412
+    - _ShapeType: 0
     - _Softness: 4.5
     - _SparkleThreshold: 0.7
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _FlowHighlightColor: {r: 4.5, g: 2.4, b: 0.5, a: 1}

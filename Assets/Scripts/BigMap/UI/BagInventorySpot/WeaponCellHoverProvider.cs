@@ -34,7 +34,7 @@ namespace My.UI
             ItemStack stack = Cell?.GetBoundStack();
             if (stack == null || stack.IsEmpty)
             {
-                return "当前武器槽未装备任何武器";
+                return "空";
             }
 
             return ItemHoverDetailUtil.BuildDetailText(stack.ItemID, stack.Count);

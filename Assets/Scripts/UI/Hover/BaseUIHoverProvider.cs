@@ -8,6 +8,7 @@ namespace My.UI
     public class BaseUIHoverProvider : MonoBehaviour, IHoverInfoProvider
     {
         public RectTransform boxTr;
+        public RectTransform toolPivot;
 
         protected virtual void Awake()
         {
@@ -17,6 +18,7 @@ namespace My.UI
         {
             get
             {
+                if (toolPivot != null) return toolPivot.position;
                 return transform.position;
             }
         }

@@ -19,6 +19,7 @@ namespace My.UI
         const string EnterExposeSkillId = "player_enter_expose";
         const string ReturnDisguiseSkillId = "player_return_disguise";
         const float PressedScale = 0.94f;
+        const float PressedGlowPadding = 24f;
 
         static readonly int HoldProgressId = Shader.PropertyToID("_HoldProgress");
         static readonly int ShapeHalfWidthId = Shader.PropertyToID("_ShapeHalfWidth");
@@ -27,7 +28,7 @@ namespace My.UI
         static readonly int RectWidthPxId = Shader.PropertyToID("_RectWidthPx");
         static readonly int RectHeightPxId = Shader.PropertyToID("_RectHeightPx");
 
-        [SerializeField] ExposeSkillGlowShape _pressedGlowShape = ExposeSkillGlowShape.Square;
+        [SerializeField] ExposeSkillGlowShape _pressedGlowShape = ExposeSkillGlowShape.Circle;
         [Tooltip("火光描边形状半宽/半高（像素），不填 icon 时生效")]
         [SerializeField] Vector2 _pressedGlowSize = new Vector2(48f, 48f);
         [SerializeField] float _pressedGlowCornerRadius = 0.06f;
@@ -65,22 +66,23 @@ namespace My.UI
                     _iconImage = iconTr.GetComponent<Image>();
                 }
 
-                var pressedTr = viewTr.Find("Pressed");
-                if (pressedTr != null)
+            }
+
+            // Pressed 是 view 的兄弟节点（ExposeSkill 根节点的直接子节点），在 Mask 之外渲染
+            var pressedTr = transform.Find("Pressed");
+            if (pressedTr != null)
+            {
+                _pressedOverlay = pressedTr.gameObject;
+                _pressedGraphic = pressedTr.GetComponent<ExposeSkillFireOutlineGraphic>();
+                if (_pressedGraphic != null)
                 {
-                    _pressedOverlay = pressedTr.gameObject;
-                    _pressedGraphic = pressedTr.GetComponent<ExposeSkillFireOutlineGraphic>();
-                    if (_pressedGraphic != null)
-                    {
-                        _pressedGraphic.raycastTarget = false;
-                        if (_pressedGraphic.material != null)
-                        {
-                            _pressedMaterial = _pressedGraphic.material;
-                        }
-                    }
+                    _pressedGraphic.raycastTarget = false;
+                    _pressedGraphic.maskable = false;
+                    _pressedMaterial = _pressedGraphic.material;
                 }
             }
 
+            SetupPressedLayout();
             SyncGlowShapeMaterial();
 
             var skillNameTr = transform.Find("SkillName");
@@ -215,6 +217,7 @@ namespace My.UI
                 {
                     _pressedMaterial.SetFloat(HoldProgressId, Mathf.Clamp01(progress));
                 }
+                _pressedGraphic?.MarkMaterialDirty();
             }
 
             if (_viewRoot != null)
@@ -234,13 +237,14 @@ namespace My.UI
             float rectW = Mathf.Max(pressedRect.width, 1f);
             float rectH = Mathf.Max(pressedRect.height, 1f);
 
+            // glowSize = view 的可见圆形区域尺寸（被 Mask 裁出的部分）
             Vector2 glowSize = _pressedGlowSize;
-            if (_iconRect != null)
+            if (_viewRoot != null)
             {
-                var iconSize = _iconRect.rect.size;
-                if (iconSize.x > 0f && iconSize.y > 0f)
+                var viewSize = _viewRoot.sizeDelta;
+                if (viewSize.x > 0f && viewSize.y > 0f)
                 {
-                    glowSize = iconSize;
+                    glowSize = viewSize;
                 }
             }
 
@@ -262,6 +266,41 @@ namespace My.UI
             _pressedMaterial.SetFloat(CornerRadiusId, _pressedGlowCornerRadius);
             _pressedMaterial.SetFloat(RectWidthPxId, rectW);
             _pressedMaterial.SetFloat(RectHeightPxId, rectH);
+            _pressedGraphic?.MarkMaterialDirty();
+        }
+
+        void SetupPressedLayout()
+        {
+            if (_pressedOverlay == null || _viewRoot == null)
+            {
+                return;
+            }
+
+            // Pressed 是 view 的兄弟节点，居中叠放在 view 上方，不受 view Mask 截断
+            var pressedRect = _pressedOverlay.transform as RectTransform;
+            if (pressedRect == null)
+            {
+                return;
+            }
+
+            // 让 Pressed 在 ExposeSkill 根节点中排第一，view 排第二，确保 view+icon 显示在 Pressed 上面
+            pressedRect.SetAsFirstSibling();
+
+            pressedRect.anchorMin = pressedRect.anchorMax = new Vector2(0.5f, 0.5f);
+            pressedRect.pivot = new Vector2(0.5f, 0.5f);
+            // 与 view 同坐标原点
+            pressedRect.anchoredPosition = _viewRoot.anchoredPosition;
+
+            // 基准尺寸：使用 view 的 sizeDelta（被 Mask 裁出的可见圆形区域）
+            var baseSize = _viewRoot.sizeDelta;
+            if (baseSize.x <= 0f || baseSize.y <= 0f)
+            {
+                baseSize = _pressedGlowSize;
+            }
+
+            // 两侧各留 PressedGlowPadding 像素供火焰向外飘动（每轴 2×padding）
+            float pad = PressedGlowPadding * 2f;
+            pressedRect.sizeDelta = new Vector2(baseSize.x + pad, baseSize.y + pad);
         }
     }
 
