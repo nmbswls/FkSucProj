@@ -718,7 +718,7 @@ namespace My.Map
                             }
 
                             GetInteractingPlayerSystem()?.GrantTempSkill(output.Param3, output.Param1);
-                            My.UI.OverworldHUDPanel.Instance?.SkilBar?.Refresh();
+                            My.UI.OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                             My.UI.PlayerHumanItemBarPanel.RefreshFromGame();
                         }
                         break;

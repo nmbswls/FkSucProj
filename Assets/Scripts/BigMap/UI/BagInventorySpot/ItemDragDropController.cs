@@ -3,6 +3,7 @@ using My;
 using My.Config;
 using My.Player;
 using My.Player.Bag;
+using My.UI.Bag;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -234,7 +235,9 @@ namespace My.UI
                         && p.SourceIndex < qb.WeaponSlots.Length)
                     {
                         qb.ClearWeaponSlot(p.SourceIndex);
+                        OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                         PlayerHumanItemBarPanel.RefreshFromGame();
+                        PlayerBagUIPanel.Instance?.RefreshContent();
                     }
                     else if (p.SourceContainerType == EContainerType.QuickBarConsumable
                              && p.SourceIndex >= 0

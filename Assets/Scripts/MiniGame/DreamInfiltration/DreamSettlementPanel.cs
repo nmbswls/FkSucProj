@@ -68,9 +68,13 @@ namespace My.MiniGame.Dream
             }
 
             var r = _payload;
+            var total = r.ForceScore + r.SoothingScore + r.TrickScore;
             _bodyTmp.text =
-                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "成功脱离梦境" : "梦境侵蚀失败")}\n\n" +
-                $"暴力破解：{r.ForceScore}\n温柔安抚：{r.SoothingScore}\n计谋突破：{r.TrickScore}";
+                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "核心摧毁成功" : "梦境侵蚀失败")}\n\n" +
+                $"对核心伤害总计：{total}\n" +
+                $"  暴力炮弹：{r.ForceScore}\n" +
+                $"  温柔炮弹：{r.SoothingScore}\n" +
+                $"  计谋炮弹：{r.TrickScore}";
         }
 
         public override bool OnCancel()

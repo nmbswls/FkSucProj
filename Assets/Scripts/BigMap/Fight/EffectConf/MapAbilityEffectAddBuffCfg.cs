@@ -13,6 +13,8 @@ namespace My.Map.Entity
     {
         public string BuffId;
         public int Layer;
+        // ???? ctx.RunningVariables ??????? ability_extra ????????????? Layer
+        public string LayerCtxAttr;
         public float Duration = -1;
         //public int TargetType; // 0 target 1 self 2 other
 

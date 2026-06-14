@@ -904,7 +904,7 @@ namespace My.UI
 
                         if (OverworldHUDPanel.Instance != null)
                         {
-                            OverworldHUDPanel.Instance.SkilBar.Refresh(true);
+                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true);
                         }
 
                     }
@@ -917,7 +917,7 @@ namespace My.UI
 
                         if (OverworldHUDPanel.Instance != null)
                         {
-                            OverworldHUDPanel.Instance.SkilBar.Refresh(true);
+                            OverworldHUDPanel.Instance.MainBottomBar.Refresh(true);
                         }
 
                     }

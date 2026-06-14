@@ -44,9 +44,11 @@ namespace My.UI
         public GameObject holdCancelHintRoot;
 
 
-        public OverworldSkillBar SkilBar;
+        public OverworldMainBottomBar MainBottomBar;
 
         public OverworldPlayerBuffBar PlayerBuffBar;
+
+        public Image HeadProfile;
 
         public TextMeshProUGUI PlayerHpText;
         // 血量进度条（PlayerCoreCircle/HPBar/bar），需在 Inspector 重新绑定
@@ -83,7 +85,7 @@ namespace My.UI
         {
             bottomProgressPanel.gameObject.SetActive(false);
 
-            SkilBar.InitSkills(this);
+            MainBottomBar.InitBar(this);
         }
 
         public void Refresh() { }
@@ -294,22 +296,16 @@ namespace My.UI
 
         void RefreshUILayout()
         {
-            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Hunger))
+            bool hungerOpen = MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Hunger);
+            if (PlayerBallMap.TryGetValue(AttrIdConsts.PlayerHunger, out var hungerBall) && hungerBall.Root != null)
             {
-                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(true);
-            }
-            else
-            {
-                PlayerBallMap[AttrIdConsts.PlayerHunger].Root.gameObject.SetActive(false);
+                hungerBall.Root.gameObject.SetActive(hungerOpen);
             }
 
-            if (MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire))
+            bool desireOpen = MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Desire);
+            if (PlayerBallMap.TryGetValue(AttrIdConsts.PlayerSanity, out var sanityBall) && sanityBall.Root != null)
             {
-                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(true);
-            }
-            else
-            {
-                PlayerBallMap[AttrIdConsts.PlayerSanity].Root.gameObject.SetActive(false);
+                sanityBall.Root.gameObject.SetActive(desireOpen);
             }
 
             CheckDisguiseState();

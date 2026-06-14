@@ -50,6 +50,11 @@ namespace My.UI
 
             if (keyName == EInputKey.UseQuickItem.ToString())
             {
+                if (PlayerHumanItemBarPanel.IsQuickUseBlocked())
+                {
+                    return true;
+                }
+
                 OnClickUseConsumable();
                 return true;
             }
@@ -60,6 +65,7 @@ namespace My.UI
                 if (wIdx >= 0)
                 {
                     qb.SelectWeaponSlot(wIdx);
+                    OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                     PlayerHumanItemBarPanel.RefreshFromGame();
                 }
 
@@ -300,7 +306,7 @@ namespace My.UI
         void OnTempSkillChanged(PlayerTempSkillChangedEvent _)
         {
             PlayerHumanItemBarPanel.RefreshFromGame();
-            SkilBar?.Refresh();
+            MainBottomBar?.Refresh();
         }
 
         void NotifySkillUseConfirmed(string skillId, bool success, Action<bool> onConfirm)
@@ -322,7 +328,7 @@ namespace My.UI
             }
 
             PlayerHumanItemBarPanel.RefreshFromGame();
-            Instance?.SkilBar?.Refresh();
+            Instance?.MainBottomBar?.Refresh();
         }
 
         static Dictionary<string, string> ResolveHumanWeaponCastOverrides(string skillId)
@@ -350,6 +356,11 @@ namespace My.UI
 
         public void OnClickUseConsumable()
         {
+            if (PlayerHumanItemBarPanel.IsQuickUseBlocked())
+            {
+                return;
+            }
+
             var lgm = MainGameManager.Instance?.gameLogicManager;
             if (lgm == null || !lgm.IsHumanQuickBarAvailable())
             {

@@ -431,9 +431,26 @@ namespace My.Map
         public float applyHValTimer;
 
         // 与 PlayerSkillList 对齐技能运行时；失去/替换技能时需调用以解绑旧被动 Buff
+        public void ReconcileSkillsWithLearnedList(IReadOnlyDictionary<string, int> skills)
+        {
+            ablilityManager?.ReconcileRegisteredSkills(skills);
+        }
+
         public void ReconcileSkillsWithLearnedList(IReadOnlyCollection<string> skillIds)
         {
-            ablilityManager?.ReconcileRegisteredSkills(skillIds);
+            var dict = new Dictionary<string, int>(StringComparer.Ordinal);
+            if (skillIds != null)
+            {
+                foreach (var id in skillIds)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        dict[id] = 1;
+                    }
+                }
+            }
+
+            ReconcileSkillsWithLearnedList(dict);
         }
 
         // 更新已注册技能的能力覆盖字典（仅本实体，不改表）

@@ -153,14 +153,12 @@ namespace My.UI
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerHunger);
             }
-            else if (e.OpenType == EFuncOpenType.Desire)
-            {
-                ShowBallAppearEffect(AttrIdConsts.PlayerSanity);
-            }
             else if (e.OpenType == EFuncOpenType.Clothes)
             {
                 ShowBallAppearEffect(AttrIdConsts.PlayerClothes);
             }
+
+            ShowBallAppearEffect(AttrIdConsts.PlayerSanity);
         }
     }
 }

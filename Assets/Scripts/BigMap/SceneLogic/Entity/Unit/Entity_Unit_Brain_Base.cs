@@ -30,7 +30,8 @@ namespace My.Map.Unit
         public string SpecialAnimTag4;
 
         public bool IsGuard;
-        public bool IsFixedTurret;
+
+        public const string SentryBrainId = "fixed_turret";
     }
 
     public static class AIBrainParamsConfigLoader
@@ -69,9 +70,8 @@ namespace My.Map.Unit
 
                 {
                     var config = new AIBrainConfig();
-                    config.IsFixedTurret = true;
                     config.ChaseRange = 1f;
-                    _configs["fixed_turret"] = config;
+                    _configs[AIBrainConfig.SentryBrainId] = config;
                 }
             }
 
@@ -113,6 +113,7 @@ namespace My.Map.Unit
 
         // 预加载状态 (避免GC)
         public AIStateIdle StateIdle;
+        public AIStateSentry StateSentry;
         public AIStateCombat StateCombat; 
         public AIStateReturn StateReturn;
         public AIStateFlee StateFlee;
@@ -151,6 +152,8 @@ namespace My.Map.Unit
         public float ActionsFrequency = 0.2f;
         private float _lastBrainUpdate = 0;
 
+        public string BrainConfigId { get; private set; }
+
         public AIBrainV2(NpcUnitLogicEntity npcOwner)
         {
             this.NpcEntity = npcOwner;
@@ -161,10 +164,12 @@ namespace My.Map.Unit
             {
                 cfgId = "basic_unit_peace";
             }
-            if(!string.IsNullOrEmpty(npcOwner.NpcConfig.AiBrainId))
+            if (!string.IsNullOrEmpty(npcOwner.NpcConfig.AiBrainId))
             {
                 cfgId = npcOwner.NpcConfig.AiBrainId;
             }
+
+            BrainConfigId = cfgId;
             Config = AIBrainParamsConfigLoader.Load(cfgId);
 
             InitializeStates();
@@ -177,6 +182,7 @@ namespace My.Map.Unit
         {
             // 初始化状态
             StateIdle = new AIStateIdle(this);
+            StateSentry = new AIStateSentry(this);
             StateCombat = new AIStateCombat(this);
             StateReturn = new AIStateReturn(this);
             StateFlee = new AIStateFlee(this);
@@ -192,7 +198,14 @@ namespace My.Map.Unit
                 StateChaseWanted = new AIStateChaseWanted(this);
             }
 
-            ChangeState(StateIdle);
+            if (string.Equals(BrainConfigId, AIBrainConfig.SentryBrainId, System.StringComparison.Ordinal))
+            {
+                ChangeState(StateSentry);
+            }
+            else
+            {
+                ChangeState(StateIdle);
+            }
         }
 
         public void TriggerUpdateImmediately()

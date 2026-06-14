@@ -66,7 +66,7 @@ namespace My.Player
 
         public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
-        readonly List<string> _registeredSkillIdScratch = new();
+        readonly Dictionary<string, int> _registeredSkillScratch = new(StringComparer.Ordinal);
 
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
         public Dictionary<string, bool> GlobalSwitchMap = new();
@@ -469,36 +469,51 @@ namespace My.Player
             }
         }
 
-        public void CollectRegisteredSkillIdsForEntity(List<string> outIds)
+        public void CollectRegisteredSkillsForEntity(Dictionary<string, int> outSkills)
         {
-            outIds.Clear();
+            outSkills.Clear();
+
+            void TryAdd(string skillId, int level)
+            {
+                if (string.IsNullOrEmpty(skillId))
+                {
+                    return;
+                }
+
+                level = Math.Max(1, level);
+                if (outSkills.TryGetValue(skillId, out var existing))
+                {
+                    outSkills[skillId] = Math.Max(existing, level);
+                }
+                else
+                {
+                    outSkills[skillId] = level;
+                }
+            }
 
             foreach (var skillId in SkillSystem.InnateSkillIdsView)
             {
-                if (!string.IsNullOrEmpty(skillId) && !outIds.Contains(skillId))
-                {
-                    outIds.Add(skillId);
-                }
+                TryAdd(skillId, 1);
             }
 
             foreach (var e in SkillSystem.grantedActives)
             {
-                if (e == null || string.IsNullOrEmpty(e.SkillId) || outIds.Contains(e.SkillId))
+                if (e == null || string.IsNullOrEmpty(e.SkillId))
                 {
                     continue;
                 }
 
-                outIds.Add(e.SkillId);
+                TryAdd(e.SkillId, e.Level);
             }
 
             foreach (var e in SkillSystem.grantedPassives)
             {
-                if (e == null || string.IsNullOrEmpty(e.SkillId) || outIds.Contains(e.SkillId))
+                if (e == null || string.IsNullOrEmpty(e.SkillId))
                 {
                     continue;
                 }
 
-                outIds.Add(e.SkillId);
+                TryAdd(e.SkillId, e.Level);
             }
 
             foreach (var skillId in SkillSystem.LearnedSkillIdsView)
@@ -514,39 +529,40 @@ namespace My.Player
                     continue;
                 }
 
-                if (!outIds.Contains(skillId))
-                {
-                    outIds.Add(skillId);
-                }
+                TryAdd(skillId, SkillSystem.GetSkillLevel(skillId));
             }
 
             for (int i = 0; i < SkillSystem.PassiveSkillSlots.Length; i++)
             {
                 var id = SkillSystem.PassiveSkillSlots[i];
-                if (!string.IsNullOrEmpty(id) && SkillSystem.IsSkillLearned(id) && !outIds.Contains(id))
+                if (!string.IsNullOrEmpty(id) && SkillSystem.IsSkillLearned(id))
                 {
-                    outIds.Add(id);
+                    TryAdd(id, SkillSystem.GetSkillLevel(id));
                 }
             }
 
             if (logicManager != null && logicManager.IsHumanQuickBarAvailable())
             {
                 var weaponSkill = HumanQuickBar.GetActiveWeaponSkillId();
-                if (!string.IsNullOrEmpty(weaponSkill) && !outIds.Contains(weaponSkill))
-                {
-                    outIds.Add(weaponSkill);
-                }
+                TryAdd(weaponSkill, 1);
             }
 
             if (IsUsingFaQingSkillBar())
             {
                 foreach (var id in FaQingSkillSlots)
                 {
-                    if (!string.IsNullOrEmpty(id) && !outIds.Contains(id))
-                    {
-                        outIds.Add(id);
-                    }
+                    TryAdd(id, 1);
                 }
+            }
+        }
+
+        public void CollectRegisteredSkillIdsForEntity(List<string> outIds)
+        {
+            outIds.Clear();
+            CollectRegisteredSkillsForEntity(_registeredSkillScratch);
+            foreach (var kv in _registeredSkillScratch)
+            {
+                outIds.Add(kv.Key);
             }
         }
 
@@ -558,8 +574,8 @@ namespace My.Player
                 return;
             }
 
-            CollectRegisteredSkillIdsForEntity(_registeredSkillIdScratch);
-            player.ReconcileSkillsWithLearnedList(_registeredSkillIdScratch);
+            CollectRegisteredSkillsForEntity(_registeredSkillScratch);
+            player.ReconcileSkillsWithLearnedList(_registeredSkillScratch);
             ApplyLearnedPassiveBuffLayersToPlayerEntity();
         }
 

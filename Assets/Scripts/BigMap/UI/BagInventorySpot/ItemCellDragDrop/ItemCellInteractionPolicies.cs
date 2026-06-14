@@ -97,6 +97,7 @@ namespace My.UI
 
                 MainGameManager.Instance.gameLogicManager.playerDataManager.HumanQuickBar.ClearWeaponSlot(payload.SourceIndex);
                 controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                 PlayerHumanItemBarPanel.RefreshFromGame();
                 PlayerBagUIPanel.Instance?.RefreshContent();
                 return;
@@ -264,6 +265,7 @@ namespace My.UI
             }
 
             qb.SelectWeaponSlot(cell.Index);
+            OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
             PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
@@ -322,8 +324,16 @@ namespace My.UI
                     return;
                 }
 
+                // 目标槽为空 → 不标记 handled，让 EndDrag 的清槽逻辑执行（等同于卸载武器）
+                if (dstSlotIndex >= 0 && dstSlotIndex < qb.WeaponSlots.Length
+                    && qb.WeaponSlots[dstSlotIndex].IsEmpty)
+                {
+                    return;
+                }
+
                 qb.SwapWeaponSlotIndices(payload.SourceIndex, dstSlotIndex);
                 controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                 PlayerHumanItemBarPanel.RefreshFromGame();
                 return;
             }
@@ -339,6 +349,7 @@ namespace My.UI
                 }
 
                 controller.MarkDropHandled();
+                OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
                 PlayerHumanItemBarPanel.RefreshFromGame();
                 PlayerBagUIPanel.Instance?.RefreshContent();
                 return;

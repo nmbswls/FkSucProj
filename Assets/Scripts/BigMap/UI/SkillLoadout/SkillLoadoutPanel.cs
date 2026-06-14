@@ -1104,9 +1104,9 @@ namespace My.UI.SkillLoadout
         static void TryRefreshHudBar()
         {
             var hud = OverworldHUDPanel.Instance;
-            if (hud != null && hud.SkilBar != null)
+            if (hud != null && hud.MainBottomBar != null)
             {
-                hud.SkilBar.Refresh();
+                hud.MainBottomBar.Refresh();
             }
         }
 

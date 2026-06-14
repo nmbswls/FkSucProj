@@ -21,7 +21,7 @@ namespace My.Map.Entity
     {
         static bool _passiveValidated;
 
-        // Luban：demo_tbentityskilldata.json ← Config/Datas/skill.xlsx
+        // Luban：demo_tbentityskilldata.json ← Config/Datas/skill.xlsx#entity_skill
         public static EntitySkillData GetSkillConfig(string skillName)
         {
             if (string.IsNullOrEmpty(skillName))
@@ -38,22 +38,73 @@ namespace My.Map.Entity
 
             if (!_passiveValidated)
             {
-                ValidatePassiveSkillRows(tables.TbEntitySkillData);
                 _passiveValidated = true;
+                ValidatePassiveSkillRows(tables.TbEntitySkillData);
             }
 
             return tables.TbEntitySkillData.GetOrDefault(skillName);
         }
 
-        public static Dictionary<string, string> CloneAbilityExtraMap(EntitySkillData row)
+        // Luban：demo_tbentityskilllevel.json ← Config/Datas/skill.xlsx#skill_level
+        public static EntitySkillLevel GetSkillLevelConfig(string skillId, int level)
+        {
+            if (string.IsNullOrEmpty(skillId))
+            {
+                return null;
+            }
+
+            level = Math.Max(1, level);
+            var tables = CfgMgr.Cfgs;
+            if (tables == null)
+            {
+                return null;
+            }
+
+            var row = tables.TbEntitySkillLevel.Get(skillId, level);
+            if (row != null)
+            {
+                return row;
+            }
+
+            if (level != 1)
+            {
+                row = tables.TbEntitySkillLevel.Get(skillId, 1);
+                if (row != null)
+                {
+                    Debug.LogWarning($"[SkillLibrary] Missing skill level row {skillId}@{level}, fallback to level 1.");
+                    return row;
+                }
+            }
+
+            Debug.LogWarning($"[SkillLibrary] Missing skill level row {skillId}@{level}.");
+            return null;
+        }
+
+        public static ResolvedSkillConfig ResolveSkillAtLevel(string skillId, int level)
+        {
+            var baseCfg = GetSkillConfig(skillId);
+            if (baseCfg == null)
+            {
+                return null;
+            }
+
+            return new ResolvedSkillConfig(baseCfg, GetSkillLevelConfig(skillId, level));
+        }
+
+        public static Dictionary<string, string> CloneAbilityExtraMap(ResolvedSkillConfig row)
+        {
+            return CloneAbilityExtraPairs(row?.AbilityExtra);
+        }
+
+        public static Dictionary<string, string> CloneAbilityExtraPairs(IReadOnlyList<SkillAbilityExtraPair> pairs)
         {
             var d = new Dictionary<string, string>(StringComparer.Ordinal);
-            if (row?.AbilityExtra == null)
+            if (pairs == null)
             {
                 return d;
             }
 
-            foreach (var p in row.AbilityExtra)
+            foreach (var p in pairs)
             {
                 if (p == null || string.IsNullOrEmpty(p.Key))
                 {
@@ -73,6 +124,7 @@ namespace My.Map.Entity
                 return;
             }
 
+            var levelTable = CfgMgr.Cfgs?.TbEntitySkillLevel;
             foreach (var cfg in table.DataList)
             {
                 if (cfg == null || !cfg.IsPassive)
@@ -80,7 +132,9 @@ namespace My.Map.Entity
                     continue;
                 }
 
-                var buffIds = SkillPassiveBuffUtil.GetPassiveBuffIds(cfg);
+                var levelCfg = levelTable != null ? levelTable.Get(cfg.SkillId, 1) : null;
+                var resolved = new ResolvedSkillConfig(cfg, levelCfg);
+                var buffIds = SkillPassiveBuffUtil.GetPassiveBuffIds(resolved);
                 if (buffIds.Count == 0)
                 {
                     Debug.LogWarning($"[SkillLibrary] Passive skill '{cfg.SkillId}' has no passive_buff_ids.");

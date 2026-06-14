@@ -350,9 +350,8 @@ namespace My.Map.Unit
         private IIdlePolicy _idlePolicy;
 
         public override string StateName => "Idle";
-        public override bool CanBeAttract => !_brain.Config.IsFixedTurret;
-
-        public override bool CanEnterCombat => !_brain.Config.IsFixedTurret;
+        public override bool CanBeAttract => true;
+        public override bool CanEnterCombat => true;
 
 
         private float _lastIdleGuardTimer = 0;
@@ -424,11 +423,6 @@ namespace My.Map.Unit
             
             // 3. 执行闲置策略
             _idlePolicy.OnTick(_brain, Time.deltaTime);
-
-            if (_brain.Config.IsFixedTurret && FixedTurretController.TryFire(_brain))
-            {
-                return;
-            }
         }
 
         public override void OnExit()
@@ -436,6 +430,33 @@ namespace My.Map.Unit
             base.OnExit();
             _idlePolicy.OnExit(_brain);
             _brain.HomePos = _brain.NpcEntity.Pos; // 更新复位坐标点
+        }
+    }
+
+    // 固定炮塔：原地监视扇区，满足条件直接施法，不进入 Idle / Combat / Gaze
+    public class AIStateSentry : AIBaseState
+    {
+        public override string StateName => "Sentry";
+
+        public override bool CanBeAttract => false;
+
+        public override bool CanEnterCombat => false;
+
+        public override bool SuppressSharedBrainTransitions => true;
+
+        public AIStateSentry(AIBrainV2 brain) : base(brain)
+        {
+        }
+
+        public override void OnEnter()
+        {
+            base.OnEnter();
+            _brain.NpcEntity.StopMove();
+        }
+
+        public override void OnUpdate()
+        {
+            SentrySkillPicker.TryFire(_brain);
         }
     }
 
@@ -1688,8 +1709,8 @@ namespace My.Map.Unit
         }
     }
 
-    // 固定炮塔：扇区检测后直接施法，不进入 Combat / Gaze
-    public static class FixedTurretController
+    // 监视态施法：扇区检测后选技能开火
+    static class SentrySkillPicker
     {
         public static bool TryFire(AIBrainV2 brain)
         {
@@ -1715,8 +1736,8 @@ namespace My.Map.Unit
                 return false;
             }
 
-            float halfAngle = SkillCastConstraintUtil.GetDesiredUseAngle(skillCfg, ability) * 0.5f;
-            float maxRange = SkillCastConstraintUtil.GetDesiredUseDistance(skillCfg, ability);
+            float halfAngle = SkillCastConstraintUtil.GetDesiredUseAngle(skillCfg.Base, ability) * 0.5f;
+            float maxRange = SkillCastConstraintUtil.GetDesiredUseDistance(skillCfg.Base, ability);
             if (!SkillCastConstraintUtil.IsInFrontSector(npc.Pos, npc.CurrentLook, player.Pos, halfAngle, maxRange))
             {
                 return false;
@@ -1728,7 +1749,7 @@ namespace My.Map.Unit
         static bool TryPickReadySkill(
             NpcUnitLogicEntity npc,
             out string skillId,
-            out EntitySkillData skillCfg,
+            out ResolvedSkillConfig skillCfg,
             out MapAbilitySpecConfig ability)
         {
             skillId = null;
@@ -1754,6 +1775,11 @@ namespace My.Map.Unit
             var pick = ready[0];
             skillId = pick.SkillName;
             skillCfg = pick.cacheConfig;
+            if (skillCfg == null)
+            {
+                return false;
+            }
+
             ability = AbilityLibrary.GetAbilityConfig(skillCfg.MainAbilityId);
             return ability != null && npc.ablilityManager.IsSkillReady(skillId);
         }

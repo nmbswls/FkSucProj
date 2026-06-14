@@ -111,47 +111,61 @@ namespace My.UI
                 return;
             }
 
-            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
-            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
+            bool hasClothes = PlayerBallMap.TryGetValue(AttrIdConsts.PlayerClothes, out var clothesBall) && clothesBall.Root != null;
+            bool hasOrigin = PlayerBallMap.TryGetValue(AttrIdConsts.PlayerOriginPower, out var originBall) && originBall.Root != null;
+
+            if (hasClothes) clothesBall.Root.gameObject.SetActive(false);
+            if (hasOrigin) originBall.Root.gameObject.SetActive(false);
 
             if (!MainGameManager.Instance.gameLogicManager.playerDataManager.FuncOpenSystem.FuncOpenSet.Contains(EFuncOpenType.Clothes))
             {
                 return;
             }
-            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
-            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
+
+            if (hasClothes) clothesBall.Root.gameObject.SetActive(true);
+            if (hasOrigin) originBall.Root.gameObject.SetActive(true);
 
             if (disguising)
             {
-                PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(true);
-                PlayerBallMap[AttrIdConsts.PlayerClothes].CG.alpha = 0;
+                if (hasClothes && clothesBall.CG != null)
+                {
+                    clothesBall.Root.gameObject.SetActive(true);
+                    clothesBall.CG.alpha = 0;
+                }
 
-                disguiseSwitchTween = DG.Tweening.DOTween.Sequence()
-                        .Append(PlayerBallMap[AttrIdConsts.PlayerClothes].CG.DOFade(1, 0.3f))
-                        .Append(PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.DOFade(0, 0.3f))
-                        .OnComplete(() =>
-                        {
-                            disguiseSwitchTween = null;
-                            PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(false);
-                            isUIDisguiseMode = disguising;
-
-                        }).SetLink(gameObject);
+                var seq = DG.Tweening.DOTween.Sequence();
+                if (hasClothes && clothesBall.CG != null)
+                    seq.Append(clothesBall.CG.DOFade(1, 0.3f));
+                if (hasOrigin && originBall.CG != null)
+                    seq.Append(originBall.CG.DOFade(0, 0.3f));
+                seq.OnComplete(() =>
+                {
+                    disguiseSwitchTween = null;
+                    if (hasOrigin) originBall.Root.gameObject.SetActive(false);
+                    isUIDisguiseMode = disguising;
+                }).SetLink(gameObject);
+                disguiseSwitchTween = seq;
             }
             else
             {
-                PlayerBallMap[AttrIdConsts.PlayerOriginPower].Root.gameObject.SetActive(true);
-                PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.alpha = 0;
+                if (hasOrigin && originBall.CG != null)
+                {
+                    originBall.Root.gameObject.SetActive(true);
+                    originBall.CG.alpha = 0;
+                }
 
-                disguiseSwitchTween = DG.Tweening.DOTween.Sequence()
-                        .Append(PlayerBallMap[AttrIdConsts.PlayerOriginPower].CG.DOFade(1, 0.3f))
-                        .Append(PlayerBallMap[AttrIdConsts.PlayerClothes].CG.DOFade(0, 0.3f))
-                        .OnComplete(() =>
-                        {
-                            disguiseSwitchTween = null;
-                            PlayerBallMap[AttrIdConsts.PlayerClothes].Root.gameObject.SetActive(false);
-                            isUIDisguiseMode = disguising;
-
-                        }).SetLink(gameObject);
+                var seq = DG.Tweening.DOTween.Sequence();
+                if (hasOrigin && originBall.CG != null)
+                    seq.Append(originBall.CG.DOFade(1, 0.3f));
+                if (hasClothes && clothesBall.CG != null)
+                    seq.Append(clothesBall.CG.DOFade(0, 0.3f));
+                seq.OnComplete(() =>
+                {
+                    disguiseSwitchTween = null;
+                    if (hasClothes) clothesBall.Root.gameObject.SetActive(false);
+                    isUIDisguiseMode = disguising;
+                }).SetLink(gameObject);
+                disguiseSwitchTween = seq;
             }
         }
 

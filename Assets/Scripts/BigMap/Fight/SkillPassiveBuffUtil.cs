@@ -17,29 +17,60 @@ namespace My.Map.Entity
                 return Empty;
             }
 
-            if (CacheBySkillId.TryGetValue(cfg.SkillId, out var cached))
+            string cacheKey = cfg.SkillId + "@base";
+            if (CacheBySkillId.TryGetValue(cacheKey, out var cached))
             {
                 return cached;
             }
 
-            var list = new List<string>();
-            if (cfg.PassiveBuffIds != null)
-            {
-                foreach (var id in cfg.PassiveBuffIds)
-                {
-                    if (string.IsNullOrEmpty(id))
-                    {
-                        continue;
-                    }
+            var list = CollectPassiveBuffIds(cfg.PassiveBuffIds);
+            CacheBySkillId[cacheKey] = list;
+            return list;
+        }
 
-                    if (!list.Contains(id))
-                    {
-                        list.Add(id);
-                    }
+        public static IReadOnlyList<string> GetPassiveBuffIds(ResolvedSkillConfig cfg)
+        {
+            if (cfg?.Base == null || string.IsNullOrEmpty(cfg.SkillId))
+            {
+                return Empty;
+            }
+
+            int level = cfg.Level?.Level ?? 1;
+            string cacheKey = cfg.SkillId + "@" + level;
+            if (CacheBySkillId.TryGetValue(cacheKey, out var cached))
+            {
+                return cached;
+            }
+
+            IReadOnlyList<string> source = cfg.Level != null && cfg.Level.PassiveBuffIds != null && cfg.Level.PassiveBuffIds.Count > 0
+                ? cfg.Level.PassiveBuffIds
+                : cfg.Base.PassiveBuffIds;
+            var list = CollectPassiveBuffIds(source);
+            CacheBySkillId[cacheKey] = list;
+            return list;
+        }
+
+        static List<string> CollectPassiveBuffIds(IReadOnlyList<string> source)
+        {
+            var list = new List<string>();
+            if (source == null)
+            {
+                return list;
+            }
+
+            foreach (var id in source)
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    continue;
+                }
+
+                if (!list.Contains(id))
+                {
+                    list.Add(id);
                 }
             }
 
-            CacheBySkillId[cfg.SkillId] = list;
             return list;
         }
 
@@ -53,7 +84,32 @@ namespace My.Map.Entity
             return cfg != null && cfg.IsPassive && GetPassiveBuffIds(cfg).Count > 0;
         }
 
+        public static bool HasPassiveBuffs(ResolvedSkillConfig cfg)
+        {
+            return cfg != null && cfg.IsPassive && GetPassiveBuffIds(cfg).Count > 0;
+        }
+
         public static int ClampLayerForAllPassiveBuffs(EntitySkillData cfg, int layer)
+        {
+            layer = Math.Max(1, layer);
+            if (cfg == null)
+            {
+                return layer;
+            }
+
+            foreach (var buffId in GetPassiveBuffIds(cfg))
+            {
+                BuffDefinition def = BuffLibrary.GetBuffDefinition(buffId);
+                if (def != null && def.MaxStackLayer > 0)
+                {
+                    layer = Math.Min(layer, def.MaxStackLayer);
+                }
+            }
+
+            return layer;
+        }
+
+        public static int ClampLayerForAllPassiveBuffs(ResolvedSkillConfig cfg, int layer)
         {
             layer = Math.Max(1, layer);
             if (cfg == null)

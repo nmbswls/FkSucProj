@@ -929,8 +929,10 @@ namespace My.Map.Entity
                 srcBuffId = ctx.SourceInfo.SrcBuffId;
             }
 
-            int layer = realCfg.Layer;
-            if (realCfg.Layer <= 0) layer = 1;
+            int layer = FightCastAttrUtil.ResolveIntFromRunningVar(
+                ctx,
+                realCfg.LayerCtxAttr,
+                realCfg.Layer <= 0 ? 1 : realCfg.Layer);
             // 当目标type为0时 在正常语境下 就是给目标使用
             if (realCfg.SelfAdd)
             {

@@ -469,11 +469,12 @@ namespace My.Map.Entity
     public class SkillRuntime
     {
         public string SkillName;
+        public int SkillLevel = 1;
         public float lastUseTime;
         public float cooldown;
         public float stackCount;
 
-        public EntitySkillData cacheConfig;
+        public ResolvedSkillConfig cacheConfig;
 
         // 施法用可变副本；表数据为 Luban 行，勿写入 AbilityExtra 列表
         public Dictionary<string, string> RuntimeAbilityExtraVariables;
@@ -534,21 +535,30 @@ namespace My.Map.Entity
             // 初始化comboOrchestrator
         }
 
-        public bool RegisterSkill(string skillId)
+        public bool RegisterSkill(string skillId, int level = 1)
         {
-            var skillCfg = SkillLibrary.GetSkillConfig(skillId);
-            if(skillCfg == null)
+            level = Math.Max(1, level);
+            var skillCfg = SkillLibrary.ResolveSkillAtLevel(skillId, level);
+            if (skillCfg?.Base == null)
             {
                 return false;
             }
-            if (SkillRuntimes.TryGetValue(skillCfg.SkillId, out var state))
+
+            if (SkillRuntimes.TryGetValue(skillId, out var existing))
             {
-                Debug.Log($"RegisterSkill duplicate {skillCfg.SkillId}");
-                return false;
+                if (existing.SkillLevel == level)
+                {
+                    Debug.Log($"RegisterSkill duplicate {skillId}");
+                    return false;
+                }
+
+                UnregisterSkill(skillId);
             }
+
             var newState = new SkillRuntime()
             {
                 SkillName = skillId,
+                SkillLevel = level,
                 cacheConfig = skillCfg,
                 RuntimeAbilityExtraVariables = SkillLibrary.CloneAbilityExtraMap(skillCfg),
                 PassiveBuffLayer = 1,
@@ -616,38 +626,62 @@ namespace My.Map.Entity
             return true;
         }
 
-        // 与外部「已拥有技能列表」对齐：多出的技能 Unregister（会解绑被动 Buff），缺少的 Register
-        public void ReconcileRegisteredSkills(IReadOnlyCollection<string> desiredSkillIds)
+        // 与外部「已拥有技能列表」对齐：多出的技能 Unregister（会解绑被动 Buff），缺少的 Register；等级变化时重注册
+        public void ReconcileRegisteredSkills(IReadOnlyDictionary<string, int> desiredSkills)
         {
-            var want = new HashSet<string>(StringComparer.Ordinal);
-            if (desiredSkillIds != null)
+            var want = new Dictionary<string, int>(StringComparer.Ordinal);
+            if (desiredSkills != null)
             {
-                foreach (var id in desiredSkillIds)
+                foreach (var kv in desiredSkills)
                 {
-                    if (!string.IsNullOrEmpty(id))
+                    if (!string.IsNullOrEmpty(kv.Key))
                     {
-                        want.Add(id);
+                        want[kv.Key] = Math.Max(1, kv.Value);
                     }
                 }
             }
 
             foreach (var key in SkillRuntimes.Keys.ToArray())
             {
-                if (!want.Contains(key))
+                if (!want.ContainsKey(key))
                 {
                     UnregisterSkill(key);
                 }
             }
 
-            foreach (var id in want)
+            foreach (var kv in want)
             {
-                if (!SkillRuntimes.ContainsKey(id))
+                if (!SkillRuntimes.TryGetValue(kv.Key, out var rt))
                 {
-                    RegisterSkill(id);
+                    RegisterSkill(kv.Key, kv.Value);
+                    continue;
+                }
+
+                if (rt.SkillLevel != kv.Value)
+                {
+                    UnregisterSkill(kv.Key);
+                    RegisterSkill(kv.Key, kv.Value);
                 }
             }
 
             SyncPassiveBuffBindings();
+        }
+
+        public void ReconcileRegisteredSkills(IReadOnlyCollection<string> desiredSkillIds)
+        {
+            var dict = new Dictionary<string, int>(StringComparer.Ordinal);
+            if (desiredSkillIds != null)
+            {
+                foreach (var id in desiredSkillIds)
+                {
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        dict[id] = 1;
+                    }
+                }
+            }
+
+            ReconcileRegisteredSkills(dict);
         }
 
         // 无「已学列表」场景下直接替换运行时技能（如 NPC）；先卸旧再挂新
@@ -680,7 +714,7 @@ namespace My.Map.Entity
 
         const string DefaultPassiveBuffLevelKey = "PassiveLevel";
 
-        static string GetPassiveBuffLevelVariableKey(EntitySkillData cfg)
+        static string GetPassiveBuffLevelVariableKey(ResolvedSkillConfig cfg)
         {
             if (cfg == null || string.IsNullOrEmpty(cfg.PassiveBuffLevelVariableKey))
             {
@@ -1272,7 +1306,7 @@ namespace My.Map.Entity
                 return !string.IsNullOrEmpty(mainAbilityId);
             }
 
-            var row = SkillLibrary.GetSkillConfig(skillId);
+            var row = SkillLibrary.ResolveSkillAtLevel(skillId, 1);
             if (row == null || string.IsNullOrEmpty(row.MainAbilityId))
             {
                 return false;

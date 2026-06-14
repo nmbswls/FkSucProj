@@ -65,6 +65,33 @@ namespace My.UI
 
                 DescText.text = "主键消耗并回血";
             }
+            else if (tipParams.Param1 == 6)
+            {
+                var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                long hp = p.GetAttr(AttrIdConsts.HP);
+                long hpMax = p.GetAttr(AttrIdConsts.HP_MAX);
+                TitleText.text = "血量";
+                ValueText.text = $"{(int)(hp * 0.001f)} / {(int)(hpMax * 0.001f)}";
+                DescText.text = "当前生命值";
+            }
+            else if (tipParams.Param1 == 7)
+            {
+                var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                long pleasure = p.GetAttr(AttrIdConsts.PlayerPleasure);
+                TitleText.text = "高潮";
+                // PlayerPleasure 以 0-100000 表示 0%-100%
+                ValueText.text = $"{pleasure * 0.001f:0.#}%";
+                DescText.text = "兴奋度积累值";
+            }
+            else if (tipParams.Param1 == 8)
+            {
+                var p = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+                long estrus = p.GetAttr(AttrIdConsts.PlayerEstrusProgrss);
+                // PlayerEstrusProgrss 以 0-100000 表示进度
+                TitleText.text = "欲望";
+                ValueText.text = $"{estrus * 0.001f:0.#}%";
+                DescText.text = "发情程度";
+            }
         }
     }
 

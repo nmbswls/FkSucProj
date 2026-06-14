@@ -343,6 +343,12 @@ namespace My.UI
         // 对外接口：请求显示
         public void RequestShowTip(HoverTipParams tipParams, IHoverInfoProvider provider)
         {
+            // 若当前有其他类型的 tip 已经可见，立刻关掉它，避免旧 tip 在新 tip 出现后残留
+            if (_activeTipType.HasValue && _activeTipType.Value != tipParams.TipType)
+            {
+                SetTipVisible(new HoverTipParams { TipType = _activeTipType.Value }, null, false);
+            }
+
             // 新的显示请求到来，提升版本号并取消隐藏协程的效力
             int myVersion = ++showRequestVersion;
             hideRequestVersion++; // 使当前正在等待隐藏的协程失效

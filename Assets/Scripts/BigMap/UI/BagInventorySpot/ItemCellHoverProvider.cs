@@ -33,7 +33,7 @@ namespace My.UI
             return InnerParams;
         }
 
-        public string GetDisplayName()
+        public virtual string GetDisplayName()
         {
             ItemStack stack = _cell?.GetBoundStack();
             if (stack == null || stack.IsEmpty)
@@ -50,7 +50,7 @@ namespace My.UI
             return stack.ItemID;
         }
 
-        public string GetDetailText()
+        public virtual string GetDetailText()
         {
             ItemStack stack = _cell?.GetBoundStack();
             if (stack == null || stack.IsEmpty)

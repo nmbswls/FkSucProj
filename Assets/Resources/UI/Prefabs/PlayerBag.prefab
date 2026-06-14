@@ -757,7 +757,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u80CC\u5305"
+  m_text: "\u884C\u56CA"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
   m_sharedMaterial: {fileID: 2549557310159315146, guid: b15d44825abceaf499ea193f3376bb2c, type: 2}
@@ -2875,7 +2875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5, g: 0.42, b: 0.75, a: 0.12}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.45}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2928,8 +2928,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: 19.795502}
-  m_SizeDelta: {x: 314.5121, y: 520}
+  m_AnchoredPosition: {x: 160, y: 68.7}
+  m_SizeDelta: {x: 314.5121, y: 460}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &909230513901999352
 CanvasRenderer:
@@ -3075,8 +3075,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -342, y: 319}
-  m_SizeDelta: {x: 40, y: 40}
+  m_AnchoredPosition: {x: -335.3, y: 318.7}
+  m_SizeDelta: {x: 24, y: 24}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2404293019213178356
 CanvasRenderer:
@@ -3449,8 +3449,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -533, y: 319}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -533, y: 318}
+  m_SizeDelta: {x: 200, y: 34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &956410044352992255
 CanvasRenderer:
@@ -3507,15 +3507,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0

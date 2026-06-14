@@ -96,7 +96,7 @@ namespace My.MiniGame
             SetPromptColor(normalTextColor);
 
             // 随机一个静态动作
-            actId = PlayerGamePlayRule.RandomGetOneHAct("Static", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
+            actId = PlayerGamePlayRule.RandomGetOneHAct("Unsensor", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 
