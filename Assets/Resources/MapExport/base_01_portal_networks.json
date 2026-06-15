@@ -1,4 +1,10 @@
 {
-    "area_id": "",
-    "networks": []
+    "area_id": "base_01",
+    "networks": [
+        {
+            "network_id": "PortalNetworks",
+            "nodes": [],
+            "edges": []
+        }
+    ]
 }

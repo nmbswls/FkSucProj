@@ -22,7 +22,7 @@
     "desc": "家园小镇",
     "var_id": "homestead_01",
     "day_period_limit": 0,
-    "map_data_name": "base_01",
+    "map_data_name": "homestead_01",
     "can_teleport": true,
     "is_home": true,
     "is_secret_base": false,

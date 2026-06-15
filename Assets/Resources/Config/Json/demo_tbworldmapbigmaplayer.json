@@ -1,13 +1,13 @@
 [
   {
     "id": 1,
-    "area_var_id": "base_01",
+    "area_var_id": "homestead_01",
     "is_main": true,
     "region_key": "default",
     "room_id": "",
     "rule_priority": 0,
     "forbid_open_world_map": false,
-    "big_map_texture_path": "base_01",
+    "big_map_texture_path": "homestead_01",
     "world_min_x": -50,
     "world_min_y": -50,
     "world_max_x": 50,

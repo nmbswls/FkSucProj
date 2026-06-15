@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6212abf8aa90cb84b9a9eccb7abfa07f, type: 3}
-  m_Name: base_01
+  m_Name: homestead_01
   m_EditorClassIdentifier: 
-  AreaId: base_01
+  AreaId: homestead_01
   Buckets: []
   EntityRefreshInfo:
   - StaticId: 100
@@ -399,6 +399,30 @@ MonoBehaviour:
     SpawnPolicy: 0
     InitInfo:
       rid: 958884442962919485
+  - StaticId: 116
+    UniqName: home_01_jp_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 958884442962919486
   NamedPoints:
   - Name: t_sp_base_entry
     PointType: 0
@@ -438,6 +462,16 @@ MonoBehaviour:
   - Name: p1
     PointType: 0
     Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: home_01_jp_01_a
+    PointType: 0
+    Position: {x: 0.5, y: -1.3, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: home_01_jp_01_b
+    PointType: 0
+    Position: {x: 2.8, y: -1.25, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths: []
@@ -620,3 +654,14 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_02_p
+    - rid: 958884442962919486
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: home_01_jp_01
+        Position: {x: 0.2, y: -1.3}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
