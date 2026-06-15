@@ -53,6 +53,7 @@ namespace My.MiniGame.Dream
 
         private void OnCloseClicked()
         {
+            DreamInfiltrationOutcomeApplier.Apply(_payload);
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
             DreamInfiltrationBootstrap.ExitMiniGame();
         }
@@ -69,8 +70,20 @@ namespace My.MiniGame.Dream
 
             var r = _payload;
             var total = r.ForceScore + r.SoothingScore + r.TrickScore;
+            var tendencyLine = "";
+            if (r.Won && r.VictoryTendency.HasValue)
+            {
+                var tendencyName = r.VictoryTendency.Value switch
+                {
+                    DreamTendencyKind.Force => "暴力",
+                    DreamTendencyKind.Soothing => "安抚",
+                    _ => "计谋",
+                };
+                tendencyLine = $"\n本次胜利方式：{tendencyName}";
+            }
+
             _bodyTmp.text =
-                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "核心摧毁成功" : "梦境侵蚀失败")}\n\n" +
+                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "核心摧毁成功" : "梦境侵蚀失败")}{tendencyLine}\n\n" +
                 $"对核心伤害总计：{total}\n" +
                 $"  暴力炮弹：{r.ForceScore}\n" +
                 $"  温柔炮弹：{r.SoothingScore}\n" +
@@ -79,6 +92,7 @@ namespace My.MiniGame.Dream
 
         public override bool OnCancel()
         {
+            DreamInfiltrationOutcomeApplier.Apply(_payload);
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
             DreamInfiltrationBootstrap.ExitMiniGame();
             return true;

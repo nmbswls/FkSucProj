@@ -947,6 +947,12 @@ namespace My.Map.Entity
         protected BuffInstance AddBuffInternal(ILogicEntity target, string buffId, int layer, float overrideDuration, long? casterId, long? srcBuffId)
         {
             var buffDef = BuffLibrary.GetBuffDefinition(buffId);
+            if (buffDef == null)
+            {
+                Debug.LogError($"AddBuffInternal missing buff definition: {buffId}");
+                return null;
+            }
+
             if (target is IEntityBuffOwner buffOwner && SteerBuffApplyGate.IsRejected(buffOwner, buffDef))
             {
                 return null;

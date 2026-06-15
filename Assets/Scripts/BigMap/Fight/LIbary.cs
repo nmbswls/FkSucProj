@@ -4267,7 +4267,7 @@ namespace My.Map.Entity
                 PhaseName = "Pre",
                 LockMovement = true,
                 LockRotation = true,
-                PhaseBuff = new List<string> { "b_player_fq_hit_pop" },
+                PhaseBuff = new List<string> { "b_player_fq_hit_hop" },
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -4385,7 +4385,7 @@ namespace My.Map.Entity
                 LockRotation = true,
                 ImmuneKnock = true,
 
-                PhaseBuff = new List<string>() { "supor_armor", "immune_fear", "b_player_fq_assult_speedup" },
+                PhaseBuff = new List<string>() { "super_armor", "immune_fear", "b_player_fq_assult_speedup" },
                 
                 DurationValue = new()
                 {

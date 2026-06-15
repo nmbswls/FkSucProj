@@ -183,6 +183,15 @@ namespace My.Saving
         public Dictionary<string, long> TributePut = new();
     }
     [Serializable]
+    public class DreamEntryTendencyWinCounts
+    {
+        public int CharDreamEntryId;
+        public int ForceWins;
+        public int SoothingWins;
+        public int TrickWins;
+    }
+
+    [Serializable]
     public class NpcCharacterPersistData
     {
         public List<string> LocalSwitches;
@@ -191,6 +200,8 @@ namespace My.Saving
         public int DesireCrystalTakenDay; // 获取天数
 
         public List<string> FinishedUniqDreamingIds = new(); // 已完成的唯一入梦入口
+
+        public List<DreamEntryTendencyWinCounts> DreamEntryWinCounts = new();
 
         public int FavorValue;
         public int GiftsGivenToday;

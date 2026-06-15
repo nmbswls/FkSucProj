@@ -158,10 +158,36 @@ namespace My.MiniGame.Dream
             {
                 ThemeId = rolled.themeId,
                 ThemeDisplayName = rolled.themeDisplayName,
+                EntrySource = DreamEntrySourceKind.FacilitySpot,
+                SpotId = spot.SpotId,
             };
 
-            // 读取配置
+            UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
+            UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);
+        }
 
+        public void OnCharacterEntryClicked(int entryId)
+        {
+            var mg = MainGameManager.Instance;
+            var glm = mg != null ? mg.gameLogicManager : null;
+            if (glm == null)
+            {
+                Debug.LogWarning("[DreamInfiltration] GameLogicManager missing.");
+                return;
+            }
+
+            var table = CfgMgr.Cfgs?.TbCharDreamEntryInfo;
+            var entry = table?.GetOrDefault(entryId);
+            if (entry == null)
+            {
+                Debug.LogWarning($"[DreamInfiltration] Char dream entry not found: {entryId}");
+                return;
+            }
+
+            if (!DreamCharacterEntryHelper.TryCreateGameplayContext(entry.CharacterKey, entryId, out var ctx))
+            {
+                return;
+            }
 
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);

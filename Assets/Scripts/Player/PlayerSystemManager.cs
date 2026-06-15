@@ -338,6 +338,28 @@ namespace My.Player
             logicManager?.worldPersistState?.NpcCharacters?.SetRuntimeLocalSwitch(characterKey, switchName, isOn);
         }
 
+        public void IncrementDreamEntryTendencyWin(string characterKey, int entryId, My.MiniGame.Dream.DreamTendencyKind tendency)
+        {
+            logicManager?.worldPersistState?.NpcCharacters?.IncrementDreamEntryTendencyWin(characterKey, entryId, tendency);
+        }
+
+        public bool TryGetDreamEntryWinCounts(string characterKey, int entryId, out DreamEntryTendencyWinCounts data)
+        {
+            data = null;
+            var reg = logicManager?.worldPersistState?.NpcCharacters;
+            if (reg == null)
+            {
+                return false;
+            }
+
+            return reg.TryGetDreamEntryWinCounts(characterKey, entryId, out data);
+        }
+
+        public bool HasAnyDreamEntryWin(string characterKey, int entryId)
+        {
+            return logicManager?.worldPersistState?.NpcCharacters?.HasAnyDreamEntryWin(characterKey, entryId) ?? false;
+        }
+
         public void Tick(float dt)
         {
             InventorySystem.Tick(dt);
@@ -547,12 +569,10 @@ namespace My.Player
                 TryAdd(weaponSkill, 1);
             }
 
-            if (IsUsingFaQingSkillBar())
+            // 发情技能常驻注册，切换 IsFaQing 后 UI 直接换槽位引用即可
+            foreach (var id in FaQingSkillSlots)
             {
-                foreach (var id in FaQingSkillSlots)
-                {
-                    TryAdd(id, 1);
-                }
+                TryAdd(id, 1);
             }
         }
 

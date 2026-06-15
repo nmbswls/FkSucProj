@@ -243,8 +243,6 @@ namespace My.UI
 
         void RefreshMainBottomBarForPlayerState()
         {
-            var glm = MainGameManager.Instance?.gameLogicManager;
-            glm?.playerDataManager?.SyncLearnedSkillsToPlayerEntity();
             MainBottomBar?.Refresh(true, forceLayoutRebuild: true);
         }
 

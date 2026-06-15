@@ -605,6 +605,13 @@ namespace My.MiniGame.Dream
                 ForceScore    = _forceDamage,
                 SoothingScore = _sootheDamage,
                 TrickScore    = _trickDamage,
+                EntrySource = _ctx.EntrySource,
+                SpotId = _ctx.SpotId,
+                CharacterKey = _ctx.CharacterKey,
+                CharDreamEntryId = _ctx.CharDreamEntryId,
+                VictoryTendency = won
+                    ? DreamVictoryTendencyResolver.Resolve(_forceDamage, _sootheDamage, _trickDamage)
+                    : null,
             };
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.SettlementPanel, payload, UILayer.Overlay);
         }
@@ -692,5 +699,10 @@ namespace My.MiniGame.Dream
         public float AoeWarningDuration = 1.5f;
         public int ProjectileDamage = 20;
         public float TrickApproachSpeed = 65f;
+
+        public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.FacilitySpot;
+        public string SpotId = "";
+        public string CharacterKey = "";
+        public int CharDreamEntryId;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using My.Config;
 using My.Map.Logic;
+using My.MiniGame.Dream;
 using My.Saving;
 using cfg.demo;
 
@@ -68,6 +69,7 @@ namespace My
                 FinishedUniqDreamingIds = s.FinishedUniqDreamingIds != null
                     ? new List<string>(s.FinishedUniqDreamingIds)
                     : new List<string>(),
+                DreamEntryWinCounts = CloneDreamEntryWinCounts(s.DreamEntryWinCounts),
                 FavorValue = s.FavorValue,
                 GiftsGivenToday = s.GiftsGivenToday,
                 LastGiftSettlementDay = s.LastGiftSettlementDay,
@@ -184,6 +186,29 @@ namespace My
             return st.GiftsGivenToday;
         }
 
+        static List<DreamEntryTendencyWinCounts> CloneDreamEntryWinCounts(List<DreamEntryTendencyWinCounts> src)
+        {
+            if (src == null || src.Count == 0)
+            {
+                return new List<DreamEntryTendencyWinCounts>();
+            }
+
+            var list = new List<DreamEntryTendencyWinCounts>(src.Count);
+            foreach (var item in src)
+            {
+                if (item == null) continue;
+                list.Add(new DreamEntryTendencyWinCounts
+                {
+                    CharDreamEntryId = item.CharDreamEntryId,
+                    ForceWins = item.ForceWins,
+                    SoothingWins = item.SoothingWins,
+                    TrickWins = item.TrickWins,
+                });
+            }
+
+            return list;
+        }
+
         static List<string> CloneList(List<string> src)
         {
             if (src == null)
@@ -289,6 +314,81 @@ namespace My
         public void AddCharLocalSwitches()
         {
 
+        }
+
+        public void IncrementDreamEntryTendencyWin(string characterKey, int entryId, DreamTendencyKind tendency)
+        {
+            if (string.IsNullOrEmpty(characterKey) || entryId <= 0)
+            {
+                return;
+            }
+
+            var st = GetOrCreate(characterKey);
+            st.DreamEntryWinCounts ??= new List<DreamEntryTendencyWinCounts>();
+
+            DreamEntryTendencyWinCounts row = null;
+            foreach (var item in st.DreamEntryWinCounts)
+            {
+                if (item != null && item.CharDreamEntryId == entryId)
+                {
+                    row = item;
+                    break;
+                }
+            }
+
+            if (row == null)
+            {
+                row = new DreamEntryTendencyWinCounts { CharDreamEntryId = entryId };
+                st.DreamEntryWinCounts.Add(row);
+            }
+
+            switch (tendency)
+            {
+                case DreamTendencyKind.Force:
+                    row.ForceWins++;
+                    break;
+                case DreamTendencyKind.Soothing:
+                    row.SoothingWins++;
+                    break;
+                default:
+                    row.TrickWins++;
+                    break;
+            }
+        }
+
+        public bool TryGetDreamEntryWinCounts(string characterKey, int entryId, out DreamEntryTendencyWinCounts data)
+        {
+            data = null;
+            if (string.IsNullOrEmpty(characterKey) || entryId <= 0)
+            {
+                return false;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st) || st?.DreamEntryWinCounts == null)
+            {
+                return false;
+            }
+
+            foreach (var item in st.DreamEntryWinCounts)
+            {
+                if (item != null && item.CharDreamEntryId == entryId)
+                {
+                    data = item;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool HasAnyDreamEntryWin(string characterKey, int entryId)
+        {
+            if (!TryGetDreamEntryWinCounts(characterKey, entryId, out var data) || data == null)
+            {
+                return false;
+            }
+
+            return data.ForceWins > 0 || data.SoothingWins > 0 || data.TrickWins > 0;
         }
 
 
