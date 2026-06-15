@@ -57,7 +57,7 @@ MonoBehaviour:
     NpcTriggerBuffId: 
     BaitDurationSeconds: 30
     ReapplyCooldownSeconds: 20
-    ApplyPoisonLabel: d
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
     NpcFloatText: ...
     NpcApproachStopDistance: 0.4
   DormantRevealSettings:
