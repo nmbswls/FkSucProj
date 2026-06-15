@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
-  m_Name: home_01_jp_01
+  m_Name: home_01_jp_01_b
   m_EditorClassIdentifier: 
-  CfgId: home_01_jp_01
+  CfgId: home_01_jp_01_b
   ShowName: "\u8DF3\u8DC3"
-  PrefabName: empty
+  PrefabName: jp
   NameOffset: 40
   IsAlwaysActive: 0
+  PersistByUniqName: 0
   ShowOnWorldMap: 0
   WorldMapMarkerLabel: 
   MainStatusInfo:
@@ -35,8 +36,8 @@ MonoBehaviour:
       - OutputType: 51
         Param1: 0
         Param2: 0
-        Param3: jump_01_a
-        Param4: jump_01_b
+        Param3: jump_01_b
+        Param4: jump_01_a
         Param5: 0
         Param6: 0
         DelayTime: 0
@@ -56,7 +57,7 @@ MonoBehaviour:
     NpcTriggerBuffId: 
     BaitDurationSeconds: 30
     ReapplyCooldownSeconds: 20
-    ApplyPoisonLabel: "\u4E0B\u6BD2"
+    ApplyPoisonLabel: "\uFF1F"
     NpcFloatText: ...
     NpcApproachStopDistance: 0.4
   DormantRevealSettings:

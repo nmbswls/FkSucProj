@@ -52,7 +52,7 @@ namespace My.Map.Scene
         public const float JumpArc = 0.45f;
         public const float JumpArcPeakBase = 1.0f;
         public const float JumpArcPeakMin = 0.6f;
-        public const float JumpArcPeakMax = 2.0f;
+        public const float JumpArcPeakMax = 3.0f;
 
         public static GhostRelocateTimings Ghost => new GhostRelocateTimings
         {
@@ -71,7 +71,7 @@ namespace My.Map.Scene
         public static float ResolveJumpArcPeak(Vector2 fromLogic, Vector2 toLogic)
         {
             float dist = Vector2.Distance(fromLogic, toLogic);
-            return Mathf.Clamp(dist * 0.25f, JumpArcPeakMin, JumpArcPeakMax);
+            return Mathf.Clamp(dist * 0.5f, JumpArcPeakMin, JumpArcPeakMax);
         }
 
         public static float GetTotalDuration(PlayerRelocateSpec spec)

@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: home_01_jp_01_a
+  m_EditorClassIdentifier: 
+  CfgId: home_01_jp_01_a
+  ShowName: "\u8DF3\u8DC3"
+  PrefabName: jp
+  NameOffset: 40
+  IsAlwaysActive: 0
+  PersistByUniqName: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: 
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u8DF3\u8DC3"
+      UnLabel: "\u8DF3\u8DC3"
+      HideWhenFail: 0
+      NeedDist: 0.5
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 51
+        Param1: 0
+        Param2: 0
+        Param3: jump_01_a
+        Param4: jump_01_b
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos: []
+  InitState: 0
+  StateChangeRules: []
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId: 
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: d
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 0
+    RevealDurationSeconds: 8
+    GcLiquidCheckRadius: 0.3

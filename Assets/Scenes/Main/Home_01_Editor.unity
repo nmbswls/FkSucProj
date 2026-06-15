@@ -7976,7 +7976,7 @@ Transform:
   m_GameObject: {fileID: 314671432}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.09, y: 35.239998, z: 0}
+  m_LocalPosition: {x: 9.79, y: 33.55, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20965,7 +20965,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RefreshInfo:
     StaticId: 116
-    UniqName: home_01_jp_01
+    UniqName: jump_01_a
     AppearCond:
       Type: 0
       Param1: 0
@@ -20994,7 +20994,7 @@ MonoBehaviour:
     - rid: 958884442962919486
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: home_01_jp_01
+        CfgId: home_01_jp_01_a
         Position: {x: -13.62, y: 2.25}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
@@ -21141,7 +21141,7 @@ Transform:
   m_GameObject: {fileID: 2062310310}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.2, y: 32, z: 0}
+  m_LocalPosition: {x: 6.12, y: 36.39, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21224,7 +21224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RefreshInfo:
     StaticId: 0
-    UniqName: 
+    UniqName: jump_01_b
     AppearCond:
       Type: 0
       Param1: 0
@@ -21253,7 +21253,7 @@ MonoBehaviour:
     - rid: 958884442962919487
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: 
+        CfgId: home_01_jp_01_b
         Position: {x: 0, y: 0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
