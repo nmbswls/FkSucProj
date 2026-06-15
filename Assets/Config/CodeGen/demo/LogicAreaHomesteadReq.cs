@@ -36,7 +36,7 @@ public sealed partial class LogicAreaHomesteadReq : Luban.BeanBase
     /// </summary>
     public int RequiredControl;
    
-    public const int __ID__ = -1048293761;
+    public const int __ID__ = -1754192266;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -52,3 +52,4 @@ public sealed partial class LogicAreaHomesteadReq : Luban.BeanBase
     }
 }
 }
+

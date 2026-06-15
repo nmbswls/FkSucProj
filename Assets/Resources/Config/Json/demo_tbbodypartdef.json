@@ -19,7 +19,7 @@
   },
   {
     "part_id": 3,
-    "display_name": "腹",
+    "display_name": "穴",
     "max_level": 5,
     "base_gear_point": 1,
     "icon": "",
@@ -28,7 +28,7 @@
   },
   {
     "part_id": 4,
-    "display_name": "尾",
+    "display_name": "尻",
     "max_level": 5,
     "base_gear_point": 1,
     "icon": "",
@@ -37,7 +37,7 @@
   },
   {
     "part_id": 5,
-    "display_name": "翼",
+    "display_name": "肢体",
     "max_level": 5,
     "base_gear_point": 1,
     "icon": "",

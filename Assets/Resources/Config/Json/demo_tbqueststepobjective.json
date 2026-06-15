@@ -98,7 +98,7 @@
     "obj_p2": 0,
     "obj_p3": 0,
     "obj_p4": "quest_mat_herb",
-    "obj_p5": "",
+    "obj_p5": "home_elder",
     "obj_p_extra": ""
   },
   {
@@ -132,7 +132,7 @@
     "obj_p2": 0,
     "obj_p3": 0,
     "obj_p4": "quest_mat_wood",
-    "obj_p5": "",
+    "obj_p5": "home_merchant",
     "obj_p_extra": ""
   }
 ]

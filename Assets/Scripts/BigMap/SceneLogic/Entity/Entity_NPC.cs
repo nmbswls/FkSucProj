@@ -901,7 +901,6 @@ namespace My.Map
         }
 
         // 全局 NPC 交谈统一入口对话 id；存在 TbDialogMetaInfo 时由入口生成菜单与分支
-        public const string NpcDialogHubId = "npc_generic_entry";
 
         public bool HasDialogEntry()
         {

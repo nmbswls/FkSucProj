@@ -23,6 +23,9 @@ namespace cfg.demo
         KillMonster = 1,
         OwnItem = 2,
         PlayerKilled = 3,
+        /// <summary>
+        /// P0: obj_p4=item_id obj_p5=character_key
+        /// </summary>
         SubmitItem = 4,
     }
 

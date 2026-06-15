@@ -1,9 +1,9 @@
 [
   {
     "id": 1,
-    "desc": "",
+    "desc": "对倒地手榨",
     "filter_types": [
-      "Static"
+      "Unsensor"
     ],
     "player_min_desire": 0,
     "is_player_passive": false,
@@ -14,48 +14,9 @@
   },
   {
     "id": 2,
-    "desc": "",
+    "desc": "对倒地手口",
     "filter_types": [
-      "Static"
-    ],
-    "player_min_desire": 1,
-    "is_player_passive": false,
-    "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
-  },
-  {
-    "id": 3,
-    "desc": "",
-    "filter_types": [
-      "Static"
-    ],
-    "player_min_desire": 2,
-    "is_player_passive": false,
-    "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
-  },
-  {
-    "id": 4,
-    "desc": "",
-    "filter_types": [
-      "Static"
-    ],
-    "player_min_desire": 3,
-    "is_player_passive": false,
-    "h_impulse_base": 40,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
-  },
-  {
-    "id": 5,
-    "desc": "",
-    "filter_types": [
-      "Charmed"
+      "Unsensor"
     ],
     "player_min_desire": 0,
     "is_player_passive": false,
@@ -65,12 +26,51 @@
     "player_climax_weight": 1
   },
   {
-    "id": 6,
-    "desc": "",
+    "id": 3,
+    "desc": "对倒地口",
     "filter_types": [
-      "Charmed"
+      "Unsensor"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 4,
+    "desc": "对倒地乳",
+    "filter_types": [
+      "Unsensor"
     ],
     "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 5,
+    "desc": "对倒地口乳",
+    "filter_types": [
+      "Unsensor"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 6,
+    "desc": "对倒地素股",
+    "filter_types": [
+      "Unsensor"
+    ],
+    "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 20,
     "coef_player": 0,
@@ -79,9 +79,9 @@
   },
   {
     "id": 7,
-    "desc": "",
+    "desc": "对倒地骑乘插入",
     "filter_types": [
-      "Charmed"
+      "Unsensor"
     ],
     "player_min_desire": 2,
     "is_player_passive": false,
@@ -91,144 +91,365 @@
     "player_climax_weight": 1
   },
   {
-    "id": 8,
-    "desc": "",
+    "id": 10,
+    "desc": "吻封坐屌",
+    "filter_types": [
+      "FemaleForce"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0.3,
+    "coef_enemy": 0.7,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 11,
+    "desc": "骑乘塞乳",
+    "filter_types": [
+      "FemaleForce"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 18,
+    "coef_player": 0.3,
+    "coef_enemy": 0.7,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 12,
+    "desc": "坐脸反身踩J",
+    "filter_types": [
+      "FemaleForce"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 26,
+    "coef_player": 0.3,
+    "coef_enemy": 0.7,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 13,
+    "desc": "逆传教士",
+    "filter_types": [
+      "FemaleForce"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 34,
+    "coef_player": 0.3,
+    "coef_enemy": 0.7,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 20,
+    "desc": "正面拥吻",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 21,
+    "desc": "背后揉胸吻",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 22,
+    "desc": "按头口爆",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 23,
+    "desc": "抬腿扣咬乳",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 24,
+    "desc": "简单69",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 25,
+    "desc": "抱起温柔入",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 2,
+    "is_player_passive": false,
+    "h_impulse_base": 40,
+    "coef_player": 0.2,
+    "coef_enemy": 0.8,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 26,
+    "desc": "扶墙温柔后入",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 2,
+    "is_player_passive": false,
+    "h_impulse_base": 40,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 27,
+    "desc": "抬腿温柔站入",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 2,
+    "is_player_passive": false,
+    "h_impulse_base": 40,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 28,
+    "desc": "强化抱起入",
     "filter_types": [
       "Charmed"
     ],
     "player_min_desire": 3,
     "is_player_passive": false,
-    "h_impulse_base": 40,
-    "coef_player": 0,
-    "coef_enemy": 1,
+    "h_impulse_base": 60,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
     "player_climax_weight": 1
   },
   {
-    "id": 9,
-    "desc": "",
+    "id": 29,
+    "desc": "强化扶墙后入",
+    "filter_types": [
+      "Charmed"
+    ],
+    "player_min_desire": 3,
+    "is_player_passive": false,
+    "h_impulse_base": 60,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 30,
+    "desc": "被摸胸",
     "filter_types": [
       "KaiYou"
     ],
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 1,
-    "coef_enemy": 0,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
     "player_climax_weight": 0
   },
   {
-    "id": 10,
-    "desc": "",
+    "id": 31,
+    "desc": "被强吻",
     "filter_types": [
       "KaiYou"
     ],
     "player_min_desire": 0,
     "is_player_passive": false,
-    "h_impulse_base": 11,
-    "coef_player": 1,
-    "coef_enemy": 0,
+    "h_impulse_base": 10,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
     "player_climax_weight": 0
   },
   {
-    "id": 11,
-    "desc": "",
+    "id": 32,
+    "desc": "被拍屁股",
+    "filter_types": [
+      "KaiYou"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 10,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 33,
+    "desc": "被扣扣",
     "filter_types": [
       "KaiYou"
     ],
     "player_min_desire": 1,
     "is_player_passive": false,
-    "h_impulse_base": 12,
-    "coef_player": 1,
-    "coef_enemy": 0,
+    "h_impulse_base": 20,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
     "player_climax_weight": 0
   },
   {
-    "id": 12,
-    "desc": "",
+    "id": 34,
+    "desc": "被舔穴",
     "filter_types": [
       "KaiYou"
     ],
     "player_min_desire": 1,
     "is_player_passive": false,
-    "h_impulse_base": 13,
-    "coef_player": 1,
-    "coef_enemy": 0,
+    "h_impulse_base": 20,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
     "player_climax_weight": 0
   },
   {
-    "id": 13,
-    "desc": "",
-    "filter_types": [
-      "KaiYou"
-    ],
-    "player_min_desire": 0,
-    "is_player_passive": true,
-    "h_impulse_base": 14,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
-  },
-  {
-    "id": 14,
-    "desc": "",
-    "filter_types": [
-      "KaiYou"
-    ],
-    "player_min_desire": 0,
-    "is_player_passive": true,
-    "h_impulse_base": 15,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
-  },
-  {
-    "id": 15,
-    "desc": "",
+    "id": 35,
+    "desc": "擦枪",
     "filter_types": [
       "KaiYou"
     ],
     "player_min_desire": 1,
-    "is_player_passive": true,
-    "h_impulse_base": 16,
-    "coef_player": 0,
-    "coef_enemy": 1,
+    "is_player_passive": false,
+    "h_impulse_base": 20,
+    "coef_player": 0.9,
+    "coef_enemy": 0.1,
     "player_climax_weight": 0
   },
   {
-    "id": 16,
-    "desc": "",
+    "id": 40,
+    "desc": "洗面奶",
     "filter_types": [
-      "KaiYou"
+      "QuickStand"
     ],
-    "player_min_desire": 1,
-    "is_player_passive": true,
-    "h_impulse_base": 17,
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 24,
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 0
   },
   {
-    "id": 17,
-    "desc": "",
+    "id": 41,
+    "desc": "强吻摩擦",
     "filter_types": [
-      "Simple"
+      "QuickStand"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 24,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 42,
+    "desc": "舔脖子+手撸",
+    "filter_types": [
+      "QuickStand"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 24,
+    "coef_player": 0,
+    "coef_enemy": 1,
+    "player_climax_weight": 0
+  },
+  {
+    "id": 50,
+    "desc": "正常体位",
+    "filter_types": [
+      "KnockDown"
     ],
     "player_min_desire": 0,
     "is_player_passive": true,
     "h_impulse_base": 20,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 51,
+    "desc": "正常后入",
+    "filter_types": [
+      "KnockDown"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 20,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 52,
+    "desc": "正常侧入",
+    "filter_types": [
+      "KnockDown"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 20,
+    "coef_player": 0.5,
+    "coef_enemy": 0.5,
+    "player_climax_weight": 1
+  },
+  {
+    "id": 60,
+    "desc": "蹂躏踩屌",
+    "filter_types": [
+      "Conquer"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 50,
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 0
   },
   {
-    "id": 18,
-    "desc": "",
+    "id": 61,
+    "desc": "蹂躏舔脚",
     "filter_types": [
-      "Simple"
+      "Conquer"
     ],
-    "player_min_desire": 1,
-    "is_player_passive": true,
-    "h_impulse_base": 20,
+    "player_min_desire": 0,
+    "is_player_passive": false,
+    "h_impulse_base": 50,
     "coef_player": 0,
     "coef_enemy": 1,
     "player_climax_weight": 0

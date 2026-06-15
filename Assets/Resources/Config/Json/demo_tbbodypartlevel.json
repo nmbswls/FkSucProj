@@ -120,23 +120,63 @@
     ]
   },
   {
-    "part_id": 6,
+    "part_id": 4,
     "level": 1,
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
     "h_power": 50000,
     "absorb_rate": 5,
-    "local_bonuses": []
+    "local_bonuses": [
+      {
+        "attr_id": 1,
+        "val": 60
+      }
+    ]
   },
   {
-    "part_id": 6,
+    "part_id": 4,
     "level": 2,
     "need_exp": 50,
     "global_bonuses": [],
     "hp": 50000,
     "h_power": 50000,
     "absorb_rate": 5,
-    "local_bonuses": []
+    "local_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 40
+      }
+    ]
+  },
+  {
+    "part_id": 5,
+    "level": 1,
+    "need_exp": 0,
+    "global_bonuses": [],
+    "hp": 50000,
+    "h_power": 50000,
+    "absorb_rate": 5,
+    "local_bonuses": [
+      {
+        "attr_id": 1,
+        "val": 60
+      }
+    ]
+  },
+  {
+    "part_id": 5,
+    "level": 2,
+    "need_exp": 50,
+    "global_bonuses": [],
+    "hp": 50000,
+    "h_power": 50000,
+    "absorb_rate": 5,
+    "local_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 40
+      }
+    ]
   }
 ]

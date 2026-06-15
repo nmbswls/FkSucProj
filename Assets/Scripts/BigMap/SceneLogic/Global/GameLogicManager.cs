@@ -705,6 +705,26 @@ namespace My
                         playerDataManager.TryUnlockRuneUpgrade(upgradeId);
                     }
                     break;
+                case EItemUseType.AddMapControl:
+                    {
+                        var logicAreaId = useRow.S1;
+                        if (string.IsNullOrEmpty(logicAreaId))
+                        {
+                            Debug.LogWarning("HandleUseItem AddMapControl: empty logic_area map_id.");
+                            break;
+                        }
+
+                        var addPerUse = (int)Mathf.Max(0, useRow.P1);
+                        if (addPerUse <= 0)
+                        {
+                            Debug.LogWarning($"HandleUseItem AddMapControl: invalid p1={useRow.P1}.");
+                            break;
+                        }
+
+                        var totalAdd = addPerUse * (int)Mathf.Clamp(cnt, 1, 1000);
+                        worldPersistState?.AddLogicAreaControl(logicAreaId, totalAdd);
+                    }
+                    break;
             }
 
             return false;

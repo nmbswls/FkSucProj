@@ -289,7 +289,7 @@ namespace My.Map.Scene
 
             if(selectionId == ID_NormalDialog)
             {
-                var entryId = NpcUnitLogicEntity.NpcDialogHubId;
+                var entryId = DialoguePlayer.NpcDialogHubId;
                 if (!string.IsNullOrEmpty(entryId))
                 {
                     NpcEntity.LogicManager.viewer.PlayDialog(entryId, srcEntityId: Id);

@@ -1,4 +1,5 @@
 using Map.Entity;
+using My.Dialog;
 using My.Map.Fight;
 using My.Map.Scene;
 using My.Player.Bag;
@@ -191,7 +192,7 @@ public interface ISceneAbilityViewer
 
     void ShowGcCloseupWindow(string showName, float duration);
 
-    bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null);
+    bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null, DialogueSessionContext sessionContext = null);
 
     void StartLoot(ILootableObj lootObj);
 

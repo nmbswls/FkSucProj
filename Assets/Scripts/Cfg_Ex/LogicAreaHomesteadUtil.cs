@@ -1,5 +1,6 @@
 using cfg.demo;
 using My.Map;
+using My.Map.Logic;
 
 namespace My.Config
 {

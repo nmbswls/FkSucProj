@@ -110,9 +110,10 @@
         <var name="None" value="0"/>
         <var name="Mouth" value="1"/>
         <var name="Breast" value="2"/>
-        <var name="Pussy" value="3"/>
-        <var name="Hip" value="4"/>
-        <var name="Limb" value="5"/>
+        <var name="Womb" value="3"/>
+        <var name="Tail" value="4"/>
+        <var name="Wing" value="5"/>
+        <var name="Skin" value="6"/>
     </enum>
 
     <enum name="EPartLocalAttribute">

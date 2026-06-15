@@ -1033,5 +1033,26 @@
     "auto_pick": false,
     "is_auto_use": false,
     "quick_bar_kind": 0
+  },
+  {
+    "item_id": "quest_control_village01",
+    "display_name": "村子影响力",
+    "item_type": 0,
+    "stackable": true,
+    "stack_count": 0,
+    "stack_tags": [],
+    "sprite_name": "",
+    "can_drop": false,
+    "rare_tier": 0,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": true,
+    "is_auto_use": true,
+    "quick_bar_kind": 0
   }
 ]

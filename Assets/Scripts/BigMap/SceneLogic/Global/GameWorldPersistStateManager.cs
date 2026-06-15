@@ -26,6 +26,11 @@ namespace My
         // mapId|triggerId -> consumed
         private readonly Dictionary<string, bool> _microPlotConsumed = new();
 
+        // logic_area map_id -> control degree
+        private readonly Dictionary<string, int> _logicAreaControlByMapId = new(StringComparer.Ordinal);
+
+        public event Action<string, int> EvOnLogicAreaControlChanged;
+
         public GameWorldPersistStateManager()
         {
         }
@@ -160,6 +165,18 @@ namespace My
             {
                 _secretBaseBuildLevel = 1;
             }
+
+            _logicAreaControlByMapId.Clear();
+            if (savingData?.PlayerData?.LogicAreaControlByMapId != null)
+            {
+                foreach (var kv in savingData.PlayerData.LogicAreaControlByMapId)
+                {
+                    if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                    {
+                        _logicAreaControlByMapId[kv.Key] = kv.Value;
+                    }
+                }
+            }
         }
 
         public void ApplyRuntimeToSaveData(SaveData data)
@@ -252,6 +269,16 @@ namespace My
             }
 
             data.PlayerData.SecretBaseBuildLevel = _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
+
+            data.PlayerData.LogicAreaControlByMapId ??= new Dictionary<string, int>();
+            data.PlayerData.LogicAreaControlByMapId.Clear();
+            foreach (var kv in _logicAreaControlByMapId)
+            {
+                if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                {
+                    data.PlayerData.LogicAreaControlByMapId[kv.Key] = kv.Value;
+                }
+            }
         }
 
         public int GetSecretBaseBuildLevel()
@@ -400,6 +427,61 @@ namespace My
                     kv.Value.LastRestockSettlementDayIndex = newSettlementDayIndex;
                 }
             }
+        }
+
+        public int GetLogicAreaControl(string logicAreaId)
+        {
+            if (string.IsNullOrEmpty(logicAreaId))
+            {
+                return 0;
+            }
+
+            return _logicAreaControlByMapId.TryGetValue(logicAreaId, out var val) ? val : 0;
+        }
+
+        public int AddLogicAreaControl(string logicAreaId, int delta)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || delta <= 0)
+            {
+                return GetLogicAreaControl(logicAreaId);
+            }
+
+            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            if (req == null)
+            {
+                Debug.LogWarning($"AddLogicAreaControl: logic area has no homestead req config: {logicAreaId}");
+                return GetLogicAreaControl(logicAreaId);
+            }
+
+            var current = GetLogicAreaControl(logicAreaId);
+            var next = current + delta;
+            if (req.RequiredControl > 0)
+            {
+                next = Mathf.Min(next, req.RequiredControl);
+            }
+
+            if (next <= 0)
+            {
+                _logicAreaControlByMapId.Remove(logicAreaId);
+            }
+            else
+            {
+                _logicAreaControlByMapId[logicAreaId] = next;
+            }
+
+            EvOnLogicAreaControlChanged?.Invoke(logicAreaId, next);
+            return next;
+        }
+
+        public bool IsLogicAreaControlRequirementMet(string logicAreaId)
+        {
+            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            if (req == null || req.RequiredControl <= 0)
+            {
+                return false;
+            }
+
+            return GetLogicAreaControl(logicAreaId) >= req.RequiredControl;
         }
     }
 }

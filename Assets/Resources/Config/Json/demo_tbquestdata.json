@@ -95,6 +95,10 @@
       [
         "gold",
         20
+      ],
+      [
+        "quest_control_village01",
+        1
       ]
     ],
     "is_auto_accept": true,

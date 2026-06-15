@@ -1,0 +1,10 @@
+[
+  {
+    "map_id": "village_01",
+    "required_control": 100
+  },
+  {
+    "map_id": "village_02",
+    "required_control": 100
+  }
+]
