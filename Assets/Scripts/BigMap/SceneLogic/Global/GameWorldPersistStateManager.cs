@@ -509,16 +509,127 @@ namespace My
 
         static bool HasMeaningfulHomesteadState(LogicAreaHomesteadPersist state)
         {
-            return state.IsAnnexed || state.ControlDegree > 0;
+            if (state == null)
+            {
+                return false;
+            }
+
+            if (state.IsAnnexed || state.ControlDegree > 0)
+            {
+                return true;
+            }
+
+            if (state.Buildings == null)
+            {
+                return false;
+            }
+
+            foreach (var b in state.Buildings)
+            {
+                if (b != null && !string.IsNullOrEmpty(b.BuildingId) && b.Level > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         static LogicAreaHomesteadPersist CloneHomesteadPersist(LogicAreaHomesteadPersist source)
         {
-            return new LogicAreaHomesteadPersist
+            var clone = new LogicAreaHomesteadPersist
             {
                 ControlDegree = source.ControlDegree,
                 IsAnnexed = source.IsAnnexed,
             };
+
+            if (source.Buildings != null)
+            {
+                foreach (var b in source.Buildings)
+                {
+                    if (b == null || string.IsNullOrEmpty(b.BuildingId) || b.Level <= 0)
+                    {
+                        continue;
+                    }
+
+                    clone.Buildings.Add(new HomesteadBuildingPersist
+                    {
+                        BuildingId = b.BuildingId,
+                        Level = b.Level,
+                    });
+                }
+            }
+
+            return clone;
+        }
+
+        public int GetHomesteadBuildingLevel(string logicAreaId, string buildingId)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(buildingId))
+            {
+                return 0;
+            }
+
+            var state = GetLogicAreaHomesteadState(logicAreaId);
+            if (state?.Buildings == null)
+            {
+                return 0;
+            }
+
+            foreach (var b in state.Buildings)
+            {
+                if (b != null && b.BuildingId == buildingId)
+                {
+                    return Mathf.Max(0, b.Level);
+                }
+            }
+
+            return 0;
+        }
+
+        public void SetHomesteadBuildingLevel(string logicAreaId, string buildingId, int level)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(buildingId))
+            {
+                return;
+            }
+
+            level = Mathf.Max(0, level);
+            var state = GetOrCreateHomesteadState(logicAreaId);
+            state.Buildings ??= new List<HomesteadBuildingPersist>();
+
+            for (int i = 0; i < state.Buildings.Count; i++)
+            {
+                var b = state.Buildings[i];
+                if (b != null && b.BuildingId == buildingId)
+                {
+                    if (level <= 0)
+                    {
+                        state.Buildings.RemoveAt(i);
+                    }
+                    else
+                    {
+                        b.Level = level;
+                    }
+
+                    NormalizeHomesteadEntry(logicAreaId, state);
+                    EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, state);
+                    return;
+                }
+            }
+
+            if (level <= 0)
+            {
+                NormalizeHomesteadEntry(logicAreaId, state);
+                return;
+            }
+
+            state.Buildings.Add(new HomesteadBuildingPersist
+            {
+                BuildingId = buildingId,
+                Level = level,
+            });
+            EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, state);
         }
 
         void NormalizeHomesteadEntry(string logicAreaId, LogicAreaHomesteadPersist state)

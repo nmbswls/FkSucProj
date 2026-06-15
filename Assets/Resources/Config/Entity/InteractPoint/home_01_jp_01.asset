@@ -35,8 +35,8 @@ MonoBehaviour:
       - OutputType: 51
         Param1: 0
         Param2: 0
-        Param3: home_01_jp_01_a
-        Param4: home_01_jp_01_b
+        Param3: jump_01_a
+        Param4: jump_01_b
         Param5: 0
         Param6: 0
         DelayTime: 0

@@ -104,6 +104,14 @@ public partial class Tables
     public demo.TbRuneUpgradeInfo TbRuneUpgradeInfo {get; }
     public demo.TbRuneEquipSlot TbRuneEquipSlot {get; }
     public demo.TbEntitySkillLevel TbEntitySkillLevel {get; }
+    /// <summary>
+    /// 逻辑区域可管理建筑
+    /// </summary>
+    public demo.TbHomesteadBuilding TbHomesteadBuilding {get; }
+    /// <summary>
+    /// 家园建筑升级项
+    /// </summary>
+    public demo.TbHomesteadBuildingUpgrade TbHomesteadBuildingUpgrade {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -185,6 +193,8 @@ public partial class Tables
         TbRuneUpgradeInfo = new demo.TbRuneUpgradeInfo(loader("demo_tbruneupgradeinfo"));
         TbRuneEquipSlot = new demo.TbRuneEquipSlot(loader("demo_tbruneequipslot"));
         TbEntitySkillLevel = new demo.TbEntitySkillLevel(loader("demo_tbentityskilllevel"));
+        TbHomesteadBuilding = new demo.TbHomesteadBuilding(loader("demo_tbhomesteadbuilding"));
+        TbHomesteadBuildingUpgrade = new demo.TbHomesteadBuildingUpgrade(loader("demo_tbhomesteadbuildingupgrade"));
         ResolveRef();
     }
     
@@ -268,6 +278,8 @@ public partial class Tables
         TbRuneUpgradeInfo.ResolveRef(this);
         TbRuneEquipSlot.ResolveRef(this);
         TbEntitySkillLevel.ResolveRef(this);
+        TbHomesteadBuilding.ResolveRef(this);
+        TbHomesteadBuildingUpgrade.ResolveRef(this);
     }
 }
 

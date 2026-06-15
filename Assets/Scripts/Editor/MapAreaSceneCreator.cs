@@ -1,7 +1,6 @@
 using System.IO;
 using System.Linq;
 using My.MapExport;
-using NavMeshPlus.Components;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -112,7 +111,6 @@ public static class MapAreaSceneCreator
         areaRootGo.AddComponent<WorldAreaRoot>();
         var mapVariantRoot = CreateChild(areaRootGo.transform, MapVariantSceneHierarchy.MapVariantRootName);
         CreateSceneGridRoot(mapVariantRoot);
-        CreateNavMeshSurface(areaRootGo.transform);
 
         EditorSceneManager.SaveScene(scene, savePath);
     }
@@ -140,7 +138,6 @@ public static class MapAreaSceneCreator
         var portalNetworks = CreateChild(areaRootGo.transform, "PortalNetworks");
         portalNetworks.gameObject.AddComponent<PortalNetworkProvider>();
 
-        CreateNavMeshSurface(areaRootGo.transform);
         CreateChild(areaRootGo.transform, "NavObc");
         CreateChild(areaRootGo.transform, "Col");
 
@@ -214,13 +211,6 @@ public static class MapAreaSceneCreator
         go.transform.SetParent(parent, false);
         go.AddComponent<Tilemap>();
         go.AddComponent<TilemapRenderer>();
-    }
-
-    static void CreateNavMeshSurface(Transform parent)
-    {
-        var go = new GameObject("NavMesh Surface");
-        go.transform.SetParent(parent, false);
-        go.AddComponent<NavMeshSurface>();
     }
 
     static void AddRuntimeSceneToBuildSettings(string scenePath)

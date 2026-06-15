@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using My.Map.Ground;
 using My.MapExport;
+using NavMeshPlus.Components;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-// 运行时区域上下文：场景内固定 GridRoot / NavMesh，逻辑层与 chunk 内容运行时装配
+// 运行时区域上下文：场景内 GridRoot + Tilemap 可走层，chunk 内容运行时装配（不加载导出 NavMesh）
 public class WorldAreaRoot : MonoBehaviour
 {
     public const string DefaultLogicHeightConfigKey = "MapLogicHeightConfig";
@@ -36,12 +37,14 @@ public class WorldAreaRoot : MonoBehaviour
 
     void Awake()
     {
+        DisableSceneNavMeshSurfaces();
         EnsureRuntimeHandles();
         EnsureSceneGrid();
     }
 
     public void Initialize(MapChunkDatabase chunkDb)
     {
+        DisableSceneNavMeshSurfaces();
         EnsureRuntimeHandles();
         EnsureSceneGrid();
 
@@ -455,6 +458,23 @@ public class WorldAreaRoot : MonoBehaviour
         }
 
         return null;
+    }
+
+    // 大地图可走性走 Tilemap/GridRoot，不依赖导出 NavMeshData
+    void DisableSceneNavMeshSurfaces()
+    {
+        var surfaces = GetComponentsInChildren<NavMeshSurface>(true);
+        for (int i = 0; i < surfaces.Length; i++)
+        {
+            var surface = surfaces[i];
+            if (surface == null)
+            {
+                continue;
+            }
+
+            surface.RemoveData();
+            surface.enabled = false;
+        }
     }
 
 #if UNITY_EDITOR

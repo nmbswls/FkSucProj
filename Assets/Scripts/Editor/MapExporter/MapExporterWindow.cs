@@ -8,7 +8,7 @@ using UnityEngine;
 
 
 
-// 统一地图导出窗口（Variant Chunk + Overlay MapExport）
+// 统一地图导出窗口（Variant Chunk + Overlay MapExport；可走层由 GridRoot/Tilemap 导出，不含 NavMesh）
 
 public class MapExporterWindow : EditorWindow
 

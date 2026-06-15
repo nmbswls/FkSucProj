@@ -272,5 +272,11 @@
         <var name="MoveToThenDespawn" value="5"/>
     </enum>
 	
+	<enum name="EMindFacetCat1">
+        <var name="None" value="0"/>
+    </enum>
 	
+	<enum name="EMindFacetCat2">
+        <var name="None" value="0"/>
+    </enum>
 </module>

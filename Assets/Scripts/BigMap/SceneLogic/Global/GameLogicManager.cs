@@ -105,6 +105,7 @@ namespace My
         public PlayerSystemManager playerDataManager;
         public GameWorldPersistStateManager worldPersistState;
         public HomeDataManager homeDataManager;
+        public LogicAreaHomesteadManager logicAreaHomesteadManager;
         public ShopDataManager shopDataManager;
 
 
@@ -169,6 +170,8 @@ namespace My
 
                 //AreaManager.EntityRefreshInfo.Add(refreshInfo);
             };
+
+            logicAreaHomesteadManager = new LogicAreaHomesteadManager(this);
 
             factionRelationManager = new();
 

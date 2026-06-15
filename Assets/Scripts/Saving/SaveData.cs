@@ -128,6 +128,16 @@ namespace My.Saving
 
         // 是否已收编为家园
         public bool IsAnnexed;
+
+        // 各建筑当前等级（0 表示尚未升级）
+        public List<HomesteadBuildingPersist> Buildings = new();
+    }
+
+    [Serializable]
+    public class HomesteadBuildingPersist
+    {
+        public string BuildingId;
+        public int Level;
     }
 
     [Serializable]
