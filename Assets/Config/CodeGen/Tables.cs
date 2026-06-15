@@ -16,6 +16,7 @@ public partial class Tables
 {
     public demo.TbReward TbReward {get; }
     public demo.TbLogicAreaInfo TbLogicAreaInfo {get; }
+    public demo.TbLogicAreaHomesteadReq TbLogicAreaHomesteadReq {get; }
     public demo.TbAreaVariantInfo TbAreaVariantInfo {get; }
     public demo.TbAreaOverlayStateInfo TbAreaOverlayStateInfo {get; }
     public demo.TbDropBundle TbDropBundle {get; }
@@ -29,6 +30,7 @@ public partial class Tables
     public demo.TbQuestStepData TbQuestStepData {get; }
     public demo.TbQuestStepOutcome TbQuestStepOutcome {get; }
     public demo.TbQuestStepObjective TbQuestStepObjective {get; }
+    public demo.TbQuestInteractDialog TbQuestInteractDialog {get; }
     public demo.TbDialogMetaInfo TbDialogMetaInfo {get; }
     public demo.TbItemData TbItemData {get; }
     public demo.TbShop TbShop {get; }
@@ -107,6 +109,7 @@ public partial class Tables
     {
         TbReward = new demo.TbReward(loader("demo_tbreward"));
         TbLogicAreaInfo = new demo.TbLogicAreaInfo(loader("demo_tblogicareainfo"));
+        TbLogicAreaHomesteadReq = new demo.TbLogicAreaHomesteadReq(loader("demo_tblogicareahomesteadreq"));
         TbAreaVariantInfo = new demo.TbAreaVariantInfo(loader("demo_tbareavariantinfo"));
         TbAreaOverlayStateInfo = new demo.TbAreaOverlayStateInfo(loader("demo_tbareaoverlaystateinfo"));
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
@@ -120,6 +123,7 @@ public partial class Tables
         TbQuestStepData = new demo.TbQuestStepData(loader("demo_tbqueststepdata"));
         TbQuestStepOutcome = new demo.TbQuestStepOutcome(loader("demo_tbqueststepoutcome"));
         TbQuestStepObjective = new demo.TbQuestStepObjective(loader("demo_tbqueststepobjective"));
+        TbQuestInteractDialog = new demo.TbQuestInteractDialog(loader("demo_tbquestinteractdialog"));
         TbDialogMetaInfo = new demo.TbDialogMetaInfo(loader("demo_tbdialogmetainfo"));
         TbItemData = new demo.TbItemData(loader("demo_tbitemdata"));
         TbShop = new demo.TbShop(loader("demo_tbshop"));
@@ -188,6 +192,7 @@ public partial class Tables
     {
         TbReward.ResolveRef(this);
         TbLogicAreaInfo.ResolveRef(this);
+        TbLogicAreaHomesteadReq.ResolveRef(this);
         TbAreaVariantInfo.ResolveRef(this);
         TbAreaOverlayStateInfo.ResolveRef(this);
         TbDropBundle.ResolveRef(this);
@@ -201,6 +206,7 @@ public partial class Tables
         TbQuestStepData.ResolveRef(this);
         TbQuestStepOutcome.ResolveRef(this);
         TbQuestStepObjective.ResolveRef(this);
+        TbQuestInteractDialog.ResolveRef(this);
         TbDialogMetaInfo.ResolveRef(this);
         TbItemData.ResolveRef(this);
         TbShop.ResolveRef(this);

@@ -41,6 +41,8 @@ namespace My.Dialog
                     return "[DynamicNpcChoice] runtime-generated";
                 case DialogCommandData4OpenShop o:
                     return $"[OpenShop] fix={o.FixShop}";
+                case DialogCommandData4QuestAction q:
+                    return $"[QuestAction] {q.QuestAction} q={q.QuestId}";
                 default:
                     return $"[{cmd.GetType().Name}]";
             }

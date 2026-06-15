@@ -638,7 +638,7 @@ namespace My
                 return "game_init";
             }
 
-            return "base_01";
+            return "homestead_01";
             //return playerDataManager.SavedBornPoint;
         }
 

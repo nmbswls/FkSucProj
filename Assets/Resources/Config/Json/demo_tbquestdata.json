@@ -85,5 +85,35 @@
       }
     ],
     "start_npc_id": ""
+  },
+  {
+    "quest_id": 200,
+    "name": "采集草药",
+    "desc": "为镇长搜集草药并递交",
+    "init_step_id": "200_s1",
+    "finish_reward": [
+      [
+        "gold",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 201,
+    "name": "采集木材",
+    "desc": "为木匠搜集木材并递交",
+    "init_step_id": "201_s1",
+    "finish_reward": [
+      [
+        "gold",
+        15
+      ]
+    ],
+    "is_auto_accept": false,
+    "acceept_cond": [],
+    "start_npc_id": "home_merchant"
   }
 ]

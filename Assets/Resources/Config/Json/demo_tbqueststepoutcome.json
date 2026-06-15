@@ -38,5 +38,45 @@
     "is_fail": false,
     "next_step_id": "",
     "finish_reward": []
+  },
+  {
+    "outcome_id": "200_s1_Main",
+    "need_objective_ids": [
+      "200_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "200_s2",
+    "finish_reward": []
+  },
+  {
+    "outcome_id": "200_s2_Main",
+    "need_objective_ids": [
+      "200_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": []
+  },
+  {
+    "outcome_id": "201_s1_Main",
+    "need_objective_ids": [
+      "201_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "201_s2",
+    "finish_reward": []
+  },
+  {
+    "outcome_id": "201_s2_Main",
+    "need_objective_ids": [
+      "201_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": []
   }
 ]

@@ -17,10 +17,10 @@
     "procedural_def_id": ""
   },
   {
-    "id": "base_01",
-    "name": "据点",
-    "desc": "据点",
-    "var_id": "base_01",
+    "id": "homestead_01",
+    "name": "家园小镇",
+    "desc": "家园小镇",
+    "var_id": "homestead_01",
     "day_period_limit": 0,
     "map_data_name": "base_01",
     "can_teleport": true,
@@ -102,10 +102,10 @@
     "procedural_def_id": ""
   },
   {
-    "id": "base_01_fight",
-    "name": "纷争据点",
-    "desc": "纷争据点",
-    "var_id": "base_01_fight",
+    "id": "homestead_01_fight",
+    "name": "家园纷争",
+    "desc": "家园纷争",
+    "var_id": "homestead_01_fight",
     "day_period_limit": 0,
     "map_data_name": "base_fight",
     "can_teleport": false,

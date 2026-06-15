@@ -60,6 +60,9 @@ namespace My.Config
             // Param3=藤顶命名点 Param4=落点命名点；各段时长见 PlayerRelocateTimings
             RelocateVineClimb = 50,
 
+            // Param3=起跳命名点 Param4=落点命名点；各段时长见 PlayerRelocateTimings
+            RelocateFakeJump2D = 51,
+
             // Param1=持续ms Param2=可视半径(0=默认28) Param3=命名点(空则用 Target 位置)
             // TargetType=StaticName 时 Pin 远端交互点 Presenter
             ShowCameraOverride = 60,

@@ -11,10 +11,10 @@
     "is_secret_base": true
   },
   {
-    "var_id": "base_01",
-    "name": "据点",
-    "desc": "据点",
-    "logic_area_id": "base_01",
+    "var_id": "homestead_01",
+    "name": "家园小镇",
+    "desc": "家园小镇",
+    "logic_area_id": "homestead_01",
     "show_in_map": true,
     "show_conds": [],
     "scene_name": "Main_Home",
@@ -55,10 +55,10 @@
     "is_secret_base": false
   },
   {
-    "var_id": "base_01_fight",
-    "name": "纷争据点",
-    "desc": "纷争据点",
-    "logic_area_id": "base_01",
+    "var_id": "homestead_01_fight",
+    "name": "家园纷争",
+    "desc": "家园纷争",
+    "logic_area_id": "homestead_01",
     "show_in_map": false,
     "show_conds": [],
     "scene_name": "Main_Home_Fight",

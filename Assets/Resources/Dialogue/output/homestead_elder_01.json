@@ -1,0 +1,23 @@
+{
+  "Steps": [
+    {
+      "Id": "begin",
+      "Note": "镇长和平对话",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "镇长",
+              "Content": "年轻人，能帮我搜集一些草药吗？",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

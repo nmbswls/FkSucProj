@@ -1,0 +1,23 @@
+{
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "递交木材成功",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "收到了，谢谢你。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

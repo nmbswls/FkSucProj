@@ -26,6 +26,14 @@ namespace My.UI
         public GameObject choicePanel;
         public Button choiceButtonPrefab;
         public Transform choiceContainer;
+        public int choicesPerPage = 5;
+        public GameObject choicePagerRoot;
+        public Button choicePrevButton;
+        public Button choiceNextButton;
+        public TextMeshProUGUI choicePageIndicator;
+
+        private List<string> _allChoiceOptions = new List<string>();
+        private int _choicePageIndex;
 
         [Header("Typing")]
         public float charInterval = 0.03f;
@@ -59,6 +67,19 @@ namespace My.UI
         public void Awake()
         {
             if (choiceButtonPrefab) choiceButtonPrefab.gameObject.SetActive(false);
+            if (choicePagerRoot) choicePagerRoot.SetActive(false);
+
+            if (choicePrevButton)
+            {
+                choicePrevButton.onClick.RemoveAllListeners();
+                choicePrevButton.onClick.AddListener(OnChoicePrevPage);
+            }
+
+            if (choiceNextButton)
+            {
+                choiceNextButton.onClick.RemoveAllListeners();
+                choiceNextButton.onClick.AddListener(OnChoiceNextPage);
+            }
 
             ClickArea.onClick.RemoveAllListeners();
             ClickArea.onClick.AddListener(TryDoContinue);
@@ -243,11 +264,11 @@ namespace My.UI
         // 选择系统
         public void StartChoices(List<string> options, Action<int> onSelected, float limitTime = 0, string overrideText = null)
         {
-            ShowNextIndicator(false); // 弹出选项时隐藏下一步指示器
+            ShowNextIndicator(false);
             showingChoices = true;
             onChoiceSelected = onSelected;
 
-            if(!string.IsNullOrEmpty(overrideText))
+            if (!string.IsNullOrEmpty(overrideText))
             {
                 contentText.text = overrideText;
             }
@@ -255,34 +276,126 @@ namespace My.UI
             choiceLimitTime = limitTime;
             choiceLimitTimeLeft = limitTime;
 
+            _allChoiceOptions = options ?? new List<string>();
+            _choicePageIndex = 0;
+
             if (choicePanel) choicePanel.SetActive(true);
 
-            // 清理旧按钮（排除预制体本身，以防预制体在同一节点下）
-            if (choiceContainer)
+            RenderChoicePage();
+
+            nameTextContainer.gameObject.SetActive(true);
+            contentTextContainer.gameObject.SetActive(true);
+        }
+
+        private void RenderChoicePage()
+        {
+            ClearChoiceButtons();
+
+            if (_allChoiceOptions == null || _allChoiceOptions.Count == 0 || choiceButtonPrefab == null || choiceContainer == null)
             {
-                foreach (Transform child in choiceContainer)
-                {
-                    if (child.gameObject != choiceButtonPrefab.gameObject)
-                    {
-                        Destroy(child.gameObject);
-                    }
-                }
+                UpdateChoicePagerState();
+                return;
             }
 
-            // 生成新选项
-            for (int i = 0; i < options.Count; i++)
+            var pageSize = Mathf.Max(1, choicesPerPage);
+            var start = _choicePageIndex * pageSize;
+            if (start >= _allChoiceOptions.Count)
+            {
+                _choicePageIndex = 0;
+                start = 0;
+            }
+
+            var end = Mathf.Min(start + pageSize, _allChoiceOptions.Count);
+            for (var i = start; i < end; i++)
             {
                 var btn = Instantiate(choiceButtonPrefab, choiceContainer);
                 btn.gameObject.SetActive(true);
                 var tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
-                if (tmp) tmp.text = options[i];
+                if (tmp) tmp.text = _allChoiceOptions[i];
 
-                int index = i; // 捕获局部变量
+                var index = i;
                 btn.onClick.AddListener(() => OnChoiceClick(index));
             }
 
-            nameTextContainer.gameObject.SetActive(true);
-            contentTextContainer.gameObject.SetActive(true);
+            UpdateChoicePagerState();
+        }
+
+        private void ClearChoiceButtons()
+        {
+            if (!choiceContainer || !choiceButtonPrefab)
+            {
+                return;
+            }
+
+            foreach (Transform child in choiceContainer)
+            {
+                if (child.gameObject != choiceButtonPrefab.gameObject)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+
+        private void UpdateChoicePagerState()
+        {
+            var pageSize = Mathf.Max(1, choicesPerPage);
+            var total = _allChoiceOptions?.Count ?? 0;
+            var pageCount = total <= 0 ? 1 : Mathf.CeilToInt(total / (float)pageSize);
+            var needPager = pageCount > 1;
+
+            if (choicePagerRoot)
+            {
+                choicePagerRoot.SetActive(needPager);
+            }
+
+            if (!needPager)
+            {
+                return;
+            }
+
+            if (choicePageIndicator)
+            {
+                choicePageIndicator.text = $"{_choicePageIndex + 1}/{pageCount}";
+            }
+
+            if (choicePrevButton)
+            {
+                choicePrevButton.interactable = _choicePageIndex > 0;
+            }
+
+            if (choiceNextButton)
+            {
+                choiceNextButton.interactable = _choicePageIndex < pageCount - 1;
+            }
+        }
+
+        private void OnChoicePrevPage()
+        {
+            if (!showingChoices || _choicePageIndex <= 0)
+            {
+                return;
+            }
+
+            _choicePageIndex--;
+            RenderChoicePage();
+        }
+
+        private void OnChoiceNextPage()
+        {
+            if (!showingChoices)
+            {
+                return;
+            }
+
+            var pageSize = Mathf.Max(1, choicesPerPage);
+            var pageCount = Mathf.CeilToInt((_allChoiceOptions?.Count ?? 0) / (float)pageSize);
+            if (_choicePageIndex >= pageCount - 1)
+            {
+                return;
+            }
+
+            _choicePageIndex++;
+            RenderChoicePage();
         }
 
         private void OnChoiceClick(int index)
@@ -294,6 +407,9 @@ namespace My.UI
 
             choiceLimitTime = 0;
             choiceLimitTimeLeft = 0;
+            _allChoiceOptions.Clear();
+            _choicePageIndex = 0;
+            if (choicePagerRoot) choicePagerRoot.SetActive(false);
 
             var cb = onChoiceSelected;
             onChoiceSelected = null;
@@ -321,14 +437,10 @@ namespace My.UI
                 choiceLimitTime = 0;
                 choiceLimitTimeLeft = 0;
                 onChoiceSelected = null;
-                if (choiceContainer && choiceButtonPrefab)
-                {
-                    foreach (Transform child in choiceContainer)
-                    {
-                        if (child.gameObject != choiceButtonPrefab.gameObject)
-                            Destroy(child.gameObject);
-                    }
-                }
+                _allChoiceOptions.Clear();
+                _choicePageIndex = 0;
+                ClearChoiceButtons();
+                if (choicePagerRoot) choicePagerRoot.SetActive(false);
             }
 
             if (contentText) contentText.text = "";

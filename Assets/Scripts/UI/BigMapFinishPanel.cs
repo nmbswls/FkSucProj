@@ -32,7 +32,7 @@ namespace My.UI
         private void DoConfirm()
         {
             var glm = MainGameManager.Instance.gameLogicManager;
-            string tpMapName = "base_01";
+            string tpMapName = "homestead_01";
             tpMapName = glm.GetCurrentReviveMap();
             glm.BeginFreeBigMapSession();
             glm.PreparePlayerSwitchArea(tpMapName, true);

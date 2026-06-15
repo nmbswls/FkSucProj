@@ -78,6 +78,7 @@ namespace My.UI
             }
 
             AlertHintIndicator?.RefreshView();
+            ControlDegreeIndicator?.RefreshView();
             RetreatHintIndicator?.RefreshView();
             ExposeSkillIndicator?.RefreshView();
             RefreshHoldCancelHint();

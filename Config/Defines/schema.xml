@@ -39,13 +39,14 @@
         <var name="CostClothes" value="2"/>
     </enum>
 
-    <!-- AddHunger: p1=饥饿增量(逻辑内再乘系数); GiveDrop: p1=drop_bundle_id; UseSkill: s1=技能/能力名; UnlockRuneUpgrade: s1=upgrade_id -->
+    <!-- AddHunger: p1=饥饿增量(逻辑内再乘系数); GiveDrop: p1=drop_bundle_id; UseSkill: s1=技能/能力名; UnlockRuneUpgrade: s1=upgrade_id; AddMapControl: p1=控制度增量; s1=logic_area map_id -->
     <enum name="EItemUseType">
         <var name="None" value="0"/>
         <var name="AddHunger" value="1"/>
         <var name="GiveDrop" value="2"/>
         <var name="UseSkill" value="3"/>
         <var name="UnlockRuneUpgrade" value="4"/>
+        <var name="AddMapControl" value="5"/>
     </enum>
 
     <enum name="EQuickBarItemKind">

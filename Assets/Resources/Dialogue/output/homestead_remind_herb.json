@@ -1,0 +1,23 @@
+{
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "复述采集草药目标",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "先去野外采集三份草药，带回来后交给我就行。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

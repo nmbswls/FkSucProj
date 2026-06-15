@@ -92,11 +92,22 @@ namespace My.UI
                                 }
                             }
                             break;
-                        default:
+                        case cfg.demo.EQuestObjectiveType.OwnItem:
                             {
-
-                                break;
+                                var itemId = BindingObjective.Data.ObjP4;
+                                var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
+                                var itemName = itemDef?.DisplayName ?? itemId ?? "物品";
+                                ObjDesc.text = $"搜集{itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
                             }
+                            break;
+                        case cfg.demo.EQuestObjectiveType.SubmitItem:
+                            {
+                                var itemId = BindingObjective.Data.ObjP4;
+                                var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
+                                var itemName = itemDef?.DisplayName ?? itemId ?? "物品";
+                                ObjDesc.text = $"向NPC递交{itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                            }
+                            break;
                     }
 
                 }

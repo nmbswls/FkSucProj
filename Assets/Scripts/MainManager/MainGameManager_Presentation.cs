@@ -212,7 +212,7 @@ namespace My
             Debug.Log("UI: save flow finished");
         }
 
-        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null)
+        public bool PlayDialog(string dialogId, long? srcEntityId = null, bool pause = false, Action onDialogEnd = null, DialogueSessionContext sessionContext = null)
         {
             var dialogMetaInfo = CfgMgr.Cfgs.TbDialogMetaInfo.Get(dialogId);
             if (dialogMetaInfo == null)
@@ -243,6 +243,7 @@ namespace My
                 driver = dialoguePlayer.GetComponent<DialogueTimeDriver>(),
                 JumpTo = label => dialoguePlayer.JumpToStep(label),
                 SrcEntityId = srcEntityId,
+                SessionContext = sessionContext,
             };
 
             dialoguePlayer.ui = dialogPanel;

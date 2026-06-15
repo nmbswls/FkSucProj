@@ -12,6 +12,8 @@ namespace My.Map.Scene
         GhostOrb = 1,
         // 入口 → 藤顶 → 停顿 → 跳跃落点
         VineClimb = 2,
+        // 走近起跳点 → 2D 视觉欺骗跳跃 → 落点
+        FakeJump2D = 3,
     }
 
     public struct PlayerRelocateSpec
@@ -46,6 +48,12 @@ namespace My.Map.Scene
         public const float VinePause = 0.00f;
         public const float VineJump = 0.35f;
 
+        public const float JumpWalkEntry = 0.35f;
+        public const float JumpArc = 0.45f;
+        public const float JumpArcPeakBase = 1.0f;
+        public const float JumpArcPeakMin = 0.6f;
+        public const float JumpArcPeakMax = 2.0f;
+
         public static GhostRelocateTimings Ghost => new GhostRelocateTimings
         {
             PlayerFadeOut = GhostFadeOut,
@@ -58,6 +66,12 @@ namespace My.Map.Scene
         public static float GetGhostTotal()
         {
             return GhostFadeOut + GhostOrbFadeIn + GhostOrbMove + GhostOrbFadeOut + GhostPlayerFadeIn;
+        }
+
+        public static float ResolveJumpArcPeak(Vector2 fromLogic, Vector2 toLogic)
+        {
+            float dist = Vector2.Distance(fromLogic, toLogic);
+            return Mathf.Clamp(dist * 0.25f, JumpArcPeakMin, JumpArcPeakMax);
         }
 
         public static float GetTotalDuration(PlayerRelocateSpec spec)
@@ -77,6 +91,14 @@ namespace My.Map.Scene
 
                     total += VineClimb + VinePause + VineJump;
                     return total;
+                case PlayerRelocateTransitStyle.FakeJump2D:
+                    float jumpTotal = JumpArc;
+                    if (spec.EntryLogicPos.HasValue)
+                    {
+                        jumpTotal += JumpWalkEntry;
+                    }
+
+                    return jumpTotal;
                 default:
                     return WaitOnlyDefault;
             }

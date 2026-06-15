@@ -1,0 +1,23 @@
+{
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "递交草药前置",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "NPC",
+              "Content": "让我看看……",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

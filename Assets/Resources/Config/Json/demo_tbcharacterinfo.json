@@ -2,5 +2,13 @@
   {
     "key": "smith_wang",
     "name": "老铁匠"
+  },
+  {
+    "key": "home_elder",
+    "name": "镇长"
+  },
+  {
+    "key": "home_merchant",
+    "name": "木匠"
   }
 ]

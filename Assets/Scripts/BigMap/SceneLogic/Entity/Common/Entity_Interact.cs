@@ -370,19 +370,6 @@ namespace My.Map
             return true;
         }
 
-        bool TryResolveInteractEntryLogicPos(out Vector2 logicPos)
-        {
-            var pres = SceneAOIManager.Instance?.GetActivePresentation(Owner.Id);
-            if (pres is InteractPointPresenter pointPres)
-            {
-                logicPos = MapLogicPosition.WorldToLogicPos(pointPres.GetHintAnchorPosition());
-                return true;
-            }
-
-            logicPos = Owner.Pos;
-            return true;
-        }
-
         bool TryResolveVineEndLogicPos(string param3, out Vector2 logicPos)
         {
             logicPos = default;
@@ -838,11 +825,7 @@ namespace My.Map
                                 break;
                             }
 
-                            if (!TryResolveInteractEntryLogicPos(out var entryPos))
-                            {
-                                errOccur = true;
-                                break;
-                            }
+                            Vector2 entryPos = Owner.Pos;
 
                             if (!TryResolveVineEndLogicPos(output.Param3, out var endPos))
                             {
@@ -862,6 +845,41 @@ namespace My.Map
                                 TransitStyle = PlayerRelocateTransitStyle.VineClimb,
                                 EntryLogicPos = entryPos,
                                 MidLogicPos = endPos,
+                                FinalLogicPos = landPos,
+                            }, out pending);
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.RelocateFakeJump2D:
+                        {
+                            var player = GetInteractingPlayerEntity();
+                            if (player == null)
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            Vector2 entryPos = Owner.Pos;
+
+                            if (!TryResolveNamedPoint(output.Param3, out var takeoffPos))
+                            {
+                                Debug.Log($"fake jump takeoff point not found: {output.Param3}");
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!TryResolveNamedPoint(output.Param4, out var landPos))
+                            {
+                                Debug.Log($"fake jump land point not found: {output.Param4}");
+                                errOccur = true;
+                                break;
+                            }
+
+                            RunPlayerRelocate(player, new PlayerRelocateSpec
+                            {
+                                TransitStyle = PlayerRelocateTransitStyle.FakeJump2D,
+                                EntryLogicPos = entryPos,
+                                MidLogicPos = takeoffPos,
                                 FinalLogicPos = landPos,
                             }, out pending);
                         }

@@ -326,4 +326,12 @@ namespace My.Dialog
         public int FixShop;
         public bool BindingShop;
     }
+
+    [Serializable]
+    public class DialogCommandData4QuestAction : DialogCommandData
+    {
+        public EDialogueQuestAction QuestAction;
+        public int QuestId;
+        public string ObjId;
+    }
 }

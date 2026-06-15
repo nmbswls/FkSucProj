@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using My.Config;
 using My.Map;
 using My.Map.Entity;
 using TMPro;
@@ -246,6 +247,51 @@ namespace My.UI
 
             MainPs.Clear();
             MainPs.Play();
+        }
+    }
+
+    public class OverworldHudControlDegreeIndicator : MonoBehaviour
+    {
+        public TextMeshProUGUI ControlValText;
+        public Image ControlValBar;
+
+        public void BindView()
+        {
+            ControlValText = transform.Find("Val")?.GetComponent<TextMeshProUGUI>();
+            ControlValBar = transform.Find("ControlValBar")?.GetComponent<Image>()
+                ?? transform.Find("AlertValBar")?.GetComponent<Image>();
+        }
+
+        public void RefreshView()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var logicAreaId = LogicAreaHomesteadUtil.ResolveCurrentLogicAreaId(glm?.AreaManager);
+            if (glm == null || string.IsNullOrEmpty(logicAreaId) || !LogicAreaHomesteadUtil.SupportsControlDegree(logicAreaId))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            var current = glm.worldPersistState?.GetLogicAreaControl(logicAreaId) ?? 0;
+            var required = req?.RequiredControl ?? 0;
+            if (required <= 0)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            gameObject.SetActive(true);
+
+            if (ControlValText != null)
+            {
+                ControlValText.text = $"{current}/{required}";
+            }
+
+            if (ControlValBar != null)
+            {
+                ControlValBar.fillAmount = Mathf.Clamp01(current * 1.0f / required);
+            }
         }
     }
 

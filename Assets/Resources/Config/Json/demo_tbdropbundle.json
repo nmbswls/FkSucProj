@@ -108,5 +108,25 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 900,
+    "name": "家园草药采集",
+    "drop_group_ids": [
+      9000
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 901,
+    "name": "家园木材采集",
+    "drop_group_ids": [
+      9001
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

@@ -1,5 +1,6 @@
 using Map.Entity;
 using Map.Logic.Events;
+using My;
 using My.Map.Entity;
 using My.MiniGame;
 using My.UI;
@@ -17,6 +18,11 @@ namespace My.Map.Scene
         public string ShowName {
             get
             {
+                var key = NpcEntity.NpcRecord?.CharacterKey;
+                if (!string.IsNullOrEmpty(key))
+                {
+                    return NpcCharacterInfoUtil.GetDisplayName(key, NpcEntity.NpcConfig?.Name);
+                }
                 return NpcEntity.NpcConfig.Name;
             } 
         }

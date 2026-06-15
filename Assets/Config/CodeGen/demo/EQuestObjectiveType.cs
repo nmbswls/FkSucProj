@@ -23,6 +23,7 @@ namespace cfg.demo
         KillMonster = 1,
         OwnItem = 2,
         PlayerKilled = 3,
+        SubmitItem = 4,
     }
 
 } 

@@ -31,6 +31,7 @@ namespace My.UI
         public OverworldHudDayPeriodIndicator PeriodIndicator;
         public OverworldHudEstrusIndicator EstrusIndicator;
         public OverworldHudAlertHintIndicator AlertHintIndicator;
+        public OverworldHudControlDegreeIndicator ControlDegreeIndicator;
         public OverworldHudRetreatHintIndicator RetreatHintIndicator;
         public OverworldHudExposeSkillIndicator ExposeSkillIndicator;
 
@@ -162,6 +163,8 @@ namespace My.UI
                 AlertHintIndicator.BindView();
             }
 
+            EnsureControlDegreeView();
+
             var retreatObj = transform.Find("RetreatHint");
             if (retreatObj != null)
             {
@@ -184,6 +187,38 @@ namespace My.UI
                     PlayerBuffBar = buffBarTr.GetComponent<OverworldPlayerBuffBar>();
                 }
             }
+        }
+
+        void EnsureControlDegreeView()
+        {
+            if (transform.Find("ControlDegreeProgress") != null)
+            {
+                var existing = transform.Find("ControlDegreeProgress");
+                ControlDegreeIndicator = existing.GetComponent<OverworldHudControlDegreeIndicator>();
+                if (ControlDegreeIndicator == null)
+                {
+                    ControlDegreeIndicator = existing.gameObject.AddComponent<OverworldHudControlDegreeIndicator>();
+                    ControlDegreeIndicator.BindView();
+                }
+
+                return;
+            }
+
+            var alertObj = transform.Find("AlertProgress");
+            if (alertObj == null)
+            {
+                return;
+            }
+
+            var clone = Instantiate(alertObj.gameObject, alertObj.parent);
+            clone.name = "ControlDegreeProgress";
+            var rt = clone.GetComponent<RectTransform>();
+            var alertRt = alertObj.GetComponent<RectTransform>();
+            rt.anchoredPosition = alertRt.anchoredPosition + new Vector2(0f, -56f);
+            clone.SetActive(false);
+
+            ControlDegreeIndicator = clone.AddComponent<OverworldHudControlDegreeIndicator>();
+            ControlDegreeIndicator.BindView();
         }
 
         public override void Show()

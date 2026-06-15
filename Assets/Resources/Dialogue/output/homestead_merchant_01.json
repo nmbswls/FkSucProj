@@ -1,0 +1,23 @@
+{
+  "Steps": [
+    {
+      "Id": "begin",
+      "Note": "木匠和平对话",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "木匠",
+              "Content": "手头缺些木材，有空帮我带一点回来。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

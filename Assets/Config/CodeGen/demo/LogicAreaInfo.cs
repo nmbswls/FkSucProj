@@ -20,6 +20,7 @@ public sealed partial class LogicAreaInfo : Luban.BeanBase
     {
         { if(!_buf["map_id"].IsString) { throw new SerializationException(); }  MapId = _buf["map_id"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
+        { if(!_buf["can_annex_homestead"].IsBoolean) { throw new SerializationException(); }  CanAnnexHomestead = _buf["can_annex_homestead"]; }
     }
 
     public static LogicAreaInfo DeserializeLogicAreaInfo(JSONNode _buf)
@@ -35,6 +36,10 @@ public sealed partial class LogicAreaInfo : Luban.BeanBase
     /// 名称
     /// </summary>
     public string Name;
+    /// <summary>
+    /// 可收编为家园
+    /// </summary>
+    public bool CanAnnexHomestead;
    
     public const int __ID__ = 1764134766;
     public override int GetTypeId() => __ID__;
@@ -48,6 +53,7 @@ public sealed partial class LogicAreaInfo : Luban.BeanBase
         return "{ "
         + "mapId:" + MapId + ","
         + "name:" + Name + ","
+        + "canAnnexHomestead:" + CanAnnexHomestead + ","
         + "}";
     }
 }

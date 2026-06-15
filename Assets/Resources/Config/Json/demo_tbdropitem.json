@@ -310,5 +310,31 @@
       40,
       60
     ]
+  },
+  {
+    "id": 9001,
+    "name": "家园草药",
+    "group_id": 9000,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "quest_mat_herb"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 9002,
+    "name": "家园木材",
+    "group_id": 9001,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "quest_mat_wood"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
   }
 ]

@@ -18,6 +18,7 @@ namespace cfg.demo
         GiveDrop = 2,
         UseSkill = 3,
         UnlockRuneUpgrade = 4,
+        AddMapControl = 5,
     }
 
 } 

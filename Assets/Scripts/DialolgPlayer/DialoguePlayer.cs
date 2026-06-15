@@ -34,10 +34,15 @@ public class DialogueRuntime
 
     public List<long> ControlledEntityList = new();
 
+    public DialogueSessionContext SessionContext;
+
 }
 
 public partial class DialoguePlayer : MonoBehaviour
 {
+
+    public const string NpcDialogHubId = "npc_generic_entry";
+
 
     [Header("Refs")]
     public DialogueUI ui;
@@ -388,7 +393,7 @@ public partial class DialoguePlayer : MonoBehaviour
             return null;
         }
         
-        return NpcUnitLogicEntity.NpcDialogHubId;
+        return NpcDialogHubId;
     }
 
     // 选项要求切换对话资源时：结束当前对话并 PlayDialog
@@ -414,8 +419,59 @@ public partial class DialoguePlayer : MonoBehaviour
         var srcId = runtimeRef?.SrcEntityId;
         ui?.PrepareForDialogSegmentSwitch();
         Stop();
-        mgr.PlayDialog(targetDialogId, srcId, pause: false, onDialogEnd: null);
+        mgr.PlayDialog(targetDialogId, srcId, pause: false, onDialogEnd: null, sessionContext: runtimeRef?.SessionContext);
         return true;
+    }
+
+    private DialogueSessionContext BuildQuestActionSession(DialogCommandData4QuestAction cmd)
+    {
+        if (cmd == null)
+        {
+            return null;
+        }
+
+        var session = runtimeRef?.SessionContext;
+        if (session != null)
+        {
+            return session;
+        }
+
+        var characterKey = ResolveSrcNpcCharacterKey();
+        if (string.IsNullOrEmpty(characterKey))
+        {
+            return null;
+        }
+
+        return cmd.QuestAction switch
+        {
+            EDialogueQuestAction.Accept => QuestDialogSession.CreateAccept(
+                cmd.QuestId > 0 ? cmd.QuestId : 0,
+                characterKey,
+                ""),
+            EDialogueQuestAction.Fulfill => QuestDialogSession.CreateFulfill(
+                cmd.QuestId > 0 ? cmd.QuestId : 0,
+                cmd.ObjId,
+                characterKey,
+                ""),
+            _ => null,
+        };
+    }
+
+    private string ResolveSrcNpcCharacterKey()
+    {
+        var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
+        if (glm == null || runtimeRef?.SrcEntityId == null)
+        {
+            return null;
+        }
+
+        var ent = glm.GetLogicEntity(runtimeRef.SrcEntityId.Value, false);
+        if (ent is not NpcUnitLogicEntity npc)
+        {
+            return null;
+        }
+
+        return npc.NpcRecord?.CharacterKey;
     }
 
     private void StartStepFromData()
@@ -778,16 +834,16 @@ public partial class DialoguePlayer : MonoBehaviour
 
                     var jumpLabels = new List<string>();
                     var options = new List<string>();
-                    var pickedChoices = new List<DialogChoiceOption>();
-                    var sourceChoices = DynamicNpcChoiceRuntime.BuildOptions(srcEntity, glm);
-                    foreach (var choice in sourceChoices)
+                    var pickedEntries = new List<NpcHubChoiceEntry>();
+                    var sourceEntries = DynamicNpcChoiceRuntime.BuildEntries(srcEntity, glm);
+                    foreach (var entry in sourceEntries)
                     {
-                        if (choice == null) continue;
-                        if (!DialogConditionRuntime.AllPass(choice.Conditions1, srcEntity, glm))
+                        if (entry?.Option == null) continue;
+                        if (!DialogConditionRuntime.AllPass(entry.Option.Conditions1, srcEntity, glm))
                             continue;
-                        options.Add(choice.Text ?? "");
-                        jumpLabels.Add(choice.TargetStepId ?? "");
-                        pickedChoices.Add(choice);
+                        options.Add(entry.Option.Text ?? "");
+                        jumpLabels.Add(entry.Option.TargetStepId ?? "");
+                        pickedEntries.Add(entry);
                     }
 
                     if (options.Count == 0)
@@ -802,9 +858,18 @@ public partial class DialoguePlayer : MonoBehaviour
                         options,
                         index =>
                         {
-                            if (index >= 0 && index < pickedChoices.Count)
+                            if (index >= 0 && index < pickedEntries.Count)
                             {
-                                var picked = pickedChoices[index];
+                                var entry = pickedEntries[index];
+                                var picked = entry.Option;
+                                if (entry.Session != null)
+                                {
+                                    ui?.PrepareForDialogSegmentSwitch();
+                                    Stop();
+                                    QuestDialogFlowRunner.Start(entry.Session, runtimeRef?.SrcEntityId);
+                                    return;
+                                }
+
                                 if (TryPlayChoiceTargetDialog(picked))
                                     return;
                                 var label = jumpLabels[index];
@@ -814,6 +879,17 @@ public partial class DialoguePlayer : MonoBehaviour
                             SafeComplete();
                         },
                         dyn.TimeLimit, overrideText:"entry");
+                    break;
+                }
+
+            case DialogCommandData4QuestAction questAction:
+                {
+                    var session = BuildQuestActionSession(questAction);
+                    if (session != null)
+                    {
+                        QuestDialogFlowRunner.DispatchQuestAction(session, runtimeRef?.SrcEntityId);
+                    }
+                    SafeComplete();
                     break;
                 }
 

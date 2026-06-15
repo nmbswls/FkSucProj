@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using Map.Scene;
 using My.Map;
 using My.Map.View;
 using UnityEngine;
@@ -9,13 +8,22 @@ namespace My.Map.Scene
 {
     public partial class PlayerScenePresenter
     {
-        const float RelocateShadowHiddenScale = 0.15f;
-        const float RelocateShadowClimbScale = 0.55f;
-        const float RelocateShadowJumpScale = 0.20f;
+        const float ShadowMulHidden = 0.15f;
+        const float ShadowMulClimb = 0.55f;
+        const float ShadowMulJump = 0.20f;
 
         Tween _relocateSessionTween;
+        Tween _relocateShadowTween;
         bool _relocateSessionActive;
         int _ghostRelocateFxId;
+
+        bool _relocateShadowBound;
+        Vector3 _relocateShadowBaseScale;
+        Color _relocateShadowBaseColor;
+        float _relocateShadowMul = 1f;
+
+        bool _relocateViewBound;
+        Vector3 _relocateViewBaseLocalPos;
 
         public bool IsRelocateSessionActive => _relocateSessionActive;
 
@@ -38,6 +46,13 @@ namespace My.Map.Scene
                         spec.FinalLogicPos,
                         onComplete);
                     break;
+                case PlayerRelocateTransitStyle.FakeJump2D:
+                    PlayFakeJump2DRelocate(
+                        spec.EntryLogicPos,
+                        spec.MidLogicPos,
+                        spec.FinalLogicPos,
+                        onComplete);
+                    break;
                 default:
                     PlayWaitOnlyRelocate(onComplete);
                     break;
@@ -47,7 +62,6 @@ namespace My.Map.Scene
         void PlayWaitOnlyRelocate(Action onComplete)
         {
             BeginRelocateSession();
-            TweenRelocateShadowVisual(0.85f, 0.85f, PlayerRelocateTimings.WaitOnlyDefault * 0.5f);
             _relocateSessionTween = DOVirtual
                 .DelayedCall(PlayerRelocateTimings.WaitOnlyDefault, () => FinishRelocateSession(onComplete))
                 .SetLink(gameObject);
@@ -63,7 +77,7 @@ namespace My.Map.Scene
             }
 
             BeginRelocateSession();
-            TweenRelocateShadowVisual(0f, RelocateShadowHiddenScale, PlayerRelocateTimings.GhostFadeOut);
+            TweenRelocateShadow(ShadowMulHidden, PlayerRelocateTimings.GhostFadeOut, standalone: true);
 
             float fxLifetime = PlayerRelocateTimings.GetGhostTotal() + 0.5f;
             var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(
@@ -95,13 +109,57 @@ namespace My.Map.Scene
                 onReachTarget: () => { transform.position = targetWorldPos; },
                 onPlayerFadeInStart: () =>
                 {
-                    TweenRelocateShadowVisual(1f, 1f, PlayerRelocateTimings.GhostPlayerFadeIn);
+                    TweenRelocateShadow(1f, PlayerRelocateTimings.GhostPlayerFadeIn, standalone: true);
                 },
                 onComplete: () =>
                 {
                     _ghostRelocateFxId = 0;
                     FinishRelocateSession(onComplete);
                 });
+        }
+
+        void PlayFakeJump2DRelocate(
+            Vector2? entryLogicPos,
+            Vector2? takeoffLogicPos,
+            Vector2 landLogicPos,
+            Action onComplete)
+        {
+            BeginRelocateSession();
+
+            var takeoffLogic = takeoffLogicPos ?? landLogicPos;
+            var takeoffWorld = MapLogicPosition.LogicToWorld(takeoffLogic);
+            var landWorld = MapLogicPosition.LogicToWorld(landLogicPos);
+            float arcPeak = PlayerRelocateTimings.ResolveJumpArcPeak(takeoffLogic, landLogicPos);
+
+            var seq = DOTween.Sequence();
+            if (entryLogicPos.HasValue)
+            {
+                PlayerRelocateSequenceBuilder.AppendRootWalk(
+                    seq,
+                    transform,
+                    takeoffWorld,
+                    PlayerRelocateTimings.JumpWalkEntry,
+                    Ease.OutQuad);
+            }
+
+            var jumpCtx = new FakeJump2DContext
+            {
+                Root = transform,
+                ViewRoot = ViewRoot,
+                ViewBaseLocalPos = _relocateViewBaseLocalPos,
+            };
+            PlayerRelocateSequenceBuilder.AppendFakeJump2D(
+                seq,
+                jumpCtx,
+                takeoffWorld,
+                landWorld,
+                arcPeak,
+                PlayerRelocateTimings.JumpArc,
+                (s, d) => JoinRelocateShadowTween(s, ShadowMulHidden, d));
+
+            seq.OnComplete(() => FinishRelocateSession(onComplete));
+            seq.SetLink(gameObject);
+            _relocateSessionTween = seq;
         }
 
         void PlayVineClimbRelocate(
@@ -112,13 +170,11 @@ namespace My.Map.Scene
         {
             BeginRelocateSession();
 
-            float entryDuration = PlayerRelocateTimings.VineEntry;
             float climbDuration = PlayerRelocateTimings.VineClimb;
             float pauseDuration = PlayerRelocateTimings.VinePause;
             float jumpDuration = PlayerRelocateTimings.VineJump;
 
-            var endWorld = MapLogicPosition.LogicToWorld(
-                midLogicPos ?? finalLogicPos);
+            var endWorld = MapLogicPosition.LogicToWorld(midLogicPos ?? finalLogicPos);
             var landWorld = MapLogicPosition.LogicToWorld(finalLogicPos);
             float jumpPower = Mathf.Max(0.15f, Mathf.Abs(landWorld.y - endWorld.y));
 
@@ -126,15 +182,16 @@ namespace My.Map.Scene
             if (entryLogicPos.HasValue)
             {
                 var entryWorld = MapLogicPosition.LogicToWorld(entryLogicPos.Value);
-                seq.Append(transform.DOMove(entryWorld, entryDuration).SetEase(Ease.OutQuad));
+                PlayerRelocateSequenceBuilder.AppendRootWalk(
+                    seq,
+                    transform,
+                    entryWorld,
+                    PlayerRelocateTimings.VineEntry,
+                    Ease.OutQuad);
             }
 
             seq.Append(transform.DOMove(endWorld, climbDuration).SetEase(Ease.Linear));
-            var climbShadowTween = TweenRelocateShadowVisual(0.6f, RelocateShadowClimbScale, climbDuration);
-            if (climbShadowTween != null)
-            {
-                seq.Join(climbShadowTween);
-            }
+            JoinRelocateShadowTween(seq, ShadowMulClimb, climbDuration);
 
             if (pauseDuration > 0f)
             {
@@ -142,14 +199,129 @@ namespace My.Map.Scene
             }
 
             seq.Append(transform.DOJump(landWorld, jumpPower, 1, jumpDuration).SetEase(Ease.InOutQuad));
-            var jumpShadowTween = TweenRelocateShadowVisual(0f, RelocateShadowJumpScale, jumpDuration);
-            if (jumpShadowTween != null)
-            {
-                seq.Join(jumpShadowTween);
-            }
+            JoinRelocateShadowTween(seq, ShadowMulJump, jumpDuration);
+
             seq.OnComplete(() => FinishRelocateSession(onComplete));
             seq.SetLink(gameObject);
             _relocateSessionTween = seq;
+        }
+
+        void BindRelocateShadow()
+        {
+            if (ShadowView == null && ViewRoot != null)
+            {
+                ShadowView = ViewRoot.Find(UnitPresentationPaths.Shadow);
+            }
+
+            if (_shadowView == null && ShadowView != null)
+            {
+                AssignShadowViewRenderer(ShadowView.GetComponent<SpriteRenderer>());
+            }
+
+            _relocateShadowBound = ShadowView != null && _shadowView != null;
+            if (!_relocateShadowBound)
+            {
+                return;
+            }
+
+            _relocateShadowBaseScale = ShadowView.localScale;
+            _relocateShadowBaseColor = _shadowView.color;
+            _relocateShadowMul = 1f;
+        }
+
+        void BindRelocateViewOffset()
+        {
+            if (ViewRoot == null)
+            {
+                ViewRoot = transform.Find(UnitPresentationPaths.View);
+                if (ViewRoot == null)
+                {
+                    ViewRoot = transform.Find(UnitPresentationPaths.ViewLegacy);
+                }
+            }
+
+            _relocateViewBound = ViewRoot != null;
+            if (!_relocateViewBound)
+            {
+                return;
+            }
+
+            _relocateViewBaseLocalPos = ViewRoot.localPosition;
+        }
+
+        void ApplyRelocateShadowMul(float mul)
+        {
+            if (!_relocateShadowBound)
+            {
+                return;
+            }
+
+            _relocateShadowMul = mul;
+            ShadowView.localScale = _relocateShadowBaseScale * mul;
+            var c = _relocateShadowBaseColor;
+            c.a = _relocateShadowBaseColor.a * mul;
+            _shadowView.color = c;
+        }
+
+        Tween TweenRelocateShadow(float targetMul, float duration, bool standalone = false)
+        {
+            if (!_relocateShadowBound)
+            {
+                return null;
+            }
+
+            float mul = _relocateShadowMul;
+            var tween = DOTween.To(
+                () => mul,
+                v =>
+                {
+                    mul = v;
+                    ApplyRelocateShadowMul(v);
+                },
+                targetMul,
+                duration);
+            if (standalone)
+            {
+                _relocateShadowTween?.Kill();
+                _relocateShadowTween = tween;
+            }
+
+            return tween;
+        }
+
+        void JoinRelocateShadowTween(Sequence seq, float targetMul, float duration)
+        {
+            var tween = TweenRelocateShadow(targetMul, duration);
+            if (tween != null)
+            {
+                seq.Join(tween);
+            }
+        }
+
+        void RestoreRelocateShadow()
+        {
+            _relocateShadowTween?.Kill();
+            _relocateShadowTween = null;
+            if (!_relocateShadowBound)
+            {
+                return;
+            }
+
+            ShadowView.localScale = _relocateShadowBaseScale;
+            _shadowView.color = _relocateShadowBaseColor;
+            _relocateShadowBound = false;
+            _relocateShadowMul = 1f;
+        }
+
+        void RestoreRelocateViewOffset()
+        {
+            if (!_relocateViewBound || ViewRoot == null)
+            {
+                return;
+            }
+
+            ViewRoot.localPosition = _relocateViewBaseLocalPos;
+            _relocateViewBound = false;
         }
 
         SpriteRenderer ResolvePlayerSpriteRenderer()
@@ -167,7 +339,8 @@ namespace My.Map.Scene
         void BeginRelocateSession()
         {
             _relocateSessionActive = true;
-            CaptureRelocateShadowSnapshot();
+            BindRelocateViewOffset();
+            BindRelocateShadow();
             CharacterController?.ResetSmoothedMoveVelocity();
 
             if (CharacterController != null)
@@ -182,7 +355,8 @@ namespace My.Map.Scene
 
             _relocateSessionActive = false;
             _relocateSessionTween = null;
-            RestoreRelocateShadowVisual();
+            RestoreRelocateViewOffset();
+            RestoreRelocateShadow();
 
             if (CharacterController != null)
             {
@@ -215,7 +389,8 @@ namespace My.Map.Scene
                 playerSr.color = c;
             }
 
-            RestoreRelocateShadowVisual();
+            RestoreRelocateViewOffset();
+            RestoreRelocateShadow();
 
             if (CharacterController != null)
             {

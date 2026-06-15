@@ -1,6 +1,7 @@
 
 using cfg;
 using Map.Logic.Events;
+using My.Cfg_Ex;
 using My.Config;
 using My.Map;
 using My.Player;
@@ -17,6 +18,21 @@ using static UnityEngine.Texture2D;
 
 namespace My.Player
 {
+
+    public class QuestFulfillOption
+    {
+        public int QuestId;
+        public string ObjId;
+        public string DisplayName;
+        public string ItemId;
+        public long NeedCount;
+    }
+
+    public class QuestAcceptOption
+    {
+        public int QuestId;
+        public string QuestName;
+    }
 
     // --- 步骤运行时 ---
 
@@ -49,16 +65,24 @@ namespace My.Player
 
         public long GetCurrProgress()
         {
-            //switch (Data.condition.ConditionCfg)
-            //{
-            //    case QuestConditionHasItem hasItemCond:
-            //        {
-            //            return ProgressVal;
-            //        }
-            //        break;
-            //}
+            switch (Data.ObjType)
+            {
+                case cfg.demo.EQuestObjectiveType.OwnItem:
+                    {
+                        var itemId = Data.ObjP4;
+                        if (string.IsNullOrEmpty(itemId) || ctx?.Ctx?.playerDataManager?.InventorySystem == null)
+                        {
+                            return ProgressVal;
+                        }
 
-            return ProgressVal;
+                        var owned = ctx.Ctx.playerDataManager.InventorySystem.GetCarriedItemTotal(itemId);
+                        return Math.Min(owned, Data.ObjProgress);
+                    }
+                case cfg.demo.EQuestObjectiveType.SubmitItem:
+                    return ProgressVal;
+                default:
+                    return ProgressVal;
+            }
         }
 
         public void OnLogicEvent(IMapLogicEvent evt)
@@ -515,7 +539,117 @@ namespace My.Player
         /// <param name="e"></param>
         public void OnPlayerItemChange(PlayerItemChangeEvent e)
         {
+            if (_activeStep == null)
+            {
+                return;
+            }
 
+            bool updated = false;
+            foreach (var obj in _activeStep.objectiveMap.Values)
+            {
+                if (obj.Data.ObjType != cfg.demo.EQuestObjectiveType.OwnItem)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(e.ItemId)
+                    && !string.Equals(obj.Data.ObjP4, e.ItemId, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                updated = true;
+            }
+
+            if (!updated)
+            {
+                return;
+            }
+
+            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+
+            if (_activeStep.CacheStepCfg.AutoNext)
+            {
+                if (_activeStep.CheckCompletion(out string outcomeId, out var options))
+                {
+                    _activeStep.OnStepCompleted(outcomeId, options);
+                }
+            }
+        }
+
+        public bool TryFulfillObjective(string characterKey, string objId, out string failReason)
+        {
+            failReason = null;
+            if (_activeStep == null || string.IsNullOrEmpty(characterKey) || string.IsNullOrEmpty(objId))
+            {
+                failReason = "invalid_args";
+                return false;
+            }
+
+            if (!_activeStep.objectiveMap.TryGetValue(objId, out var objRuntime))
+            {
+                failReason = "no_objective";
+                return false;
+            }
+
+            if (!QuestObjectiveFulfillUtil.SupportsDialogFulfill(objRuntime.Data.ObjType))
+            {
+                failReason = "not_fulfillable_type";
+                return false;
+            }
+
+            if (objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
+            {
+                failReason = "already_done";
+                return false;
+            }
+
+            switch (objRuntime.Data.ObjType)
+            {
+                case cfg.demo.EQuestObjectiveType.SubmitItem:
+                    return TryFulfillSubmitItem(objRuntime, out failReason);
+                default:
+                    failReason = "not_fulfillable_type";
+                    return false;
+            }
+        }
+
+        private bool TryFulfillSubmitItem(QuestObjectiveRuntime objRuntime, out string failReason)
+        {
+            failReason = null;
+            var itemId = objRuntime.Data.ObjP4;
+            var needCount = objRuntime.GetRequireProgress();
+            var pdm = ctx.Ctx?.playerDataManager;
+            if (pdm == null || string.IsNullOrEmpty(itemId) || needCount <= 0)
+            {
+                failReason = "bad_cfg";
+                return false;
+            }
+
+            if (!pdm.CheckHaveItem(itemId, needCount))
+            {
+                failReason = "not_enough_" + itemId;
+                return false;
+            }
+
+            if (pdm.CostItem(itemId, needCount) < needCount)
+            {
+                failReason = "cost_failed";
+                return false;
+            }
+
+            objRuntime.ProgressVal = needCount;
+            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+
+            if (_activeStep.CacheStepCfg.AutoNext)
+            {
+                if (_activeStep.CheckCompletion(out string outcomeId, out var options))
+                {
+                    _activeStep.OnStepCompleted(outcomeId, options);
+                }
+            }
+
+            return true;
         }
 
 
@@ -589,6 +723,7 @@ namespace My.Player
         {
             PlayerEventBus.Subscribe<PlayerKillUnitEvent>(OnPlayerKillUnit);
             PlayerEventBus.Subscribe<PlayerKilledEvent>(OnPlayerKilled);
+            PlayerEventBus.Subscribe<PlayerItemChangeEvent>(OnPlayerItemChange);
         }
 
         private List<int> _removedQuests = new();
@@ -708,6 +843,190 @@ namespace My.Player
             EventOnQuestStepUpdate?.Invoke(questId);
         }
 
+        public bool TryAcceptQuestFromNpc(string characterKey, int questId, out string failReason)
+        {
+            failReason = null;
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                failReason = "invalid_npc";
+                return false;
+            }
+
+            var questCfg = CfgMgr.Cfgs.TbQuestData.GetOrDefault(questId);
+            if (questCfg == null)
+            {
+                failReason = "no_cfg";
+                return false;
+            }
+
+            if (questCfg.IsAutoAccept)
+            {
+                failReason = "auto_accept_only";
+                return false;
+            }
+
+            if (_finishQuestSet.Contains(questId) || _questInfoMap.ContainsKey(questId))
+            {
+                failReason = "already_taken";
+                return false;
+            }
+
+            foreach (var cond in questCfg.AcceeptCond)
+            {
+                if (!Ctx.CheckCommonCond(cond))
+                {
+                    failReason = "accept_cond";
+                    return false;
+                }
+            }
+
+            AcceptQuest(questCfg);
+            if (MarkQuestId == 0)
+            {
+                MarkQuestId = questId;
+            }
+
+            return true;
+        }
+
+        public List<QuestAcceptOption> GetAvailableAcceptOptions(string characterKey)
+        {
+            var result = new List<QuestAcceptOption>();
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return result;
+            }
+
+            foreach (var row in CfgMgr.Cfgs.TbQuestInteractDialog.DataList)
+            {
+                if (row == null || row.DialogRole != cfg.demo.EQuestDialogRole.Accept)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(row.CharacterKey, characterKey, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var questCfg = CfgMgr.Cfgs.TbQuestData.GetOrDefault(row.QuestId);
+                if (questCfg == null || questCfg.IsAutoAccept)
+                {
+                    continue;
+                }
+
+                if (_finishQuestSet.Contains(questCfg.QuestId) || _questInfoMap.ContainsKey(questCfg.QuestId))
+                {
+                    continue;
+                }
+
+                bool allPassed = true;
+                foreach (var cond in questCfg.AcceeptCond)
+                {
+                    if (!Ctx.CheckCommonCond(cond))
+                    {
+                        allPassed = false;
+                        break;
+                    }
+                }
+
+                if (!allPassed)
+                {
+                    continue;
+                }
+
+                result.Add(new QuestAcceptOption
+                {
+                    QuestId = questCfg.QuestId,
+                    QuestName = questCfg.Name,
+                });
+            }
+
+            return result;
+        }
+
+        public List<QuestFulfillOption> GetPendingFulfillOptions(string characterKey)
+        {
+            var result = new List<QuestFulfillOption>();
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return result;
+            }
+
+            foreach (var row in CfgMgr.Cfgs.TbQuestInteractDialog.DataList)
+            {
+                if (row == null || row.DialogRole != cfg.demo.EQuestDialogRole.Fulfill)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(row.CharacterKey, characterKey, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(row.ObjId))
+                {
+                    continue;
+                }
+
+                if (!_questInfoMap.TryGetValue(row.QuestId, out var quest))
+                {
+                    continue;
+                }
+
+                var step = quest.ActiveStep;
+                if (step == null || step.IsCompleted)
+                {
+                    continue;
+                }
+
+                if (!step.objectiveMap.TryGetValue(row.ObjId, out var obj))
+                {
+                    continue;
+                }
+
+                if (!QuestObjectiveFulfillUtil.SupportsDialogFulfill(obj.Data.ObjType))
+                {
+                    continue;
+                }
+
+                if (obj.GetCurrProgress() >= obj.GetRequireProgress())
+                {
+                    continue;
+                }
+
+                var itemId = obj.Data.ObjP4;
+                var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
+                var itemName = itemDef?.DisplayName ?? itemId;
+                var displayName = obj.Data.ObjType == cfg.demo.EQuestObjectiveType.SubmitItem
+                    ? itemName
+                    : QuestObjectiveFulfillUtil.GetFulfillOptionFallbackText(obj.Data);
+                result.Add(new QuestFulfillOption
+                {
+                    QuestId = row.QuestId,
+                    ObjId = row.ObjId,
+                    DisplayName = displayName,
+                    ItemId = itemId,
+                    NeedCount = obj.GetRequireProgress(),
+                });
+            }
+
+            return result;
+        }
+
+        public bool TryFulfillObjective(string characterKey, int questId, string objId, out string failReason)
+        {
+            failReason = null;
+            if (!_questInfoMap.TryGetValue(questId, out var quest))
+            {
+                failReason = "quest_not_running";
+                return false;
+            }
+
+            return quest.TryFulfillObjective(characterKey, objId, out failReason);
+        }
+
         #region 监听
 
         /// <summary>
@@ -743,6 +1062,21 @@ namespace My.Player
             foreach (var q in listeners.Values)
             {
                 q.OnPlayerKilled(e);
+            }
+        }
+
+        private void OnPlayerItemChange(PlayerItemChangeEvent e)
+        {
+            var eType = EPlayerEventType.ItemChange;
+
+            if (!EventRouter.TryGetValue(eType, out var listeners))
+            {
+                return;
+            }
+
+            foreach (var q in listeners.Values)
+            {
+                q.OnPlayerItemChange(e);
             }
         }
 

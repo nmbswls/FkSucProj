@@ -141,11 +141,17 @@ namespace My.Dialog
     }
 
     // 为 DialogCommandData4DynamicNpcChoice 在运行期组装选项（与 JSON 数据解耦）
+    public class NpcHubChoiceEntry
+    {
+        public DialogChoiceOption Option;
+        public DialogueSessionContext Session;
+    }
+
     public static class DynamicNpcChoiceRuntime
     {
-        public static List<DialogChoiceOption> BuildOptions(LogicEntityBase srcEntity, My.GameLogicManager glm)
+        public static List<NpcHubChoiceEntry> BuildEntries(LogicEntityBase srcEntity, My.GameLogicManager glm)
         {
-            var ret = new List<DialogChoiceOption>();
+            var ret = new List<NpcHubChoiceEntry>();
             if (glm == null || srcEntity is not NpcUnitLogicEntity npcEntity)
             {
                 return ret;
@@ -154,42 +160,86 @@ namespace My.Dialog
             var defaultDialogId = npcEntity.GetCurrentDialogId();
             if (!string.IsNullOrEmpty(defaultDialogId))
             {
-                ret.Add(new DialogChoiceOption
+                ret.Add(new NpcHubChoiceEntry
                 {
-                    Text = "交谈",
-                    TargetStepId = "",
-                    TargetDialogId = defaultDialogId,
-                    Conditions1 = new List<DialogCondition>(),
+                    Option = new DialogChoiceOption
+                    {
+                        Text = "交谈",
+                        TargetStepId = "",
+                        TargetDialogId = defaultDialogId,
+                        Conditions1 = new List<DialogCondition>(),
+                    },
                 });
+            }
+
+            var characterKey = npcEntity.NpcRecord?.CharacterKey;
+            var questSystem = glm.playerDataManager?.QuestSystem;
+            if (!string.IsNullOrEmpty(characterKey) && questSystem != null)
+            {
+                foreach (var hubOpt in QuestHubOptionBuilder.Build(characterKey, questSystem, glm))
+                {
+                    ret.Add(new NpcHubChoiceEntry
+                    {
+                        Option = new DialogChoiceOption
+                        {
+                            Text = hubOpt.OptionText,
+                            TargetStepId = "",
+                            TargetDialogId = "",
+                            Conditions1 = new List<DialogCondition>(),
+                        },
+                        Session = hubOpt.Session,
+                    });
+                }
             }
 
             var shopInfo = glm.shopDataManager.GetShopProviderByNpcId(npcEntity.CfgId);
-            if(shopInfo != null)
+            if (shopInfo != null)
             {
-                ret.Add(new DialogChoiceOption
+                ret.Add(new NpcHubChoiceEntry
                 {
-                    Text = "交易",
-                    TargetStepId = "shop",
-                    TargetDialogId = "",
-                    Conditions1 = new List<DialogCondition>(),
+                    Option = new DialogChoiceOption
+                    {
+                        Text = "交易",
+                        TargetStepId = "shop",
+                        TargetDialogId = "",
+                        Conditions1 = new List<DialogCondition>(),
+                    },
                 });
             }
 
-            ret.Add(new DialogChoiceOption
+            ret.Add(new NpcHubChoiceEntry
             {
-                Text = "诱惑",
-                TargetStepId = "",
-                TargetDialogId = "player_gouyin",
-                Conditions1 = new List<DialogCondition>(),
+                Option = new DialogChoiceOption
+                {
+                    Text = "诱惑",
+                    TargetStepId = "",
+                    TargetDialogId = "player_gouyin",
+                    Conditions1 = new List<DialogCondition>(),
+                },
             });
 
-            ret.Add(new DialogChoiceOption
+            ret.Add(new NpcHubChoiceEntry
             {
-                Text = "再见",
-                TargetStepId = "hub_bye",
-                TargetDialogId = "",
-                Conditions1 = new List<DialogCondition>(),
+                Option = new DialogChoiceOption
+                {
+                    Text = "再见",
+                    TargetStepId = "hub_bye",
+                    TargetDialogId = "",
+                    Conditions1 = new List<DialogCondition>(),
+                },
             });
+
+            return ret;
+        }
+
+        public static List<DialogChoiceOption> BuildOptions(LogicEntityBase srcEntity, My.GameLogicManager glm)
+        {
+            var entries = BuildEntries(srcEntity, glm);
+            var ret = new List<DialogChoiceOption>(entries.Count);
+            foreach (var entry in entries)
+            {
+                ret.Add(entry.Option);
+            }
 
             return ret;
         }

@@ -2,7 +2,7 @@
   {
     "save_point_id": "base_entry",
     "display_name": "入口",
-    "area_var_id": "base_01",
+    "area_var_id": "homestead_01",
     "default_activated": true,
     "show_unlock_conds": [
       {

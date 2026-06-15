@@ -379,7 +379,12 @@ namespace My.Player
 
         public long CostItem(string itemId, long count)
         {
-            return InventorySystem.CostItem(itemId, count);
+            var left = InventorySystem.CostItem(itemId, count);
+            if (left < count)
+            {
+                NotifyItemChanged(itemId);
+            }
+            return left;
         }
 
         /// <summary>
@@ -416,7 +421,26 @@ namespace My.Player
         /// <returns></returns>
         public long GiveItemToPlayer(string itemId, long count)
         {
-            return InventorySystem.GiveItemToPlayer(itemId, count);
+            var gained = InventorySystem.GiveItemToPlayer(itemId, count);
+            if (gained > 0)
+            {
+                NotifyItemChanged(itemId);
+            }
+            return gained;
+        }
+
+        void NotifyItemChanged(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return;
+            }
+
+            PlayerEventBus.Publish(new PlayerItemChangeEvent
+            {
+                ItemId = itemId,
+                ChangeAmount = 0,
+            });
         }
 
         public bool IsUsingFaQingSkillBar()

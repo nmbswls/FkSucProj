@@ -1,6 +1,7 @@
 using Config.Unit;
 using Config;
 using UnityEngine;
+using My;
 using My.Map.Logic;
 using My.Map.Entity;
 using System.Collections.Generic;
@@ -148,8 +149,19 @@ namespace My.Map
             }
         }
 
-        public override string WorldMapLandmarkLabel =>
-            NpcConfig != null && !string.IsNullOrEmpty(NpcConfig.Name) ? NpcConfig.Name : CfgId;
+        public override string WorldMapLandmarkLabel
+        {
+            get
+            {
+                var key = NpcRecord?.CharacterKey;
+                if (!string.IsNullOrEmpty(key))
+                {
+                    return NpcCharacterInfoUtil.GetDisplayName(key, NpcConfig?.Name ?? CfgId);
+                }
+
+                return NpcConfig != null && !string.IsNullOrEmpty(NpcConfig.Name) ? NpcConfig.Name : CfgId;
+            }
+        }
 
         protected override void InitAbility()
         {

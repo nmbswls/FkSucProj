@@ -101,6 +101,9 @@ namespace My.Saving
 
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
+        // 逻辑区域收编控制度（键 logic_area map_id）
+        public Dictionary<string, int> LogicAreaControlByMapId = new();
+
         // 地图小剧情触发器消费态：键 mapId|triggerId
         public Dictionary<string, bool> MicroPlotConsumedByKey = new();
 
@@ -421,6 +424,7 @@ namespace My.Saving
                 data.PlayerData.SecretBaseBuildLevel = 1;
             }
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
+            data.PlayerData.LogicAreaControlByMapId ??= new Dictionary<string, int>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
