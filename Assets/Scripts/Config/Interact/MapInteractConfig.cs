@@ -26,8 +26,10 @@ namespace My.Config
 
 
             ActivateEventGroup,
-            SpecialMoveTo,
-            PresentationMoveTo,
+            // Param3=目标命名点；GhostOrb 过渡，时长见 PlayerRelocateTimings
+            RelocateGhostOrb = 8,
+            // Param3=目标命名点；WaitOnly 默认（无过渡表现），时长见 PlayerRelocateTimings
+            RelocateWaitOnly = 9,
 
             StartStealth,
 
@@ -55,8 +57,8 @@ namespace My.Config
             // Param1=(int)EFactionId；Param2=1 保持战斗状态；TargetType=StaticName，StaticName=刷新点 uniq 名
             ChangeUnitFaction,
 
-            // Param1=沿藤移动ms Param2=停顿ms Param3=藤蔓结束点 Param4=落点 Param5=跳跃ms Param6=移到交互点ms(0则默认350)
-            VineClimbTo = 50,
+            // Param3=藤顶命名点 Param4=落点命名点；各段时长见 PlayerRelocateTimings
+            RelocateVineClimb = 50,
 
             // Param1=持续ms Param2=可视半径(0=默认28) Param3=命名点(空则用 Target 位置)
             // TargetType=StaticName 时 Pin 远端交互点 Presenter

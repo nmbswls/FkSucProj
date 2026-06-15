@@ -1,5 +1,6 @@
 using Map.Entity;
 using My.Map.Fight;
+using My.Map.Scene;
 using My.Player.Bag;
 using System;
 using System.Collections;
@@ -180,19 +181,7 @@ public interface ISceneAbilityViewer
 
     void DestroySceneFxEffect(int effe);
 
-    void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null);
-
-    void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null);
-
-    void DoPlayerVineClimbMove(
-        Vector2 entryLogicPos,
-        Vector2 endLogicPos,
-        Vector2 landLogicPos,
-        float entryDuration,
-        float climbDuration,
-        float pauseDuration,
-        float jumpDuration,
-        Action onComplete = null);
+    void DoPlayerRelocate(PlayerRelocateSpec spec, Action onComplete = null);
 
     void ShowKaiYouCloseupWindow(long srcEntityId, string showName, float duration);
 

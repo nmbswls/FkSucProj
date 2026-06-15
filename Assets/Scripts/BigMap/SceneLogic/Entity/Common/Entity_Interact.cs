@@ -399,7 +399,7 @@ namespace My.Map
                 return true;
             }
 
-            Debug.Log("[EntityInteract] VineClimbTo failed to resolve vine end point.");
+            Debug.Log("[EntityInteract] RelocateVineClimb failed to resolve vine end point.");
             return false;
         }
 
@@ -412,6 +412,24 @@ namespace My.Map
             ctx.TargetId = playerId;
             ctx.CastVec1 = targetPos;
             Owner.LogicManager.HandleLogicFightEffect(new MapAbilityEffectTeleportToCfg() { PendingTime = delaySec }, ctx);
+        }
+
+        void RunPlayerRelocate(PlayerLogicEntity player, PlayerRelocateSpec spec, out bool pending)
+        {
+            pending = true;
+            float totalSec = PlayerRelocateTimings.GetTotalDuration(spec);
+            BeginInteractPending(
+                InteractPendingMode.ExternalNotify,
+                totalSec + ExternalNotifyFallbackMarginSec);
+
+            MainGameManager.Instance?.interactSystem?.SetInteractPause(totalSec);
+            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
+            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
+            Owner.LogicManager.viewer.DoPlayerRelocate(spec, () =>
+            {
+                ApplyPendingTeleportTo(player.Id, spec.FinalLogicPos, 0f);
+                NotifyInteractPendingComplete();
+            });
         }
 
         public bool TryTriggerInteract(int interactId, int playerId)
@@ -528,7 +546,7 @@ namespace My.Map
                             egPoint.ActivateSleepyMembers();
                         }
                         break;
-                    case LogicInteractOutput.EOutputType.SpecialMoveTo:
+                    case LogicInteractOutput.EOutputType.RelocateGhostOrb:
                         {
                             var player = GetInteractingPlayerEntity();
                             if (player == null)
@@ -539,19 +557,20 @@ namespace My.Map
 
                             if (!TryResolveNamedPoint(output.Param3, out var targetPos))
                             {
-                                Debug.Log("special move no point found");
+                                Debug.Log("relocate ghost orb no point found");
                                 errOccur = true;
                                 break;
                             }
 
-                            float delay = output.Param1 * 0.001f;
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: delay);
-                            Owner.LogicManager.viewer.DoPlayerSpecialMove(targetPos, player.Pos, delay, () => { });
-                            ApplyPendingTeleportTo(player.Id, targetPos, delay);
+                            RunPlayerRelocate(player, new PlayerRelocateSpec
+                            {
+                                TransitStyle = PlayerRelocateTransitStyle.GhostOrb,
+                                FinalLogicPos = targetPos,
+                            }, out pending);
                         }
                         break;
 
-                    case LogicInteractOutput.EOutputType.PresentationMoveTo:
+                    case LogicInteractOutput.EOutputType.RelocateWaitOnly:
                         {
                             var player = GetInteractingPlayerEntity();
                             if (player == null)
@@ -562,22 +581,16 @@ namespace My.Map
 
                             if (!TryResolveNamedPoint(output.Param3, out var targetPos))
                             {
-                                Debug.Log("presentation move no point found");
+                                Debug.Log("relocate wait only no point found");
                                 errOccur = true;
                                 break;
                             }
 
-                            float delay = output.Param1 * 0.001f;
-                            if (delay <= 0f)
+                            RunPlayerRelocate(player, new PlayerRelocateSpec
                             {
-                                delay = 0.5f;
-                            }
-
-                            MainGameManager.Instance?.interactSystem?.SetInteractPause(delay);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: delay);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: delay);
-                            Owner.LogicManager.viewer.DoPlayerPresentationMove(targetPos, player.Pos, delay, () => { });
-                            ApplyPendingTeleportTo(player.Id, targetPos, delay);
+                                TransitStyle = PlayerRelocateTransitStyle.WaitOnly,
+                                FinalLogicPos = targetPos,
+                            }, out pending);
                         }
                         break;
 
@@ -816,7 +829,7 @@ namespace My.Map
                             (Owner as LogicEntityInteractPoint)?.NotifySelfAnim(animName, durationSec);
                         }
                         break;
-                    case LogicInteractOutput.EOutputType.VineClimbTo:
+                    case LogicInteractOutput.EOutputType.RelocateVineClimb:
                         {
                             var player = GetInteractingPlayerEntity();
                             if (player == null)
@@ -844,47 +857,13 @@ namespace My.Map
                                 break;
                             }
 
-                            float entrySec = output.Param6 * 0.001f;
-                            if (entrySec <= 0f)
+                            RunPlayerRelocate(player, new PlayerRelocateSpec
                             {
-                                entrySec = 0.35f;
-                            }
-
-                            float climbSec = output.Param1 * 0.001f;
-                            if (climbSec <= 0f)
-                            {
-                                climbSec = 0.8f;
-                            }
-
-                            float pauseSec = output.Param2 * 0.001f;
-                            float jumpSec = output.Param5 * 0.001f;
-                            if (jumpSec <= 0f)
-                            {
-                                jumpSec = 0.35f;
-                            }
-
-                            float totalSec = entrySec + climbSec + pauseSec + jumpSec;
-                            BeginInteractPending(
-                                InteractPendingMode.ExternalNotify,
-                                totalSec + ExternalNotifyFallbackMarginSec);
-                            pending = true;
-
-                            MainGameManager.Instance?.interactSystem?.SetInteractPause(totalSec);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "lock_move", overrideDuration: totalSec);
-                            Owner.LogicManager.globalBuffManager.RequestAddBuff(player.Id, "as_presentation", overrideDuration: totalSec);
-                            Owner.LogicManager.viewer.DoPlayerVineClimbMove(
-                                entryPos,
-                                endPos,
-                                landPos,
-                                entrySec,
-                                climbSec,
-                                pauseSec,
-                                jumpSec,
-                                () =>
-                                {
-                                    ApplyPendingTeleportTo(player.Id, landPos, 0f);
-                                    NotifyInteractPendingComplete();
-                                });
+                                TransitStyle = PlayerRelocateTransitStyle.VineClimb,
+                                EntryLogicPos = entryPos,
+                                MidLogicPos = endPos,
+                                FinalLogicPos = landPos,
+                            }, out pending);
                         }
                         break;
 

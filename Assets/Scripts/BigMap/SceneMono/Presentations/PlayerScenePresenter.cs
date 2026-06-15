@@ -549,7 +549,7 @@ namespace My.Map.Scene
             var targetWorldPos = MapLogicPosition.LogicToWorld(newPos);
             bool visualAlreadyAtTarget = (transform.position - targetWorldPos).sqrMagnitude < 0.25f;
 
-            if (IsPresentationMoveActive)
+            if (IsRelocateSessionActive)
             {
                 if (!visualAlreadyAtTarget)
                 {

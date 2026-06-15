@@ -164,43 +164,7 @@ namespace My
             MapSceneEffectManager.Instance.ForceDestroy(effectId);
         }
 
-        public void DoPlayerSpecialMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onCompelete = null)
-        {
-            if (playerScenePresenter != null)
-            {
-                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(fromPos, duration + 1f, "PlayerSpecialMove", null);
-
-                var effectGo = ctx.EffectGo.GetComponent<PlayerGhostMoveFxCtrl>();
-                var agentView = playerScenePresenter.AgentView;
-                effectGo.playerSR = agentView != null
-                    ? agentView.GetComponentInChildren<SpriteRenderer>()
-                    : playerScenePresenter.transform.Find(UnitPresentationPaths.View)?.Find(UnitPresentationPaths.Agent)
-                        ?.GetComponentInChildren<SpriteRenderer>();
-                effectGo.PlayMoveFx(playerScenePresenter.transform, targetPos, () => { onCompelete?.Invoke(); }, () => { });
-            }
-        }
-
-        public void DoPlayerPresentationMove(Vector2 targetPos, Vector2 fromPos, float duration, Action onReach = null)
-        {
-            if (playerScenePresenter == null)
-            {
-                onReach?.Invoke();
-                return;
-            }
-
-            var targetWorld = GetWorldPosFromLogicPos(targetPos);
-            playerScenePresenter.PlayPresentationMove(targetWorld, duration, onReach);
-        }
-
-        public void DoPlayerVineClimbMove(
-            Vector2 entryLogicPos,
-            Vector2 endLogicPos,
-            Vector2 landLogicPos,
-            float entryDuration,
-            float climbDuration,
-            float pauseDuration,
-            float jumpDuration,
-            Action onComplete = null)
+        public void DoPlayerRelocate(PlayerRelocateSpec spec, Action onComplete = null)
         {
             if (playerScenePresenter == null)
             {
@@ -208,18 +172,7 @@ namespace My
                 return;
             }
 
-            var entryWorld = GetWorldPosFromLogicPos(entryLogicPos);
-            var endWorld = GetWorldPosFromLogicPos(endLogicPos);
-            var landWorld = GetWorldPosFromLogicPos(landLogicPos);
-            playerScenePresenter.PlayVineClimbMove(
-                entryWorld,
-                endWorld,
-                landWorld,
-                entryDuration,
-                climbDuration,
-                pauseDuration,
-                jumpDuration,
-                onComplete);
+            playerScenePresenter.PlayRelocate(spec, onComplete);
         }
 
         SaveData BuildRuntimeSaveSnapshot()

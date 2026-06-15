@@ -5350,7 +5350,7 @@ namespace My.Map.Entity
 
             {
 
-                var closeToEffect = new MapFightEffectSpecialMoveToCfg()
+                var closeToEffect = new MapFightEffectRelocateGhostOrbCfg()
                 {
                     Duration = 0.3f,
                 };
@@ -5408,7 +5408,7 @@ namespace My.Map.Entity
             }
 
             {
-                var closeToEffect = new MapFightEffectSpecialMoveToCfg()
+                var closeToEffect = new MapFightEffectRelocateGhostOrbCfg()
                 {
                     Duration = 0.25f,
                 };

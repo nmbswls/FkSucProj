@@ -197,9 +197,9 @@ namespace My
                             executor = new AbilityEffectExecutor4HitAttach();
                         }
                         break;
-                    case MapFightEffectSpecialMoveToCfg:
+                    case MapFightEffectRelocateGhostOrbCfg:
                         {
-                            executor = new AbilityFightExecutor4SpecialMoveTo();
+                            executor = new AbilityFightExecutor4RelocateGhostOrb();
                         }
                         break;
 

@@ -617,7 +617,7 @@ namespace My.Map.Entity
             var realCfg = effectConf as MapFightEffectShowEffect;
             if (realCfg == null)
             {
-                Debug.LogError("AbilityFightExecutor4SpecialMoveTo cfg error");
+                Debug.LogError("AbilityFightExecutor4ShowEffect cfg error");
                 return;
             }
             Vector2 p = Vector2.zero;
@@ -644,14 +644,14 @@ namespace My.Map.Entity
 
     
 
-    public class AbilityFightExecutor4SpecialMoveTo : AbilityEffectExecutor
+    public class AbilityFightExecutor4RelocateGhostOrb : AbilityEffectExecutor
     {
         public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
         {
-            var realCfg = effectConf as MapFightEffectSpecialMoveToCfg;
+            var realCfg = effectConf as MapFightEffectRelocateGhostOrbCfg;
             if (realCfg == null)
             {
-                Debug.LogError("AbilityFightExecutor4SpecialMoveTo cfg error");
+                Debug.LogError("AbilityFightExecutor4RelocateGhostOrb cfg error");
                 return;
             }
 
@@ -672,10 +672,16 @@ namespace My.Map.Entity
                 return;
             }
 
-            var duration = realCfg.Duration;
+            var spec = new My.Map.Scene.PlayerRelocateSpec
+            {
+                TransitStyle = My.Map.Scene.PlayerRelocateTransitStyle.GhostOrb,
+                FinalLogicPos = target.Pos,
+            };
+            var duration = My.Map.Scene.PlayerRelocateTimings.GetTotalDuration(spec);
 
             ctx.Env.globalBuffManager.RequestAddBuff(actor.Id, "lock_move", overrideDuration: duration);
-            ctx.Env.viewer.DoPlayerSpecialMove(target.Pos, actor.Pos, duration, () =>
+            ctx.Env.globalBuffManager.RequestAddBuff(actor.Id, "as_presentation", overrideDuration: duration);
+            ctx.Env.viewer.DoPlayerRelocate(spec, () =>
             {
                 unitEntity.TeleportTo(target.Pos);
             });
