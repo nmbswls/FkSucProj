@@ -26,10 +26,10 @@ namespace My
         // mapId|triggerId -> consumed
         private readonly Dictionary<string, bool> _microPlotConsumed = new();
 
-        // logic_area map_id -> control degree
-        private readonly Dictionary<string, int> _logicAreaControlByMapId = new(StringComparer.Ordinal);
+        // logic_area map_id -> homestead runtime
+        private readonly Dictionary<string, LogicAreaHomesteadPersist> _logicAreaHomesteadByMapId = new(StringComparer.Ordinal);
 
-        public event Action<string, int> EvOnLogicAreaControlChanged;
+        public event Action<string, LogicAreaHomesteadPersist> EvOnLogicAreaHomesteadChanged;
 
         public GameWorldPersistStateManager()
         {
@@ -166,15 +166,17 @@ namespace My
                 _secretBaseBuildLevel = 1;
             }
 
-            _logicAreaControlByMapId.Clear();
-            if (savingData?.PlayerData?.LogicAreaControlByMapId != null)
+            _logicAreaHomesteadByMapId.Clear();
+            if (savingData?.PlayerData?.LogicAreaHomesteadByMapId != null)
             {
-                foreach (var kv in savingData.PlayerData.LogicAreaControlByMapId)
+                foreach (var kv in savingData.PlayerData.LogicAreaHomesteadByMapId)
                 {
-                    if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                    if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value))
                     {
-                        _logicAreaControlByMapId[kv.Key] = kv.Value;
+                        continue;
                     }
+
+                    _logicAreaHomesteadByMapId[kv.Key] = CloneHomesteadPersist(kv.Value);
                 }
             }
         }
@@ -270,14 +272,16 @@ namespace My
 
             data.PlayerData.SecretBaseBuildLevel = _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
 
-            data.PlayerData.LogicAreaControlByMapId ??= new Dictionary<string, int>();
-            data.PlayerData.LogicAreaControlByMapId.Clear();
-            foreach (var kv in _logicAreaControlByMapId)
+            data.PlayerData.LogicAreaHomesteadByMapId ??= new Dictionary<string, LogicAreaHomesteadPersist>();
+            data.PlayerData.LogicAreaHomesteadByMapId.Clear();
+            foreach (var kv in _logicAreaHomesteadByMapId)
             {
-                if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value))
                 {
-                    data.PlayerData.LogicAreaControlByMapId[kv.Key] = kv.Value;
+                    continue;
                 }
+
+                data.PlayerData.LogicAreaHomesteadByMapId[kv.Key] = CloneHomesteadPersist(kv.Value);
             }
         }
 
@@ -429,14 +433,24 @@ namespace My
             }
         }
 
-        public int GetLogicAreaControl(string logicAreaId)
+        public LogicAreaHomesteadPersist GetLogicAreaHomesteadState(string logicAreaId)
         {
             if (string.IsNullOrEmpty(logicAreaId))
             {
-                return 0;
+                return null;
             }
 
-            return _logicAreaControlByMapId.TryGetValue(logicAreaId, out var val) ? val : 0;
+            return _logicAreaHomesteadByMapId.TryGetValue(logicAreaId, out var state) ? state : null;
+        }
+
+        public int GetLogicAreaControl(string logicAreaId)
+        {
+            return GetLogicAreaHomesteadState(logicAreaId)?.ControlDegree ?? 0;
+        }
+
+        public bool IsLogicAreaAnnexed(string logicAreaId)
+        {
+            return GetLogicAreaHomesteadState(logicAreaId)?.IsAnnexed ?? false;
         }
 
         public int AddLogicAreaControl(string logicAreaId, int delta)
@@ -453,28 +467,26 @@ namespace My
                 return GetLogicAreaControl(logicAreaId);
             }
 
-            var current = GetLogicAreaControl(logicAreaId);
-            var next = current + delta;
+            var state = GetOrCreateHomesteadState(logicAreaId);
+            var next = state.ControlDegree + delta;
             if (req.RequiredControl > 0)
             {
                 next = Mathf.Min(next, req.RequiredControl);
             }
 
-            if (next <= 0)
-            {
-                _logicAreaControlByMapId.Remove(logicAreaId);
-            }
-            else
-            {
-                _logicAreaControlByMapId[logicAreaId] = next;
-            }
-
-            EvOnLogicAreaControlChanged?.Invoke(logicAreaId, next);
-            return next;
+            state.ControlDegree = next;
+            NormalizeHomesteadEntry(logicAreaId, state);
+            EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, state);
+            return state.ControlDegree;
         }
 
         public bool IsLogicAreaControlRequirementMet(string logicAreaId)
         {
+            if (IsLogicAreaAnnexed(logicAreaId))
+            {
+                return true;
+            }
+
             var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
             if (req == null || req.RequiredControl <= 0)
             {
@@ -482,6 +494,41 @@ namespace My
             }
 
             return GetLogicAreaControl(logicAreaId) >= req.RequiredControl;
+        }
+
+        LogicAreaHomesteadPersist GetOrCreateHomesteadState(string logicAreaId)
+        {
+            if (!_logicAreaHomesteadByMapId.TryGetValue(logicAreaId, out var state) || state == null)
+            {
+                state = new LogicAreaHomesteadPersist();
+                _logicAreaHomesteadByMapId[logicAreaId] = state;
+            }
+
+            return state;
+        }
+
+        static bool HasMeaningfulHomesteadState(LogicAreaHomesteadPersist state)
+        {
+            return state.IsAnnexed || state.ControlDegree > 0;
+        }
+
+        static LogicAreaHomesteadPersist CloneHomesteadPersist(LogicAreaHomesteadPersist source)
+        {
+            return new LogicAreaHomesteadPersist
+            {
+                ControlDegree = source.ControlDegree,
+                IsAnnexed = source.IsAnnexed,
+            };
+        }
+
+        void NormalizeHomesteadEntry(string logicAreaId, LogicAreaHomesteadPersist state)
+        {
+            if (state == null || HasMeaningfulHomesteadState(state))
+            {
+                return;
+            }
+
+            _logicAreaHomesteadByMapId.Remove(logicAreaId);
         }
     }
 }

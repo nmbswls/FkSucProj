@@ -257,9 +257,15 @@ namespace My.UI
 
         public void BindView()
         {
-            ControlValText = transform.Find("Val")?.GetComponent<TextMeshProUGUI>();
-            ControlValBar = transform.Find("ControlValBar")?.GetComponent<Image>()
-                ?? transform.Find("AlertValBar")?.GetComponent<Image>();
+            if (ControlValText == null)
+            {
+                ControlValText = transform.Find("Val")?.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (ControlValBar == null)
+            {
+                ControlValBar = transform.Find("ControlValBar")?.GetComponent<Image>();
+            }
         }
 
         public void RefreshView()

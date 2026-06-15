@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldName: home
   subScenes:
-  - Main_Home
-  activeSubScene: Main_Home
+  - Home_01
+  activeSubScene: Home_01
