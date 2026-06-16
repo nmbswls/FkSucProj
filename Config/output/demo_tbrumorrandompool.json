@@ -1,0 +1,14 @@
+[
+  {
+    "entry_id": "default_rumor_rand_a",
+    "pool_id": "default",
+    "rumor_id": "rumor_rand_a",
+    "weight": 10
+  },
+  {
+    "entry_id": "default_rumor_rand_b",
+    "pool_id": "default",
+    "rumor_id": "rumor_rand_b",
+    "weight": 10
+  }
+]

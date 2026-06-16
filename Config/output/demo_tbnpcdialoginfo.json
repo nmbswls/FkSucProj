@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "npc_id": "game_init_luca_injured",
+    "dialog_id": "game_init_luca_injured_01",
+    "priority": 1,
+    "show_cond": [],
+    "need_npc_val": ""
+  },
+  {
+    "id": 2,
+    "npc_id": "game_init_luca_injured",
+    "dialog_id": "game_init_luca_injured_02",
+    "priority": 2,
+    "show_cond": [],
+    "need_npc_val": ""
+  },
+  {
+    "id": 3,
+    "npc_id": "game_init_luca_injured",
+    "dialog_id": "game_init_luca_injured_03",
+    "priority": 3,
+    "show_cond": [],
+    "need_npc_val": ""
+  }
+]

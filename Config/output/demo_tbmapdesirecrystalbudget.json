@@ -1,0 +1,20 @@
+[
+  {
+    "id": "village_01_b2",
+    "map_id": "village_01_n",
+    "attach_count": 0,
+    "weight": 40
+  },
+  {
+    "id": "village_01_b3",
+    "map_id": "village_01_n",
+    "attach_count": 1,
+    "weight": 35
+  },
+  {
+    "id": "village_01_b4",
+    "map_id": "village_01_n",
+    "attach_count": 2,
+    "weight": 25
+  }
+]

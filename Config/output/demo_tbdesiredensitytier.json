@@ -1,0 +1,22 @@
+[
+  {
+    "tier": 1,
+    "min_density": 0,
+    "max_density": 19999
+  },
+  {
+    "tier": 2,
+    "min_density": 20000,
+    "max_density": 44999
+  },
+  {
+    "tier": 3,
+    "min_density": 45000,
+    "max_density": 69999
+  },
+  {
+    "tier": 4,
+    "min_density": 70000,
+    "max_density": 100000
+  }
+]

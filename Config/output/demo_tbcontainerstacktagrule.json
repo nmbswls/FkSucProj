@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "container_type": 0,
+    "priority": 0,
+    "stack_tags": [],
+    "stack_ratio": 1
+  },
+  {
+    "id": 2,
+    "container_type": 0,
+    "priority": 1,
+    "stack_tags": [
+      "big"
+    ],
+    "stack_ratio": 0.3
+  },
+  {
+    "id": 22,
+    "container_type": 1,
+    "priority": 0,
+    "stack_tags": [],
+    "stack_ratio": 1
+  },
+  {
+    "id": 33,
+    "container_type": 2,
+    "priority": 0,
+    "stack_tags": [],
+    "stack_ratio": 1
+  },
+  {
+    "id": 44,
+    "container_type": 3,
+    "priority": 0,
+    "stack_tags": [],
+    "stack_ratio": 999
+  },
+  {
+    "id": 55,
+    "container_type": 4,
+    "priority": 0,
+    "stack_tags": [],
+    "stack_ratio": 1
+  }
+]

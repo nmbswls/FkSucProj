@@ -1,0 +1,38 @@
+[
+  {
+    "entry_id": 1,
+    "mind_tag": "orc_common",
+    "desire_type": 1,
+    "density_tier_min": 1,
+    "density_tier_max": 2,
+    "item_id": "mind_shard_common",
+    "count_min": 1,
+    "count_max": 2,
+    "base_weight": 100,
+    "weight_per_density": 0.001
+  },
+  {
+    "entry_id": 2,
+    "mind_tag": "orc_common",
+    "desire_type": 1,
+    "density_tier_min": 3,
+    "density_tier_max": 4,
+    "item_id": "mind_shard_rare",
+    "count_min": 1,
+    "count_max": 1,
+    "base_weight": 50,
+    "weight_per_density": 0.002
+  },
+  {
+    "entry_id": 3,
+    "mind_tag": "orc_common",
+    "desire_type": 2,
+    "density_tier_min": 2,
+    "density_tier_max": 4,
+    "item_id": "mind_shard_rare",
+    "count_min": 1,
+    "count_max": 2,
+    "base_weight": 80,
+    "weight_per_density": 0.0015
+  }
+]

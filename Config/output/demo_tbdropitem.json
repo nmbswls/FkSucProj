@@ -1,0 +1,340 @@
+[
+  {
+    "id": 1,
+    "name": "城市杂物箱1",
+    "group_id": 100,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      100,
+      150
+    ]
+  },
+  {
+    "id": 2,
+    "name": "城市杂物箱2",
+    "group_id": 100,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      2,
+      5
+    ]
+  },
+  {
+    "id": 3,
+    "name": "城市杂物箱1",
+    "group_id": 200,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      100,
+      150
+    ]
+  },
+  {
+    "id": 4,
+    "name": "城市杂物箱2",
+    "group_id": 200,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      2,
+      5
+    ]
+  },
+  {
+    "id": 5,
+    "name": "破坏灰箱",
+    "group_id": 2000,
+    "weight_in_group": 10,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      50,
+      65
+    ]
+  },
+  {
+    "id": 6,
+    "name": "破坏灰箱",
+    "group_id": 2000,
+    "weight_in_group": 90,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      10,
+      15
+    ]
+  },
+  {
+    "id": 7,
+    "name": "破坏灰箱",
+    "group_id": 2001,
+    "weight_in_group": 90,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      50,
+      65
+    ]
+  },
+  {
+    "id": 8,
+    "name": "破坏灰箱",
+    "group_id": 2001,
+    "weight_in_group": 10,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      10,
+      15
+    ]
+  },
+  {
+    "id": 9,
+    "name": "少量欲望碎片",
+    "group_id": 10000,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "desire_shard"
+    ],
+    "item_count_range_list": [
+      4,
+      6
+    ]
+  },
+  {
+    "id": 10,
+    "name": "少量通识碎片",
+    "group_id": 10001,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "knowledge_shard"
+    ],
+    "item_count_range_list": [
+      4,
+      6
+    ]
+  },
+  {
+    "id": 11,
+    "name": "中量欲望碎片",
+    "group_id": 10010,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "desire_shard"
+    ],
+    "item_count_range_list": [
+      12,
+      17
+    ]
+  },
+  {
+    "id": 12,
+    "name": "中量通识碎片",
+    "group_id": 10011,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "knowledge_shard"
+    ],
+    "item_count_range_list": [
+      12,
+      17
+    ]
+  },
+  {
+    "id": 13,
+    "name": "中档 特殊奖励",
+    "group_id": 10012,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      5,
+      8
+    ]
+  },
+  {
+    "id": 14,
+    "name": "大量欲望碎片",
+    "group_id": 10020,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "desire_shard"
+    ],
+    "item_count_range_list": [
+      20,
+      14
+    ]
+  },
+  {
+    "id": 15,
+    "name": "大量通识碎片",
+    "group_id": 10021,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "knowledge_shard"
+    ],
+    "item_count_range_list": [
+      20,
+      24
+    ]
+  },
+  {
+    "id": 16,
+    "name": "高档 特殊奖励1",
+    "group_id": 10022,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "random_desire_crystal"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 17,
+    "name": "高档 特殊奖励2",
+    "group_id": 10022,
+    "weight_in_group": 80,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      40,
+      40
+    ]
+  },
+  {
+    "id": 18,
+    "name": "随机欲望结晶1",
+    "group_id": 99,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "desire_crystal_1"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 19,
+    "name": "随机欲望结晶2",
+    "group_id": 99,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "desire_crystal_2"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 20,
+    "name": "随机欲望结晶3",
+    "group_id": 99,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "desire_crystal_3"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 21,
+    "name": "随机欲望结晶4",
+    "group_id": 99,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "desire_crystal_4"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 22,
+    "name": "牛逼箱子1",
+    "group_id": 999,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      40,
+      40
+    ]
+  },
+  {
+    "id": 23,
+    "name": "牛逼箱子2",
+    "group_id": 999,
+    "weight_in_group": 20,
+    "item_id_list": [
+      "wood_board"
+    ],
+    "item_count_range_list": [
+      4,
+      4
+    ]
+  },
+  {
+    "id": 24,
+    "name": "牛逼箱子3",
+    "group_id": 999,
+    "weight_in_group": 60,
+    "item_id_list": [
+      "desire_shard"
+    ],
+    "item_count_range_list": [
+      40,
+      60
+    ]
+  },
+  {
+    "id": 9001,
+    "name": "家园草药",
+    "group_id": 9000,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "quest_mat_herb"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 9002,
+    "name": "家园木材",
+    "group_id": 9001,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "quest_mat_wood"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  }
+]

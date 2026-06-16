@@ -1,0 +1,32 @@
+[
+  {
+    "school_id": 1,
+    "display_name": "愤怒",
+    "icon_path": "",
+    "unlock_conds": []
+  },
+  {
+    "school_id": 2,
+    "display_name": "幻惑",
+    "icon_path": "",
+    "unlock_conds": []
+  },
+  {
+    "school_id": 3,
+    "display_name": "夜幕",
+    "icon_path": "",
+    "unlock_conds": []
+  },
+  {
+    "school_id": 4,
+    "display_name": "X",
+    "icon_path": "",
+    "unlock_conds": []
+  },
+  {
+    "school_id": 5,
+    "display_name": "X",
+    "icon_path": "",
+    "unlock_conds": []
+  }
+]

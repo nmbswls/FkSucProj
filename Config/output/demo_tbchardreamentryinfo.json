@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "character_key": "v1_merchant",
+    "priority": 1,
+    "has_locals": "h1",
+    "no_locals": ""
+  },
+  {
+    "id": 2,
+    "character_key": "v1_merchant",
+    "priority": 2,
+    "has_locals": "h2",
+    "no_locals": ""
+  },
+  {
+    "id": 3,
+    "character_key": "v1_merchant",
+    "priority": 3,
+    "has_locals": "h3",
+    "no_locals": ""
+  },
+  {
+    "id": 4,
+    "character_key": "v1_merchant",
+    "priority": 4,
+    "has_locals": "h4",
+    "no_locals": ""
+  },
+  {
+    "id": 5,
+    "character_key": "v1_merchant",
+    "priority": 5,
+    "has_locals": "h5",
+    "no_locals": ""
+  }
+]

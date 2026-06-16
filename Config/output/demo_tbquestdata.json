@@ -1,0 +1,123 @@
+[
+  {
+    "quest_id": 100,
+    "name": "初始任务",
+    "desc": "初始任务",
+    "init_step_id": "100_s1",
+    "finish_reward": [
+      [
+        "gold",
+        10
+      ],
+      [
+        "bundle_01",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "init.dialog_01",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 101,
+    "name": "强盗？",
+    "desc": "初始任务2",
+    "init_step_id": "101_s1",
+    "finish_reward": [
+      [
+        "gold",
+        10
+      ],
+      [
+        "bundle_01",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 100,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 102,
+    "name": "初始任务3",
+    "desc": "初始任务3",
+    "init_step_id": "102_s1",
+    "finish_reward": [
+      [
+        "gold",
+        10
+      ],
+      [
+        "bundle_01",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 101,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 200,
+    "name": "采集草药",
+    "desc": "为镇长搜集草药并递交",
+    "init_step_id": "200_s1",
+    "finish_reward": [
+      [
+        "gold",
+        20
+      ],
+      [
+        "quest_control_village01",
+        1
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 201,
+    "name": "采集木材",
+    "desc": "为木匠搜集木材并递交",
+    "init_step_id": "201_s1",
+    "finish_reward": [
+      [
+        "gold",
+        15
+      ]
+    ],
+    "is_auto_accept": false,
+    "acceept_cond": [],
+    "start_npc_id": "home_merchant"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "level": 0,
+    "need_val": 0
+  },
+  {
+    "level": 1,
+    "need_val": 20
+  },
+  {
+    "level": 2,
+    "need_val": 40
+  },
+  {
+    "level": 3,
+    "need_val": 60
+  },
+  {
+    "level": 4,
+    "need_val": 80
+  },
+  {
+    "level": 5,
+    "need_val": 100
+  }
+]

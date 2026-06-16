@@ -983,6 +983,32 @@ namespace My.Map.Entity
                     IsHidden = true,
                 };
 
+                _library["map_peace_mark"] = new BuffDefinition()
+                {
+                    BuffId = "map_peace_mark",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PeaceCombatRestricted, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["zone_peace"] = new BuffDefinition()
+                {
+                    BuffId = "zone_peace",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.ForbidSkillOp, ModifierValue = 1 },
+                        new BuffDefinition.OneModPair() { ModifierAttrId = AttrIdConsts.PeaceCombatRestricted, ModifierValue = 1 },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
                 _library["system_no_logic"] = new BuffDefinition()
                 {
                     BuffId = "system_no_logic",

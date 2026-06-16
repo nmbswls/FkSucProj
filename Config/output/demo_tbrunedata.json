@@ -1,0 +1,52 @@
+[
+  {
+    "rune_id": "rune_lamp",
+    "name": "灯",
+    "desc": "旅者的印记。",
+    "rune_type": 1,
+    "equip_slot": 0,
+    "initial_upgrade_id": "lamp_basic",
+    "layout_template_id": "RuneLayout_Lamp",
+    "icon": "rune_lamp"
+  },
+  {
+    "rune_id": "rune_harvest",
+    "name": "丰饶",
+    "desc": "丰饶的印记。",
+    "rune_type": 1,
+    "equip_slot": 0,
+    "initial_upgrade_id": "harvest_basic",
+    "layout_template_id": "RuneLayout_Linear3",
+    "icon": "rune_harvest"
+  },
+  {
+    "rune_id": "rune_lady",
+    "name": "淑女",
+    "desc": "时间尽头的淑女。",
+    "rune_type": 2,
+    "equip_slot": 1,
+    "initial_upgrade_id": "lady_initial",
+    "layout_template_id": "RuneLayout_Single1",
+    "icon": "rune_lady"
+  },
+  {
+    "rune_id": "rune_evil_hand",
+    "name": "魅惑之手",
+    "desc": "",
+    "rune_type": 2,
+    "equip_slot": 2,
+    "initial_upgrade_id": "evil_hand_initial",
+    "layout_template_id": "RuneLayout_Single1",
+    "icon": "rune_evil_hand"
+  },
+  {
+    "rune_id": "rune_foot_spirit",
+    "name": "灵体之足",
+    "desc": "",
+    "rune_type": 2,
+    "equip_slot": 3,
+    "initial_upgrade_id": "foot_spirit_initial",
+    "layout_template_id": "RuneLayout_Single1",
+    "icon": "rune_foot_spirit"
+  }
+]

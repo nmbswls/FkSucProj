@@ -33,6 +33,7 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         { if(!_buf["hunting_target"].IsBoolean) { throw new SerializationException(); }  HuntingTarget = _buf["hunting_target"]; }
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
         { if(!_buf["procedural_def_id"].IsString) { throw new SerializationException(); }  ProceduralDefId = _buf["procedural_def_id"]; }
+        { if(!_buf["peace_zone_mark"].IsBoolean) { throw new SerializationException(); }  PeaceZoneMark = _buf["peace_zone_mark"]; }
     }
 
     public static AreaOverlayStateInfo DeserializeAreaOverlayStateInfo(JSONNode _buf)
@@ -100,6 +101,10 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
     /// 程序生成定义 id
     /// </summary>
     public string ProceduralDefId;
+    /// <summary>
+    /// 全图安全区标记
+    /// </summary>
+    public bool PeaceZoneMark;
    
     public const int __ID__ = 928836711;
     public override int GetTypeId() => __ID__;
@@ -127,6 +132,7 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         + "huntingTarget:" + HuntingTarget + ","
         + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
         + "proceduralDefId:" + ProceduralDefId + ","
+        + "peaceZoneMark:" + PeaceZoneMark + ","
         + "}";
     }
 }

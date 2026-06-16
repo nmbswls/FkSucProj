@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "amount": 15,
+    "extra_attr": [
+      [
+        8,
+        2
+      ]
+    ]
+  },
+  {
+    "id": 2,
+    "amount": 40,
+    "extra_attr": [
+      [
+        8,
+        2
+      ]
+    ]
+  },
+  {
+    "id": 3,
+    "amount": 70,
+    "extra_attr": [
+      [
+        8,
+        2
+      ]
+    ]
+  },
+  {
+    "id": 4,
+    "amount": 100,
+    "extra_attr": [
+      [
+        8,
+        2
+      ]
+    ]
+  }
+]

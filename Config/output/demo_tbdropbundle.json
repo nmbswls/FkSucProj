@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "name": "城市杂物箱",
+    "drop_group_ids": [
+      100
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 2,
+    "name": "城市杂物箱（大）",
+    "drop_group_ids": [
+      100
+    ],
+    "drop_group_weights": [
+      30000
+    ]
+  },
+  {
+    "id": 100,
+    "name": "挖掘点（小）",
+    "drop_group_ids": [
+      200
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 200,
+    "name": "破坏物（灰箱子）",
+    "drop_group_ids": [
+      2000
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 201,
+    "name": "破坏物（金箱子）",
+    "drop_group_ids": [
+      2001
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 1000,
+    "name": "0档静态榨取",
+    "drop_group_ids": [
+      10000,
+      10001
+    ],
+    "drop_group_weights": [
+      10000,
+      10000
+    ]
+  },
+  {
+    "id": 1001,
+    "name": "1档静态榨取",
+    "drop_group_ids": [
+      10010,
+      10011,
+      10012
+    ],
+    "drop_group_weights": [
+      10000,
+      10000,
+      1000
+    ]
+  },
+  {
+    "id": 1002,
+    "name": "2档静态榨取",
+    "drop_group_ids": [
+      10020,
+      10021,
+      10022
+    ],
+    "drop_group_weights": [
+      10000,
+      10000,
+      1000
+    ]
+  },
+  {
+    "id": 99,
+    "name": "随机欲望结晶",
+    "drop_group_ids": [
+      99
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 999,
+    "name": "牛逼箱子",
+    "drop_group_ids": [
+      999
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 900,
+    "name": "家园草药采集",
+    "drop_group_ids": [
+      9000
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 901,
+    "name": "家园木材采集",
+    "drop_group_ids": [
+      9001
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  }
+]

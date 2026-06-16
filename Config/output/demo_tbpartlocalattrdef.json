@@ -1,0 +1,12 @@
+[
+  {
+    "attr_id": 1,
+    "display_name": "敏感度",
+    "value_scale": 10000
+  },
+  {
+    "attr_id": 2,
+    "display_name": "耐受",
+    "value_scale": 10000
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "entry_id": 2,
+    "school_id": 2,
+    "display_name": "强化斩击",
+    "learn_conds": [],
+    "skill_id": "queen_attack",
+    "skill_level": 1,
+    "loadout_slot_type": 1
+  },
+  {
+    "entry_id": 3,
+    "school_id": 2,
+    "display_name": "强化重击",
+    "learn_conds": [],
+    "skill_id": "queen_attack_heavy",
+    "skill_level": 1,
+    "loadout_slot_type": 2
+  },
+  {
+    "entry_id": 4,
+    "school_id": 3,
+    "display_name": "耐受到减伤被动",
+    "learn_conds": [],
+    "skill_id": "player_naishou_to_jianshang",
+    "skill_level": 1,
+    "loadout_slot_type": 5
+  },
+  {
+    "entry_id": 5,
+    "school_id": 2,
+    "display_name": "召唤炮台",
+    "learn_conds": [],
+    "skill_id": "player_summon_ally_turret",
+    "skill_level": 1,
+    "loadout_slot_type": 4
+  },
+  {
+    "entry_id": 6,
+    "school_id": 2,
+    "display_name": "能量球召唤",
+    "learn_conds": [],
+    "skill_id": "orb_skill_summon",
+    "skill_level": 1,
+    "loadout_slot_type": 4
+  }
+]

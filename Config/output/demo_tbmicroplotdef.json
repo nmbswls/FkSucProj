@@ -1,0 +1,17 @@
+[
+  {
+    "id": "demo_micro_plot",
+    "managed_uniqnames": [
+      "cornor_01_a",
+      "cornor_01_b"
+    ],
+    "max_duration_sec": 30,
+    "consume_on": 0,
+    "reward_items": [
+      [
+        "rumor_points",
+        10
+      ]
+    ]
+  }
+]

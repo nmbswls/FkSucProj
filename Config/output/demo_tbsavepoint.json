@@ -1,0 +1,80 @@
+[
+  {
+    "save_point_id": "base_entry",
+    "display_name": "入口",
+    "area_var_id": "homestead_01",
+    "default_activated": true,
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": false,
+    "tribute_costs": [],
+    "target_named_point": "t_sp_base_entry",
+    "snap_show_x": 0.3,
+    "snap_show_y": 0.3,
+    "sort_order": 0
+  },
+  {
+    "save_point_id": "v1_entry_01",
+    "display_name": "演示存档点",
+    "area_var_id": "village_01",
+    "default_activated": true,
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": true,
+    "tribute_costs": [
+      {
+        "item_id": "wood",
+        "count": 2
+      },
+      {
+        "item_id": "stick",
+        "count": 1
+      }
+    ],
+    "target_named_point": "t_sp_v1_entry_01",
+    "snap_show_x": 0.3,
+    "snap_show_y": 0.3,
+    "sort_order": 0
+  },
+  {
+    "save_point_id": "v1_inn_01",
+    "display_name": "演示旅店存档",
+    "area_var_id": "village_01",
+    "default_activated": false,
+    "show_unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "require_tribute": false,
+    "tribute_costs": [],
+    "target_named_point": "t_sp_v1_inn_01",
+    "snap_show_x": 0.5,
+    "snap_show_y": 0.5,
+    "sort_order": 1
+  }
+]

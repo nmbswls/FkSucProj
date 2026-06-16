@@ -14,6 +14,7 @@ namespace My
             Alert = 1 << 0,
             BusyZone = 1 << 1,
             TallGrass = 1 << 2,
+            PeaceZone = 1 << 3,
         }
 
         public EZoneFlag ZoneType;
@@ -29,9 +30,19 @@ namespace My
         public bool HasTallGrass =>
             (ZoneType & EZoneFlag.TallGrass) != 0;
 
+        public bool HasPeaceZone =>
+            (ZoneType & EZoneFlag.PeaceZone) != 0;
+
 #if UNITY_EDITOR
         void OnValidate()
         {
+            if (HasPeaceZone && GetComponent<ZonePeaceTrigger>() == null)
+            {
+                Debug.LogWarning(
+                    $"[ZoneInfoProvider] Peace zone '{name}' needs ZonePeaceTrigger component.",
+                    this);
+            }
+
             if (!HasTallGrass)
             {
                 return;

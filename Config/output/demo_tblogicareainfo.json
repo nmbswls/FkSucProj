@@ -1,0 +1,17 @@
+[
+  {
+    "map_id": "homestead_01",
+    "name": "家园小镇",
+    "can_annex_homestead": true
+  },
+  {
+    "map_id": "village_01",
+    "name": "村子1",
+    "can_annex_homestead": true
+  },
+  {
+    "map_id": "village_02",
+    "name": "村子2",
+    "can_annex_homestead": true
+  }
+]

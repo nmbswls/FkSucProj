@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "TestShop_Orc01",
+    "bind_npc_id": "initial_orc_01"
+  },
+  {
+    "id": 2,
+    "name": "TestShop_Orc02",
+    "bind_npc_id": "initial_orc_02"
+  },
+  {
+    "id": 4,
+    "name": "TestShop_Luca",
+    "bind_npc_id": "game_init_luca_injured"
+  },
+  {
+    "id": 6,
+    "name": "TestShop_BigOrc",
+    "bind_npc_id": "initial_orc_big"
+  }
+]

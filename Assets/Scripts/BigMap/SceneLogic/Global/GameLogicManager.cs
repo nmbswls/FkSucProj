@@ -1,7 +1,7 @@
 
 using Map.Logic.Events;
 using My.Config;
-using My.Home;
+using My.Map.Fight;
 using My.Map;
 using My.Map.Drop;
 using My.Map.Entity;
@@ -172,7 +172,7 @@ namespace My
             };
 
             logicAreaHomesteadManager = new LogicAreaHomesteadManager(this);
-            ControlledTownPeaceBuffRefresh.BindRefreshEvents(this);
+            PeaceCombatBuffRefresh.BindRefreshEvents(this);
 
             factionRelationManager = new();
 
@@ -322,6 +322,7 @@ namespace My
             TickPendingDelayedEffect();
 
             TickPeaceMode();
+            PeaceCombatBuffRefresh.Tick(this, dt);
 
             // 帧末再处理buff
             globalBuffManager.Tick(dt);

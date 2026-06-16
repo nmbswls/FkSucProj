@@ -33,7 +33,7 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": true
+    "peace_zone_mark": false
   },
   {
     "id": "village_01_d",

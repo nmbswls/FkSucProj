@@ -2,7 +2,7 @@
 
 using System;
 using My.Config;
-using My.Home;
+using My.Map.Fight;
 using My.Map.Entity;
 using My.Map;
 using System.Collections.Generic;
@@ -220,7 +220,7 @@ namespace My
         {
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
             RefreshPlayerPeaceMode();
-            ControlledTownPeaceBuffRefresh.Refresh(this);
+            PeaceCombatBuffRefresh.Refresh(this);
             OnSecretBasePostAreaLoaded();
             if (!IsInSecretBase)
             {

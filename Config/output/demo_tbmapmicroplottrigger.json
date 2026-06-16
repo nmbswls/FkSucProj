@@ -1,0 +1,11 @@
+[
+  {
+    "id": "demo_micro_plot_trigger",
+    "map_id": "village_01_n",
+    "center_x": 1.02,
+    "center_y": -22.66,
+    "micro_plot_id": "demo_micro_plot",
+    "priority": 0,
+    "enabled": true
+  }
+]

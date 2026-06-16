@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "key": "smith_wang",
+    "favor_level": 1,
+    "need_value": 20
+  },
+  {
+    "id": 2,
+    "key": "smith_wang",
+    "favor_level": 2,
+    "need_value": 40
+  },
+  {
+    "id": 3,
+    "key": "smith_wang",
+    "favor_level": 3,
+    "need_value": 60
+  },
+  {
+    "id": 4,
+    "key": "smith_wang",
+    "favor_level": 4,
+    "need_value": 80
+  },
+  {
+    "id": 5,
+    "key": "smith_wang",
+    "favor_level": 5,
+    "need_value": 100
+  }
+]
