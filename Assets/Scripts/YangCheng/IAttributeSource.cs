@@ -23,6 +23,8 @@ namespace My.Player
 
         ExtraJingYuanSlot,
 
+        TiaoJingSlotCap,
+
         FixDmgReduceFinal,
 
         FixFallenAdd,
@@ -127,6 +129,7 @@ namespace My.Player
         Gear,
         Talent,
         BodyPart,
+        JingYuanCodex,
 
         Aggregator
     }

@@ -1,0 +1,86 @@
+[
+  {
+    "entry_id": 1,
+    "pool_id": "orc",
+    "type_id": "orc_common",
+    "weight": 100
+  },
+  {
+    "entry_id": 2,
+    "pool_id": "orc",
+    "type_id": "orc_elite",
+    "weight": 100
+  },
+  {
+    "entry_id": 3,
+    "pool_id": "human",
+    "type_id": "sign_aries",
+    "weight": 100
+  },
+  {
+    "entry_id": 4,
+    "pool_id": "human",
+    "type_id": "sign_taurus",
+    "weight": 100
+  },
+  {
+    "entry_id": 5,
+    "pool_id": "human",
+    "type_id": "sign_gemini",
+    "weight": 100
+  },
+  {
+    "entry_id": 6,
+    "pool_id": "human",
+    "type_id": "sign_cancer",
+    "weight": 100
+  },
+  {
+    "entry_id": 7,
+    "pool_id": "human",
+    "type_id": "sign_leo",
+    "weight": 100
+  },
+  {
+    "entry_id": 8,
+    "pool_id": "human",
+    "type_id": "sign_virgo",
+    "weight": 100
+  },
+  {
+    "entry_id": 9,
+    "pool_id": "human",
+    "type_id": "sign_libra",
+    "weight": 100
+  },
+  {
+    "entry_id": 10,
+    "pool_id": "human",
+    "type_id": "sign_scorpio",
+    "weight": 100
+  },
+  {
+    "entry_id": 11,
+    "pool_id": "human",
+    "type_id": "sign_sagittarius",
+    "weight": 100
+  },
+  {
+    "entry_id": 12,
+    "pool_id": "human",
+    "type_id": "sign_capricorn",
+    "weight": 100
+  },
+  {
+    "entry_id": 13,
+    "pool_id": "human",
+    "type_id": "sign_aquarius",
+    "weight": 100
+  },
+  {
+    "entry_id": 14,
+    "pool_id": "human",
+    "type_id": "sign_pisces",
+    "weight": 100
+  }
+]

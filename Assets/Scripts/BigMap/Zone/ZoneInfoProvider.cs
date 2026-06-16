@@ -36,14 +36,7 @@ namespace My
 #if UNITY_EDITOR
         void OnValidate()
         {
-            if (HasPeaceZone && GetComponent<ZonePeaceTrigger>() == null)
-            {
-                Debug.LogWarning(
-                    $"[ZoneInfoProvider] Peace zone '{name}' needs ZonePeaceTrigger component.",
-                    this);
-            }
-
-            if (!HasTallGrass)
+            if (!HasPeaceZone && !HasTallGrass)
             {
                 return;
             }
@@ -59,8 +52,9 @@ namespace My
             int zoneLayer = LayerMask.NameToLayer("Zone");
             if (zoneLayer >= 0 && gameObject.layer != zoneLayer)
             {
+                var zoneKind = HasPeaceZone ? "Peace" : "TallGrass";
                 Debug.LogWarning(
-                    $"[ZoneInfoProvider] TallGrass zone '{name}' should use Layer 'Zone'.",
+                    $"[ZoneInfoProvider] {zoneKind} zone '{name}' should use Layer 'Zone'.",
                     this);
             }
         }

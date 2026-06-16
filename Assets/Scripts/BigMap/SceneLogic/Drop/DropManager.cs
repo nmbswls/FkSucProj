@@ -8,7 +8,6 @@ namespace My.Map.Drop
 {
     public class GlobalMapDropCollection
     {
-        //private int _dropCounter;
         public Dictionary<long, DropData> _drops = new Dictionary<long, DropData>();
 
         public event Action<DropData, Vector2?> EvOnDropAdd;
@@ -17,6 +16,7 @@ namespace My.Map.Drop
         public Dictionary<string, long> LostItems = new Dictionary<string, long>();
 
         public GameLogicManager logicManager;
+
         public GlobalMapDropCollection(GameLogicManager logicManager)
         {
             _lastRecycleTime = LogicTime.time;
@@ -24,7 +24,7 @@ namespace My.Map.Drop
         }
 
         private float _lastRecycleTime;
-        private float _dropIt;
+
         public void Tick(float dt)
         {
             if(LogicTime.time < _lastRecycleTime + 60.0f)
@@ -46,7 +46,13 @@ namespace My.Map.Drop
         public void CreateDrop(string itemId, long amount, Vector2 position, bool autoPick, Vector2? sourcePos)
         {
             Debug.Log($"Create drop {itemId} {amount} {position}");
-            var dropData = new DropData(GameLogicManager.LogicEntityIdInst++, itemId, (int)amount, position, createTime: LogicTime.time,  autoPick);
+            var dropData = new DropData(
+                GameLogicManager.LogicEntityIdInst++,
+                itemId,
+                (int)amount,
+                position,
+                createTime: LogicTime.time,
+                autoPick);
             _drops.Add(dropData.Id, dropData);
             EvOnDropAdd?.Invoke(dropData, sourcePos);
         }
@@ -54,14 +60,14 @@ namespace My.Map.Drop
         public void PickDrop(long id)
         {
             _drops.TryGetValue(id, out var dropData);
-            if(dropData != null)
+            if(dropData == null)
             {
-                RemoveDrop(id, isRecycle: false);
-
-                // ʰȡ
-                Debug.Log("PickDrop " + id);
-                logicManager.playerDataManager.GiveItemToPlayer(dropData.ItemId, dropData.Amount);
+                return;
             }
+
+            RemoveDrop(id, isRecycle: false);
+            Debug.Log("PickDrop " + id);
+            logicManager.playerDataManager.GiveItemToPlayer(dropData.ItemId, dropData.Amount);
         }
 
         public void RemoveDrop(long id, bool isRecycle)
@@ -97,7 +103,7 @@ namespace My.Map.Drop
             ItemId = itemId;
             Amount = amount;
             Position = position;
-            this.CreateTime = createTime;
+            CreateTime = createTime;
             AutoPick = autoPick;
         }
     }

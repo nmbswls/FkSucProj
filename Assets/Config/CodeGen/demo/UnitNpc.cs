@@ -46,8 +46,6 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["vision_range"].IsNumber) { throw new SerializationException(); }  VisionRange = _buf["vision_range"]; }
         { if(!_buf["vision_fov_deg"].IsNumber) { throw new SerializationException(); }  VisionFovDeg = _buf["vision_fov_deg"]; }
         { if(!_buf["mind_tag"].IsString) { throw new SerializationException(); }  MindTag = _buf["mind_tag"]; }
-        { if(!_buf["fallback_drop_id"].IsNumber) { throw new SerializationException(); }  FallbackDropId = _buf["fallback_drop_id"]; }
-        { if(!_buf["lock_initial_face"].IsBoolean) { throw new SerializationException(); }  LockInitialFace = _buf["lock_initial_face"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -164,14 +162,6 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// mind_tag
     /// </summary>
     public string MindTag;
-    /// <summary>
-    /// fallback_drop_id
-    /// </summary>
-    public int FallbackDropId;
-    /// <summary>
-    /// False
-    /// </summary>
-    public bool LockInitialFace;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -211,8 +201,6 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "visionRange:" + VisionRange + ","
         + "visionFovDeg:" + VisionFovDeg + ","
         + "mindTag:" + MindTag + ","
-        + "fallbackDropId:" + FallbackDropId + ","
-        + "lockInitialFace:" + LockInitialFace + ","
         + "}";
     }
 }

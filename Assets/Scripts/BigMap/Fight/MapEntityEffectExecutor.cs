@@ -2335,18 +2335,26 @@ namespace My.Map.Entity
                 if (absorb)
                 {
                     Debug.Log("AbilityEffectExecutor4HModeBlurt sj to player");
-                    //ctx.Env.viewer.ShowPauseCloseupWindow("jingyu", 0.5f);
                     ctx.Env.viewer.ShowFakeFxEffect("精浴", ctx.Env.playerLogicEntity.Pos);
 
                     var goodVal = sjAmount * 0.5f;
-                    ctx.Env.playerLogicEntity.ApplyResourceChange(AttrIdConsts.PlayerJingYu, (long)(goodVal * 1000), false, Fight.FightStruct.EDmgFlag.None, npcUnit.Id);
+                    ctx.Env.playerLogicEntity.OnAbsorbBlurtDirectly(goodVal, npcUnit);
                 }
                 else
                 {
                     var dropPos = npcUnit.Pos + npcUnit.CurrentLook * 0.5f;
+                    float perDropAmount = sjAmount / 4f;
+                    var dropAmount = Mathf.Max(1, Mathf.RoundToInt(perDropAmount * 1000f));
+                    var pickupItemId = npcUnit.BlurtDropItemId;
+
                     for (int i = 0; i < 4; i++)
                     {
-                        ctx.Env.globalDropCollection.CreateDrop("j_drop_small", 1, dropPos + UnityEngine.Random.insideUnitCircle * 0.5f, true, npcUnit.Pos);
+                        ctx.Env.globalDropCollection.CreateDrop(
+                            string.IsNullOrEmpty(pickupItemId) ? "j_drop_small" : pickupItemId,
+                            dropAmount,
+                            dropPos + UnityEngine.Random.insideUnitCircle * 0.5f,
+                            true,
+                            npcUnit.Pos);
                     }
 
                     ctx.Env.viewer.ShowFakeFxEffect("落地", dropPos);

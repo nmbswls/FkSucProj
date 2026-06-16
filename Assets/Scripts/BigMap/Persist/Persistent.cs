@@ -123,6 +123,9 @@ namespace My.Map.Logic
         // 欲望结晶类型 id（TbDesireCrystalDef）；空表示当前未附着；在刷新/生成时已决定，非死亡掉落时再算
         public string AttachedDesireCrystalTypeId = string.Empty;
 
+        // 生成时掷出的精型 type_id（TbJingYuanTypeDef）；空表示无精型
+        public string RolledJingyuanTypeId = string.Empty;
+
         // 路网巡逻：对应导出的 PortalNetworkProvider.networkId；空且仅一张网时自动用该网
         public string PatrolPortalNetworkId = string.Empty;
 

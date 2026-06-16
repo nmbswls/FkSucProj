@@ -21,6 +21,7 @@ using UnityEngine;
 using static MapSceneEffectManager;
 using static My.Map.Fight.FightStruct;
 using static My.MapExport.MapExportDatabase;
+using My.Home;
 
 namespace My
 {
@@ -186,8 +187,6 @@ namespace My
             DropUtils.InitializeDropGroups();
 
             
-
-
             CapturePersistenceFromSaveData(saveData);
 
             BindSecretBaseOnInit();
@@ -728,6 +727,43 @@ namespace My
 
                         var totalAdd = addPerUse * (int)Mathf.Clamp(cnt, 1, 1000);
                         worldPersistState?.AddLogicAreaControl(logicAreaId, totalAdd);
+                    }
+                    break;
+                case EItemUseType.AddJingYuanCodexProgress:
+                    {
+                        var codexId = useRow.S1;
+                        if (string.IsNullOrEmpty(codexId))
+                        {
+                            Debug.LogWarning("HandleUseItem AddJingYuanCodexProgress: empty codex_id.");
+                            break;
+                        }
+
+                        int useCnt = (int)Mathf.Clamp(cnt, 1, 1000);
+                        int extractAdd = (int)Mathf.Max(0, useRow.P1) * useCnt;
+                        long amountAdd = (long)Mathf.Max(0, useRow.P2) * useCnt;
+                        playerDataManager.JingYuanCodexSystem?.AddProgress(
+                            codexId,
+                            extractAdd,
+                            amountAdd,
+                            Player.EJingYuanProgressSource.ItemGrant);
+                    }
+                    break;
+                case EItemUseType.AddJingYuanCodexBlurtDrop:
+                    {
+                        var codexId = useRow.S1;
+                        if (string.IsNullOrEmpty(codexId))
+                        {
+                            Debug.LogWarning("HandleUseItem AddJingYuanCodexBlurtDrop: empty codex_id.");
+                            break;
+                        }
+
+                        int extractAdd = (int)Mathf.Max(0, useRow.P1);
+                        long amountAdd = (long)Mathf.Max(0, cnt);
+                        playerDataManager.JingYuanCodexSystem?.AddProgress(
+                            codexId,
+                            extractAdd,
+                            amountAdd,
+                            Player.EJingYuanProgressSource.ItemGrant);
                     }
                     break;
             }

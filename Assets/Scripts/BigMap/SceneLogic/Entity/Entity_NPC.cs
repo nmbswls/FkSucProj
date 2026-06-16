@@ -83,6 +83,14 @@ namespace My.Map
         public bool HasAttachedDesireCrystal =>
             !string.IsNullOrEmpty(NpcRecord.AttachedDesireCrystalTypeId);
 
+        // 运行时掷出的精型，对应图鉴 match_tag
+        public string JingyuanMatchTag =>
+            My.Config.JingYuanTypeCatalog.GetMatchTag(NpcRecord?.RolledJingyuanTypeId);
+
+        // 喷射落地掉落物 id，由精型推导
+        public string BlurtDropItemId =>
+            My.Config.JingYuanCodexCatalog.GetPickupItemIdByMatchTag(JingyuanMatchTag);
+
         public NpcUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
@@ -581,7 +589,7 @@ namespace My.Map
 
                     OnNpcBlurt(sjAmount, dmgPerAmount);
 
-                    player.OnAbsorbBlurtDirectly(sjAmount);
+                    player.OnAbsorbBlurtDirectly(sjAmount, this);
 
                     LogicManager.viewer.ShowFakeFxEffect("内射", this.Pos);
 

@@ -1,6 +1,7 @@
 using System;
 using cfg.demo;
 using My.Map;
+using My.Player;
 using UnityEngine;
 
 namespace My.Quest
@@ -65,6 +66,47 @@ namespace My.Quest
 
     public struct PlayerTempSkillChangedEvent
     {
+    }
+
+    public struct PlayerJingYuanCodexProgressEvent
+    {
+        public string CodexId;
+        public int ExtractCount;
+        public long TotalAmount;
+        public int Level;
+        public EJingYuanProgressSource Source;
+    }
+
+    public struct PlayerJingYuanCodexLevelUpEvent
+    {
+        public string CodexId;
+        public int OldLevel;
+        public int NewLevel;
+    }
+
+    public struct PlayerJingYuanTuneEquipChangedEvent
+    {
+        public int Slot;
+        public string CodexId;
+    }
+
+    // 玩家吸收 NPC 射精（内射/近距离吸收）
+    public struct PlayerJingYuanBlurtAbsorbedEvent
+    {
+        public string JingyuanTag;
+        public float SjAmount;
+    }
+
+    // 玩家逻辑实体已就绪（区域加载完成）
+    public struct PlayerEntityReadyEvent
+    {
+    }
+
+    public struct PlayerResourceChangedEvent
+    {
+        public string AttrId;
+        public long Before;
+        public long After;
     }
 
     public static class PlayerEventBus

@@ -349,6 +349,7 @@ namespace My.Map
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
+            attributeStore.RegisterResource(AttrIdConsts.PlayerTiaoJingConcentration, null, 1000_000, 0);
 
         }
 
@@ -413,6 +414,15 @@ namespace My.Map
                             HandlePlayerKnockDownFull();
                         }
                     }
+                    break;
+
+                case AttrIdConsts.PlayerTiaoJingConcentration:
+                    My.Quest.PlayerEventBus.Publish(new My.Quest.PlayerResourceChangedEvent
+                    {
+                        AttrId = attrId,
+                        Before = before,
+                        After = after,
+                    });
                     break;
             }
         }
@@ -2033,8 +2043,7 @@ namespace My.Map
         /// <summary>
         /// 直接吸收
         /// </summary>
-        /// <param name="absorbVal"></param>
-        public void OnAbsorbBlurtDirectly(float absorbVal)
+        public void OnAbsorbBlurtDirectly(float absorbVal, NpcUnitLogicEntity sourceNpc = null)
         {
             long hungerBaseRate = 2000;
             var hungerVal = (long)(absorbVal * (hungerBaseRate * 0.0001) * 10000);
@@ -2064,6 +2073,16 @@ namespace My.Map
             if(toJingYu * 1000 > 0)
             {
                 ApplyResourceChange(AttrIdConsts.PlayerJingYu, (long)(toJingYu * 1000), false, EDmgFlag.None, null);
+            }
+
+            var jingyuanTag = sourceNpc?.JingyuanMatchTag;
+            if (!string.IsNullOrEmpty(jingyuanTag) && absorbVal > 0f)
+            {
+                My.Quest.PlayerEventBus.Publish(new My.Quest.PlayerJingYuanBlurtAbsorbedEvent
+                {
+                    JingyuanTag = jingyuanTag,
+                    SjAmount = absorbVal,
+                });
             }
         }
 

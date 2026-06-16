@@ -18,15 +18,20 @@ namespace My.Player
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
         public ProgressionAggregator BodyPartAggregator { get; private set; }
+        public ProgressionAggregator JingYuanCodexAggregator { get; private set; }
         public bool IsBodyPartBound { get; private set; }
+        public bool IsJingYuanCodexBound { get; private set; }
 
         BodyPartProgressionProvider _boundBodyPartProvider;
+        JingYuanCodexProgressionProvider _boundJingYuanCodexProvider;
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             LogicManager = ctx;
             IsBodyPartBound = false;
+            IsJingYuanCodexBound = false;
             _boundBodyPartProvider = null;
+            _boundJingYuanCodexProvider = null;
 
             TalentManager = new PlayerTalentManager();
             TalentManager.Initialize(ctx, savingData);
@@ -38,12 +43,14 @@ namespace My.Player
             BaseStats.Initialize(savingData);
 
             BodyPartAggregator = new ProgressionAggregator("BodyPart");
+            JingYuanCodexAggregator = new ProgressionAggregator("JingYuanCodex");
 
             ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
             ProgressionRoot.AddChild(GearManager.GearAggregator);
             ProgressionRoot.AddChild(TalentManager.TalentAggregator);
             ProgressionRoot.AddChild(BodyPartAggregator);
+            ProgressionRoot.AddChild(JingYuanCodexAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) =>
             {
@@ -56,6 +63,24 @@ namespace My.Player
         public void PostInit(PlayerSystemManager owner)
         {
             BindBodyPartSystem(owner?.BodyPartSystem);
+            BindJingYuanCodexSystem(owner?.JingYuanCodexSystem);
+        }
+
+        void BindJingYuanCodexSystem(PlayerJingYuanCodexSystem codexSystem)
+        {
+            if (JingYuanCodexAggregator == null || codexSystem == null)
+            {
+                return;
+            }
+
+            if (_boundJingYuanCodexProvider != null)
+            {
+                JingYuanCodexAggregator.RemoveChild(_boundJingYuanCodexProvider);
+            }
+
+            _boundJingYuanCodexProvider = codexSystem.ProgressionProvider;
+            JingYuanCodexAggregator.AddChild(_boundJingYuanCodexProvider);
+            IsJingYuanCodexBound = true;
         }
 
         void BindBodyPartSystem(PlayerBodyPartSystem bodyPartSystem)

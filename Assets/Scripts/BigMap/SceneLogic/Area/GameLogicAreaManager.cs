@@ -6,6 +6,7 @@ using My.Dungeon;
 using My.Map;
 using My.Map.Entity;
 using My.MapExport;
+using My.Quest;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -811,6 +812,7 @@ namespace My.Map.Logic
                 logicManager.worldPersistState?.NpcCharacters.TryApplyToRecordBeforeSpawn(npcRec);
                 DesireDensitySpawnLogic.ApplyOnNpcRecord(npcRec);
                 DesireCrystalSpawnLogic.ApplyOnNpcBeforeSpawn(logicManager, this, npcRec);
+                JingYuanTypeSpawnLogic.ApplyOnNpcBeforeSpawn(logicManager, this, npcRec);
             }
 
             logicManager.worldPersistState?.MapInteractPoints.TryApplyToRecordBeforeSpawn(rec);
@@ -835,6 +837,8 @@ namespace My.Map.Logic
                 {
                     logicManager.RestorePendingPlayerBuffsIfAny(buffOwner);
                 }
+
+                PlayerEventBus.Publish(new PlayerEntityReadyEvent());
             }
 
             return ent;

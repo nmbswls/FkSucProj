@@ -6,7 +6,7 @@ using My.Map.Entity;
 
 namespace My.Map.Fight
 {
-    // 和平战斗限制 buff 的统一挂卸：全图 mark、掌控城镇、Zone trigger
+    // 和平战斗限制 buff 的统一挂卸：全图 mark、掌控城镇、Zone 脚底扫描
     public static class PeaceCombatBuffRefresh
     {
         public const string MapPeaceBuffId = "map_peace_mark";

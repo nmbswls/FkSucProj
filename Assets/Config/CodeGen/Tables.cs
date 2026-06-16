@@ -112,6 +112,12 @@ public partial class Tables
     /// 家园建筑升级项
     /// </summary>
     public demo.TbHomesteadBuildingUpgrade TbHomesteadBuildingUpgrade {get; }
+    public demo.TbJingYuanCodexDef TbJingYuanCodexDef {get; }
+    public demo.TbJingYuanCodexLevel TbJingYuanCodexLevel {get; }
+    public demo.TbJingYuanTuneTier TbJingYuanTuneTier {get; }
+    public demo.TbTiaoJingConcentrationLevel TbTiaoJingConcentrationLevel {get; }
+    public demo.TbJingYuanTypeDef TbJingYuanTypeDef {get; }
+    public demo.TbJingYuanTypePoolEntry TbJingYuanTypePoolEntry {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -195,6 +201,12 @@ public partial class Tables
         TbEntitySkillLevel = new demo.TbEntitySkillLevel(loader("demo_tbentityskilllevel"));
         TbHomesteadBuilding = new demo.TbHomesteadBuilding(loader("demo_tbhomesteadbuilding"));
         TbHomesteadBuildingUpgrade = new demo.TbHomesteadBuildingUpgrade(loader("demo_tbhomesteadbuildingupgrade"));
+        TbJingYuanCodexDef = new demo.TbJingYuanCodexDef(loader("demo_tbjingyuancodexdef"));
+        TbJingYuanCodexLevel = new demo.TbJingYuanCodexLevel(loader("demo_tbjingyuancodexlevel"));
+        TbJingYuanTuneTier = new demo.TbJingYuanTuneTier(loader("demo_tbjingyuantunetier"));
+        TbTiaoJingConcentrationLevel = new demo.TbTiaoJingConcentrationLevel(loader("demo_tbtiaojingconcentrationlevel"));
+        TbJingYuanTypeDef = new demo.TbJingYuanTypeDef(loader("demo_tbjingyuantypedef"));
+        TbJingYuanTypePoolEntry = new demo.TbJingYuanTypePoolEntry(loader("demo_tbjingyuantypepoolentry"));
         ResolveRef();
     }
     
@@ -280,6 +292,12 @@ public partial class Tables
         TbEntitySkillLevel.ResolveRef(this);
         TbHomesteadBuilding.ResolveRef(this);
         TbHomesteadBuildingUpgrade.ResolveRef(this);
+        TbJingYuanCodexDef.ResolveRef(this);
+        TbJingYuanCodexLevel.ResolveRef(this);
+        TbJingYuanTuneTier.ResolveRef(this);
+        TbTiaoJingConcentrationLevel.ResolveRef(this);
+        TbJingYuanTypeDef.ResolveRef(this);
+        TbJingYuanTypePoolEntry.ResolveRef(this);
     }
 }
 

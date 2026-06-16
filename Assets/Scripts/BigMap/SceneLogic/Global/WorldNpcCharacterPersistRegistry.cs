@@ -66,6 +66,7 @@ namespace My
                 LocalSwitches = CloneList(s.LocalSwitches),
                 DesireCrystalTaken = s.DesireCrystalTaken,
                 DesireCrystalTakenDay = s.DesireCrystalTakenDay,
+                RolledJingyuanTypeId = s.RolledJingyuanTypeId,
                 FinishedUniqDreamingIds = s.FinishedUniqDreamingIds != null
                     ? new List<string>(s.FinishedUniqDreamingIds)
                     : new List<string>(),
@@ -429,6 +430,39 @@ namespace My
             }
 
             st.DesireCrystalTaken = taken;
+        }
+
+        public bool TryGetRolledJingyuanTypeId(string characterKey, out string typeId)
+        {
+            typeId = null;
+            if (string.IsNullOrEmpty(characterKey))
+            {
+                return false;
+            }
+
+            if (!_byKey.TryGetValue(characterKey, out var st) || st == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(st.RolledJingyuanTypeId))
+            {
+                return false;
+            }
+
+            typeId = st.RolledJingyuanTypeId;
+            return true;
+        }
+
+        public void SetRolledJingyuanTypeId(string characterKey, string typeId)
+        {
+            if (string.IsNullOrEmpty(characterKey) || string.IsNullOrEmpty(typeId))
+            {
+                return;
+            }
+
+            var st = GetOrCreate(characterKey);
+            st.RolledJingyuanTypeId = typeId;
         }
 
         public void RestoreNamedNpcDesireCrystal(string characterKey)

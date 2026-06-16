@@ -116,6 +116,11 @@ namespace My.Saving
         public List<string> UnlockedRuneUpgradeIds = new();
         public List<RuneEquipPersist> EquippedRunes = new();
 
+        // 魅魔精元图鉴进度与调精装备
+        public List<JingYuanCodexProgressPersist> JingYuanCodexProgress = new();
+        public List<JingYuanTuneEquipPersist> EquippedJingYuanTunes = new();
+        public long TiaoJingConcentration;
+
         // 本地玩家功能解锁（原 SaveData 根级 FuncOpenList 已迁入）
         public List<EFuncOpenType> FuncOpenList = new();
     }
@@ -145,6 +150,21 @@ namespace My.Saving
     {
         public int Slot;
         public string RuneId;
+    }
+
+    [Serializable]
+    public class JingYuanCodexProgressPersist
+    {
+        public string CodexId;
+        public int ExtractCount;
+        public long TotalAmount;
+    }
+
+    [Serializable]
+    public class JingYuanTuneEquipPersist
+    {
+        public int Slot;
+        public string CodexId;
     }
 
     [Serializable]
@@ -221,6 +241,9 @@ namespace My.Saving
 
         public bool DesireCrystalTaken;
         public int DesireCrystalTakenDay; // 获取天数
+
+        // 具名 NPC 掷出的精型 type_id，跨地图持久
+        public string RolledJingyuanTypeId = string.Empty;
 
         public List<string> FinishedUniqDreamingIds = new(); // 已完成的唯一入梦入口
 

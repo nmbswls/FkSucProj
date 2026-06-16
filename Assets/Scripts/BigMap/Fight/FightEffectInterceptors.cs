@@ -3,7 +3,7 @@ using My.Map.Entity;
 
 namespace My.Map.Fight
 {
-    public readonly struct FightEffectInterceptContext
+    public struct FightEffectInterceptContext
     {
         public GameLogicManager Env;
         public long SrcEntityId;

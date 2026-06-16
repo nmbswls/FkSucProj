@@ -33,9 +33,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "orc_common",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": "orc_common"
   },
   {
     "id": "initial_orc_02",
@@ -71,9 +69,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "initial_orc_big",
@@ -109,9 +105,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "game_init_luca_injured",
@@ -145,9 +139,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "qigai_default",
@@ -181,9 +173,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "hunhun",
@@ -219,9 +209,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "slime_red",
@@ -257,9 +245,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "civil",
@@ -293,9 +279,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "civil_sleeping",
@@ -329,9 +313,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "default_guard_01",
@@ -365,9 +347,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_small_01",
@@ -404,9 +384,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_small_02",
@@ -443,9 +421,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_small_03",
@@ -482,9 +458,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_middle_01",
@@ -521,9 +495,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_middle_02",
@@ -560,9 +532,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_middle_03",
@@ -599,9 +569,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_big_01",
@@ -638,9 +606,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_big_02",
@@ -677,9 +643,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "h_spirit_big_03",
@@ -716,9 +680,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "city_watcher_01",
@@ -750,9 +712,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "summon_ally_turret_01",
@@ -784,9 +744,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "area_cannon_01",
@@ -818,9 +776,7 @@
     "vision_cone_kind": 0,
     "vision_range": 0,
     "vision_fov_deg": 0,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": true
+    "mind_tag": ""
   },
   {
     "id": "homestead_elder",
@@ -850,9 +806,7 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   },
   {
     "id": "homestead_merchant",
@@ -882,8 +836,6 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "mind_tag": ""
   }
 ]

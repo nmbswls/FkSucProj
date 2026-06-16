@@ -19,6 +19,8 @@ namespace cfg.demo
         UseSkill = 3,
         UnlockRuneUpgrade = 4,
         AddMapControl = 5,
+        AddJingYuanCodexProgress = 6,
+        AddJingYuanCodexBlurtDrop = 7,
     }
 
 } 

@@ -60,6 +60,8 @@ namespace My.Player
 
         public PlayerBodyPartSystem BodyPartSystem { get; private set; }
 
+        public PlayerJingYuanCodexSystem JingYuanCodexSystem { get; private set; }
+
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public RumorIntelSystem RumorIntel { get; } = new();
@@ -133,6 +135,7 @@ namespace My.Player
             ItemEnchant = new PlayerItemEnchantSystem(this);
             RuneSystem = new PlayerRuneSystem(this);
             BodyPartSystem = new PlayerBodyPartSystem(this);
+            JingYuanCodexSystem = new PlayerJingYuanCodexSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
@@ -205,6 +208,7 @@ namespace My.Player
             HumanQuickBar.InitSystem(logicManager, savingData);
             ItemEnchant.InitSystem(logicManager, savingData);
             RuneSystem.InitSystem(logicManager, savingData);
+            JingYuanCodexSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
@@ -234,6 +238,7 @@ namespace My.Player
             yield return HumanQuickBar;
             yield return ItemEnchant;
             yield return RuneSystem;
+            yield return JingYuanCodexSystem;
             yield return RumorIntel;
         }
 
@@ -262,6 +267,7 @@ namespace My.Player
 
             HumanQuickBar.WriteToSave(data.PlayerData);
             RuneSystem?.WriteToSave(data.PlayerData);
+            JingYuanCodexSystem?.WriteToSave(data.PlayerData);
 
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
             data.PlayerData.FuncOpenList.Clear();
@@ -370,6 +376,7 @@ namespace My.Player
             FuncOpenSystem.Tick(dt);
             RumorIntel.Tick(dt);
             SkillSystem.Tick(dt);
+            JingYuanCodexSystem.Tick(dt);
         }
 
         public bool CheckHaveItem(string itemId, long count)
@@ -698,6 +705,30 @@ namespace My.Player
                     applied.Add(skillId);
                 }
             }
+
+            if (JingYuanCodexSystem != null)
+            {
+                var tunePassiveScratch = new List<(string skillId, int level)>();
+                JingYuanCodexSystem.CollectEquippedTunePassiveSkills(applied, tunePassiveScratch);
+                foreach (var entry in tunePassiveScratch)
+                {
+                    if (applied.Contains(entry.skillId))
+                    {
+                        Debug.LogWarning("Passive skill in higher priority and tune: " + entry.skillId + ", tune skipped.");
+                        continue;
+                    }
+
+                    var cfg = SkillLibrary.GetSkillConfig(entry.skillId);
+                    if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
+                    {
+                        continue;
+                    }
+
+                    int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(entry.skillId, entry.level);
+                    player.TrySetPassiveSkillBuffLayer(entry.skillId, lvl);
+                    applied.Add(entry.skillId);
+                }
+            }
         }
 
         public bool TryGrantRune(string runeId)
@@ -736,6 +767,28 @@ namespace My.Player
         public bool TryUnequipRune(cfg.demo.ERuneEquipSlot slot)
         {
             if (RuneSystem == null || !RuneSystem.TryUnequip(slot))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryEquipJingYuanTune(int slot, string codexId)
+        {
+            if (JingYuanCodexSystem == null || !JingYuanCodexSystem.TryEquipTune(slot, codexId))
+            {
+                return false;
+            }
+
+            SyncLearnedSkillsToPlayerEntity();
+            return true;
+        }
+
+        public bool TryUnequipJingYuanTune(int slot)
+        {
+            if (JingYuanCodexSystem == null || !JingYuanCodexSystem.TryUnequipTune(slot))
             {
                 return false;
             }
