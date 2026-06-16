@@ -522,6 +522,27 @@ namespace My.Map.Entity
                     var ab = CreateChongZhuangAbility();
                     _abilityDict[ab.Id] = ab;
                 }
+
+                {
+                    var ab = CreateSlimeQuickPokeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateSlimeSlamAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateSlimeSpitAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateSlimeMagicAoeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateSlimeMagicBoltAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
                 
             }
 
@@ -5718,6 +5739,376 @@ namespace My.Map.Entity
             //    };
             //    mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitEffect, Kind = PhaseEventKind.OnEnter });
             //}
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateSlimeQuickPokeAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "slime_quick_poke";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1.5f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.12"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectHitBoxCfg()
+                {
+                    Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
+                    TargetEntityType = EEntityType.Player,
+                    CampFilterType = ECampFilterType.NotSelf,
+                    Width = 0.8f,
+                    Length = 1.0f,
+                    HitResult = new()
+                    {
+                        OnHitEffects = new()
+                        {
+                            new MapFightEffectApplyDamageCfg()
+                            {
+                                BaseDamage = 2800,
+                                KnockBackForce = 0.2f,
+                            },
+                        }
+                    },
+                },
+                Kind = PhaseEventKind.OnEnter
+            });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateSlimeSlamAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "slime_slam";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 2.5f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                ShowRangePreview = true,
+                PreviewIntent = new()
+                {
+                    ShapeInfo = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 1.4f,
+                    },
+                },
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "1.2"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Slam",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectHitBoxCfg()
+                {
+                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                    Radius = 1.4f,
+                    CampFilterType = ECampFilterType.NotSelf,
+                    HitResult = new()
+                    {
+                        OnHitEffects = new()
+                        {
+                            new MapFightEffectApplyDamageCfg()
+                            {
+                                BaseDamage = 14000,
+                                KnockBackForce = 0.9f,
+                            },
+                        }
+                    },
+                },
+                Kind = PhaseEventKind.OnEnter
+            });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateSlimeSpitAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "slime_spit";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 8f;
+            spec.DesiredUseDistance = 6f;
+            spec.DesiredUseAngle = 45f;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            var prePhase = new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.35"
+                },
+            };
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    BulletId = "slime_spit_blob",
+                    MotionData = new ParabolaMotionData()
+                    {
+                        horizontalSpeed = 9f,
+                        arcHeight = 2.5f,
+                        gravity = 22f,
+                        hitRadius = 0.4f,
+                    },
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                    isHoming = true,
+                    homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                    lifeTime = 6f,
+                    showRangeWarn = true,
+                    BulletShape = new Shape()
+                    {
+                        Type = EShapeType.Circle,
+                        Radius = 0.5f,
+                    },
+                    TriggerOnCollide = true,
+                    TriggerOnLifeEnd = true,
+                    BulletHitResult = new HitResult()
+                    {
+                        OnHitEffects = new List<MapFightEffectCfg>
+                        {
+                            new MapAbilityEffectHitBoxCfg()
+                            {
+                                Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                Radius = 0.9f,
+                                CampFilterType = ECampFilterType.NotSelf,
+                                HitResult = new HitResult()
+                                {
+                                    OnHitEffects = new List<MapFightEffectCfg>
+                                    {
+                                        new MapFightEffectApplyDamageCfg()
+                                        {
+                                            BaseDamage = 6000,
+                                            KnockBackForce = 0.3f,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                },
+                Kind = PhaseEventKind.OnExit
+            });
+
+            spec.Phases.Add(prePhase);
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateSlimeMagicAoeAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "slime_magic_aoe";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Circle;
+            spec.Range1 = 5f;
+            spec.Range2 = 1.5f;
+            spec.DesiredUseDistance = 5f;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Prepare",
+                LockMovement = true,
+                LockRotation = true,
+                ShowRangePreview = true,
+                PreviewIntent = new()
+                {
+                    ShapeInfo = new FightStruct.Shape()
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 1.5f,
+                    },
+                },
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.9"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectHitBoxCfg()
+                {
+                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                    Radius = 1.5f,
+                    CampFilterType = ECampFilterType.NotSelf,
+                    CenterPosType = 1,
+                    HitResult = new()
+                    {
+                        OnHitEffects = new()
+                        {
+                            new MapFightEffectApplyDamageCfg()
+                            {
+                                BaseDamage = 8500,
+                                KnockBackForce = 0.5f,
+                            },
+                        }
+                    },
+                },
+                Kind = PhaseEventKind.OnEnter
+            });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateSlimeMagicBoltAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "slime_magic_bolt";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Directional;
+            spec.Range1 = 7f;
+            spec.DesiredUseDistance = 6f;
+            spec.DesiredUseAngle = 30f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.4"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15"
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent()
+            {
+                Effect = new MapAbilityEffectSpawnBulletCfg()
+                {
+                    BulletId = "slime_magic_bolt",
+                    MotionData = new LinearMotionData()
+                    {
+                        speed = 10f,
+                    },
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                    lifeTime = 4f,
+                    bulletMaxPenetration = 1,
+                    TriggerOnCollide = true,
+                    BulletShape = new Shape()
+                    {
+                        Type = EShapeType.Circle,
+                        Radius = 0.35f,
+                    },
+                    BulletHitResult = new HitResult()
+                    {
+                        OnHitEffects = new List<MapFightEffectCfg>
+                        {
+                            new MapFightEffectApplyDamageCfg()
+                            {
+                                BaseDamage = 5500,
+                                KnockBackForce = 0.25f,
+                            }
+                        }
+                    },
+                },
+                Kind = PhaseEventKind.OnExit
+            });
 
             spec.Phases.Add(mainPhase);
             return spec;

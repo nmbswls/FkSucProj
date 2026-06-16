@@ -197,6 +197,43 @@ public class ConsoleGM : MonoBehaviour
                 });
             });
         
+        Register("slime_test", "刷基础史莱姆变体：无参刷全部5种，有参指定 cfgId（如 slime_green）",
+            null,
+            args =>
+            {
+                var glm = MainGameManager.Instance.gameLogicManager;
+                var playerPos = MainGameManager.Instance.playerScenePresenter.transform.position;
+                var slimeIds = new[]
+                {
+                    "slime_red",
+                    "slime_green",
+                    "slime_brown",
+                    "slime_orange",
+                    "slime_crystal",
+                };
+
+                if (args != null && args.Count > 0 && !string.IsNullOrEmpty(args[0]))
+                {
+                    slimeIds = new[] { args[0] };
+                }
+
+                for (int i = 0; i < slimeIds.Length; i++)
+                {
+                    var offset = new Vector3(2f + i * 1.5f, 1.5f, 0f);
+                    glm.AddNewEntityRecord(new LogicEntityRecord4Npc()
+                    {
+                        Id = GameLogicManager.LogicEntityIdInst++,
+                        EntityType = EEntityType.Npc,
+                        CfgId = slimeIds[i],
+                        Position = playerPos + offset,
+                        FactionId = EFactionId.None,
+                        IsPeace = false,
+                        MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.Hunting,
+                        EnmityConfId = "default_monster",
+                    });
+                }
+            });
+
 
         Register("dump_player_attr", "Print all registered numeric and resource attributes on the player",
             null,

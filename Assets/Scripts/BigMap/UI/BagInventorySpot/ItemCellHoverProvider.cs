@@ -8,8 +8,16 @@ namespace My.UI
     public class ItemCellHoverProvider : BaseUIHoverProvider
     {
         ItemCellBase _cell;
+        bool _nameOnlyTip;
 
         public ItemCellBase Cell => _cell;
+
+        public void SetNameOnlyTip(bool nameOnly)
+        {
+            _nameOnlyTip = nameOnly;
+        }
+
+        public bool IsNameOnlyTip => _nameOnlyTip;
 
         protected override void Awake()
         {

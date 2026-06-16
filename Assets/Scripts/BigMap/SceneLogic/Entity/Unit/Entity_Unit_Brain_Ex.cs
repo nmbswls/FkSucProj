@@ -706,6 +706,7 @@ namespace My.Map.Unit
         public float OverTimeLimit = 15f;
 
         private float attackRestTimer = 0; // 暂停攻击逻辑
+        private float _postAttackRetreatUntil = 0f;
 
 
         private EntitySkillData? intentSkillCfgOrigin;
@@ -734,8 +735,15 @@ namespace My.Map.Unit
             _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "杀", 1.0f); 
         }
 
-        private void ResetAttackState()
+        private void ResetAttackState(bool completedCast = false)
         {
+            if (completedCast
+                && _brain.Config.CombatMoveStyle == ECombatMoveStyle.HitAndRun
+                && _currentTarget != null)
+            {
+                _postAttackRetreatUntil = LogicTime.time + 1.0f;
+            }
+
             attackRestTimer = LogicTime.time;
             intentSkillCfgOrigin = null;
             intentAbilityCfgCurrent = null;
@@ -753,9 +761,18 @@ namespace My.Map.Unit
                 return;
             }
 
-            if(attackRestTimer != 0 && LogicTime.time - attackRestTimer < 3.0f)
+            if(attackRestTimer != 0 && LogicTime.time - attackRestTimer < _brain.Config.AttackRestDuration)
             {
                 return;
+            }
+
+            if (_brain.Config.CombatMoveStyle == ECombatMoveStyle.Caster && _currentTarget != null)
+            {
+                var distToTarget = (_brain.NpcEntity.Pos - _currentTarget.Pos).magnitude;
+                if (distToTarget < _brain.Config.CombatCloseDistance)
+                {
+                    return;
+                }
             }
 
             var anyReady = _brain.NpcEntity.ablilityManager.CheckAnyReadySkill();
@@ -881,33 +898,104 @@ namespace My.Map.Unit
             {
                 var diff = _brain.NpcEntity.Pos - _currentTarget.Pos;
                 var distToTarget = diff.magnitude;
+                UpdateCombatMovement(diff, distToTarget);
+            }
+        }
 
-                // 超过远距离
-                if (_brain.Config.CombatFarDistance > 0 && distToTarget > _brain.Config.CombatFarDistance)
-                {
-                    Debug.Log("fast mo TryMoveTo player");
-                    // 快速移动
-                    _brain.NpcEntity.TryMoveTo(_currentTarget.Pos);
-                }
-                // 低于最近距离
-                else if (_brain.Config.CombatCloseDistance > 0 && distToTarget <= _brain.Config.CombatCloseDistance)
-                {
-                    Debug.Log("too close");
+        private void UpdateCombatMovement(Vector2 diff, float distToTarget)
+        {
+            var cfg = _brain.Config;
+            var style = cfg.CombatMoveStyle;
 
-                    _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (diff.normalized) * 0.5f, moveSpeedRate: 0.5f);
-                }
-                else
-                {
-                    Debug.Log("keep distance");
-                    // 计算切线方向 (左手定则或右手定则)
-                    Vector2 tangentDir = new Vector3(-diff.y, diff.x);
-                    // 根据时间计算偏移量 (-1 到 1 之间波动)
-                    float sineValue = Mathf.Sin(LogicTime.time * 1.0f + 0.0f);
-                    var _strafeAmplitude = 0.5f;
+            if (style == ECombatMoveStyle.HitAndRun
+                && _postAttackRetreatUntil > LogicTime.time
+                && _currentTarget != null)
+            {
+                var away = (_brain.NpcEntity.Pos - _currentTarget.Pos).normalized;
+                _brain.NpcEntity.TryMoveTo(
+                    _brain.NpcEntity.Pos + away * cfg.PostAttackRetreatDist,
+                    moveSpeedRate: 1.2f);
+                return;
+            }
 
-                    // 最终目标点 = 槽位中心 + 切线方向偏移
-                    _brain.NpcEntity.TryMoveTo(_brain.NpcEntity.Pos + (tangentDir * sineValue * _strafeAmplitude), moveSpeedRate: 0.25f);
-                }
+            switch (style)
+            {
+                case ECombatMoveStyle.Kiting:
+                case ECombatMoveStyle.Caster:
+                    if (distToTarget < cfg.CombatCloseDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + diff.normalized * 0.5f,
+                            moveSpeedRate: 1.2f);
+                    }
+                    else if (distToTarget > cfg.CombatFarDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, moveSpeedRate: 0.8f);
+                    }
+                    else
+                    {
+                        Vector2 tangentDir = new Vector2(-diff.y, diff.x);
+                        float sineValue = Mathf.Sin(LogicTime.time * 1.0f);
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + tangentDir * sineValue * 0.5f,
+                            moveSpeedRate: 0.5f);
+                    }
+                    break;
+
+                case ECombatMoveStyle.HitAndRun:
+                    if (distToTarget > cfg.CombatCloseDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, moveSpeedRate: 1.2f);
+                    }
+                    else if (distToTarget <= cfg.CombatCloseDistance * 0.8f)
+                    {
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + diff.normalized * 0.5f,
+                            moveSpeedRate: 1.0f);
+                    }
+                    break;
+
+                case ECombatMoveStyle.SlowHeavy:
+                    if (distToTarget > cfg.CombatFarDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(_currentTarget.Pos, moveSpeedRate: 0.6f);
+                    }
+                    else if (distToTarget <= cfg.CombatCloseDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + diff.normalized * 0.5f,
+                            moveSpeedRate: 0.5f);
+                    }
+                    else
+                    {
+                        Vector2 tangentDir = new Vector2(-diff.y, diff.x);
+                        float sineValue = Mathf.Sin(LogicTime.time * 0.8f);
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + tangentDir * sineValue * 0.3f,
+                            moveSpeedRate: 0.25f);
+                    }
+                    break;
+
+                default:
+                    if (cfg.CombatFarDistance > 0 && distToTarget > cfg.CombatFarDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(_currentTarget.Pos);
+                    }
+                    else if (cfg.CombatCloseDistance > 0 && distToTarget <= cfg.CombatCloseDistance)
+                    {
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + diff.normalized * 0.5f,
+                            moveSpeedRate: 0.5f);
+                    }
+                    else
+                    {
+                        Vector2 tangentDir = new Vector2(-diff.y, diff.x);
+                        float sineValue = Mathf.Sin(LogicTime.time * 1.0f);
+                        _brain.NpcEntity.TryMoveTo(
+                            _brain.NpcEntity.Pos + tangentDir * sineValue * 0.5f,
+                            moveSpeedRate: 0.25f);
+                    }
+                    break;
             }
         }
 
@@ -983,8 +1071,7 @@ namespace My.Map.Unit
                     {
                         if (!_brain.NpcEntity.abilityController.IsRunning)
                         {
-                            // 重置技能释放
-                            ResetAttackState();
+                            ResetAttackState(completedCast: true);
                             return;
                         }
                         break;

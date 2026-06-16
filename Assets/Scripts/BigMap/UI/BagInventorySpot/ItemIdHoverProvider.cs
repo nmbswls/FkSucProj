@@ -8,6 +8,7 @@ namespace My.UI
     {
         string _itemId;
         long _stackCount = 1;
+        bool _nameOnlyTip;
 
         protected override void Awake()
         {
@@ -19,16 +20,25 @@ namespace My.UI
             };
         }
 
-        public void SetItem(string itemId, long stackCount = 1)
+        public void SetItem(string itemId, long stackCount = 1, bool nameOnlyTip = false)
         {
             _itemId = itemId;
             _stackCount = stackCount > 0 ? stackCount : 1;
+            _nameOnlyTip = nameOnlyTip;
         }
+
+        public void SetNameOnlyTip(bool nameOnly)
+        {
+            _nameOnlyTip = nameOnly;
+        }
+
+        public bool IsNameOnlyTip => _nameOnlyTip;
 
         public void ClearItem()
         {
             _itemId = null;
             _stackCount = 1;
+            _nameOnlyTip = false;
         }
 
         public override HoverTipParams? GetSimpleTipInfo()

@@ -5,6 +5,15 @@ using UnityEngine;
 
 namespace My.Map.Unit
 {
+    public enum ECombatMoveStyle
+    {
+        Default,
+        HitAndRun,
+        Kiting,
+        Caster,
+        SlowHeavy,
+    }
+
     // --- 配置 ---
     [System.Serializable]
     public class AIBrainConfig
@@ -16,13 +25,13 @@ namespace My.Map.Unit
         public float SearchDuration = 5.0f;  // 搜索持续时间
         public float IdleWaitTime = 3.0f;
 
-        //public IdleType IdleType = IdleType.StandStill; // 枚举定义闲置类型
-        //public List<Vector3> PatrolPoints;   // 巡逻点数据
-        //public float WanderInterval = 5.0f;
-
         public bool IsPeace; // 和平单位只会逃
         public float CombatCloseDistance = 2.0f;
         public float CombatFarDistance = 5.0f;
+
+        public ECombatMoveStyle CombatMoveStyle = ECombatMoveStyle.Default;
+        public float AttackRestDuration = 3.0f;
+        public float PostAttackRetreatDist = 3.0f;
 
         public string SpecialAnimTag1;
         public string SpecialAnimTag2;
@@ -72,6 +81,43 @@ namespace My.Map.Unit
                     var config = new AIBrainConfig();
                     config.ChaseRange = 1f;
                     _configs[AIBrainConfig.SentryBrainId] = config;
+                }
+
+                {
+                    var config = new AIBrainConfig();
+                    config.CombatMoveStyle = ECombatMoveStyle.HitAndRun;
+                    config.CombatCloseDistance = 1.5f;
+                    config.CombatFarDistance = 4.0f;
+                    config.AttackRestDuration = 1.0f;
+                    config.PostAttackRetreatDist = 3.0f;
+                    _configs["agile_melee"] = config;
+                }
+
+                {
+                    var config = new AIBrainConfig();
+                    config.CombatMoveStyle = ECombatMoveStyle.SlowHeavy;
+                    config.CombatCloseDistance = 2.5f;
+                    config.CombatFarDistance = 3.5f;
+                    config.AttackRestDuration = 2.5f;
+                    _configs["slow_melee"] = config;
+                }
+
+                {
+                    var config = new AIBrainConfig();
+                    config.CombatMoveStyle = ECombatMoveStyle.Kiting;
+                    config.CombatCloseDistance = 4.0f;
+                    config.CombatFarDistance = 7.0f;
+                    config.AttackRestDuration = 1.5f;
+                    _configs["ranged_kiting"] = config;
+                }
+
+                {
+                    var config = new AIBrainConfig();
+                    config.CombatMoveStyle = ECombatMoveStyle.Caster;
+                    config.CombatCloseDistance = 5.0f;
+                    config.CombatFarDistance = 8.0f;
+                    config.AttackRestDuration = 2.0f;
+                    _configs["caster"] = config;
                 }
             }
 
