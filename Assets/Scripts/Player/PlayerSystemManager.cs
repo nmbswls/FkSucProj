@@ -376,7 +376,6 @@ namespace My.Player
             FuncOpenSystem.Tick(dt);
             RumorIntel.Tick(dt);
             SkillSystem.Tick(dt);
-            JingYuanCodexSystem.Tick(dt);
         }
 
         public bool CheckHaveItem(string itemId, long count)

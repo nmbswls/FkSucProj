@@ -8,6 +8,7 @@ using My.Map;
 using System.Collections.Generic;
 using My.Map.Logic;
 using My.MapExport;
+using My.Quest;
 using UnityEngine;
 using UnityEditor.SceneManagement;
 using SuperScrollView;
@@ -106,6 +107,8 @@ namespace My
             SecretBase.Shutdown();
 
             EventOnHardAreaClearStarting?.Invoke();
+
+            PlayerEventBus.Publish(new PlayerEntityDespawnEvent());
 
             DelayedEffectQueue.Clear();
             AreaManager.CleanArea();

@@ -33,7 +33,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": "orc_common"
+    "mind_tag": "orc_common",
+    "jingyuan_pool_id": "orc",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "initial_orc_02",
@@ -69,7 +72,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "orc",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "initial_orc_big",
@@ -105,7 +111,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "orc",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "game_init_luca_injured",
@@ -139,7 +148,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "qigai_default",
@@ -173,7 +185,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "hunhun",
@@ -209,7 +224,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "slime_red",
@@ -245,7 +263,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "civil",
@@ -279,7 +300,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "civil_sleeping",
@@ -313,7 +337,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "default_guard_01",
@@ -347,7 +374,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_small_01",
@@ -384,7 +414,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_small_02",
@@ -421,7 +454,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_small_03",
@@ -458,7 +494,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_middle_01",
@@ -495,7 +534,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_middle_02",
@@ -532,7 +574,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_middle_03",
@@ -569,7 +614,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_big_01",
@@ -606,7 +654,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_big_02",
@@ -643,7 +694,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "h_spirit_big_03",
@@ -680,7 +734,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "city_watcher_01",
@@ -712,7 +769,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "summon_ally_turret_01",
@@ -744,7 +804,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "area_cannon_01",
@@ -776,7 +839,10 @@
     "vision_cone_kind": 0,
     "vision_range": 0,
     "vision_fov_deg": 0,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": true
   },
   {
     "id": "homestead_elder",
@@ -806,7 +872,10 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   },
   {
     "id": "homestead_merchant",
@@ -836,6 +905,9 @@
     "vision_cone_kind": 0,
     "vision_range": -1,
     "vision_fov_deg": -1,
-    "mind_tag": ""
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false
   }
 ]

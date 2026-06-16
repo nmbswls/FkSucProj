@@ -3,6 +3,7 @@ using System;
 using My.Map;
 using System.Collections.Generic;
 using UnityEngine;
+using My.Home;
 using My.Player;
 using My.UI;
 
@@ -32,6 +33,7 @@ namespace My
             public long AddFallenAmount = 0;
             public long FromFallenAmount = 0;
             public long DesireShardAdded = 0;
+            public Dictionary<string, long> TownBuildingOutputs = new();
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -167,6 +169,15 @@ namespace My
 
             //  
             playerDataManager.ProgressionSystem.BaseStats.OnFallenAmountUpdate(playerDataManager.TotalFallPeopleAmount);
+
+            var townOutputs = logicAreaHomesteadManager?.ApplyDailySettlement(playerDataManager);
+            if (townOutputs?.MergedOutputs != null && townOutputs.MergedOutputs.Count > 0)
+            {
+                foreach (var kv in townOutputs.MergedOutputs)
+                {
+                    balanceInfo.TownBuildingOutputs[kv.Key] = kv.Value;
+                }
+            }
 
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);

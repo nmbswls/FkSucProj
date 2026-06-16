@@ -9,7 +9,12 @@ namespace My.UI
     {
         public const string PanelId = "DayPeriodSettlementPanel";
 
+        [SerializeField] TMP_Text titleText;
         [SerializeField] TMP_Text summaryText;
+        [SerializeField] UICommonItemAmountGridView outputGrid;
+        [SerializeField] Button btnDetail;
+        [SerializeField] GameObject detailOverlay;
+        [SerializeField] Button btnDetailClose;
         [SerializeField] Button btnConfirm;
 
         public static void Show(GameLogicManager.OneDayBalanceInfo info)
@@ -28,114 +33,58 @@ namespace My.UI
                 panelId = PanelId;
             }
 
-            EnsureUiBuilt();
-            EnsureRefs();
+            ResolveRefs();
         }
 
-        void EnsureUiBuilt()
+        void ResolveRefs()
         {
-            if (transform.Find("Summary") != null)
-            {
-                return;
-            }
-
-            var rootRt = transform as RectTransform;
-            if (rootRt == null)
-            {
-                return;
-            }
-
-            rootRt.sizeDelta = new Vector2(420f, 220f);
-            var bg = gameObject.GetComponent<Image>();
-            if (bg == null)
-            {
-                bg = gameObject.AddComponent<Image>();
-            }
-
-            bg.color = new Color(0.12f, 0.12f, 0.16f, 0.96f);
-
-            var titleGo = new GameObject("Title", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            titleGo.transform.SetParent(transform, false);
-            var titleRt = titleGo.GetComponent<RectTransform>();
-            titleRt.anchorMin = new Vector2(0f, 1f);
-            titleRt.anchorMax = new Vector2(1f, 1f);
-            titleRt.pivot = new Vector2(0.5f, 1f);
-            titleRt.anchoredPosition = new Vector2(0f, -12f);
-            titleRt.sizeDelta = new Vector2(-32f, 32f);
-            var titleText = titleGo.GetComponent<TextMeshProUGUI>();
-            titleText.fontSize = 22f;
-            titleText.fontStyle = FontStyles.Bold;
-            titleText.alignment = TextAlignmentOptions.Center;
-            titleText.text = "日结算";
-
-            var summaryGo = new GameObject("Summary", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            summaryGo.transform.SetParent(transform, false);
-            var summaryRt = summaryGo.GetComponent<RectTransform>();
-            summaryRt.anchorMin = new Vector2(0f, 0f);
-            summaryRt.anchorMax = new Vector2(1f, 1f);
-            summaryRt.offsetMin = new Vector2(20f, 56f);
-            summaryRt.offsetMax = new Vector2(-20f, -52f);
-            summaryText = summaryGo.GetComponent<TextMeshProUGUI>();
-            summaryText.fontSize = 18f;
-            summaryText.alignment = TextAlignmentOptions.TopLeft;
-
-            var btnGo = new GameObject("BtnConfirm", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-            btnGo.transform.SetParent(transform, false);
-            var btnRt = btnGo.GetComponent<RectTransform>();
-            btnRt.anchorMin = new Vector2(0.5f, 0f);
-            btnRt.anchorMax = new Vector2(0.5f, 0f);
-            btnRt.pivot = new Vector2(0.5f, 0f);
-            btnRt.anchoredPosition = new Vector2(0f, 12f);
-            btnRt.sizeDelta = new Vector2(120f, 36f);
-            btnGo.GetComponent<Image>().color = new Color(0.28f, 0.3f, 0.38f, 1f);
-            btnConfirm = btnGo.GetComponent<Button>();
-
-            var btnTextGo = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-            btnTextGo.transform.SetParent(btnRt, false);
-            var btnTextRt = btnTextGo.GetComponent<RectTransform>();
-            btnTextRt.anchorMin = Vector2.zero;
-            btnTextRt.anchorMax = Vector2.one;
-            btnTextRt.offsetMin = Vector2.zero;
-            btnTextRt.offsetMax = Vector2.zero;
-            var btnText = btnTextGo.GetComponent<TextMeshProUGUI>();
-            btnText.fontSize = 18f;
-            btnText.alignment = TextAlignmentOptions.Center;
-            btnText.text = "确认";
-        }
-
-        void EnsureRefs()
-        {
-            if (summaryText == null)
-            {
-                summaryText = transform.Find("Summary")?.GetComponent<TMP_Text>();
-            }
-
-            if (btnConfirm == null)
-            {
-                btnConfirm = transform.Find("BtnConfirm")?.GetComponent<Button>();
-            }
+            titleText ??= transform.Find("Title")?.GetComponent<TMP_Text>();
+            summaryText ??= transform.Find("Summary")?.GetComponent<TMP_Text>();
+            btnConfirm ??= transform.Find("BtnConfirm")?.GetComponent<Button>();
+            btnDetail ??= transform.Find("BuildingOutputSection/HeaderRow/BtnDetail")?.GetComponent<Button>();
+            detailOverlay ??= transform.Find("DetailOverlay")?.gameObject;
+            btnDetailClose ??= transform.Find("DetailOverlay/DetailBox/BtnClose")?.GetComponent<Button>();
+            outputGrid ??= transform.Find("BuildingOutputSection/OutputGrid")?.GetComponent<UICommonItemAmountGridView>();
         }
 
         public override void Setup(object data = null)
         {
             base.Setup(data);
-            EnsureRefs();
+            ResolveRefs();
+            HideDetailOverlay();
 
             if (data is GameLogicManager.OneDayBalanceInfo info)
             {
-                RefreshSummary(info);
+                Refresh(info);
             }
         }
 
         public override void Show()
         {
             base.Show();
-            EnsureRefs();
+            ResolveRefs();
+            HideDetailOverlay();
+        }
+
+        void Refresh(GameLogicManager.OneDayBalanceInfo info)
+        {
+            if (info == null)
+            {
+                return;
+            }
+
+            if (titleText != null)
+            {
+                titleText.text = "日结算";
+            }
+
+            RefreshSummary(info);
+            outputGrid?.Refresh(info.TownBuildingOutputs);
         }
 
         void RefreshSummary(GameLogicManager.OneDayBalanceInfo info)
         {
-            if (summaryText == null || info == null)
+            if (summaryText == null)
             {
                 return;
             }
@@ -148,27 +97,74 @@ namespace My.UI
 
         void OnEnable()
         {
-            EnsureRefs();
+            ResolveRefs();
+            WireButtons();
+            HideDetailOverlay();
+        }
+
+        void WireButtons()
+        {
             if (btnConfirm != null)
             {
-                btnConfirm.onClick.RemoveAllListeners();
+                btnConfirm.onClick.RemoveListener(Close);
                 btnConfirm.onClick.AddListener(Close);
+            }
+
+            if (btnDetail != null)
+            {
+                btnDetail.onClick.RemoveListener(ShowDetailOverlay);
+                btnDetail.onClick.AddListener(ShowDetailOverlay);
+            }
+
+            if (btnDetailClose != null)
+            {
+                btnDetailClose.onClick.RemoveListener(HideDetailOverlay);
+                btnDetailClose.onClick.AddListener(HideDetailOverlay);
+            }
+        }
+
+        void ShowDetailOverlay()
+        {
+            if (detailOverlay != null)
+            {
+                detailOverlay.SetActive(true);
+            }
+        }
+
+        void HideDetailOverlay()
+        {
+            if (detailOverlay != null)
+            {
+                detailOverlay.SetActive(false);
             }
         }
 
         public void Close()
         {
+            HideDetailOverlay();
             UIManager.Instance.HidePanel(PanelId);
         }
 
         public override bool OnCancel()
         {
+            if (detailOverlay != null && detailOverlay.activeSelf)
+            {
+                HideDetailOverlay();
+                return true;
+            }
+
             Close();
             return true;
         }
 
         public override bool OnConfirm()
         {
+            if (detailOverlay != null && detailOverlay.activeSelf)
+            {
+                HideDetailOverlay();
+                return true;
+            }
+
             Close();
             return true;
         }

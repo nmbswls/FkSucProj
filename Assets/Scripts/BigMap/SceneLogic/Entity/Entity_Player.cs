@@ -417,12 +417,7 @@ namespace My.Map
                     break;
 
                 case AttrIdConsts.PlayerTiaoJingConcentration:
-                    My.Quest.PlayerEventBus.Publish(new My.Quest.PlayerResourceChangedEvent
-                    {
-                        AttrId = attrId,
-                        Before = before,
-                        After = after,
-                    });
+                    LogicManager.playerDataManager?.JingYuanCodexSystem?.ResyncTunePassives();
                     break;
             }
         }
@@ -762,6 +757,22 @@ namespace My.Map
                 ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
             }
 
+            var codexSystem = LogicManager.playerDataManager?.JingYuanCodexSystem;
+            if (codexSystem != null)
+            {
+                var concentration = GetAttr(AttrIdConsts.PlayerTiaoJingConcentration);
+                var concentrationCostPerSec = codexSystem.GetConcentrationDrainCostPerSec(concentration);
+                if (concentrationCostPerSec > 0f)
+                {
+                    ApplyResourceChange(
+                        AttrIdConsts.PlayerTiaoJingConcentration,
+                        -(long)(concentrationCostPerSec * interval * 1000f),
+                        false,
+                        EDmgFlag.None,
+                        null);
+                }
+            }
+
 
             var jingyuVal = GetAttr(AttrIdConsts.PlayerJingYu);
             int jingyuLevel = PlayerGamePlayRule.GetJingYuLevel(jingyuVal);
@@ -812,11 +823,6 @@ namespace My.Map
                     }
                 }
 
-            }
-
-            // 身上有jingyu时 需要累计发情进度
-            if(jingyuLevel > 0)
-            {
             }
         }
 

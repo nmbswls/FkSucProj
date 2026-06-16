@@ -255,6 +255,21 @@
         <var name="Skills" value="10"/>
 		<var name="Map" value="11"/>
 		<var name="Travel" value="12"/>
+        <var name="ProgressionTalents" value="13"/>
+        <var name="ProgressionBodyPart" value="14"/>
+        <var name="ProgressionWorld" value="15"/>
+        <var name="ProgressionRunes" value="16"/>
+        <var name="JingYuanTune" value="17"/>
+    </enum>
+
+    <!-- 养成总面板选项卡：Datas/progression_hub_tab.xlsx，表见 __tables__ -->
+    <enum name="EProgressionHubTab">
+        <var name="Skills" value="0"/>
+        <var name="Talents" value="1"/>
+        <var name="BodyPart" value="2"/>
+        <var name="World" value="3"/>
+        <var name="Runes" value="4"/>
+        <var name="JingYuanTune" value="5"/>
     </enum>
 	
 	<enum name="EDesireDensityType">

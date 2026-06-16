@@ -25,6 +25,7 @@ public sealed partial class HomesteadBuildingUpgrade : Luban.BeanBase
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { var __json0 = _buf["unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  UnlockConds.Add(__v0); }   }
         { var __json0 = _buf["unlock_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  UnlockCosts.Add(__v0); }   }
+        { var __json0 = _buf["daily_outputs"]; if(!__json0.IsArray) { throw new SerializationException(); } DailyOutputs = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  DailyOutputs.Add(__v0); }   }
     }
 
     public static HomesteadBuildingUpgrade DeserializeHomesteadBuildingUpgrade(JSONNode _buf)
@@ -60,6 +61,10 @@ public sealed partial class HomesteadBuildingUpgrade : Luban.BeanBase
     /// 消耗
     /// </summary>
     public System.Collections.Generic.List<demo.TalentUnlockCost> UnlockCosts;
+    /// <summary>
+    /// 每日产出(控制城镇后结算)
+    /// </summary>
+    public System.Collections.Generic.List<demo.TalentUnlockCost> DailyOutputs;
    
     public const int __ID__ = -1985487445;
     public override int GetTypeId() => __ID__;
@@ -68,6 +73,7 @@ public sealed partial class HomesteadBuildingUpgrade : Luban.BeanBase
     {
         foreach (var _e in UnlockConds) { _e?.ResolveRef(tables); }
         foreach (var _e in UnlockCosts) { _e?.ResolveRef(tables); }
+        foreach (var _e in DailyOutputs) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -80,6 +86,7 @@ public sealed partial class HomesteadBuildingUpgrade : Luban.BeanBase
         + "desc:" + Desc + ","
         + "unlockConds:" + Luban.StringUtil.CollectionToString(UnlockConds) + ","
         + "unlockCosts:" + Luban.StringUtil.CollectionToString(UnlockCosts) + ","
+        + "dailyOutputs:" + Luban.StringUtil.CollectionToString(DailyOutputs) + ","
         + "}";
     }
 }

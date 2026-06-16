@@ -851,6 +851,11 @@ namespace My.Map.Logic
             var record = Repo.Records[id];
             var ent = Repo.GetLoaded(id);
 
+            if (record.EntityType == EEntityType.Player)
+            {
+                PlayerEventBus.Publish(new PlayerEntityDespawnEvent());
+            }
+
             ent.OnDespawn(ref record);
             Repo.Loaded.Remove(id);
 

@@ -102,11 +102,9 @@ namespace My.Quest
     {
     }
 
-    public struct PlayerResourceChangedEvent
+    // 玩家逻辑实体即将回收（切图 / despawn）
+    public struct PlayerEntityDespawnEvent
     {
-        public string AttrId;
-        public long Before;
-        public long After;
     }
 
     public static class PlayerEventBus

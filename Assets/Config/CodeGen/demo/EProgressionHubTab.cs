@@ -11,21 +11,14 @@
 
 namespace cfg.demo
 { 
-    public enum EFuncOpenType
+    public enum EProgressionHubTab
     {
-        Invalid = 0,
-        Hunger = 1,
-        Desire = 2,
-        Clothes = 3,
-        Expose = 4,
-        Skills = 10,
-        Map = 11,
-        Travel = 12,
-        ProgressionTalents = 13,
-        ProgressionBodyPart = 14,
-        ProgressionWorld = 15,
-        ProgressionRunes = 16,
-        JingYuanTune = 17,
+        Skills = 0,
+        Talents = 1,
+        BodyPart = 2,
+        World = 3,
+        Runes = 4,
+        JingYuanTune = 5,
     }
 
 } 

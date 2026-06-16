@@ -1,5 +1,10 @@
+using System.Collections.Generic;
+using cfg.demo;
 using My;
+using My.Config;
 using My.Map.Logic;
+using My.Player;
+using My.Quest;
 using My.UI.BodyPart;
 using My.UI.Rune;
 using My.UI.SkillLoadout;
@@ -16,6 +21,7 @@ namespace My.UI
         BodyPart = 2,
         World = 3,
         Runes = 4,
+        JingYuanTune = 5,
     }
 
     public sealed class ProgressionHubOpenArgs
@@ -41,6 +47,7 @@ namespace My.UI
         const string PathGear = "UI/Prefabs/PlayerProgressionHubPanelSub/PlayerGearEquipPanel";
         const string PathWorld = "UI/Prefabs/PlayerProgressionHubPanelSub/GlobalWorldPanel";
         const string PathRune = "UI/Prefabs/PlayerProgressionHubPanelSub/RuneLoadoutPanel";
+        const string PathJingYuanTune = "UI/Prefabs/PlayerProgressionHubPanelSub/JingYuanTunePanel";
 
         public ProgressionHubTab CurrentTab { get; private set; }
 
@@ -52,25 +59,32 @@ namespace My.UI
         RectTransform _gearHost;
         RectTransform _worldHost;
         RectTransform _runeHost;
+        RectTransform _jingYuanHost;
+        Transform _hubTabsRoot;
         Button _tabSkill;
         Button _tabTalent;
         Button _tabGear;
         Button _tabWorld;
         Button _tabRune;
+        Button _tabJingYuan;
+        readonly List<Button> _orderedTabButtons = new List<Button>();
+        ProgressionHubTabBar _tabBar;
         SkillLoadoutPanel _skill;
         TalentTreePanel _talent;
         PlayerGearEquipPanel _gear;
         GlobalWorldPanel _world;
         RuneLoadoutPanel _rune;
+        JingYuanTunePanel _jingYuan;
 
         static readonly Color TabSelectedColor = new Color(0.38f, 0.55f, 0.72f, 1f);
         static readonly Color TabNormalColor = new Color(0.22f, 0.24f, 0.3f, 1f);
 
-        // 与 UIManager 路径对齐：Hub 重复 ShowPanel 时传入的 data；子页按需 Setup
         object _lastHubSetupData;
+        bool _funcOpenSubscribed;
 
         public Button BtnClose;
         public Button BtnBlocker;
+
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId))
@@ -94,9 +108,9 @@ namespace My.UI
 
         public static void OpenBodyPart()
         {
-            if (!BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic()))
+            if (!ProgressionHubTabRules.IsTabOpen(ProgressionHubTab.BodyPart, ResolveGameLogic()))
             {
-                Debug.LogWarning("[PlayerProgressionHubPanel] BodyPart page unavailable: no selectable part.");
+                Debug.LogWarning("[PlayerProgressionHubPanel] BodyPart page unavailable.");
                 Open(ProgressionHubTab.Skills);
                 return;
             }
@@ -108,6 +122,8 @@ namespace My.UI
 
         public static void OpenRunes() => Open(ProgressionHubTab.Runes);
 
+        public static void OpenJingYuanTune() => Open(ProgressionHubTab.JingYuanTune);
+
         public SkillLoadoutPanel SkillPage => _skill;
 
         public TalentTreePanel TalentPage => _talent;
@@ -117,6 +133,8 @@ namespace My.UI
         public GlobalWorldPanel WorldPage => _world;
 
         public RuneLoadoutPanel RunePage => _rune;
+
+        public JingYuanTunePanel JingYuanPage => _jingYuan;
 
         public static void ToggleTab(ProgressionHubTab tab)
         {
@@ -151,19 +169,17 @@ namespace My.UI
             base.Setup(data);
             _lastHubSetupData = data;
             BindShellRefs();
-            if (data is ProgressionHubOpenArgs args)
-            {
-                SelectTab(args.InitialTab);
-            }
-            else
-            {
-                SelectTab(ProgressionHubTab.Skills);
-            }
+            var logic = ResolveGameLogic();
+            var initialTab = data is ProgressionHubOpenArgs args
+                ? args.InitialTab
+                : ProgressionHubTab.Skills;
+            SelectTab(ProgressionHubTabRules.ResolveInitialTab(initialTab, logic));
         }
 
         public override void Show()
         {
             base.Show();
+            EnsureFuncOpenSubscription();
             EnsurePages();
             RefreshHubTabVisuals();
             RefreshActivePage();
@@ -176,22 +192,62 @@ namespace My.UI
             _gear?.Hide();
             _world?.Hide();
             _rune?.Hide();
+            _jingYuan?.Hide();
             base.Hide();
         }
 
         public override void Teardown()
         {
+            UnsubscribeFuncOpen();
             _skill?.Teardown();
             _talent?.Teardown();
             _gear?.Teardown();
             _world?.Teardown();
             _rune?.Teardown();
+            _jingYuan?.Teardown();
             _skill = null;
             _talent = null;
             _gear = null;
             _world = null;
             _rune = null;
+            _jingYuan = null;
             base.Teardown();
+        }
+
+        void EnsureFuncOpenSubscription()
+        {
+            if (_funcOpenSubscribed)
+            {
+                return;
+            }
+
+            PlayerEventBus.Subscribe<PlayerFuncUnlockEvent>(HandlePlayerFuncUnlock);
+            _funcOpenSubscribed = true;
+        }
+
+        void UnsubscribeFuncOpen()
+        {
+            if (!_funcOpenSubscribed)
+            {
+                return;
+            }
+
+            PlayerEventBus.Unsubscribe<PlayerFuncUnlockEvent>(HandlePlayerFuncUnlock);
+            _funcOpenSubscribed = false;
+        }
+
+        void HandlePlayerFuncUnlock(PlayerFuncUnlockEvent e)
+        {
+            if (!IsVisible)
+            {
+                return;
+            }
+
+            RefreshHubTabVisuals();
+            if (!ProgressionHubTabRules.IsTabOpen(CurrentTab, ResolveGameLogic()))
+            {
+                SelectTab(ProgressionHubTabRules.ResolveInitialTab(CurrentTab, ResolveGameLogic()));
+            }
         }
 
         void BindShellRefs()
@@ -208,43 +264,112 @@ namespace My.UI
             _gearHost = root.Find("Window/ContentHost/GearHost") as RectTransform;
             _worldHost = root.Find("Window/ContentHost/WorldHost") as RectTransform;
             _runeHost = root.Find("Window/ContentHost/RuneHost") as RectTransform;
-            _tabSkill = root.Find("Window/HubTabs/TabSkill")?.GetComponent<Button>();
-            _tabTalent = root.Find("Window/HubTabs/TabTalent")?.GetComponent<Button>();
-            _tabGear = root.Find("Window/HubTabs/TabGear")?.GetComponent<Button>();
-            _tabWorld = root.Find("Window/HubTabs/TabWorld")?.GetComponent<Button>();
-            _tabRune = root.Find("Window/HubTabs/TabRune")?.GetComponent<Button>();
-
-            if (_tabSkill != null)
+            _jingYuanHost = root.Find("Window/ContentHost/JingYuanHost") as RectTransform;
+            _hubTabsRoot = root.Find("Window/HubTabs");
+            _tabSkill = _hubTabsRoot?.Find("TabSkill")?.GetComponent<Button>();
+            if (_tabSkill == null)
             {
-                _tabSkill.onClick.RemoveAllListeners();
-                _tabSkill.onClick.AddListener(() => SelectTab(ProgressionHubTab.Skills));
+                _tabSkill = _hubTabsRoot?.Find("TabScrollArea/Viewport/Content/TabSkill")?.GetComponent<Button>();
             }
 
-            if (_tabTalent != null)
-            {
-                _tabTalent.onClick.RemoveAllListeners();
-                _tabTalent.onClick.AddListener(() => SelectTab(ProgressionHubTab.Talents));
-            }
+            _tabTalent = FindTabButton("TabTalent");
+            _tabGear = FindTabButton("TabGear");
+            _tabWorld = FindTabButton("TabWorld");
+            _tabRune = FindTabButton("TabRune");
+            _tabJingYuan = FindTabButton("TabJingYuan");
 
-            if (_tabGear != null)
-            {
-                _tabGear.onClick.RemoveAllListeners();
-                _tabGear.onClick.AddListener(() => SelectTab(ProgressionHubTab.BodyPart));
-            }
+            WireTabButton(_tabSkill, ProgressionHubTab.Skills);
+            WireTabButton(_tabTalent, ProgressionHubTab.Talents);
+            WireTabButton(_tabGear, ProgressionHubTab.BodyPart);
+            WireTabButton(_tabWorld, ProgressionHubTab.World);
+            WireTabButton(_tabRune, ProgressionHubTab.Runes);
+            WireTabButton(_tabJingYuan, ProgressionHubTab.JingYuanTune);
 
-            if (_tabWorld != null)
-            {
-                _tabWorld.onClick.RemoveAllListeners();
-                _tabWorld.onClick.AddListener(() => SelectTab(ProgressionHubTab.World));
-            }
-
-            if (_tabRune != null)
-            {
-                _tabRune.onClick.RemoveAllListeners();
-                _tabRune.onClick.AddListener(() => SelectTab(ProgressionHubTab.Runes));
-            }
-
+            EnsureTabBar();
             WireShellChrome(root);
+        }
+
+        Button FindTabButton(string tabName)
+        {
+            if (_hubTabsRoot == null)
+            {
+                return null;
+            }
+
+            var direct = _hubTabsRoot.Find(tabName);
+            if (direct != null)
+            {
+                return direct.GetComponent<Button>();
+            }
+
+            return _hubTabsRoot.Find($"TabScrollArea/Viewport/Content/{tabName}")?.GetComponent<Button>();
+        }
+
+        void WireTabButton(Button button, ProgressionHubTab tab)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => SelectTab(tab));
+        }
+
+        void EnsureTabBar()
+        {
+            if (_hubTabsRoot == null)
+            {
+                return;
+            }
+
+            if (_tabBar == null)
+            {
+                _tabBar = _hubTabsRoot.GetComponent<ProgressionHubTabBar>();
+                if (_tabBar == null)
+                {
+                    _tabBar = _hubTabsRoot.gameObject.AddComponent<ProgressionHubTabBar>();
+                }
+            }
+
+            BuildOrderedTabButtons();
+            _tabBar.BuildIfNeeded(_hubTabsRoot, _orderedTabButtons);
+            _tabBar.NotifyTabSelected(GetTabIndex(CurrentTab));
+        }
+
+        void BuildOrderedTabButtons()
+        {
+            _orderedTabButtons.Clear();
+            var boundTabs = new Dictionary<ProgressionHubTab, Button>
+            {
+                { ProgressionHubTab.Skills, _tabSkill },
+                { ProgressionHubTab.Talents, _tabTalent },
+                { ProgressionHubTab.BodyPart, _tabGear },
+                { ProgressionHubTab.World, _tabWorld },
+                { ProgressionHubTab.Runes, _tabRune },
+                { ProgressionHubTab.JingYuanTune, _tabJingYuan },
+            };
+
+            var defs = ProgressionHubTabRules.GetSortedTabDefs();
+            if (defs.Count == 0)
+            {
+                _orderedTabButtons.Add(_tabSkill);
+                _orderedTabButtons.Add(_tabTalent);
+                _orderedTabButtons.Add(_tabGear);
+                _orderedTabButtons.Add(_tabWorld);
+                _orderedTabButtons.Add(_tabRune);
+                _orderedTabButtons.Add(_tabJingYuan);
+                return;
+            }
+
+            for (int i = 0; i < defs.Count; i++)
+            {
+                var tab = ProgressionHubTabRules.FromCfgTab(defs[i].TabId);
+                if (boundTabs.TryGetValue(tab, out var button) && button != null && button.gameObject.activeInHierarchy)
+                {
+                    _orderedTabButtons.Add(button);
+                }
+            }
         }
 
         void WireShellChrome(Transform root)
@@ -262,8 +387,6 @@ namespace My.UI
             }
         }
 
-        // Hub 托管子页：Resources 实例化不会自动走 UIManager；此处统一 Instantiate → 绑 Host → Hide。
-        // 子页 Setup 由 ApplySetupForTab 在选中 Tab 时调用，与 UIManager 每次 Show 前再 Setup 的习惯对齐。
         void EnsureEmbeddedPage<T>(
             ref T cache,
             string resourcePath,
@@ -314,6 +437,11 @@ namespace My.UI
             {
                 EnsureEmbeddedPage(ref _rune, PathRune, _runeHost, (p, h) => p.SetProgressionHubHost(h));
             }
+
+            if (_jingYuanHost != null)
+            {
+                EnsureEmbeddedPage(ref _jingYuan, PathJingYuanTune, _jingYuanHost, (p, h) => p.SetProgressionHubHost(h));
+            }
         }
 
         void ApplySetupForTab(ProgressionHubTab tab, object data)
@@ -335,6 +463,9 @@ namespace My.UI
                 case ProgressionHubTab.Runes:
                     _rune?.Setup(data);
                     break;
+                case ProgressionHubTab.JingYuanTune:
+                    _jingYuan?.Setup(data);
+                    break;
             }
         }
 
@@ -355,10 +486,11 @@ namespace My.UI
 
         public void SelectTab(ProgressionHubTab tab)
         {
-            if (tab == ProgressionHubTab.BodyPart && !BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic()))
+            var logic = ResolveGameLogic();
+            if (!ProgressionHubTabRules.IsTabOpen(tab, logic))
             {
-                Debug.LogWarning("[PlayerProgressionHubPanel] BodyPart tab unavailable: no selectable part.");
-                tab = ProgressionHubTab.Skills;
+                Debug.LogWarning($"[PlayerProgressionHubPanel] Tab unavailable: {tab}");
+                tab = ProgressionHubTabRules.ResolveInitialTab(tab, logic);
             }
 
             CurrentTab = tab;
@@ -368,6 +500,7 @@ namespace My.UI
             _gear?.Hide();
             _world?.Hide();
             _rune?.Hide();
+            _jingYuan?.Hide();
 
             if (_skillHost != null)
             {
@@ -394,6 +527,11 @@ namespace My.UI
                 _runeHost.gameObject.SetActive(tab == ProgressionHubTab.Runes);
             }
 
+            if (_jingYuanHost != null)
+            {
+                _jingYuanHost.gameObject.SetActive(tab == ProgressionHubTab.JingYuanTune);
+            }
+
             ApplySetupForTab(CurrentTab, _lastHubSetupData);
             RefreshHubTabVisuals();
             RefreshActivePage();
@@ -401,16 +539,30 @@ namespace My.UI
 
         void RefreshHubTabVisuals()
         {
-            bool bodyPartAvailable = BodyPartUiRules.HasAnySelectablePart(ResolveGameLogic());
-            ApplyTabVisual(_tabSkill, CurrentTab == ProgressionHubTab.Skills);
-            ApplyTabVisual(_tabTalent, CurrentTab == ProgressionHubTab.Talents);
-            ApplyTabVisual(_tabGear, CurrentTab == ProgressionHubTab.BodyPart);
-            if (_tabGear != null)
+            var logic = ResolveGameLogic();
+            ApplyTabEntryVisual(_tabSkill, ProgressionHubTab.Skills, logic);
+            ApplyTabEntryVisual(_tabTalent, ProgressionHubTab.Talents, logic);
+            ApplyTabEntryVisual(_tabGear, ProgressionHubTab.BodyPart, logic);
+            ApplyTabEntryVisual(_tabWorld, ProgressionHubTab.World, logic);
+            ApplyTabEntryVisual(_tabRune, ProgressionHubTab.Runes, logic);
+            ApplyTabEntryVisual(_tabJingYuan, ProgressionHubTab.JingYuanTune, logic);
+            EnsureTabBar();
+            _tabBar?.NotifyTabSelected(GetTabIndex(CurrentTab));
+        }
+
+        void ApplyTabEntryVisual(Button tab, ProgressionHubTab tabId, GameLogicManager logic)
+        {
+            if (tab == null)
             {
-                _tabGear.interactable = bodyPartAvailable;
+                return;
             }
-            ApplyTabVisual(_tabWorld, CurrentTab == ProgressionHubTab.World);
-            ApplyTabVisual(_tabRune, CurrentTab == ProgressionHubTab.Runes);
+
+            bool open = ProgressionHubTabRules.IsTabOpen(tabId, logic);
+            var def = CfgMgr.Cfgs?.TbProgressionHubTab?.GetOrDefault(ProgressionHubTabRules.ToCfgTab(tabId));
+            bool hideWhenLocked = def != null && def.FuncOpenType != EFuncOpenType.Invalid;
+            tab.gameObject.SetActive(!hideWhenLocked || open);
+            tab.interactable = open;
+            ApplyTabVisual(tab, CurrentTab == tabId);
         }
 
         static void ApplyTabVisual(Button tab, bool selected)
@@ -424,6 +576,46 @@ namespace My.UI
             if (img != null)
             {
                 img.color = selected ? TabSelectedColor : TabNormalColor;
+            }
+        }
+
+        int GetTabIndex(ProgressionHubTab tab)
+        {
+            for (int i = 0; i < _orderedTabButtons.Count; i++)
+            {
+                var button = _orderedTabButtons[i];
+                if (button == null)
+                {
+                    continue;
+                }
+
+                if (TabFromButton(button) == tab)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
+        static ProgressionHubTab TabFromButton(Button button)
+        {
+            switch (button.name)
+            {
+                case "TabSkill":
+                    return ProgressionHubTab.Skills;
+                case "TabTalent":
+                    return ProgressionHubTab.Talents;
+                case "TabGear":
+                    return ProgressionHubTab.BodyPart;
+                case "TabWorld":
+                    return ProgressionHubTab.World;
+                case "TabRune":
+                    return ProgressionHubTab.Runes;
+                case "TabJingYuan":
+                    return ProgressionHubTab.JingYuanTune;
+                default:
+                    return ProgressionHubTab.Skills;
             }
         }
 
@@ -450,6 +642,9 @@ namespace My.UI
                     break;
                 case ProgressionHubTab.Runes:
                     _rune?.Show();
+                    break;
+                case ProgressionHubTab.JingYuanTune:
+                    _jingYuan?.Show();
                     break;
             }
         }

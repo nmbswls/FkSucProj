@@ -118,6 +118,10 @@ public partial class Tables
     public demo.TbTiaoJingConcentrationLevel TbTiaoJingConcentrationLevel {get; }
     public demo.TbJingYuanTypeDef TbJingYuanTypeDef {get; }
     public demo.TbJingYuanTypePoolEntry TbJingYuanTypePoolEntry {get; }
+    /// <summary>
+    /// 养成总面板选项卡
+    /// </summary>
+    public demo.TbProgressionHubTab TbProgressionHubTab {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -207,6 +211,7 @@ public partial class Tables
         TbTiaoJingConcentrationLevel = new demo.TbTiaoJingConcentrationLevel(loader("demo_tbtiaojingconcentrationlevel"));
         TbJingYuanTypeDef = new demo.TbJingYuanTypeDef(loader("demo_tbjingyuantypedef"));
         TbJingYuanTypePoolEntry = new demo.TbJingYuanTypePoolEntry(loader("demo_tbjingyuantypepoolentry"));
+        TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         ResolveRef();
     }
     
@@ -298,6 +303,7 @@ public partial class Tables
         TbTiaoJingConcentrationLevel.ResolveRef(this);
         TbJingYuanTypeDef.ResolveRef(this);
         TbJingYuanTypePoolEntry.ResolveRef(this);
+        TbProgressionHubTab.ResolveRef(this);
     }
 }
 

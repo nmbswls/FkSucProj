@@ -2,10 +2,16 @@ using System;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Player;
 using UnityEngine;
 
 namespace My.Home
 {
+    public sealed class HomesteadDailySettlementResult
+    {
+        public readonly Dictionary<string, long> MergedOutputs = new(StringComparer.Ordinal);
+    }
+
     // 以 logic_area map_id 为键，管理各家园区域的建筑升级运行时
     public class LogicAreaHomesteadManager
     {
@@ -205,6 +211,74 @@ namespace My.Home
             }
 
             return true;
+        }
+
+        // 对已控制城镇内已升级建筑，按当前等级配置汇总每日产出并发放
+        public HomesteadDailySettlementResult ApplyDailySettlement(PlayerSystemManager pdm)
+        {
+            var result = new HomesteadDailySettlementResult();
+            if (pdm == null)
+            {
+                return result;
+            }
+
+            foreach (var logicAreaId in LogicAreaHomesteadUtil.GetDistinctLogicAreaIdsWithBuildings())
+            {
+                if (!IsAreaUnderPlayerControl(logicAreaId))
+                {
+                    continue;
+                }
+
+                CollectBuildingOutputs(logicAreaId, result.MergedOutputs);
+            }
+
+            foreach (var kv in result.MergedOutputs)
+            {
+                pdm.GiveItemToPlayer(kv.Key, kv.Value);
+            }
+
+            return result;
+        }
+
+        void CollectBuildingOutputs(string logicAreaId, Dictionary<string, long> mergedOutputs)
+        {
+            foreach (var buildingDef in GetBuildingDefs(logicAreaId))
+            {
+                if (buildingDef == null || string.IsNullOrEmpty(buildingDef.BuildingId))
+                {
+                    continue;
+                }
+
+                var level = GetBuildingLevel(logicAreaId, buildingDef.BuildingId);
+                if (level <= 0)
+                {
+                    continue;
+                }
+
+                var upgradeDef = LogicAreaHomesteadUtil.GetBuildingUpgradeDef(
+                    logicAreaId, buildingDef.BuildingId, level);
+                if (upgradeDef?.DailyOutputs == null || upgradeDef.DailyOutputs.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (var output in upgradeDef.DailyOutputs)
+                {
+                    if (output == null || string.IsNullOrEmpty(output.ItemId) || output.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (mergedOutputs.TryGetValue(output.ItemId, out var existing))
+                    {
+                        mergedOutputs[output.ItemId] = existing + output.Count;
+                    }
+                    else
+                    {
+                        mergedOutputs[output.ItemId] = output.Count;
+                    }
+                }
+            }
         }
     }
 }

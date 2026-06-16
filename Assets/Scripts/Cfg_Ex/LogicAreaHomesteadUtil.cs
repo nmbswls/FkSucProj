@@ -9,6 +9,7 @@ namespace My.Config
     public static class LogicAreaHomesteadUtil
     {
         static readonly List<HomesteadBuilding> _buildingQueryBuffer = new();
+        static readonly List<string> _logicAreaIdQueryBuffer = new();
         public static string ResolveLogicAreaId(AreaOverlayStateInfo overlay)
         {
             if (overlay == null)
@@ -110,6 +111,31 @@ namespace My.Config
         public static bool HasManageableBuildings(string logicAreaId)
         {
             return GetBuildingDefsForArea(logicAreaId).Count > 0;
+        }
+
+        public static IReadOnlyList<string> GetDistinctLogicAreaIdsWithBuildings()
+        {
+            _logicAreaIdQueryBuffer.Clear();
+            var table = CfgMgr.Cfgs?.TbHomesteadBuilding;
+            if (table == null)
+            {
+                return _logicAreaIdQueryBuffer;
+            }
+
+            foreach (var row in table.DataList)
+            {
+                if (row == null || string.IsNullOrEmpty(row.LogicAreaId))
+                {
+                    continue;
+                }
+
+                if (!_logicAreaIdQueryBuffer.Contains(row.LogicAreaId))
+                {
+                    _logicAreaIdQueryBuffer.Add(row.LogicAreaId);
+                }
+            }
+
+            return _logicAreaIdQueryBuffer;
         }
     }
 }
