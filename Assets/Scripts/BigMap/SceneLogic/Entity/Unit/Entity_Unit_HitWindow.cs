@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
+using My.Map.Fight;
 using My.Map.Entity;
 using My.Map.Fight;
 using UnityEditor.PackageManager.UI;
@@ -140,6 +141,11 @@ namespace My.Map
             //  todo 多次命中
             window.HitRecord.Add(hitEntityId);
 
+            if (hitEntity is BaseUnitLogicEntity peaceTarget
+                && FightEffectInterceptors.ShouldBlockHit(Owner, peaceTarget))
+            {
+                return;
+            }
 
             if (!window.IsSilentHit && hitEntity is BaseUnitLogicEntity unitHitTarget)
             {

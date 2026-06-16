@@ -1,4 +1,5 @@
 
+using My.Map.Fight;
 using My.Map.Entity;
 using My.Map;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace My
     {
 
         /// <summary>
-        /// ºÏ≤Èpendingµƒeffect
+        /// ùùùpendingùùeffect
         /// </summary>
         private void TickPendingDelayedEffect()
         {
@@ -37,8 +38,7 @@ namespace My
                     {
                         case DelayedFightEffectWrapper fightEffectWrapper:
                             {
-                                var executor = GetLogicFightEffectExecutor(fightEffectWrapper.effectConf);
-                                executor?.Apply(fightEffectWrapper.effectConf, fightEffectWrapper.ctx);
+                                ApplyLogicFightEffectImmediate(fightEffectWrapper.effectConf, fightEffectWrapper.ctx);
                             }
                             break;
                         case DelayedCostPeriodEffectWrapper nextPeriodWrapper:
@@ -86,6 +86,19 @@ namespace My
                     fixedExeTime = LogicTime.time + effectConf.PendingTime,
                 });
                 _delayQueueDirty = true;
+                return;
+            }
+
+            ApplyLogicFightEffectImmediate(effectConf, effectCtx);
+        }
+
+        void ApplyLogicFightEffectImmediate(MapFightEffectCfg effectConf, LogicFightEffectContext effectCtx)
+        {
+            if (FightEffectInterceptors.ShouldBlockEffect(
+                    this,
+                    effectCtx.SourceInfo.SrcEntityId,
+                    effectCtx.TargetId))
+            {
                 return;
             }
 

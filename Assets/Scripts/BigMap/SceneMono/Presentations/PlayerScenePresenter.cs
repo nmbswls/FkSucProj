@@ -551,11 +551,7 @@ namespace My.Map.Scene
 
             if (IsRelocateSessionActive)
             {
-                if (!visualAlreadyAtTarget)
-                {
-                    transform.position = targetWorldPos;
-                }
-
+                // Relocate 期间由 DOTween 驱动表现层，忽略逻辑位移同步
                 return;
             }
 

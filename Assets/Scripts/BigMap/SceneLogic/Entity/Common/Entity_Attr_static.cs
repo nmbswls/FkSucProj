@@ -94,6 +94,7 @@ namespace My.Map.Entity
         public const string LockFace = "LockFace";
         public const string Stun = "Stun";
         public const string ForbidSkillOp = "ForbidSkillOp";
+        public const string PeaceCombatRestricted = "PeaceCombatRestricted";
         public const string NoSelect = "NoSelect";
         public const string PerfectDodgeWindow = "PerfectDodgeWindow"; // 完美闪避判定窗口
         public const string ImmuneKnock = "ImmuneKnock";

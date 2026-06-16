@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Config.Unit;
 using My.Config;
+using My.Map.Fight;
 using Map.Logic.Events;
 using My.Map.Entity;
 using My.Map.Fight;
@@ -808,6 +809,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.Unmovable, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.LockFace, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.ForbidSkillOp, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.PeaceCombatRestricted, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoSelect, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.PerfectDodgeWindow, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.NoInteract, initialBase: 0);
@@ -1153,6 +1155,14 @@ namespace My.Map
 
         public virtual void ProcessHit(long? srcEntityId, Vector2? hitDir)
         {
+            if (srcEntityId.HasValue
+                && this is NpcUnitLogicEntity
+                && LogicManager.GetLogicEntity(srcEntityId.Value, false) is BaseUnitLogicEntity srcUnit
+                && FightEffectInterceptors.ShouldBlockHit(srcUnit, this))
+            {
+                return;
+            }
+
             TryInterrupt(new InterruptRequest()
             {
                 source = EInterruptSource.Hit,

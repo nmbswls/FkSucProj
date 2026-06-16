@@ -31,6 +31,7 @@ namespace My.Map
                 case AttrIdConsts.LockFace:
                 case AttrIdConsts.Stun:
                 case AttrIdConsts.ForbidSkillOp:
+                case AttrIdConsts.PeaceCombatRestricted:
                 case AttrIdConsts.NoSelect:
                 case AttrIdConsts.PerfectDodgeWindow:
                 case AttrIdConsts.NoInteract:

@@ -172,6 +172,7 @@ namespace My
             };
 
             logicAreaHomesteadManager = new LogicAreaHomesteadManager(this);
+            ControlledTownPeaceBuffRefresh.BindRefreshEvents(this);
 
             factionRelationManager = new();
 

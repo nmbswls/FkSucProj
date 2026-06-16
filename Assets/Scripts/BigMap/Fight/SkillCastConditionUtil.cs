@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using cfg.demo;
+using My.Map.Entity;
+using My.Map.Fight;
 using UnityEngine;
 
 namespace My.Map.Entity
@@ -66,6 +68,11 @@ namespace My.Map.Entity
             else if (!entity.IsInHBehaveMode())
             {
                 denyMessage = "需在特殊状态下使用";
+                return false;
+            }
+
+            if (FightEffectInterceptors.TryGetSkillCastDeny(entity, out denyMessage))
+            {
                 return false;
             }
 

@@ -46,8 +46,7 @@ namespace My.Map.Scene
             float duration,
             Action<Sequence, float> appendShadowTween = null)
         {
-            ctx.Root.position = fromWorld;
-
+            seq.AppendCallback(() => ctx.Root.position = fromWorld);
             seq.Append(ctx.Root.DOMove(toWorld, duration).SetEase(Ease.InOutQuad));
 
             if (ctx.ViewRoot != null)
