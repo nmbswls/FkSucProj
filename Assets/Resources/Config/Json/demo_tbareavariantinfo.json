@@ -64,5 +64,38 @@
     "scene_name": "Home_01_Fight",
     "thumb_map": "base_01",
     "is_secret_base": false
+  },
+  {
+    "var_id": "test_link_a",
+    "name": "测试连通A",
+    "desc": "测试连通A",
+    "logic_area_id": "test_link_a",
+    "show_in_map": false,
+    "show_conds": [],
+    "scene_name": "TestLink_A",
+    "thumb_map": "",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "test_link_b",
+    "name": "测试连通B",
+    "desc": "测试连通B",
+    "logic_area_id": "test_link_b",
+    "show_in_map": false,
+    "show_conds": [],
+    "scene_name": "TestLink_B",
+    "thumb_map": "",
+    "is_secret_base": false
+  },
+  {
+    "var_id": "forest_01",
+    "name": "Forest",
+    "desc": "Forest",
+    "logic_area_id": "forest_01",
+    "show_in_map": true,
+    "show_conds": [],
+    "scene_name": "Forest_01",
+    "thumb_map": "forest_01",
+    "is_secret_base": false
   }
 ]

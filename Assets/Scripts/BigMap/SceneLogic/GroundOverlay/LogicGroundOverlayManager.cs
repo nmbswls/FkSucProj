@@ -423,6 +423,11 @@ namespace My
             _fieldManager?.AddElementCircle(worldCenter, radius, type, duration);
         }
 
+        public void AddElementOrganicBlob(Vector2 worldCenter, float radius, EGroundLiquidType type, float duration, bool withSplatter = false)
+        {
+            _fieldManager?.AddElementOrganicBlob(worldCenter, radius, type, duration, withSplatter);
+        }
+
         public HashSet<EGroundLiquidType> CheckAllLiquidsUnderUnit(Vector3 unitPos, float unitRadius)
         {
             if (_fieldManager != null)

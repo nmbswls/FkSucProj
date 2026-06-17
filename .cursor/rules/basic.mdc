@@ -19,3 +19,85 @@ alwaysApply: true
 每次完成编码时，需要检查设计是否具有侵入性，例如在通用结构中增加具有语义侵入的变量与函数，或在通用流程中调用某个专有的静态方法。
 
 所有创建的代码文件使用Utf-8格式。如果修改时遇到非utf-8格式文件，顺带修改为utf-8.
+
+## 地图 Editor 场景与 MapExporter 约定
+
+大地图编辑走 **Runtime + Editor 成对场景**，由 `Window/Map/创建区域场景` 或等价脚本创建；Exporter 读取 **`*_Editor.unity`** 中的 `MapChunkEditorRoot`。
+
+### 场景文件
+
+| 用途 | 路径 |
+|------|------|
+| 运行时 | `Assets/Scenes/Main/{SceneName}.unity`（须进 Build Settings） |
+| 编辑 | `Assets/Scenes/Main/{SceneName}_Editor.unity` |
+
+`MapChunkEditorRoot.MapVariantSceneName` = 运行时场景名 = Luban `AreaVariantInfo.scene_name` = MapChunk 资源 key。
+
+### AreaRoot 固定层级（节点名不可改）
+
+```
+AreaRoot                          ← MapChunkEditorRoot（仅 Editor 场景）
+├── MapVariantRoot
+│   ├── GridRoot                  ← 须含 Grid + Tilemap（Export Variant 硬要求）
+│   │   ├── Ground                ← 默认行走层；可用 GroundLayerNames 指定
+│   │   └── Hole                  ← 可选，不参与行走采样
+│   ├── Room                      ← 基础设施，不参与静态扫描
+│   ├── Decorate                  ← 静态装饰（prefab / 场景叶子 → SceneBake）
+│   └── Trigger                   ← 静态 Trigger（MapScenePrefabProvider）
+├── NamedPoint                    ← 命名点：递归收集叶子节点（NamePointGenerator）
+├── NamedPath                     ← 命名路径：递归收集 NamePathProvider（任意深度）
+├── DynamicRoot
+│   ├── Common                    ← 所有 overlay 共享的动态实体
+│   └── {overlay_id}              ← 与 Luban AreaOverlayStateInfo.id 同名
+├── PortalNetworks                ← 可选，PortalNetworkProvider
+├── NavObc / Col                  ← 可选辅助层，Exporter 不按目录名扫描
+└── ...
+```
+
+**不要**再使用遗留空目录 `FovObstacleRoot`（Exporter 从不按该名查找）。
+
+`MapVariantRoot` 可兼容旧名：`StaticRoot` / `StaticPrefabRoot`。
+
+### 内容放置
+
+| 内容 | 位置 |
+|------|------|
+| 装饰 / 无 prefab 静态物 | `MapVariantRoot/Decorate/` |
+| 条件 Trigger 静态物 | `MapVariantRoot/Trigger/` + `MapScenePrefabProvider` |
+| NPC / 传送点等动态实体 | `DynamicRoot/{overlay_id}/` 或 `DynamicRoot/Common/` + `DynamicEntityExportGenerator` |
+| 命名点 | `NamedPoint/` 下**叶子**节点 + `NamePointGenerator` |
+| 命名路径 | `NamedPath/` 子树任意深度 + `NamePathProvider` |
+| FOV 视野遮罩障碍 | `MapVariantRoot` 下任意位置，**Layer = MapViewObc** + `Collider2D`（按 Layer 筛选，与目录名无关） |
+
+跨图传送点 `TargetMapName` 填 **overlay id**（`AreaOverlayStateInfo.id`），不能填 `var_id`。
+
+### Luban 与 Exporter 配置
+
+- Exporter 读表：`Assets/Resources/Config/Json/`（非 `Config/output`）
+- `AreaVariantInfo.scene_name` ↔ Unity 场景名 / MapChunk key
+- `AreaOverlayStateInfo.var_id` ↔ variant
+- `AreaOverlayStateInfo.id` ↔ `DynamicRoot` 子文件夹名
+- `AreaOverlayStateInfo.map_data_name` ↔ MapExport 资源名
+
+创建 Editor 场景时，应同步在 `map.xlsx` 注册 variant + overlay，并在 `DynamicRoot` 下建对应 `{overlay_id}` 文件夹。
+
+### 导出产物（Resources 固定路径）
+
+**Export Variant（MapChunk）**
+
+- `Assets/Resources/MapChunk/{SceneName}.asset`
+- `Assets/Resources/MapChunk/{SceneName}/Prefabs/`、`Sprites/`、`BakedTiles/`、`SceneBake/{map_data_name}/`
+
+**Export Overlays（MapExport）**
+
+- `Assets/Resources/MapExport/{map_data_name}.asset`
+- `Assets/Resources/MapExport/{map_data_name}_portal_networks.json`（有 PortalNetwork 时）
+
+运行时加载：`Resources/MapExport/{map_data_name}` + `Resources/MapChunk/{scene_name}`。
+
+### Export 校验要点
+
+- **硬错误**：无 `MapChunkEditorRoot`、`MapVariantSceneName` 为空、`GridRoot` 下无可用 Tilemap
+- **警告**：缺 `Decorate`/`Trigger`、缺 `DynamicRoot` 或 overlay 子目录、Luban 无对应 variant/overlay
+
+AI 辅助建图时优先改 `Config/Datas/map.xlsx` + Editor 场景 YAML，MapExport/MapChunk 优先走 `Window/Map Exporter` 导出，手写 asset 仅作最小测试兜底。

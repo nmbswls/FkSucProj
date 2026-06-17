@@ -33,7 +33,7 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": true
   },
   {
     "id": "village_01_d",
@@ -141,6 +141,60 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "test_cave",
+    "peace_zone_mark": false
+  },
+  {
+    "id": "test_link_a",
+    "name": "测试连通A",
+    "desc": "测试连通A",
+    "var_id": "test_link_a",
+    "day_period_limit": 0,
+    "map_data_name": "test_link_a",
+    "can_teleport": true,
+    "is_home": false,
+    "is_secret_base": false,
+    "always_alert": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": [],
+    "procedural_def_id": "",
+    "peace_zone_mark": true
+  },
+  {
+    "id": "test_link_b",
+    "name": "测试连通B",
+    "desc": "测试连通B",
+    "var_id": "test_link_b",
+    "day_period_limit": 0,
+    "map_data_name": "test_link_b",
+    "can_teleport": true,
+    "is_home": false,
+    "is_secret_base": false,
+    "always_alert": false,
+    "is_civil_area": false,
+    "is_danger_area": false,
+    "hunting_target": false,
+    "hunting_unlock_conds": [],
+    "procedural_def_id": "",
+    "peace_zone_mark": true
+  },
+  {
+    "id": "forest_01",
+    "name": "Forest",
+    "desc": "Forest",
+    "var_id": "forest_01",
+    "day_period_limit": 0,
+    "map_data_name": "forest_01",
+    "can_teleport": true,
+    "is_home": false,
+    "is_secret_base": false,
+    "always_alert": true,
+    "is_civil_area": false,
+    "is_danger_area": true,
+    "hunting_target": true,
+    "hunting_unlock_conds": [],
+    "procedural_def_id": "",
     "peace_zone_mark": false
   }
 ]

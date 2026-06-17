@@ -40,5 +40,19 @@
     "world_min_y": -50,
     "world_max_x": 50,
     "world_max_y": 50
+  },
+  {
+    "id": 4,
+    "area_var_id": "forest_01",
+    "is_main": true,
+    "region_key": "default",
+    "room_id": "",
+    "rule_priority": 0,
+    "forbid_open_world_map": false,
+    "big_map_texture_path": "forest_01",
+    "world_min_x": 0.0,
+    "world_min_y": 0.0,
+    "world_max_x": 64.0,
+    "world_max_y": 64.0
   }
 ]

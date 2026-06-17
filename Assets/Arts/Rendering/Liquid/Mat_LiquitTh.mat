@@ -55,9 +55,9 @@ Material:
     m_Floats:
     - _DetailStrength: 1.5
     - _EdgeAnimSpeed: 0
-    - _EdgeFoamStrength: 0.35
+    - _EdgeFoamStrength: 0.52
     - _EnableExternalAlpha: 0
-    - _NoiseTiling: 1
+    - _NoiseTiling: 1.35
     - _OverallAlpha: 0.9
     - _RippleHighlight: 0.25
     - _RippleShimmerSpeed: 0.15

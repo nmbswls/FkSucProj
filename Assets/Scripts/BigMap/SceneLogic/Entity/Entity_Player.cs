@@ -1122,7 +1122,7 @@ namespace My.Map
                 "player_mini_gc_debuff",
                 overrideDuration: PlayerGamePlayRule.MiniGcSlowDuration);
 
-            LogicManager.GroundLiquidManager.AddElementCircle(
+            LogicManager.GroundLiquidManager.AddElementOrganicBlob(
                 Pos,
                 PlayerGamePlayRule.MiniGcLiquidRadius,
                 EGroundLiquidType.GcLiquid,
@@ -1147,7 +1147,7 @@ namespace My.Map
             //gcLiquidEntity.LifeTime = 20.0f;
             //gcLiquidEntity.Position = this.Pos;
             //gcLiquidEntity.FactionId = this.FactionId;
-            LogicManager.GroundLiquidManager.AddElementCircle(this.Pos, 1.0f, EGroundLiquidType.GcLiquid, 20f);
+            LogicManager.GroundLiquidManager.AddElementOrganicBlob(this.Pos, 1.0f, EGroundLiquidType.GcLiquid, 20f, withSplatter: true);
 
             //LogicManager.AddNewEntityRecord(gcLiquidEntity);
 

@@ -661,6 +661,29 @@ public class ConsoleGM : MonoBehaviour
                 Log($"dungeon_test switching to {DungeonPresentation.TestCaveOverlayId} seed={seed}");
             });
 
+        Register("goto_map", "Switch to map overlay. Usage: goto_map <overlay_id> [named_point]",
+            new[] { new CmdParam("overlay_id", "AreaOverlayStateInfo.id e.g. test_link_a"), new CmdParam("named_point", "optional NamedPoint, default BornPos") },
+            args =>
+            {
+                if (args.Count < 1 || string.IsNullOrWhiteSpace(args[0]))
+                {
+                    LogError("usage: goto_map <overlay_id> [named_point]");
+                    return;
+                }
+
+                var glm = MainGameManager.Instance.gameLogicManager;
+                if (glm == null)
+                {
+                    LogError("gameLogicManager null");
+                    return;
+                }
+
+                var overlayId = args[0];
+                string? namedPoint = args.Count >= 2 && !string.IsNullOrWhiteSpace(args[1]) ? args[1] : "BornPos";
+                glm.PreparePlayerSwitchArea(overlayId, true, targetPoint: namedPoint);
+                Log($"goto_map switching to {overlayId} namedPoint={namedPoint}");
+            });
+
         Register("spawn_investigation_npc", "Spawn default_guard_01; kind=pressure_behavior 0-3 on NpcRecord (post-Search policy applied by WantedGuardSpawner); optional immediate 0|1 (default: 1 if kind>0 else 0)",
             new[] { new CmdParam("kind", "0-3 pressure_behavior / NpcRecord.PostInvestigationResolveKind"), new CmdParam("immediate", "optional 0|1") },
             args =>

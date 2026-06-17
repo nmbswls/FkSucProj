@@ -1,0 +1,10 @@
+{
+    "area_id": "forest_01",
+    "networks": [
+        {
+            "network_id": "PortalNetworks",
+            "nodes": [],
+            "edges": []
+        }
+    ]
+}

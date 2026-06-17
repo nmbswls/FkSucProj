@@ -627,6 +627,8 @@ public static class MapOverlayExportCore
         }
     }
 
+    // FOV 遮罩 segment：扫描 MapVariantRoot 整棵子树，按 Layer「MapViewObc」筛选 Collider2D 烘焙。
+    // 与节点目录名无关（旧 FovObstacleRoot 不参与导出）。
     static void ScanFovSegments(
         Transform mapVariantRoot,
         float chunkSize,
@@ -722,27 +724,48 @@ public static class MapOverlayExportCore
 
     static void CollectNamedPaths(Transform namedPathRoot, Dictionary<string, NamedPath> cache)
     {
+        var stack = new Stack<Transform>();
         for (int i = 0; i < namedPathRoot.childCount; i++)
         {
-            var t = namedPathRoot.GetChild(i);
-            var comp = t.GetComponent<NamePathProvider>();
-            if (comp == null)
+            stack.Push(namedPathRoot.GetChild(i));
+        }
+
+        while (stack.Count > 0)
+        {
+            var t = stack.Pop();
+            if (!t.gameObject.activeInHierarchy)
             {
                 continue;
             }
 
-            var path = new NamedPath
+            var comp = t.GetComponent<NamePathProvider>();
+            if (comp != null)
             {
-                Name = comp.Name,
-                Tag = comp.Tag,
-                Points = new List<string>(),
-            };
-            foreach (var p in comp.NamedPoints)
-            {
-                path.Points.Add(p.gameObject.name);
+                var pathKey = string.IsNullOrWhiteSpace(comp.Name) ? t.gameObject.name : comp.Name.Trim();
+                var path = new NamedPath
+                {
+                    Name = pathKey,
+                    Tag = comp.Tag,
+                    Points = new List<string>(),
+                };
+                if (comp.NamedPoints != null)
+                {
+                    foreach (var p in comp.NamedPoints)
+                    {
+                        if (p != null)
+                        {
+                            path.Points.Add(p.gameObject.name);
+                        }
+                    }
+                }
+
+                cache[pathKey] = path;
             }
 
-            cache[t.name] = path;
+            for (int i = 0; i < t.childCount; i++)
+            {
+                stack.Push(t.GetChild(i));
+            }
         }
     }
 

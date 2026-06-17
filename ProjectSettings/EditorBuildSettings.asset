@@ -35,4 +35,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main/Main_Dungeon_TestCave.unity
     guid: a7f3c2e81d4b49a6b8e0f1d2c3a4b5e6
+  - enabled: 1
+    path: Assets/Scenes/Main/TestLink_A.unity
+    guid: 3cc90ab700754c57bef260a26b8ce20f
+  - enabled: 1
+    path: Assets/Scenes/Main/TestLink_B.unity
+    guid: e23edaca7245485195b00821dfe521a8
+  - enabled: 1
+    path: Assets/Scenes/Main/Forest_01.unity
+    guid: b2a3afe74d7c8074a8fae7ff6e8afbf7
   m_configObjects: {}

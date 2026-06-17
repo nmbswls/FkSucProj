@@ -133,7 +133,6 @@ public static class MapAreaSceneCreator
         CreateChild(areaRootGo.transform, "NamedPath");
         CreateChild(areaRootGo.transform, "NamedPoint");
         CreateChild(areaRootGo.transform, MapVariantSceneHierarchy.DynamicRootName);
-        CreateChild(areaRootGo.transform, "FovObstacleRoot");
 
         var portalNetworks = CreateChild(areaRootGo.transform, "PortalNetworks");
         portalNetworks.gameObject.AddComponent<PortalNetworkProvider>();

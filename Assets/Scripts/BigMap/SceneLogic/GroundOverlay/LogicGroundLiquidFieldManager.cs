@@ -23,6 +23,16 @@ namespace My
             FlushDirtyChunks();
         }
 
+        const float OrganicBlobBoundsPadding = 1.15f;
+        const float OrganicBlobRadiusMinMult = 0.68f;
+        const float OrganicBlobRadiusMaxMult = 1.12f;
+
+        enum LiquidStampMode
+        {
+            Circle,
+            OrganicBlob,
+        }
+
         public void AddElementCircle(Vector2 worldCenter, float radius, EGroundLiquidType type, float duration)
         {
             if (type == EGroundLiquidType.None || radius <= 0f)
@@ -30,10 +40,71 @@ namespace My
                 return;
             }
 
-            float expireAt = duration < 0f ? -1f : Time.time + duration;
-            float sqrRadius = radius * radius;
+            float expireAt = ResolveExpireAt(duration);
+            StampElement(worldCenter, radius, type, expireAt, LiquidStampMode.Circle);
+            FinalizeStampBatch();
+        }
 
-            CollectIntersectingChunks(worldCenter, radius, _scratchChunks);
+        // 生成带随机轮廓的液体：角度噪声塑形 + 可选小溅射，配合 shader 边缘抖动使用
+        public void AddElementOrganicBlob(Vector2 worldCenter, float radius, EGroundLiquidType type, float duration, bool withSplatter = false)
+        {
+            if (type == EGroundLiquidType.None || radius <= 0f)
+            {
+                return;
+            }
+
+            float expireAt = ResolveExpireAt(duration);
+            int seed = UnityEngine.Random.Range(1, int.MaxValue);
+            float rotation = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+            StampElement(worldCenter, radius, type, expireAt, LiquidStampMode.OrganicBlob, seed, rotation);
+
+            if (withSplatter)
+            {
+                StampRandomSplatter(worldCenter, radius, type, expireAt);
+            }
+
+            FinalizeStampBatch();
+        }
+
+        static float ResolveExpireAt(float duration)
+        {
+            return duration < 0f ? -1f : Time.time + duration;
+        }
+
+        void FinalizeStampBatch()
+        {
+            RemoveEmptyChunks();
+            FlushDirtyChunks();
+        }
+
+        void StampRandomSplatter(Vector2 center, float baseRadius, EGroundLiquidType type, float expireAt)
+        {
+            int dropCount = UnityEngine.Random.Range(2, 5);
+            for (int i = 0; i < dropCount; i++)
+            {
+                float angle = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
+                float dist = UnityEngine.Random.Range(baseRadius * 0.22f, baseRadius * 0.92f);
+                float dropRadius = UnityEngine.Random.Range(baseRadius * 0.1f, baseRadius * 0.26f);
+                Vector2 dropCenter = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * dist;
+                StampElement(dropCenter, dropRadius, type, expireAt, LiquidStampMode.Circle);
+            }
+        }
+
+        void StampElement(
+            Vector2 worldCenter,
+            float radius,
+            EGroundLiquidType type,
+            float expireAt,
+            LiquidStampMode mode,
+            int organicSeed = 0,
+            float organicRotation = 0f)
+        {
+            float boundsRadius = mode == LiquidStampMode.OrganicBlob
+                ? radius * OrganicBlobBoundsPadding
+                : radius;
+            float sqrBoundsRadius = boundsRadius * boundsRadius;
+
+            CollectIntersectingChunks(worldCenter, boundsRadius, _scratchChunks);
 
             for (int c = 0; c < _scratchChunks.Count; c++)
             {
@@ -54,13 +125,25 @@ namespace My
                         float worldX = chunkMin.x + (tx + 0.5f) * LiquidFieldConstants.SubCellWorldSize;
                         float dx = worldX - worldCenter.x;
                         float sqrDist = dx * dx + dy * dy;
-                        if (sqrDist > sqrRadius)
+                        if (sqrDist > sqrBoundsRadius)
                         {
                             continue;
                         }
 
                         float dist = Mathf.Sqrt(sqrDist);
-                        byte weight = ComputeWeight(dist, radius);
+                        float localRadius = radius;
+                        if (mode == LiquidStampMode.OrganicBlob)
+                        {
+                            float angle = Mathf.Atan2(dy, dx) + organicRotation;
+                            localRadius = radius * SampleBlobRadiusMultiplier(angle, organicSeed);
+                        }
+
+                        if (dist > localRadius)
+                        {
+                            continue;
+                        }
+
+                        byte weight = ComputeWeight(dist, localRadius);
                         if (weight == 0)
                         {
                             continue;
@@ -86,9 +169,21 @@ namespace My
                     _emptyChunks.Add(chunkCoord);
                 }
             }
+        }
 
-            RemoveEmptyChunks();
-            FlushDirtyChunks();
+        static float SampleBlobRadiusMultiplier(float angleRad, int seed)
+        {
+            float sx = seed * 0.173f;
+            float sy = seed * 0.271f;
+            float cosA = Mathf.Cos(angleRad);
+            float sinA = Mathf.Sin(angleRad);
+
+            float n1 = Mathf.PerlinNoise(cosA * 1.15f + sx, sinA * 1.15f + sy);
+            float n2 = Mathf.PerlinNoise(
+                Mathf.Cos(angleRad * 2.6f + 1.1f) * 2.05f + sx * 1.61f,
+                Mathf.Sin(angleRad * 2.6f + 1.1f) * 2.05f + sy * 1.73f);
+            float combined = n1 * 0.62f + n2 * 0.38f;
+            return Mathf.Lerp(OrganicBlobRadiusMinMult, OrganicBlobRadiusMaxMult, combined);
         }
 
         public HashSet<EGroundLiquidType> CheckAllLiquidsUnderUnit(Vector3 unitPos, float unitRadius)
