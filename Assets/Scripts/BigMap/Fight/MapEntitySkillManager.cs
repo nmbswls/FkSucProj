@@ -1115,7 +1115,11 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (!SkillCastConditionUtil.CheckAll(OwnerEntity, skillRuntime.cacheConfig.CastConditions))
+            if (!SkillCastConditionUtil.CheckAll(
+                    OwnerEntity,
+                    skillRuntime.cacheConfig.CastConditions,
+                    this,
+                    skillId))
             {
                 return false;
             }
@@ -1534,12 +1538,40 @@ namespace My.Map.Entity
                 }
             }
 
-            if (!SkillCastConditionUtil.CheckAll(OwnerEntity, skillRuntime.cacheConfig.CastConditions))
+            if (!SkillCastConditionUtil.CheckAll(
+                    OwnerEntity,
+                    skillRuntime.cacheConfig.CastConditions,
+                    this,
+                    skillName))
             {
                 return false;
             }
 
             return true;
+        }
+
+        // 除指定技能外，是否还有其他可释放的主动技能（不含被动、冷却、H 模式等基础门槛）
+        public bool HasOtherReadyActiveSkill(string excludeSkillId)
+        {
+            foreach (var kv in SkillRuntimes)
+            {
+                if (kv.Key == excludeSkillId)
+                {
+                    continue;
+                }
+
+                if (kv.Value?.cacheConfig == null || kv.Value.cacheConfig.IsPassive)
+                {
+                    continue;
+                }
+
+                if (IsSkillReady(kv.Key))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         

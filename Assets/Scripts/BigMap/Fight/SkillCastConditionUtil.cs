@@ -8,9 +8,15 @@ namespace My.Map.Entity
 {
     public static class SkillCastConditionUtil
     {
-        public static bool CheckAll(BaseUnitLogicEntity entity, IReadOnlyList<SkillCastCondition> conditions)
+        public const string DisarmedBuffId = "disarmed";
+
+        public static bool CheckAll(
+            BaseUnitLogicEntity entity,
+            IReadOnlyList<SkillCastCondition> conditions,
+            MapEntitySkillManager skillMgr = null,
+            string evaluatingSkillId = null)
         {
-            return TryCheckAll(entity, conditions, out _);
+            return TryCheckAll(entity, conditions, skillMgr, evaluatingSkillId, out _);
         }
 
         public static bool CheckSkill(BaseUnitLogicEntity entity, EntitySkillData skillConfig)
@@ -26,7 +32,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            return TryCheckAll(entity, skillConfig.CastConditions, out denyMessage);
+            return TryCheckAll(entity, skillConfig.CastConditions, null, skillConfig.SkillId, out denyMessage);
         }
 
         public static bool TryEvaluateReadiness(
@@ -76,7 +82,12 @@ namespace My.Map.Entity
                 return false;
             }
 
-            return TryCheckAll(entity, skillConfig.CastConditions, out denyMessage);
+            return TryCheckAll(
+                entity,
+                skillConfig.CastConditions,
+                skillMgr,
+                skillConfig.SkillId,
+                out denyMessage);
         }
 
         public static bool TryEvaluateReadiness(
@@ -105,6 +116,8 @@ namespace My.Map.Entity
         static bool TryCheckAll(
             BaseUnitLogicEntity entity,
             IReadOnlyList<SkillCastCondition> conditions,
+            MapEntitySkillManager skillMgr,
+            string evaluatingSkillId,
             out string denyMessage)
         {
             denyMessage = null;
@@ -115,7 +128,7 @@ namespace My.Map.Entity
 
             for (var i = 0; i < conditions.Count; i++)
             {
-                if (!TryCheckSingle(entity, conditions[i], out denyMessage))
+                if (!TryCheckSingle(entity, conditions[i], skillMgr, evaluatingSkillId, out denyMessage))
                 {
                     return false;
                 }
@@ -127,6 +140,8 @@ namespace My.Map.Entity
         static bool TryCheckSingle(
             BaseUnitLogicEntity entity,
             SkillCastCondition condition,
+            MapEntitySkillManager skillMgr,
+            string evaluatingSkillId,
             out string denyMessage)
         {
             denyMessage = null;
@@ -135,7 +150,7 @@ namespace My.Map.Entity
                 return true;
             }
 
-            if (CheckSingle(entity, condition))
+            if (CheckSingle(entity, condition, skillMgr, evaluatingSkillId))
             {
                 return true;
             }
@@ -144,7 +159,11 @@ namespace My.Map.Entity
             return false;
         }
 
-        static bool CheckSingle(BaseUnitLogicEntity entity, SkillCastCondition condition)
+        static bool CheckSingle(
+            BaseUnitLogicEntity entity,
+            SkillCastCondition condition,
+            MapEntitySkillManager skillMgr,
+            string evaluatingSkillId)
         {
             if (condition == null || condition.Type == ESkillCastConditionType.None)
             {
@@ -168,6 +187,19 @@ namespace My.Map.Entity
                 case ESkillCastConditionType.InBattle:
                     return entity.IsInCombat;
 
+                case ESkillCastConditionType.UnarmedFallbackOnly:
+                    if (entity.CheckHasBuff(DisarmedBuffId))
+                    {
+                        return true;
+                    }
+
+                    if (skillMgr == null || string.IsNullOrEmpty(evaluatingSkillId))
+                    {
+                        return false;
+                    }
+
+                    return !skillMgr.HasOtherReadyActiveSkill(evaluatingSkillId);
+
                 default:
                     Debug.LogWarning($"[SkillCastConditionUtil] Unknown cast condition type: {condition.Type}");
                     return true;
@@ -188,6 +220,7 @@ namespace My.Map.Entity
                 ESkillCastConditionType.NoQueenMode => "女王形态下无法使用",
                 ESkillCastConditionType.NotInBattle => "战斗中无法使用",
                 ESkillCastConditionType.InBattle => "需在战斗中使用",
+                ESkillCastConditionType.UnarmedFallbackOnly => "无法使用",
                 _ => "无法使用",
             };
         }

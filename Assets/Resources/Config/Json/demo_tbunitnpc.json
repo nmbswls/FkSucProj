@@ -36,7 +36,8 @@
     "mind_tag": "orc_common",
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "orc"
   },
   {
     "id": "initial_orc_02",
@@ -75,7 +76,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "orc"
   },
   {
     "id": "initial_orc_big",
@@ -114,7 +116,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "orc"
   },
   {
     "id": "game_init_luca_injured",
@@ -151,7 +154,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "qigai_default",
@@ -188,7 +192,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "hunhun",
@@ -227,7 +232,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "slime_red",
@@ -266,164 +272,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
-  },
-  {
-    "id": "slime_green",
-    "name": "绿色史莱姆",
-    "desc": "敏捷近战，打完就跑",
-    "prefab_name": "slime_green",
-    "attr_template_id": 10010,
-    "emnity_cfg_id": "default_monster",
-    "faction_id": 0,
-    "move_style": 1,
-    "idle_move_behave": 0,
-    "ai_brain_id": "agile_melee",
-    "skill_list": [
-      "slime_quick_poke"
-    ],
-    "h_behave_list": [
-      "default_h_attack",
-      "default_enemy_harass",
-      "default_enemy_knockdown_push"
-    ],
-    "is_peace": false,
-    "no_aggro": false,
-    "peace_dialog_id": "",
-    "defeat_drop_id": 1,
-    "desire_density_type": 1,
-    "not_target": false,
-    "always_h_mode": false,
-    "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5,
-    "no_unsensored": false,
-    "desire_crystal_random_attachable": true,
-    "no_real_jing": false,
-    "vision_cone_kind": 0,
-    "vision_range": -1,
-    "vision_fov_deg": -1,
-    "mind_tag": "",
-    "jingyuan_pool_id": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
-  },
-  {
-    "id": "slime_brown",
-    "name": "棕色史莱姆",
-    "desc": "迟缓近战，蓄力砸地",
-    "prefab_name": "slime_brown",
-    "attr_template_id": 10011,
-    "emnity_cfg_id": "default_monster",
-    "faction_id": 0,
-    "move_style": 1,
-    "idle_move_behave": 0,
-    "ai_brain_id": "slow_melee",
-    "skill_list": [
-      "slime_slam"
-    ],
-    "h_behave_list": [
-      "default_h_attack",
-      "default_enemy_harass",
-      "default_enemy_knockdown_push"
-    ],
-    "is_peace": false,
-    "no_aggro": false,
-    "peace_dialog_id": "",
-    "defeat_drop_id": 1,
-    "desire_density_type": 1,
-    "not_target": false,
-    "always_h_mode": false,
-    "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5,
-    "no_unsensored": false,
-    "desire_crystal_random_attachable": true,
-    "no_real_jing": false,
-    "vision_cone_kind": 0,
-    "vision_range": -1,
-    "vision_fov_deg": -1,
-    "mind_tag": "",
-    "jingyuan_pool_id": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
-  },
-  {
-    "id": "slime_orange",
-    "name": "橙色史莱姆",
-    "desc": "远程，弧形吐弹",
-    "prefab_name": "slime_orange",
-    "attr_template_id": 10012,
-    "emnity_cfg_id": "default_monster",
-    "faction_id": 0,
-    "move_style": 1,
-    "idle_move_behave": 0,
-    "ai_brain_id": "ranged_kiting",
-    "skill_list": [
-      "slime_spit"
-    ],
-    "h_behave_list": [
-      "default_h_attack",
-      "default_enemy_harass",
-      "default_enemy_knockdown_push"
-    ],
-    "is_peace": false,
-    "no_aggro": false,
-    "peace_dialog_id": "",
-    "defeat_drop_id": 1,
-    "desire_density_type": 1,
-    "not_target": false,
-    "always_h_mode": false,
-    "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5,
-    "no_unsensored": false,
-    "desire_crystal_random_attachable": true,
-    "no_real_jing": false,
-    "vision_cone_kind": 0,
-    "vision_range": -1,
-    "vision_fov_deg": -1,
-    "mind_tag": "",
-    "jingyuan_pool_id": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
-  },
-  {
-    "id": "slime_crystal",
-    "name": "水晶史莱姆",
-    "desc": "魔法生物，AOE与魔法弹轮换",
-    "prefab_name": "slime_crystal",
-    "attr_template_id": 10013,
-    "emnity_cfg_id": "default_monster",
-    "faction_id": 0,
-    "move_style": 1,
-    "idle_move_behave": 0,
-    "ai_brain_id": "caster",
-    "skill_list": [
-      "slime_magic_bolt",
-      "slime_magic_aoe"
-    ],
-    "h_behave_list": [
-      "default_h_attack",
-      "default_enemy_harass",
-      "default_enemy_knockdown_push"
-    ],
-    "is_peace": false,
-    "no_aggro": false,
-    "peace_dialog_id": "",
-    "defeat_drop_id": 1,
-    "desire_density_type": 1,
-    "not_target": false,
-    "always_h_mode": false,
-    "ignore_attract_level": 0,
-    "unit_bottom_size": 0.5,
-    "no_unsensored": false,
-    "desire_crystal_random_attachable": true,
-    "no_real_jing": false,
-    "vision_cone_kind": 0,
-    "vision_range": -1,
-    "vision_fov_deg": -1,
-    "mind_tag": "",
-    "jingyuan_pool_id": "",
-    "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "civil",
@@ -460,7 +310,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "civil_sleeping",
@@ -497,7 +348,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "default_guard_01",
@@ -534,7 +386,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "h_spirit_small_01",
@@ -574,7 +427,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_small_02",
@@ -614,7 +468,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_small_03",
@@ -654,7 +509,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_middle_01",
@@ -694,7 +550,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_middle_02",
@@ -734,7 +591,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_middle_03",
@@ -774,7 +632,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_big_01",
@@ -814,7 +673,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_big_02",
@@ -854,7 +714,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "h_spirit_big_03",
@@ -894,7 +755,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "city_watcher_01",
@@ -929,7 +791,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "summon_ally_turret_01",
@@ -964,7 +827,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": ""
   },
   {
     "id": "area_cannon_01",
@@ -999,7 +863,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
-    "lock_initial_face": true
+    "lock_initial_face": true,
+    "race_id": ""
   },
   {
     "id": "homestead_elder",
@@ -1032,7 +897,8 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   },
   {
     "id": "homestead_merchant",
@@ -1065,6 +931,7 @@
     "mind_tag": "",
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
-    "lock_initial_face": false
+    "lock_initial_face": false,
+    "race_id": "human"
   }
 ]

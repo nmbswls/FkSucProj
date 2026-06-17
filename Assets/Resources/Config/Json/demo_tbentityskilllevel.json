@@ -522,41 +522,9 @@
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_quick_poke",
+    "skill_id": "human_unarmed_attack",
     "level": 1,
-    "cool_down": 1.5,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "slime_slam",
-    "level": 1,
-    "cool_down": 4,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "slime_spit",
-    "level": 1,
-    "cool_down": 2.5,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "slime_magic_aoe",
-    "level": 1,
-    "cool_down": 5,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "slime_magic_bolt",
-    "level": 1,
-    "cool_down": 2,
+    "cool_down": 0.5,
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []

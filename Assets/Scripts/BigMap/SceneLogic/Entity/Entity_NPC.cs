@@ -193,6 +193,12 @@ namespace My.Map
             // 通用H普攻：固定注册，不依赖配表
             ablilityManager.RegisterSkill("default_h_attack");
 
+            // 人类种族空手兜底普攻
+            if (NpcConfig != null && NpcConfig.RaceId == "human")
+            {
+                ablilityManager.RegisterSkill("human_unarmed_attack");
+            }
+
             abilityController.EventOnInputCancelPhaseStart += () =>
             {
                 if (AIBrain != null)

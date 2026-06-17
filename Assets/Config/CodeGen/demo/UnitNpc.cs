@@ -49,6 +49,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["jingyuan_pool_id"].IsString) { throw new SerializationException(); }  JingyuanPoolId = _buf["jingyuan_pool_id"]; }
         { if(!_buf["fallback_drop_id"].IsNumber) { throw new SerializationException(); }  FallbackDropId = _buf["fallback_drop_id"]; }
         { if(!_buf["lock_initial_face"].IsBoolean) { throw new SerializationException(); }  LockInitialFace = _buf["lock_initial_face"]; }
+        { if(!_buf["race_id"].IsString) { throw new SerializationException(); }  RaceId = _buf["race_id"]; }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -177,6 +178,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// lock_initial_face
     /// </summary>
     public bool LockInitialFace;
+    public string RaceId;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -219,6 +221,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "jingyuanPoolId:" + JingyuanPoolId + ","
         + "fallbackDropId:" + FallbackDropId + ","
         + "lockInitialFace:" + LockInitialFace + ","
+        + "raceId:" + RaceId + ","
         + "}";
     }
 }

@@ -13,7 +13,6 @@ namespace My.UI.Forge
 
         public static bool CanCraft(PlayerInventorySystem inv, ForgeRecipe recipe)
         {
-            return true;
             return TryCraftDryRun(inv, recipe, out _);
         }
 
@@ -45,24 +44,13 @@ namespace My.UI.Forge
                 return false;
             }
 
-            if (def.IsAutoUse || def.ItemType == EItemType.Currency)
+            if (!inv.CanGainItems(rc.ItemIdOrEmpty, rc.Count))
             {
-                return true;
+                failReasonEn = "Not enough space for result item.";
+                return false;
             }
 
-            if (ItemCatalog.IsInstanceType(def.ItemType))
-            {
-                if (rc.Count > PlayerInventorySystem.MaxInstanceGrantBatch)
-                {
-                    failReasonEn = "Result count exceeds instance grant limit.";
-                    return false;
-                }
-
-                var bag = inv.GetBagById(0);
-                return bag != null && bag.CountDiscreteEmptySlots() >= rc.Count;
-            }
-
-            return inv.CanGainItems(rc.ItemIdOrEmpty, rc.Count);
+            return true;
         }
 
         static bool HasAllMaterials(PlayerInventorySystem inv, ForgeRecipe recipe)

@@ -946,41 +946,137 @@ namespace My.Player.Bag
                 return true;
             }
 
-            if (MainBag == null)
+            if (count < 0)
             {
                 return false;
             }
 
             var itemConf = ItemCatalog.GetItemDef(itemId);
-            if (itemConf != null && ItemCatalog.IsInstanceType(itemConf.ItemType))
+            if (itemConf == null)
+            {
+                return false;
+            }
+
+            if (itemConf.ItemType == EItemType.Currency || itemConf.IsAutoUse)
+            {
+                return true;
+            }
+
+            var targetBag = GetGainTargetBag(itemConf);
+            if (targetBag == null)
+            {
+                return false;
+            }
+
+            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
             {
                 if (count > MaxInstanceGrantBatch)
                 {
                     return false;
                 }
 
-                return MainBag.CountDiscreteEmptySlots() >= count;
+                return targetBag.CountDiscreteEmptySlots() >= count;
             }
 
-            var maxStack = MainBag.GetMaxStack(itemId);
-            int needSlot = (int)(((count - 1) / maxStack + 1));
+            return CanBagGainStackableItems(targetBag, itemId, count);
+        }
 
-            int empty = 0;
-            foreach (var slot in MainBag.NormalSlots)
+        PlayerBag GetGainTargetBag(cfg.demo.ItemData itemConf)
+        {
+            if (itemConf == null)
             {
-                if (slot != null)
+                return null;
+            }
+
+            if (itemConf.ItemType == EItemType.MindFacet)
+            {
+                return GetBagById((int)EPlayerBagId.Mind);
+            }
+
+            return GetBagById(0);
+        }
+
+        static bool CanBagGainStackableItems(PlayerBag bag, string itemId, long count)
+        {
+            if (bag == null || string.IsNullOrEmpty(itemId) || count <= 0)
+            {
+                return false;
+            }
+
+            long remaining = count;
+            var maxStack = bag.GetMaxStack(itemId);
+            if (maxStack <= 0)
+            {
+                return false;
+            }
+
+            remaining = ConsumeStackableSpace(remaining, itemId, maxStack, bag.NormalSlots);
+            if (remaining <= 0)
+            {
+                return true;
+            }
+
+            remaining = ConsumeEmptySlotSpace(remaining, maxStack, bag.NormalSlots);
+            if (remaining <= 0)
+            {
+                return true;
+            }
+
+            remaining = ConsumeStackableSpace(remaining, itemId, maxStack, bag.ExtraSlots);
+            if (remaining <= 0)
+            {
+                return true;
+            }
+
+            if (bag.MaxExtraCapacity > 0)
+            {
+                var appendableExtraSlots = Math.Max(0, bag.MaxExtraCapacity - bag.ExtraSlots.Count);
+                remaining -= appendableExtraSlots * maxStack;
+            }
+
+            return remaining <= 0;
+        }
+
+        static long ConsumeStackableSpace(long remaining, string itemId, long maxStack, List<ItemStack> slots)
+        {
+            if (slots == null)
+            {
+                return remaining;
+            }
+
+            for (int i = 0; i < slots.Count && remaining > 0; i++)
+            {
+                var slot = slots[i];
+                if (slot == null || slot.IsEmpty || slot.ItemID != itemId || slot.Count >= maxStack)
                 {
                     continue;
                 }
 
-                empty += 1;
-                if (empty >= needSlot)
-                {
-                    return true;
-                }
+                remaining -= maxStack - slot.Count;
             }
 
-            return false;
+            return remaining;
+        }
+
+        static long ConsumeEmptySlotSpace(long remaining, long maxStack, List<ItemStack> slots)
+        {
+            if (slots == null)
+            {
+                return remaining;
+            }
+
+            for (int i = 0; i < slots.Count && remaining > 0; i++)
+            {
+                var slot = slots[i];
+                if (slot != null && !slot.IsEmpty)
+                {
+                    continue;
+                }
+
+                remaining -= maxStack;
+            }
+
+            return remaining;
         }
     }
 

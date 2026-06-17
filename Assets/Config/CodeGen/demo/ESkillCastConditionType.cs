@@ -19,6 +19,7 @@ namespace cfg.demo
         NoQueenMode = 3,
         NotInBattle = 4,
         InBattle = 5,
+        UnarmedFallbackOnly = 6,
     }
 
 } 

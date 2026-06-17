@@ -621,6 +621,7 @@ namespace My.Map.Entity
                 return;
             }
             Vector2 p = Vector2.zero;
+            Vector2 dir = Vector2.right;
             var target = ctx.Env.GetLogicEntity(ctx.TargetId);
             if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TriggerPos)
             {
@@ -628,7 +629,32 @@ namespace My.Map.Entity
             }
             else if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.TargetAligned)
             {
-                p = target.Pos;
+                if (target != null)
+                {
+                    p = target.Pos;
+                }
+            }
+            else if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.CasterAligned)
+            {
+                var caster = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId) as BaseUnitLogicEntity;
+                if (caster != null)
+                {
+                    var look = caster.CurrentLook.sqrMagnitude > 1e-8f
+                        ? caster.CurrentLook.normalized
+                        : Vector2.right;
+                    p = caster.Pos
+                        + look * (float)realCfg.ShowPos.X
+                        + new Vector2(0f, (float)realCfg.ShowPos.Y);
+                    dir = look;
+                }
+            }
+            else if (realCfg.ShowMode == MapFightEffectShowEffect.EShowMode.Fixed)
+            {
+                p = realCfg.ShowPos;
+                if (realCfg.ShorRotation.sqrMagnitude > 1e-8f)
+                {
+                    dir = realCfg.ShorRotation.normalized;
+                }
             }
 
             if(realCfg.IsFake)
@@ -637,7 +663,7 @@ namespace My.Map.Entity
             }
             else
             {
-                ctx.Env.viewer.ShowSceneFxEffect(realCfg.EffectName, p, Vector2.right);
+                ctx.Env.viewer.ShowSceneFxEffect(realCfg.EffectName, p, dir);
             }
         }
     }

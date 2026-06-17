@@ -28,11 +28,22 @@ namespace My.UI.Forge
             EForgeRecipeType.Misc,
         };
 
+        public sealed class OpenArgs
+        {
+            public IEnumerable<EForgeRecipeType> RecipeTypes;
+            public Dictionary<EForgeRecipeType, string> CategoryTitles;
+            public bool HideEmptySections;
+        }
+
         [SerializeField] RectTransform contentRoot;
         [SerializeField] ScrollRect mainScroll;
         [SerializeField] Button closeButton;
         [SerializeField] RectTransform sectionsRoot;
         [SerializeField] GameObject categorySectionTemplate;
+
+        readonly List<EForgeRecipeType> _activeSectionTypes = new List<EForgeRecipeType>();
+        Dictionary<EForgeRecipeType, string> _activeCategoryTitles;
+        bool _hideEmptySections;
 
         Coroutine _layoutScrollCo;
         PlayerInventorySystem _invEventsBound;
@@ -80,6 +91,68 @@ namespace My.UI.Forge
             {
                 closeButton.onClick.RemoveAllListeners();
                 closeButton.onClick.AddListener(() => UIManager.Instance.HidePanel(Pid));
+            }
+        }
+
+        public override void Setup(object data = null)
+        {
+            base.Setup(data);
+            ApplyOpenArgs(data);
+        }
+
+        void ApplyOpenArgs(object data)
+        {
+            _activeSectionTypes.Clear();
+            _activeCategoryTitles = null;
+            _hideEmptySections = false;
+
+            if (data is OpenArgs args)
+            {
+                AddRecipeTypes(args.RecipeTypes);
+                _activeCategoryTitles = args.CategoryTitles;
+                _hideEmptySections = args.HideEmptySections;
+            }
+            else if (data is EForgeRecipeType oneType)
+            {
+                _activeSectionTypes.Add(oneType);
+            }
+            else if (data is IEnumerable<EForgeRecipeType> manyTypes)
+            {
+                AddRecipeTypes(manyTypes);
+            }
+
+            if (_activeSectionTypes.Count == 0)
+            {
+                AddDefaultRecipeTypes();
+            }
+        }
+
+        void AddDefaultRecipeTypes()
+        {
+            for (int i = 0; i < SectionTypes.Length; i++)
+            {
+                AddRecipeType(SectionTypes[i]);
+            }
+        }
+
+        void AddRecipeTypes(IEnumerable<EForgeRecipeType> types)
+        {
+            if (types == null)
+            {
+                return;
+            }
+
+            foreach (var type in types)
+            {
+                AddRecipeType(type);
+            }
+        }
+
+        void AddRecipeType(EForgeRecipeType type)
+        {
+            if (!_activeSectionTypes.Contains(type))
+            {
+                _activeSectionTypes.Add(type);
             }
         }
 
@@ -212,12 +285,16 @@ namespace My.UI.Forge
                 sourceRows = new List<ForgeRecipe>();
             }
 
-            var byType = new Dictionary<EForgeRecipeType, List<ForgeRecipe>>
+            if (_activeSectionTypes.Count == 0)
             {
-                [EForgeRecipeType.Weapon] = new List<ForgeRecipe>(),
-                [EForgeRecipeType.Armor] = new List<ForgeRecipe>(),
-                [EForgeRecipeType.Misc] = new List<ForgeRecipe>(),
-            };
+                AddDefaultRecipeTypes();
+            }
+
+            var byType = new Dictionary<EForgeRecipeType, List<ForgeRecipe>>();
+            for (int i = 0; i < _activeSectionTypes.Count; i++)
+            {
+                byType[_activeSectionTypes[i]] = new List<ForgeRecipe>();
+            }
 
             foreach (var row in sourceRows)
             {
@@ -243,13 +320,18 @@ namespace My.UI.Forge
                 });
             }
 
-            for (int i = 0; i < SectionTypes.Length; i++)
+            for (int i = 0; i < _activeSectionTypes.Count; i++)
             {
-                var t = SectionTypes[i];
+                var t = _activeSectionTypes[i];
                 byType.TryGetValue(t, out var list);
                 if (list == null)
                 {
                     list = new List<ForgeRecipe>();
+                }
+
+                if (_hideEmptySections && list.Count == 0)
+                {
+                    continue;
                 }
 
                 var go = Instantiate(categorySectionTemplate, sectionsRoot, false);
@@ -257,12 +339,32 @@ namespace My.UI.Forge
                 var sec = go.GetComponent<ForgeCategorySection>();
                 if (sec != null)
                 {
-                    sec.Init(t, CategoryTitles[i]);
+                    sec.Init(t, ResolveCategoryTitle(t));
                     sec.RefreshRecipes(list);
                 }
             }
 
             RebuildForgeLayout();
+        }
+
+        string ResolveCategoryTitle(EForgeRecipeType type)
+        {
+            if (_activeCategoryTitles != null &&
+                _activeCategoryTitles.TryGetValue(type, out var title) &&
+                !string.IsNullOrEmpty(title))
+            {
+                return title;
+            }
+
+            for (int i = 0; i < SectionTypes.Length && i < CategoryTitles.Length; i++)
+            {
+                if (SectionTypes[i] == type)
+                {
+                    return CategoryTitles[i];
+                }
+            }
+
+            return type.ToString();
         }
 
         void RebuildForgeLayout()

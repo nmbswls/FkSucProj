@@ -238,6 +238,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateHumanUnarmedAttack();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateDefaultHAttack();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -1626,6 +1631,80 @@ namespace My.Map.Entity
 
             };
             mainPhase.Events.Add(new PhaseEffectEvent() { Effect = newEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateHumanUnarmedAttack()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "human_unarmed_attack";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.NoTarget;
+            spec.DesiredUseDistance = 1f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                AnimTag = "normal_attack",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.15",
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.25",
+                },
+            };
+
+            var hitBoxEffect = new MapAbilityEffectHitBoxCfg()
+            {
+                Shape = MapAbilityEffectHitBoxCfg.EShape.Direction,
+                TargetEntityType = EEntityType.Player,
+                CampFilterType = ECampFilterType.NotSelf,
+                Width = 1f,
+                Length = 1.2f,
+                HitResult = new()
+                {
+                    OnHitEffects = new()
+                    {
+                        new MapFightEffectApplyDamageCfg()
+                        {
+                            ExtraDamageRate = new()
+                            {
+                                new AttrKvPair(){AttrId = "Strength", Val = 2500}
+                            },
+                            DamageCategory = EDmgCategory.Physics,
+                            KnockBackForce = 0.3f,
+                        },
+                    }
+                },
+            };
+
+            var impactVfx = new MapFightEffectShowEffect()
+            {
+                ShowMode = MapFightEffectShowEffect.EShowMode.CasterAligned,
+                ShowPos = new System.Numerics.Vector2(0.6f, 0.55f),
+                EffectName = "Slash/impact",
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = hitBoxEffect, Kind = PhaseEventKind.OnEnter });
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = impactVfx, Kind = PhaseEventKind.OnEnter });
 
             spec.Phases.Add(mainPhase);
             return spec;

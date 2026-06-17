@@ -115,7 +115,7 @@ namespace My.UI.Forge
                 return;
             }
 
-            var sp = SimpleResManager.Load<Sprite>("Sprites/Item" + spriteName);
+            var sp = SimpleResManager.Load<Sprite>("Sprites/Item/" + spriteName);
             if (sp != null)
             {
                 icon.sprite = sp;

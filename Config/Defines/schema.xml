@@ -140,6 +140,7 @@
         <var name="NoQueenMode" value="3"/>
 		<var name="NotInBattle" value="4"/>
 		<var name="InBattle" value="5"/>
+		<var name="UnarmedFallbackOnly" value="6"/>
     </enum>
 
     <bean name="SkillAbilityExtraPair" tags="sep=,">
