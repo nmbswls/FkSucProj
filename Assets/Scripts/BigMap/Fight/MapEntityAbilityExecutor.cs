@@ -925,6 +925,8 @@ namespace My.Map.Entity
                 ctx.RunningStorage[key] = (long)(xuliInfo.Value * 1000);
             }
 
+            ctx.RunningStorage["CurrentPhaseDurationMs"] = (long)(abilityCtx.PhaseDuration * 1000f);
+
             FightCastAttrUtil.MergeCastRunningVars(ctx.RunningVariables, ctx.CacheAttrVal);
 
             return ctx;

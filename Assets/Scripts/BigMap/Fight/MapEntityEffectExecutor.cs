@@ -710,10 +710,17 @@ namespace My.Map.Entity
             {
                 var animName = realCfg.AnimName;
                 var castSnapshot = FightCastAttrUtil.CopyCacheAttrs(ctx.CacheAttrVal);
+                var duration = realCfg.Duration;
+                if (realCfg.BindPhaseDuration
+                    && ctx.RunningStorage.TryGetValue("CurrentPhaseDurationMs", out var phaseDurMs))
+                {
+                    duration = phaseDurMs * 0.001f;
+                }
+
                 var windowId = unitEntity.ApplyUseWeapon(
                     realCfg.WeaponName,
                     animName,
-                    realCfg.Duration,
+                    duration,
                     realCfg.OnHitEffects,
                     realCfg.MaxHit,
                     castSnapshot);

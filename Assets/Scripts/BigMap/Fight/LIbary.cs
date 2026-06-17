@@ -3460,6 +3460,9 @@ namespace My.Map.Entity
         }
         private static MapAbilitySpecConfig CreateQueenAttackHeavy()
         {
+            const float executeDuration = 0.96f;
+            var executeDurationStr = executeDuration.ToString("0.##");
+
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
 
             spec.Id = "queen_attack_heavy";
@@ -3502,7 +3505,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "0.5"
+                    RawVal = executeDurationStr
                 },
 
                 AnimTag = "queen_attack_heavy",
@@ -3532,7 +3535,8 @@ namespace My.Map.Entity
                             {
                                 WeaponName = "QueenHeavy",
                                 AnimName = "player_weapon01_heavy3",
-                                Duration = 0.5f,
+                                Duration = executeDuration,
+                                BindPhaseDuration = true,
                                 OnHitEffects = new()
                                 {
 
@@ -3556,7 +3560,8 @@ namespace My.Map.Entity
                             {
                                 WeaponName = "QueenHeavy",
                                 AnimName = "player_weapon01_heavy2",
-                                Duration = 0.5f,
+                                Duration = executeDuration,
+                                BindPhaseDuration = true,
                                 OnHitEffects = new()
                                 {
 
@@ -3580,7 +3585,8 @@ namespace My.Map.Entity
                             {
                                 WeaponName = "QueenHeavy",
                                 AnimName = "player_weapon01_heavy1",
-                                Duration = 0.5f,
+                                Duration = executeDuration,
+                                BindPhaseDuration = true,
                                 OnHitEffects = new()
                                 {
 
