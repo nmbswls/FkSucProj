@@ -1,0 +1,33 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "Forest_01 北侧心木前节点",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "越往北，叶片上的露珠越亮。它们没有滴落，而是悬在叶尖，像小小的灯。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "花露。森林拿这个养封印，也拿这个喂门。要见中心的东西，最好多收一点。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "明白。先收集花露，再去试那个祭坛。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "第一次互动森林之心祭坛",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "祭坛中央的木纹慢慢展开，像一只闭了很久的眼睛。那些收集来的花露在掌心发热。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "你就是这片森林的核心？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "没有声音回答。只有树根轻轻敲击地下，节奏像心跳。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "它听得见。第一次只是确认来的人有没有资格献上花露。下一次再碰它，就该进入正式交换了。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 1,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "heart_intro_seen",
+          "Param6": ""
+        }
+      ]
+    }
+  ]
+}

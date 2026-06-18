@@ -11,17 +11,11 @@ using My.Map.Logic;
 using My.MapExport;
 using My.Player;
 using My.Player.Bag;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
-using UnityEngine.InputSystem.HID;
 using static My.GameLogicManager;
 using static My.Map.BaseUnitLogicEntity;
 using static My.Map.Entity.MapAbilityEffectDashStartCfg;
 using static My.Map.Fight.FightStruct;
-using static My.Map.PlayerLogicEntity;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
-using static UnityEngine.GraphicsBuffer;
 
 namespace My.Map.Entity
 {
@@ -643,8 +637,8 @@ namespace My.Map.Entity
                         ? caster.CurrentLook.normalized
                         : Vector2.right;
                     p = caster.Pos
-                        + look * (float)realCfg.ShowPos.X
-                        + new Vector2(0f, (float)realCfg.ShowPos.Y);
+                        + look * (float)realCfg.ShowPos.x
+                        + new Vector2(0f, (float)realCfg.ShowPos.y);
                     dir = look;
                 }
             }

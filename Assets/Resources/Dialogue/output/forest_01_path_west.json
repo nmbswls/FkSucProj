@@ -1,0 +1,38 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "Forest_01 西侧通道节点",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "西侧的藤枝横在路中，表面有细小的绿色光点，像还在呼吸。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "这些障碍不是自然倒下的。只要打断魔力循环，应该就能让它们枯掉。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "也可以礼貌地问它们能不能让路。虽然我猜它们的礼貌程度和你差不多。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "那就按我的方式来。靠近后处理掉挡路的东西。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

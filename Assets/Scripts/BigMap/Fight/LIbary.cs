@@ -1699,7 +1699,7 @@ namespace My.Map.Entity
             var impactVfx = new MapFightEffectShowEffect()
             {
                 ShowMode = MapFightEffectShowEffect.EShowMode.CasterAligned,
-                ShowPos = new System.Numerics.Vector2(0.6f, 0.55f),
+                ShowPos = new Vector2(0.6f, 0.55f),
                 EffectName = "Slash/impact",
             };
 

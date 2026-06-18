@@ -1,0 +1,38 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "进入 Forest_01 时触发",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "树冠把天光压得很低，潮湿的雾从蕨叶间贴着地面流动。前方的林道被藤蔓和倒木切成了几条窄路。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "这片森林不像普通野地。魔力在绕圈，像是在把闯入者往中心赶。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "中心有个老东西醒着。别急着高兴，它闻起来不像宝箱，更像脾气很差的门锁。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "那就先找钥匙。路上的花露、封路的枝障，还有那些守着通道的怪物，应该都不是随便摆在这里的。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

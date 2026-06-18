@@ -201,6 +201,8 @@ namespace My.Map.Scene
 
             TickPeaceZoneAtFoot();
 
+            TickDialogTriggerZonesAtFoot();
+
             CheckTriggerTeleporter();
 
             TickForbiddenAreaMove();
@@ -253,6 +255,7 @@ namespace My.Map.Scene
 
             LastValidMovePos = rb != null ? rb.position : (Vector2)transform.position;
             ResetPeaceZoneTracking();
+            ResetDialogZoneTracking();
         }
 
 

@@ -1,11 +1,10 @@
 
 
-using System.Numerics;
+
+using UnityEngine;
 
 namespace My.Map.Entity
 {
-
-
 
     public class MapFightEffectShowEffect : MapFightEffectCfg
     {

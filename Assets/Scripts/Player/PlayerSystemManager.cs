@@ -268,6 +268,7 @@ namespace My.Player
             HumanQuickBar.WriteToSave(data.PlayerData);
             RuneSystem?.WriteToSave(data.PlayerData);
             JingYuanCodexSystem?.WriteToSave(data.PlayerData);
+            DialogTriggerSystem?.SaveTo(data.PlayerData);
 
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
             data.PlayerData.FuncOpenList.Clear();
@@ -1056,4 +1057,3 @@ namespace My.Player
         }
     }
 }
-

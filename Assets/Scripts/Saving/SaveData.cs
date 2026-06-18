@@ -107,6 +107,9 @@ namespace My.Saving
         // 地图小剧情触发器消费态：键 mapId|triggerId
         public Dictionary<string, bool> MicroPlotConsumedByKey = new();
 
+        // 已经结束过的对话 id；用于 DialogMetaInfo.only_once，避免用剧情变量额外占位
+        public List<string> TriggeredDialogIds = new();
+
         // 角色装备（与主背包互斥：穿上时从背包扣除；存档需与背包一致）
         public List<EquippedGearEntry> EquippedGear = new();
 
@@ -469,6 +472,7 @@ namespace My.Saving
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.LogicAreaHomesteadByMapId ??= new Dictionary<string, LogicAreaHomesteadPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
+            data.PlayerData.TriggeredDialogIds ??= new List<string>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();

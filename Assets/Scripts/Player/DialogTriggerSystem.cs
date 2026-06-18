@@ -12,10 +12,24 @@ namespace My.Player
         protected GameLogicManager LogicManager { get; private set; }
 
 
-        private Dictionary<string, int> _dialogTriggerCounter = new();
+        private readonly HashSet<string> _triggeredDialogIds = new();
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             this.LogicManager = ctx;
+
+            _triggeredDialogIds.Clear();
+            if (savingData?.PlayerData?.TriggeredDialogIds != null)
+            {
+                foreach (var dialogId in savingData.PlayerData.TriggeredDialogIds)
+                {
+                    if (string.IsNullOrEmpty(dialogId))
+                    {
+                        continue;
+                    }
+
+                    _triggeredDialogIds.Add(dialogId);
+                }
+            }
 
             InitAutoTriggerDialogs();
         }
@@ -28,6 +42,8 @@ namespace My.Player
 
         private void InitAutoTriggerDialogs()
         {
+            _autoDialogs.Clear();
+
             foreach (var d in CfgMgr.Cfgs.TbDialogMetaInfo.DataList)
             {
                 if (!d.IsAutoTrigger)
@@ -35,9 +51,9 @@ namespace My.Player
                     continue;
                 }
 
-                if(d.OnlyOnce)
+                if (d.OnlyOnce)
                 {
-                    if(_dialogTriggerCounter.TryGetValue(d.DialogId, out var count) && count >= 1)
+                    if (IsDialogTriggered(d.DialogId))
                     {
                         continue;
                     }
@@ -50,7 +66,77 @@ namespace My.Player
 
         public void AddTriggerCount(string dialogId)
         {
-            _dialogTriggerCounter[dialogId] = _dialogTriggerCounter.GetValueOrDefault(dialogId) + 1;
+            if (string.IsNullOrEmpty(dialogId))
+            {
+                return;
+            }
+
+            _triggeredDialogIds.Add(dialogId);
+        }
+
+        public bool IsDialogTriggered(string dialogId)
+        {
+            return !string.IsNullOrEmpty(dialogId) && _triggeredDialogIds.Contains(dialogId);
+        }
+
+        public void SaveTo(PlayerData playerData)
+        {
+            if (playerData == null)
+            {
+                return;
+            }
+
+            playerData.TriggeredDialogIds ??= new List<string>();
+            playerData.TriggeredDialogIds.Clear();
+
+            foreach (var dialogId in _triggeredDialogIds)
+            {
+                playerData.TriggeredDialogIds.Add(dialogId);
+            }
+        }
+
+        private bool IsDialogAvailable(DialogMetaInfo dialog)
+        {
+            if (dialog == null)
+            {
+                return false;
+            }
+
+            if (dialog.OnlyOnce && IsDialogTriggered(dialog.DialogId))
+            {
+                return false;
+            }
+
+            foreach (var cond in dialog.TriggerCond)
+            {
+                if (!LogicManager.CheckCommonCond(cond))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool TryPlayDialogByTriggerZone(string dialogId)
+        {
+            if (string.IsNullOrEmpty(dialogId) || LogicManager == null)
+            {
+                return false;
+            }
+
+            if (LogicManager.IsDialogPlayering)
+            {
+                return false;
+            }
+
+            var dialog = CfgMgr.Cfgs.TbDialogMetaInfo.GetOrDefault(dialogId);
+            if (!IsDialogAvailable(dialog))
+            {
+                return false;
+            }
+
+            return LogicManager.viewer.PlayDialog(dialog.DialogId, null, dialog.LockGlobalTime);
         }
 
         private float _autoDialogTimer = 0;
@@ -74,6 +160,9 @@ namespace My.Player
                 return;
             }
 
+            DialogMetaInfo bestDialog = null;
+            var bestPriority = int.MinValue;
+
             foreach (var dialog in _autoDialogs.Values)
             {
                 if(dialog.NeedMap != mapName)
@@ -81,31 +170,21 @@ namespace My.Player
                     continue;
                 }
 
-                if (dialog.OnlyOnce)
+                if (!IsDialogAvailable(dialog))
                 {
-                    if (_dialogTriggerCounter.TryGetValue(dialog.DialogId, out var count) && count >= 1)
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
-                bool passed = true;
-
-                foreach(var cond in dialog.TriggerCond)
+                if (bestDialog == null || dialog.ShowPriority > bestPriority)
                 {
-                    if (!LogicManager.CheckCommonCond(cond))
-                    {
-                        passed = false;
-                        break;
-                    }
+                    bestDialog = dialog;
+                    bestPriority = dialog.ShowPriority;
                 }
+            }
 
-                if(passed)
-                {
-                    // 
-                    LogicManager.viewer.PlayDialog(dialog.DialogId, null, dialog.LockGlobalTime);
-                    break;
-                }
+            if (bestDialog != null)
+            {
+                LogicManager.viewer.PlayDialog(bestDialog.DialogId, null, bestDialog.LockGlobalTime);
             }
         }
 

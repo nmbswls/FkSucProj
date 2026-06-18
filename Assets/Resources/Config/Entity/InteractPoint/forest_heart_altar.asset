@@ -25,13 +25,44 @@ MonoBehaviour:
     Desp: 
     InteractInfos:
     - InteractId: 1
-      Label: Offer
-      UnLabel: Offer(no)
-      HideWhenFail: 0
+      Label: "\u8046\u542C\u5FC3\u6728"
+      UnLabel: "\u8046\u542C\u5FC3\u6728"
+      HideWhenFail: 1
       NeedDist: 0.4
       Passive: 0
       CheckCommonCond: []
-      CheckInteractCond: []
+      CheckInteractCond:
+      - CheckType: 3
+        Param1: 0
+        Param2: 0
+        Param3: heart_intro_seen
+        Param4: 
+      Outputs:
+      - OutputType: 14
+        Param1: 0
+        Param2: 0
+        Param3: forest_01_heart_first
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    - InteractId: 2
+      Label: "\u732E\u4E0A\u82B1\u9732"
+      UnLabel: "\u732E\u4E0A\u82B1\u9732"
+      HideWhenFail: 1
+      NeedDist: 0.4
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond:
+      - CheckType: 2
+        Param1: 0
+        Param2: 0
+        Param3: heart_intro_seen
+        Param4: 
       Outputs:
       - OutputType: 1
         Param1: 1

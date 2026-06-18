@@ -1,0 +1,33 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "Forest_01 南侧主路节点",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "脚下的泥土忽然变硬，像是许多人曾在这里反复折返。几块被苔藓盖住的石标露出半截。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "影羽",
+              "Content": "岔路口。左边风里有苦味，右边有烧焦的树脂味。中间那条最安静，所以最可疑。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "先记住这里。森林在试着让人迷路，我们就反过来把它的节点钉下来。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}
