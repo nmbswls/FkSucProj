@@ -83,7 +83,9 @@ namespace My
                     if (hitOne != null && hitOne.UnitEntity != null)
                     {
                         // 对目标执行一次hit result
-                        hitOne.UnitEntity.ProcessHit(logicProjectile.ownerEntity?.Id ?? 0, hitDir);
+                        hitOne.UnitEntity.ProcessHit(
+                            logicProjectile.ownerEntity?.Id ?? 0,
+                            new UnitHitInfo(hitDir, hitPosition));
                     }
                 }
             }

@@ -116,7 +116,7 @@ namespace My.Map
         /// </summary>
         /// <param name="hitId"></param>
         /// <param name="hitEntityId"></param>
-        public void OnMapHitboxCallback(long hitId, long hitEntityId)
+        public void OnMapHitboxCallback(long hitId, long hitEntityId, Vector2? hitPoint = null)
         {
             activeHitWindows.TryGetValue(hitId, out var window);
 
@@ -150,7 +150,7 @@ namespace My.Map
             if (!window.IsSilentHit && hitEntity is BaseUnitLogicEntity unitHitTarget)
             {
                 // 对目标执行一次hit result
-                unitHitTarget.ProcessHit(Owner.Id, Owner.FinalLook);
+                unitHitTarget.ProcessHit(Owner.Id, new UnitHitInfo(Owner.FinalLook, hitPoint));
             }
 
             if (window.OnHitEffects != null)

@@ -350,7 +350,7 @@ namespace My.Map.Scene
 
         public SpriteWhiteFlasher MainFlasher;
         private int lastHitOverrideCtxId = 0;
-        public void PresenterOnHit(long? srcId)
+        public void PresenterOnHit(long? srcId, UnitHitInfo hitInfo)
         {
             bool overrideHit = false;
             foreach(var buff in UnitEntity.BuffContainer.Values)
@@ -381,15 +381,25 @@ namespace My.Map.Scene
             
             if (!overrideHit)
             {
-                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(UnitEntity.Pos, 0.5f, "Hit/Style01", this.Id);
+                var showPos = hitInfo.HitPoint ?? UnitEntity.Pos;
+                var ctx = MapSceneEffectManager.Instance.ShowSceneEffect(showPos, 0.5f, "Hit/Style01", this.Id);
                 if (ctx != null)
                 {
-                    ctx.BindingUnitVec = new Vector2(0, 0.05f);
+                    ctx.BindingUnitVec = hitInfo.HitPoint.HasValue
+                        ? (Vector3)(hitInfo.HitPoint.Value - UnitEntity.Pos)
+                        : new Vector2(0, 0.05f);
                     var dir = UnityEngine.Random.insideUnitCircle.normalized;
-                    if (srcId != null)
+                    if (hitInfo.HitDir.HasValue && hitInfo.HitDir.Value.sqrMagnitude > 1e-6f)
+                    {
+                        dir = hitInfo.HitDir.Value;
+                    }
+                    else if (srcId != null)
                     {
                         var pres = SceneAOIManager.Instance.GetActivePresentation(srcId.Value);
-                        dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                        if (pres != null)
+                        {
+                            dir = pres.GetWorldPosition() - this.GetWorldPosition();
+                        }
                     }
 
                     ctx.EffectGo.transform.right = -dir;

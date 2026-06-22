@@ -189,12 +189,17 @@ namespace My
 
             Collider2D hit = default;
             bool hitSomething = false;
+            Vector2 hitPosition = end;
 
             if (D.useCCD)
             {
                 var hitResult = Physics2D.CircleCast(start, D.radius, _dir, delta.magnitude, 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("MapTarget"));
                 hit = hitResult.collider;
                 hitSomething = hitResult.collider != null;
+                if (hitSomething)
+                {
+                    hitPosition = hitResult.point;
+                }
             }
             else
             {
@@ -204,12 +209,13 @@ namespace My
                 {
                     hitSomething = true;
                     hit = col;
+                    hitPosition = col.ClosestPoint(_pos);
                 }
             }
 
             if (hitSomething)
             {
-                if (HandleHit(hit))
+                if (HandleHit(hit, hitPosition))
                 {
                     // 终止
                     _finished = true;
@@ -229,7 +235,7 @@ namespace My
             }
         }
 
-        private bool HandleHit(Collider2D col)
+        private bool HandleHit(Collider2D col, Vector2 hitPosition)
         {
             if (col == null) return false;
 
@@ -239,7 +245,7 @@ namespace My
             {
                 if (ownerProj.bindingProjInfo.pData.TriggerOnCollide)
                 {
-                    MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, ownerProj.transform.position);
+                    MainGameManager.Instance.gameLogicManager.projectileHolder.OnProjectileExplode(ownerProj.bindingProjInfo.instId, hitPosition);
                     //ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, _pos, null);
                     Debug.Log("Handle Hit _pos " + _pos);
                 }
@@ -263,8 +269,8 @@ namespace My
                 if (_hitCD.TryGetValue(entityId, out float next) && _time < next) return false;
                 //_hitCD[id] = _time + PD.hitCooldown;
 
-                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, ownerProj.transform.position, hitDir: _dir, unitPresent);
-                ownerProj.NotifyEntityHit(ownerProj.transform.position);
+                ProjectileUtil.HandleHitOutput(ownerProj.bindingProjInfo, hitPosition, hitDir: _dir, unitPresent);
+                ownerProj.NotifyEntityHit(hitPosition);
 
                 _penetrationLeft--;
                 if (_penetrationLeft <= 0) return true;
@@ -704,7 +710,14 @@ namespace My
                     continue;
                 }
 
-                ProjectileUtil.HandleHitOutput(Owner.bindingProjInfo, _pos, hitDir, pres);
+                Vector2 hitPoint = _pos;
+                var targetCol = pres.GetTargetCol();
+                if (targetCol != null)
+                {
+                    hitPoint = targetCol.ClosestPoint(_pos);
+                }
+
+                ProjectileUtil.HandleHitOutput(Owner.bindingProjInfo, hitPoint, hitDir, pres);
                 _hitsRemaining--;
                 float cd = Mathf.Max(0.02f, PerTargetHitCooldown);
                 _perTargetNextHitTime[unit.Id] = _time + cd;

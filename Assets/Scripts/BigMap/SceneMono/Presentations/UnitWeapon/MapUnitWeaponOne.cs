@@ -103,7 +103,14 @@ namespace My.Map.Scene
                 return;
             }
 
-            WeaponCtrl.OnWeaponTriggerHit(HitId, scenePresenter.GetLogicEntity());
+            Vector2? hitPoint = null;
+            if (HitCollider != null)
+            {
+                var distance = HitCollider.Distance(other);
+                hitPoint = distance.isValid ? distance.pointB : other.ClosestPoint(HitCollider.bounds.center);
+            }
+
+            WeaponCtrl.OnWeaponTriggerHit(HitId, scenePresenter.GetLogicEntity(), hitPoint);
         }
 
         private void Update()

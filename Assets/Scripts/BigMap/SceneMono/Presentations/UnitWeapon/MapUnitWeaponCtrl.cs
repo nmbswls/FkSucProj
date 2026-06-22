@@ -111,7 +111,7 @@ public class MapUnitWeaponCtrl : MonoBehaviour
         findIt.ClearWeapon();
     }
 
-    public void OnWeaponTriggerHit(long hitId, ILogicEntity logicEntity)
+    public void OnWeaponTriggerHit(long hitId, ILogicEntity logicEntity, Vector2? hitPoint = null)
     {
         if(logicEntity == null || logicEntity.Id == UnitPresenter.UnitEntity.Id)
         {
@@ -135,6 +135,6 @@ public class MapUnitWeaponCtrl : MonoBehaviour
             return;
         }
 
-        UnitPresenter.OnWeaponHitCallback(hitId, logicEntity.Id);
+        UnitPresenter.OnWeaponHitCallback(hitId, logicEntity.Id, hitPoint);
     }
 }

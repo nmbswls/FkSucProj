@@ -23,6 +23,17 @@ using HighlightPlus;
 
 namespace My.Map
 {
+    public struct UnitHitInfo
+    {
+        public Vector2? HitDir;
+        public Vector2? HitPoint;
+
+        public UnitHitInfo(Vector2? hitDir, Vector2? hitPoint = null)
+        {
+            HitDir = hitDir;
+            HitPoint = hitPoint;
+        }
+    }
 
     public class UnitMoveBehaveInfo
     {
@@ -116,7 +127,7 @@ namespace My.Map
         /// <summary>
         /// event
         /// </summary>
-        public event Action<long, long?> EventOnHit;
+        public event Action<long, long?, UnitHitInfo> EventOnHit;
         public event Action<long> EventOnEnmityBehave;
         public event Action<long> EventOnDie;
         public event Action<long> EventOnAttachStatusChanged;
@@ -1153,7 +1164,12 @@ namespace My.Map
             return true;
         }
 
-        public virtual void ProcessHit(long? srcEntityId, Vector2? hitDir)
+        public void ProcessHit(long? srcEntityId, Vector2? hitDir)
+        {
+            ProcessHit(srcEntityId, new UnitHitInfo(hitDir));
+        }
+
+        public virtual void ProcessHit(long? srcEntityId, UnitHitInfo hitInfo)
         {
             if (srcEntityId.HasValue
                 && this is NpcUnitLogicEntity
@@ -1168,7 +1184,7 @@ namespace My.Map
                 source = EInterruptSource.Hit,
                 priority = 1,
             });
-            EventOnHit?.Invoke(this.Id, srcEntityId);
+            EventOnHit?.Invoke(this.Id, srcEntityId, hitInfo);
         }
 
         /// <summary>
@@ -1703,4 +1719,3 @@ namespace My.Map
 
 
 }
-

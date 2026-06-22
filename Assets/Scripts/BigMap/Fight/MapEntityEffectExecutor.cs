@@ -1150,7 +1150,7 @@ namespace My.Map.Entity
                             if (candidate is BaseUnitLogicEntity unitEntity)
                             {
                                 // 对目标执行一次hit result
-                                unitEntity.ProcessHit(ctx.SourceInfo.SrcEntityId, hitDir);
+                                unitEntity.ProcessHit(ctx.SourceInfo.SrcEntityId, new UnitHitInfo(hitDir));
                             }
                         }
                     }

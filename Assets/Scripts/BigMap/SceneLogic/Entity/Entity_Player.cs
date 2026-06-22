@@ -1583,7 +1583,7 @@ namespace My.Map
             }
 
 
-            var cfg = MapPlayerAttachObjCfgLoader.Get(attachId);
+            var cfg = PlayerAttachCatalog.GetOrDefault(attachId);
             if(cfg == null)
             {
                 Debug.LogError("No attach found {attachId}");
@@ -1594,15 +1594,16 @@ namespace My.Map
             obj.Id = id;
             obj.AttachId = attachId;
             obj.SrcEntityId = srcEntityId;
-            obj.AttachDuration = cfg.AutoDropTime;
-            obj.leftDuration = cfg.AutoDropTime;
-            obj.LeftHp = cfg.HitCount;
+            obj.AttachDuration = PlayerAttachCatalog.GetAutoDropTime(attachId);
+            obj.leftDuration = obj.AttachDuration;
+            obj.LeftHp = PlayerAttachCatalog.GetHitCount(attachId);
 
             AtttachingObjList.Add(obj);
 
-            if(!string.IsNullOrEmpty(cfg.AttachMainBuff))
+            string attachMainBuff = PlayerAttachCatalog.GetAttachMainBuff(attachId);
+            if(!string.IsNullOrEmpty(attachMainBuff))
             {
-                long bid = LogicManager.globalBuffManager.AddBuff(this.Id, cfg.AttachMainBuff);
+                long bid = LogicManager.globalBuffManager.AddBuff(this.Id, attachMainBuff);
                 obj.BuffInstId = bid;
             }
 
@@ -1751,9 +1752,9 @@ namespace My.Map
         }
 
 
-        public override void ProcessHit(long? srcEntityId, Vector2? hitDir)
+        public override void ProcessHit(long? srcEntityId, UnitHitInfo hitInfo)
         {
-            base.ProcessHit(srcEntityId, hitDir);
+            base.ProcessHit(srcEntityId, hitInfo);
 
             if (IsInStealth())
             {
@@ -2273,5 +2274,3 @@ namespace My.Map
 
     }
 }
-
-

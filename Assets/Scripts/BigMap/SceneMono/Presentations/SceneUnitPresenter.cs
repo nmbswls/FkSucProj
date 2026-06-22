@@ -8,7 +8,7 @@ using UnityEngine.AI;
 
 public interface IMapWeaponHolder
 {
-    void OnWeaponHitCallback(long hitId, long hitEntityId);
+    void OnWeaponHitCallback(long hitId, long hitEntityId, Vector2? hitPoint = null);
 }
 
 namespace My.Map.Scene
@@ -562,9 +562,9 @@ namespace My.Map.Scene
             }
         }
 
-        protected virtual void OnEventUnitHit(long entityId, long? srcId)
+        protected virtual void OnEventUnitHit(long entityId, long? srcId, UnitHitInfo hitInfo)
         {
-            PresenterOnHit(srcId);
+            PresenterOnHit(srcId, hitInfo);
         }
 
         protected virtual void HandleEventHpChanged(long entityId, long? srcId, long hpFinalDelta)
@@ -786,9 +786,9 @@ namespace My.Map.Scene
         /// </summary>
         /// <param name="hitId"></param>
         /// <param name="hitEntityId"></param>
-        public void OnWeaponHitCallback(long hitId, long hitEntityId)
+        public void OnWeaponHitCallback(long hitId, long hitEntityId, Vector2? hitPoint = null)
         {
-            UnitEntity.HitWindowRegistry.OnMapHitboxCallback(hitId, hitEntityId);
+            UnitEntity.HitWindowRegistry.OnMapHitboxCallback(hitId, hitEntityId, hitPoint);
         }
 
 
