@@ -52,37 +52,25 @@ namespace My.Config
             return GetOrDefault(attachId)?.MaxVisibleCount ?? 0;
         }
 
-        public static int GetCoverageCircleCount(string attachId, int sameTypeCount)
+        public static string GetAttachMainBuff(string attachId)
         {
-            var info = GetOrDefault(attachId);
-            if (info == null)
-            {
-                return 0;
-            }
-
-            if (sameTypeCount <= 1)
-            {
-                return info.CoverageCircleCount1;
-            }
-
-            if (sameTypeCount == 2)
-            {
-                return info.CoverageCircleCount2;
-            }
-
-            return info.CoverageCircleCount3;
+            return GetOrDefault(attachId)?.AttachMainBuff;
         }
 
-        public static float GetCoverageRadius(string attachId)
+        public static string GetAttachViewPrefabPath(string attachId)
         {
-            var radius = GetOrDefault(attachId)?.CoverageRadius ?? 0f;
-            return radius > 0f ? radius : 0.35f;
+            var path = GetOrDefault(attachId)?.AttachViewPrefab;
+            return string.IsNullOrEmpty(path) ? $"Prefab/Attach/{attachId}" : path;
         }
 
-        public static string GetCoverageColor(string attachId)
+        public static float GetAutoDropTime(string attachId)
         {
-            var color = GetOrDefault(attachId)?.CoverageColor;
-            return string.IsNullOrEmpty(color) ? "#202020" : color;
+            return GetOrDefault(attachId)?.AutoDropTime ?? 0f;
+        }
+
+        public static float GetHitCount(string attachId)
+        {
+            return GetOrDefault(attachId)?.HitCount ?? 3f;
         }
     }
 }

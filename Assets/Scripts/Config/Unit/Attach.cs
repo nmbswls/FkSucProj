@@ -4,16 +4,10 @@ using UnityEngine;
 
 namespace My.Config
 {
-    [CreateAssetMenu(menuName = "GP/Config/Misc/PlayerAttach")]
     [Serializable]
+    [Obsolete("Player attach config has moved to Luban PlayerAttachInfo.")]
     public class PlayerAttachObjCfg : ScriptableObject
     {
         public string AttachId;
-
-        public string AttachMainBuff;
-        public GameObject AttachViewPrefab;
-
-        public float AutoDropTime = 0;
-        public float HitCount = 3;
     }
 }

@@ -13,7 +13,3 @@ MonoBehaviour:
   m_Name: forest_fly_attach
   m_EditorClassIdentifier: 
   AttachId: forest_fly_attach
-  AttachMainBuff: 
-  AttachViewPrefab: {fileID: 0}
-  AutoDropTime: -1
-  HitCount: 1

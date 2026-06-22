@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using My.Config;
 using UnityEngine;
 
 namespace My.Map.Scene
@@ -11,6 +10,7 @@ namespace My.Map.Scene
 
         string _attachId;
         int _sameTypeCount = -1;
+        Transform _coverageRoot;
 
         public void Configure(string attachId, int sameTypeCount)
         {
@@ -43,30 +43,33 @@ namespace My.Map.Scene
 
         void Rebuild()
         {
-            for (int i = transform.childCount - 1; i >= 0; i--)
+            var root = GetOrCreateCoverageRoot();
+            for (int i = root.childCount - 1; i >= 0; i--)
             {
-                Destroy(transform.GetChild(i).gameObject);
+                Destroy(root.GetChild(i).gameObject);
             }
 
             _dots.Clear();
             _baseOffsets.Clear();
 
-            int dotCount = PlayerAttachCatalog.GetCoverageCircleCount(_attachId, _sameTypeCount);
+            var effectCfg = ResolveEffectCfg(_attachId, _sameTypeCount);
+            int dotCount = effectCfg.DotCount;
+            root.gameObject.SetActive(dotCount > 0);
             if (dotCount <= 0)
             {
                 return;
             }
 
-            float radius = PlayerAttachCatalog.GetCoverageRadius(_attachId);
+            float radius = effectCfg.Radius;
             var color = RuntimeCircleVisualUtil.ParseColor(
-                PlayerAttachCatalog.GetCoverageColor(_attachId),
+                effectCfg.Color,
                 new Color(0.08f, 0.08f, 0.08f, 0.9f));
             color.a = Mathf.Clamp(color.a <= 0f ? 0.85f : color.a, 0.2f, 1f);
 
             for (int i = 0; i < dotCount; i++)
             {
                 var go = new GameObject($"Coverage_{i + 1}");
-                go.transform.SetParent(transform, false);
+                go.transform.SetParent(root, false);
 
                 float normalized = dotCount <= 1 ? 0f : i / (float)(dotCount - 1);
                 float angle = i * 2.3999632f;
@@ -83,6 +86,68 @@ namespace My.Map.Scene
                 _dots.Add(go.transform);
                 _baseOffsets.Add(offset);
             }
+        }
+
+        Transform GetOrCreateCoverageRoot()
+        {
+            if (_coverageRoot != null)
+            {
+                return _coverageRoot;
+            }
+
+            _coverageRoot = transform.Find("__AttachCoverage");
+            if (_coverageRoot != null)
+            {
+                return _coverageRoot;
+            }
+
+            var go = new GameObject("__AttachCoverage");
+            go.transform.SetParent(transform, false);
+            _coverageRoot = go.transform;
+            return _coverageRoot;
+        }
+
+        static CoverageEffectCfg ResolveEffectCfg(string attachId, int sameTypeCount)
+        {
+            switch (attachId)
+            {
+                case "forest_fly_attach":
+                    return new CoverageEffectCfg
+                    {
+                        DotCount = ResolveForestFlyDotCount(sameTypeCount),
+                        Radius = 0.42f,
+                        Color = "#1f2a1d",
+                    };
+                default:
+                    return default;
+            }
+        }
+
+        static int ResolveForestFlyDotCount(int sameTypeCount)
+        {
+            if (sameTypeCount <= 0)
+            {
+                return 0;
+            }
+
+            if (sameTypeCount == 1)
+            {
+                return 5;
+            }
+
+            if (sameTypeCount == 2)
+            {
+                return 10;
+            }
+
+            return 16;
+        }
+
+        struct CoverageEffectCfg
+        {
+            public int DotCount;
+            public float Radius;
+            public string Color;
         }
     }
 }

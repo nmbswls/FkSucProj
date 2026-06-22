@@ -526,10 +526,10 @@ namespace My.Map.Scene
 
                 if(!AttachViewDict.TryGetValue(attach.Id, out var showObj))
                 {
-                    var cfg = MapPlayerAttachObjCfgLoader.Get(attach.AttachId);
-                    var prefab = cfg != null && cfg.AttachViewPrefab != null
-                        ? cfg.AttachViewPrefab
-                        : Resources.Load<GameObject>($"Prefab/Attach/{attach.AttachId}");
+                    var prefabPath = PlayerAttachCatalog.GetAttachViewPrefabPath(attach.AttachId);
+                    var prefab = string.IsNullOrEmpty(prefabPath)
+                        ? null
+                        : Resources.Load<GameObject>(prefabPath);
                     if (prefab != null)
                     {
                         showObj = GameObject.Instantiate(prefab, AttachmentRoot);
@@ -546,18 +546,13 @@ namespace My.Map.Scene
                 }
 
                 int sameTypeCount = CountSameAttachType(attach.AttachId);
-                int coverageCount = PlayerAttachCatalog.GetCoverageCircleCount(attach.AttachId, sameTypeCount);
-                if (coverageCount > 0)
+                var coverageView = showObj.GetComponent<PlayerAttachCoverageView>();
+                if (coverageView == null)
                 {
-                    var coverageView = showObj.GetComponent<PlayerAttachCoverageView>();
-                    if (coverageView == null)
-                    {
-                        coverageView = showObj.AddComponent<PlayerAttachCoverageView>();
-                    }
-
-                    coverageView.Configure(attach.AttachId, sameTypeCount);
+                    coverageView = showObj.AddComponent<PlayerAttachCoverageView>();
                 }
 
+                coverageView.Configure(attach.AttachId, sameTypeCount);
                 showObj.transform.SetSiblingIndex(i);
             }
 

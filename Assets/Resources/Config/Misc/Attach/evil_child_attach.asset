@@ -13,7 +13,3 @@ MonoBehaviour:
   m_Name: evil_child_attach
   m_EditorClassIdentifier: 
   AttachId: evil_child_attach
-  AttachMainBuff: attach_small
-  AttachViewPrefab: {fileID: 6750296682159153729, guid: e6af0b341375da440a230d6c284316d8, type: 3}
-  AutoDropTime: -1
-  HitCount: 3

@@ -24,11 +24,10 @@ public sealed partial class PlayerAttachInfo : Luban.BeanBase
         { if(!_buf["display_count_weight"].IsNumber) { throw new SerializationException(); }  DisplayCountWeight = _buf["display_count_weight"]; }
         { if(!_buf["display_group_id"].IsString) { throw new SerializationException(); }  DisplayGroupId = _buf["display_group_id"]; }
         { if(!_buf["max_visible_count"].IsNumber) { throw new SerializationException(); }  MaxVisibleCount = _buf["max_visible_count"]; }
-        { if(!_buf["coverage_circle_count_1"].IsNumber) { throw new SerializationException(); }  CoverageCircleCount1 = _buf["coverage_circle_count_1"]; }
-        { if(!_buf["coverage_circle_count_2"].IsNumber) { throw new SerializationException(); }  CoverageCircleCount2 = _buf["coverage_circle_count_2"]; }
-        { if(!_buf["coverage_circle_count_3"].IsNumber) { throw new SerializationException(); }  CoverageCircleCount3 = _buf["coverage_circle_count_3"]; }
-        { if(!_buf["coverage_radius"].IsNumber) { throw new SerializationException(); }  CoverageRadius = _buf["coverage_radius"]; }
-        { if(!_buf["coverage_color"].IsString) { throw new SerializationException(); }  CoverageColor = _buf["coverage_color"]; }
+        { if(!_buf["attach_main_buff"].IsString) { throw new SerializationException(); }  AttachMainBuff = _buf["attach_main_buff"]; }
+        { if(!_buf["attach_view_prefab"].IsString) { throw new SerializationException(); }  AttachViewPrefab = _buf["attach_view_prefab"]; }
+        { if(!_buf["auto_drop_time"].IsNumber) { throw new SerializationException(); }  AutoDropTime = _buf["auto_drop_time"]; }
+        { if(!_buf["hit_count"].IsNumber) { throw new SerializationException(); }  HitCount = _buf["hit_count"]; }
     }
 
     public static PlayerAttachInfo DeserializePlayerAttachInfo(JSONNode _buf)
@@ -61,25 +60,21 @@ public sealed partial class PlayerAttachInfo : Luban.BeanBase
     /// </summary>
     public int MaxVisibleCount;
     /// <summary>
-    /// circle count when one same-type attach is active
+    /// main buff added while attach is active
     /// </summary>
-    public int CoverageCircleCount1;
+    public string AttachMainBuff;
     /// <summary>
-    /// circle count when two same-type attaches are active
+    /// Resources prefab path under Prefab/Attach; empty uses attach_id
     /// </summary>
-    public int CoverageCircleCount2;
+    public string AttachViewPrefab;
     /// <summary>
-    /// circle count when three or more same-type attaches are active
+    /// auto drop duration; negative means no timer
     /// </summary>
-    public int CoverageCircleCount3;
+    public float AutoDropTime;
     /// <summary>
-    /// local radius for generated attach coverage circles
+    /// hit count before attach breaks
     /// </summary>
-    public float CoverageRadius;
-    /// <summary>
-    /// html color for generated attach coverage circles
-    /// </summary>
-    public string CoverageColor;
+    public float HitCount;
    
     public const int __ID__ = -1448051937;
     public override int GetTypeId() => __ID__;
@@ -97,11 +92,10 @@ public sealed partial class PlayerAttachInfo : Luban.BeanBase
         + "displayCountWeight:" + DisplayCountWeight + ","
         + "displayGroupId:" + DisplayGroupId + ","
         + "maxVisibleCount:" + MaxVisibleCount + ","
-        + "coverageCircleCount1:" + CoverageCircleCount1 + ","
-        + "coverageCircleCount2:" + CoverageCircleCount2 + ","
-        + "coverageCircleCount3:" + CoverageCircleCount3 + ","
-        + "coverageRadius:" + CoverageRadius + ","
-        + "coverageColor:" + CoverageColor + ","
+        + "attachMainBuff:" + AttachMainBuff + ","
+        + "attachViewPrefab:" + AttachViewPrefab + ","
+        + "autoDropTime:" + AutoDropTime + ","
+        + "hitCount:" + HitCount + ","
         + "}";
     }
 }
