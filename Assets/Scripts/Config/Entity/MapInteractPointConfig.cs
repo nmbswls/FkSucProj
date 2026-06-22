@@ -43,6 +43,8 @@ namespace Config.Map
             public bool AutoTriggerCollide = false;
 
             public bool AutoTrigger = false;
+            public int AutoTriggerInteractId = 1;
+            public float AutoTriggerCheckInterval = 0.25f;
         }
 
         public StatusInfo MainStatusInfo;

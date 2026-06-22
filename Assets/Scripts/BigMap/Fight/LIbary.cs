@@ -463,6 +463,11 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateForestFlyAttachAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateHitAttachAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -5161,6 +5166,70 @@ namespace My.Map.Entity
             spec.Phases.Add(mainPhase);
             return spec;
         }
+
+        private static MapAbilitySpecConfig CreateForestFlyAttachAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "forest_fly_attach";
+            spec.TypeTag = AbilityTypeTag.Combat;
+
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 3.2f;
+            spec.TargetSelectPolicy = FightStruct.ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase()
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                EnterDebugString = "fly",
+
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.45"
+                },
+            });
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Executing",
+                LockMovement = true,
+                LockRotation = true,
+                ImmuneKnock = true,
+                AnimTag = "Push",
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.45"
+                },
+            };
+
+            var dashEffect = new MapAbilityEffectDashStartCfg()
+            {
+                DashMode = EDashMode.ToTarget,
+                DashSpeed = 7.5f,
+                MaxDistance = 3.4f,
+                DashWeaponName = "Catch",
+                DirMode = EDirMode.LookDir,
+                OnHitEffects = new()
+                {
+                    new MapAbilityEffectNextPhaseCfg()
+                    {
+                        MatchPhase = "Executing",
+                        MatchSkill = "forest_fly_attach"
+                    },
+                    new MapAbilityEffectConvertAttachCfg()
+                    {
+                        AttachId = "forest_fly_attach",
+                    },
+                },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = dashEffect, Kind = PhaseEventKind.OnEnter });
+
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
     
         
         private static MapAbilitySpecConfig CreateEvilChildInsertionAbility()
@@ -5246,7 +5315,7 @@ namespace My.Map.Entity
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
-                    RawVal = "1.5"
+                    RawVal = "0.55"
                 },
             };
 

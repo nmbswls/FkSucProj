@@ -77,7 +77,7 @@ namespace My.UI
                 return;
             }
 
-            var showSkills = pdm.GetSkillSlotsByState();
+            var showSkills = OverworldHUDPanel.BuildEffectiveSkillSlots(pdm.GetSkillSlotsByState());
             if (showSkills == null)
             {
                 return;
@@ -194,7 +194,7 @@ namespace My.UI
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
             var pdm = glm?.playerDataManager;
-            var showSkills = pdm?.GetSkillSlotsByState();
+            var showSkills = OverworldHUDPanel.BuildEffectiveSkillSlots(pdm?.GetSkillSlotsByState());
 
             if (showSkills == null || skillSourceIndex < 0 || skillSourceIndex >= showSkills.Length)
             {

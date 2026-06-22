@@ -98,6 +98,7 @@ namespace My.Player
             "queen_desire_charm_01",
             "player_small_staggering",
             "default_push",
+            "hit_attach",
             "player_normal_defend",
             "crazy_fire",
             "player_dark_dance",

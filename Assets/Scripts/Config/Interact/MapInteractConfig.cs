@@ -108,6 +108,9 @@ namespace My.Config
 
             // Param3 = skill_id；玩家当前已持有该临时技能时不可交互
             PlayerNotHoldTempSkill,
+
+            // Param1 = count, Param2 = 0 by attach_id / 1 by attach_type, Param3 = attach id or type
+            PlayerAttachCountAtLeast,
         }
 
         public ECheckType CheckType;
@@ -134,4 +137,3 @@ namespace My.Config
         public List<LogicInteractOutput> Outputs = new();
     }
 }
-

@@ -53,7 +53,14 @@ namespace My.UI
             // 人类快捷栏：武器槽在前，技能槽在后（同尺寸横向排列）
             if (glm.IsHumanQuickBarAvailable())
             {
-                layout.Add(new MainBottomBarSlotDef(MainBottomBarSlotKind.Weapon, 0));
+                if (OverworldHUDPanel.ShouldUseAttachStruggleSkill())
+                {
+                    layout.Add(new MainBottomBarSlotDef(MainBottomBarSlotKind.Skill, 0));
+                }
+                else
+                {
+                    layout.Add(new MainBottomBarSlotDef(MainBottomBarSlotKind.Weapon, 0));
+                }
                 layout.Add(new MainBottomBarSlotDef(MainBottomBarSlotKind.Weapon, 1));
 
                 layout.Add(new MainBottomBarSlotDef(MainBottomBarSlotKind.Skill, 3));
@@ -83,6 +90,13 @@ namespace My.UI
             }
 
             var def = layout[barSlotIndex];
+            if (OverworldHUDPanel.ShouldUseAttachStruggleSkill()
+                && def.Kind == MainBottomBarSlotKind.Skill
+                && def.SourceIndex == 0)
+            {
+                return "左键";
+            }
+
             if (def.Kind == MainBottomBarSlotKind.Weapon)
             {
                 return def.SourceIndex == 0 ? "左键" : "右键";

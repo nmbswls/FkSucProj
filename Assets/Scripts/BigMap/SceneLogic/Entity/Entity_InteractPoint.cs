@@ -5,6 +5,7 @@ using My;
 using My.Config;
 using My.Map;
 using My.Map.Logic;
+using My.Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -275,6 +276,7 @@ namespace My.Map.Entity
             LowFreqCheckStatusChange();
 
             InteractComp?.TickInteract(dt);
+            TryTickAutoTrigger();
 
             TickPoisonBait(dt);
             TickDormantReveal();
@@ -286,6 +288,7 @@ namespace My.Map.Entity
         }
 
         private float _lowFreqCheckStatusTimer = 0;
+        private float _nextAutoTriggerCheckTime = 0;
         /// <summary>
         /// ????
         /// </summary>
@@ -299,6 +302,34 @@ namespace My.Map.Entity
             _lowFreqCheckStatusTimer = LogicTime.time + 2f;
 
             CheckStatusCondition();
+        }
+
+        private void TryTickAutoTrigger()
+        {
+            if (InteractComp == null || IsInteracting || !IsLogicInteractAvailable)
+            {
+                return;
+            }
+
+            var curState = GetCurrentStatusInfo();
+            if (curState == null || !curState.AutoTrigger)
+            {
+                return;
+            }
+
+            if (LogicTime.time < _nextAutoTriggerCheckTime)
+            {
+                return;
+            }
+
+            float interval = curState.AutoTriggerCheckInterval > 0f ? curState.AutoTriggerCheckInterval : 0.25f;
+            _nextAutoTriggerCheckTime = LogicTime.time + interval;
+
+            int interactId = curState.AutoTriggerInteractId > 0 ? curState.AutoTriggerInteractId : 1;
+            if (CheckTriggerInteract(interactId, GamePlayerIds.Local))
+            {
+                TryTriggerInteract(interactId, GamePlayerIds.Local);
+            }
         }
 
         public virtual void ChangeSelfStatus(int newStatus, StateChangeView changeView = null)

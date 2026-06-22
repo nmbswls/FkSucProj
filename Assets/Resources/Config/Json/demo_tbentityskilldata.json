@@ -1264,5 +1264,43 @@
         "param4": ""
       }
     ]
+  },
+  {
+    "skill_id": "hit_attach",
+    "main_ability_id": "hit_attach",
+    "desc": "挣脱附着物",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "stack_count": 0,
+    "icon_path": "icon_01",
+    "priority": 100,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0.8,
+    "buffer_cache_time": 0.1,
+    "cast_conditions": []
+  },
+  {
+    "skill_id": "forest_fly_attach",
+    "main_ability_id": "forest_fly_attach",
+    "desc": "飞虫冲刺附着",
+    "is_passive": false,
+    "passive_buff_ids": [],
+    "passive_buff_level_variable_key": "",
+    "is_combo": false,
+    "need_h_mode": false,
+    "interrupt_combo": true,
+    "is_derived": false,
+    "stack_count": 0,
+    "icon_path": "icon_01",
+    "priority": 30,
+    "desired_use_angle": 0,
+    "desired_use_distance": 0.8,
+    "buffer_cache_time": 0.1,
+    "cast_conditions": []
   }
 ]

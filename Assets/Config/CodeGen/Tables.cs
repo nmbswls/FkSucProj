@@ -122,6 +122,7 @@ public partial class Tables
     /// 养成总面板选项卡
     /// </summary>
     public demo.TbProgressionHubTab TbProgressionHubTab {get; }
+    public demo.TbPlayerAttachInfo TbPlayerAttachInfo {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -212,6 +213,7 @@ public partial class Tables
         TbJingYuanTypeDef = new demo.TbJingYuanTypeDef(loader("demo_tbjingyuantypedef"));
         TbJingYuanTypePoolEntry = new demo.TbJingYuanTypePoolEntry(loader("demo_tbjingyuantypepoolentry"));
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
+        TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
         ResolveRef();
     }
     
@@ -304,6 +306,7 @@ public partial class Tables
         TbJingYuanTypeDef.ResolveRef(this);
         TbJingYuanTypePoolEntry.ResolveRef(this);
         TbProgressionHubTab.ResolveRef(this);
+        TbPlayerAttachInfo.ResolveRef(this);
     }
 }
 

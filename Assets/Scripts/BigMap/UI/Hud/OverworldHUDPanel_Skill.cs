@@ -14,6 +14,35 @@ namespace My.UI
 {
     public partial class OverworldHUDPanel
     {
+        public const string AttachStruggleSkillId = "hit_attach";
+
+        public static bool ShouldUseAttachStruggleSkill()
+        {
+            var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
+            return player != null && player.HasAttachingObj;
+        }
+
+        public static string[] BuildEffectiveSkillSlots(string[] source)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+
+            if (!ShouldUseAttachStruggleSkill())
+            {
+                return source;
+            }
+
+            var ret = (string[])source.Clone();
+            if (ret.Length > 0)
+            {
+                ret[0] = AttachStruggleSkillId;
+            }
+
+            return ret;
+        }
+
         static bool IsWeaponHotkey(string keyName)
         {
             return keyName == EInputKey.Num1.ToString() || keyName == EInputKey.Num2.ToString();
@@ -85,6 +114,11 @@ namespace My.UI
 
             if (keyName == EInputKey.MouseLeft.ToString())
             {
+                if (ShouldUseAttachStruggleSkill())
+                {
+                    return AttachStruggleSkillId;
+                }
+
                 var pdm = MainGameManager.Instance.gameLogicManager.playerDataManager;
                 var leftClick = pdm?.HumanQuickBar?.ResolveLeftClickSkillId();
                 if (!string.IsNullOrEmpty(leftClick))

@@ -6,6 +6,7 @@ using Map.Entity;
 using Map.Logic;
 using Map.Scene;
 using My;
+using My.Config;
 using My.Map;
 using My.Map.Entity;
 using My.UI;
@@ -334,11 +335,6 @@ namespace My.Map.Scene
                 return true;
             }
 
-            if (PlayerEntity.AtttachingObjList.Count > 0)
-            {
-                return true;
-            }
-
             return false;
         }
 
@@ -349,12 +345,6 @@ namespace My.Map.Scene
                 PlayerEntity.EndStealth();
                 return true;
             }
-            else if (selectionId == 2)
-            {
-                PlayerEntity.abilityController.TryUseAbility("hit_attach");
-                return true;
-            }
-
             return false;
         }
 
@@ -378,16 +368,6 @@ namespace My.Map.Scene
                 {
                     SelectId = 1,
                     SelectContent = "Leave",
-                    Selectable = true,
-                });
-            }
-
-            if(PlayerEntity.AtttachingObjList.Count > 0)
-            {
-                ret.Add(new SceneInteractSelection()
-                {
-                    SelectId = 2,
-                    SelectContent = "挣扎",
                     Selectable = true,
                 });
             }
@@ -437,29 +417,153 @@ namespace My.Map.Scene
         private void OnEventAttachmentUpdate(long e)
         {
             RefreshAttachmentView();
+            OverworldHUDPanel.Instance?.MainBottomBar?.Refresh();
+            PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
         public Transform AttachmentRoot;
 
         private Dictionary<int, GameObject> AttachViewDict = new();
+
+        private sealed class AttachDisplayGroup
+        {
+            public string GroupId;
+            public int Count;
+            public int Weight;
+            public int CountWeight;
+            public int MaxVisibleCount;
+            public List<PlayerLogicEntity.AttachingObjInfo> Items = new();
+
+            public int SortScore => Weight + Count * CountWeight;
+        }
+
+        private List<PlayerLogicEntity.AttachingObjInfo> BuildSortedVisibleAttachInfos()
+        {
+            var ret = new List<PlayerLogicEntity.AttachingObjInfo>();
+            var groups = new Dictionary<string, AttachDisplayGroup>();
+
+            foreach (var attach in PlayerEntity.AtttachingObjList)
+            {
+                string groupId = PlayerAttachCatalog.GetDisplayGroupId(attach.AttachId);
+                if (string.IsNullOrEmpty(groupId))
+                {
+                    groupId = attach.AttachId;
+                }
+
+                if (!groups.TryGetValue(groupId, out var group))
+                {
+                    group = new AttachDisplayGroup()
+                    {
+                        GroupId = groupId,
+                    };
+                    groups[groupId] = group;
+                }
+
+                int weight = PlayerAttachCatalog.GetDisplayWeight(attach.AttachId);
+                int countWeight = PlayerAttachCatalog.GetDisplayCountWeight(attach.AttachId);
+                int maxVisibleCount = PlayerAttachCatalog.GetMaxVisibleCount(attach.AttachId);
+
+                group.Count++;
+                group.Weight = Mathf.Max(group.Weight, weight);
+                group.CountWeight = Mathf.Max(group.CountWeight, countWeight);
+                if (maxVisibleCount > 0)
+                {
+                    group.MaxVisibleCount = group.MaxVisibleCount > 0
+                        ? Mathf.Min(group.MaxVisibleCount, maxVisibleCount)
+                        : maxVisibleCount;
+                }
+                group.Items.Add(attach);
+            }
+
+            var sortedGroups = groups.Values
+                .OrderByDescending(item => item.SortScore)
+                .ThenByDescending(item => item.Count)
+                .ThenBy(item => item.GroupId)
+                .ToList();
+
+            foreach (var group in sortedGroups)
+            {
+                group.Items.Sort((a, b) =>
+                {
+                    int weightCompare = PlayerAttachCatalog.GetDisplayWeight(b.AttachId)
+                        .CompareTo(PlayerAttachCatalog.GetDisplayWeight(a.AttachId));
+                    if (weightCompare != 0)
+                    {
+                        return weightCompare;
+                    }
+
+                    return a.Id.CompareTo(b.Id);
+                });
+
+                int visibleCount = group.MaxVisibleCount > 0
+                    ? Mathf.Min(group.MaxVisibleCount, group.Items.Count)
+                    : group.Items.Count;
+
+                for (int i = 0; i < visibleCount; i++)
+                {
+                    ret.Add(group.Items[i]);
+                }
+            }
+
+            return ret;
+        }
+
+        int CountSameAttachType(string attachId)
+        {
+            string attachType = PlayerAttachCatalog.GetAttachType(attachId);
+            return PlayerEntity.CountAttachByType(attachType);
+        }
+
         public void RefreshAttachmentView()
         {
-            foreach(var attach in PlayerEntity.AtttachingObjList)
+            var visibleAttachInfos = BuildSortedVisibleAttachInfos();
+            var visibleAttachIds = new HashSet<int>();
+
+            for (int i = 0; i < visibleAttachInfos.Count; i++)
             {
+                var attach = visibleAttachInfos[i];
+                visibleAttachIds.Add(attach.Id);
+
                 if(!AttachViewDict.TryGetValue(attach.Id, out var showObj))
                 {
                     var cfg = MapPlayerAttachObjCfgLoader.Get(attach.AttachId);
-                    var prefab = Resources.Load<GameObject>($"Prefab/Attach/{attach.AttachId}");
-                    var go = GameObject.Instantiate(prefab, AttachmentRoot);
-                    go.SetActive(true);
-                    go.transform.localPosition = Vector3.zero;
-                    AttachViewDict[attach.Id] = go;
+                    var prefab = cfg != null && cfg.AttachViewPrefab != null
+                        ? cfg.AttachViewPrefab
+                        : Resources.Load<GameObject>($"Prefab/Attach/{attach.AttachId}");
+                    if (prefab != null)
+                    {
+                        showObj = GameObject.Instantiate(prefab, AttachmentRoot);
+                    }
+                    else
+                    {
+                        showObj = new GameObject($"Attach_{attach.AttachId}");
+                        showObj.transform.SetParent(AttachmentRoot, false);
+                    }
+
+                    showObj.SetActive(true);
+                    showObj.transform.localPosition = Vector3.zero;
+                    AttachViewDict[attach.Id] = showObj;
                 }
+
+                int sameTypeCount = CountSameAttachType(attach.AttachId);
+                int coverageCount = PlayerAttachCatalog.GetCoverageCircleCount(attach.AttachId, sameTypeCount);
+                if (coverageCount > 0)
+                {
+                    var coverageView = showObj.GetComponent<PlayerAttachCoverageView>();
+                    if (coverageView == null)
+                    {
+                        coverageView = showObj.AddComponent<PlayerAttachCoverageView>();
+                    }
+
+                    coverageView.Configure(attach.AttachId, sameTypeCount);
+                }
+
+                showObj.transform.SetSiblingIndex(i);
             }
 
             foreach(var key in AttachViewDict.Keys.ToList())
             {
-                if (PlayerEntity.AtttachingObjList.Find((item) => { return item.Id == key; }) == null)
+                if (!visibleAttachIds.Contains(key))
                 {
                     GameObject.Destroy(AttachViewDict[key].gameObject);
                     AttachViewDict.Remove(key); 

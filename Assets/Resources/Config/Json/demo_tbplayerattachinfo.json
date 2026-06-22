@@ -1,0 +1,28 @@
+[
+  {
+    "attach_id": "evil_child_attach",
+    "attach_type": "evil_child",
+    "display_weight": 100,
+    "display_count_weight": 0,
+    "display_group_id": "evil_child",
+    "max_visible_count": 0,
+    "coverage_circle_count_1": 0,
+    "coverage_circle_count_2": 0,
+    "coverage_circle_count_3": 0,
+    "coverage_radius": 0.28,
+    "coverage_color": "#2f251f"
+  },
+  {
+    "attach_id": "forest_fly_attach",
+    "attach_type": "forest_fly",
+    "display_weight": 120,
+    "display_count_weight": 30,
+    "display_group_id": "forest_fly",
+    "max_visible_count": 1,
+    "coverage_circle_count_1": 5,
+    "coverage_circle_count_2": 10,
+    "coverage_circle_count_3": 16,
+    "coverage_radius": 0.42,
+    "coverage_color": "#1f2a1d"
+  }
+]

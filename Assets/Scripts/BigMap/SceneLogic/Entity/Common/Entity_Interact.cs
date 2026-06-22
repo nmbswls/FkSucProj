@@ -265,6 +265,19 @@ namespace My.Map
                             }
                         }
                         break;
+                    case InteractCheckCond.ECheckType.PlayerAttachCountAtLeast:
+                        {
+                            string attachKey = oneCond.Param3;
+                            int needCount = oneCond.Param1 > 0 ? (int)oneCond.Param1 : 0;
+                            int count = oneCond.Param2 == 1
+                                ? playerEntity.CountAttachByType(attachKey)
+                                : playerEntity.CountAttachById(attachKey);
+                            if (count < needCount)
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
                         
                 }
             }

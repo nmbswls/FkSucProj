@@ -528,5 +528,21 @@
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
+  },
+  {
+    "skill_id": "hit_attach",
+    "level": 1,
+    "cool_down": 0.2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "forest_fly_attach",
+    "level": 1,
+    "cool_down": 1.5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
   }
 ]

@@ -52,6 +52,7 @@ namespace My.Map.Scene
         public bool InteractDetailMode { get; set; }
 
         private int _faqingEffectUId { get; set; }
+        FlySwarmVisual _flySwarmVisual;
 
         public bool InteractFocused
         {
@@ -122,6 +123,7 @@ namespace My.Map.Scene
         public override void Tick(float dt)
         {
             base.Tick(dt);
+            _flySwarmVisual?.Tick(dt);
 
             if(NpcEntity.IsFaQing)
             {
@@ -144,6 +146,43 @@ namespace My.Map.Scene
                     _faqingEffectUId = 0;
                 }
             }
+        }
+
+        public override void Bind(ILogicEntity logic)
+        {
+            base.Bind(logic);
+            RefreshSpecialRuntimeVisuals();
+        }
+
+        public override void Unbind()
+        {
+            if (_flySwarmVisual != null)
+            {
+                _flySwarmVisual.SetEnabled(false, ViewRoot, AgentView);
+            }
+
+            base.Unbind();
+        }
+
+        void RefreshSpecialRuntimeVisuals()
+        {
+            bool isFlySwarm = NpcEntity != null && NpcEntity.CfgId == "forest_fly_swarm";
+            if (!isFlySwarm)
+            {
+                _flySwarmVisual?.SetEnabled(false, ViewRoot, AgentView);
+                return;
+            }
+
+            if (_flySwarmVisual == null)
+            {
+                _flySwarmVisual = GetComponent<FlySwarmVisual>();
+                if (_flySwarmVisual == null)
+                {
+                    _flySwarmVisual = gameObject.AddComponent<FlySwarmVisual>();
+                }
+            }
+
+            _flySwarmVisual.SetEnabled(true, ViewRoot, AgentView);
         }
 
         public override bool CheckCanActiveMove()

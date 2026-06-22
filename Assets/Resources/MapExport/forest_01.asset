@@ -194,16 +194,16 @@ MonoBehaviour:
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
-      Param6: 
+      Param5:
+      Param6:
     DisappearCond:
       Type: 0
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
-      Param6: 
+      Param5:
+      Param6:
     WillRespawn: 0
     RespawnInterval: 0
     DungeonNodeId: -1
@@ -498,6 +498,30 @@ MonoBehaviour:
     SpawnPolicy: 0
     InitInfo:
       rid: 958884501006319641
+  - StaticId: 113
+    UniqName: forest_fly_swarm_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5:
+      Param6:
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5:
+      Param6:
+    WillRespawn: 1
+    RespawnInterval: 30
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 958884501006319642
   NamedPoints:
   - Name: heart_gate
     PointType: 0
@@ -528,15 +552,15 @@ MonoBehaviour:
         CfgId: area_cannon
         Position: {x: 53, y: 32}
         FaceDir: {x: -1, y: 0}
-        BindRoomId: 
+        BindRoomId:
         OrgFactionId: 0
         MoveMode: 0
-        EnmityConfId: 
+        EnmityConfId:
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
-        CharacterKey: 
-        PatrolPortalNetworkId: 
+        CharacterKey:
+        PatrolPortalNetworkId:
         PatrolCycleNodeIds: []
     - rid: 958884501006319630
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
@@ -678,3 +702,19 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
+    - rid: 958884501006319642
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 47, y: 47}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId:
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId:
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey:
+        PatrolPortalNetworkId:
+        PatrolCycleNodeIds: []

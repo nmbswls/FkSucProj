@@ -1995,7 +1995,7 @@ namespace My.Map.Entity
                 return;
             }
 
-            player.HitAttachObjs();
+            player.HitAttachObjs(realCfg.HitHp);
         }
     }
 

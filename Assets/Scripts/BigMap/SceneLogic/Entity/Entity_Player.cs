@@ -1497,16 +1497,81 @@ namespace My.Map
 
         public List<AttachingObjInfo> AtttachingObjList = new();
 
+        public bool HasAttachingObj => AtttachingObjList.Count > 0;
+
+        public int CountAttachById(string attachId)
+        {
+            if (string.IsNullOrEmpty(attachId))
+            {
+                return 0;
+            }
+
+            int count = 0;
+            foreach (var attach in AtttachingObjList)
+            {
+                if (attach.AttachId == attachId)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public int CountAttachByType(string attachType)
+        {
+            if (string.IsNullOrEmpty(attachType))
+            {
+                return 0;
+            }
+
+            int count = 0;
+            foreach (var attach in AtttachingObjList)
+            {
+                if (PlayerAttachCatalog.GetAttachType(attach.AttachId) == attachType)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
 
         /// <summary>
         /// 打attach
         /// </summary>
-        public void HitAttachObjs()
+        public void HitAttachObjs(int hitHp = 1)
         {
-            foreach (var obj in AtttachingObjList)
+            if (AtttachingObjList.Count == 0)
             {
-                obj.LeftHp -= 1;
+                return;
             }
+
+            hitHp = Math.Max(1, hitHp);
+            var target = AtttachingObjList
+                .OrderBy(item => item.LeftHp)
+                .ThenBy(item => item.Id)
+                .FirstOrDefault();
+            if (target == null)
+            {
+                return;
+            }
+
+            target.LeftHp -= hitHp;
+
+            bool removed = false;
+            for (int i = AtttachingObjList.Count - 1; i >= 0; i--)
+            {
+                if (AtttachingObjList[i].LeftHp <= 0)
+                {
+                    OnAttachRemoved(AtttachingObjList[i]);
+                    AtttachingObjList.RemoveAt(i);
+                    removed = true;
+                }
+            }
+
+            EventOnAttachmentUpdate?.Invoke(removed ? 1 : 0);
         }
 
         public void AddAttachingObjInfo(string attachId, long? srcEntityId)
@@ -1530,6 +1595,7 @@ namespace My.Map
             obj.AttachId = attachId;
             obj.SrcEntityId = srcEntityId;
             obj.AttachDuration = cfg.AutoDropTime;
+            obj.leftDuration = cfg.AutoDropTime;
             obj.LeftHp = cfg.HitCount;
 
             AtttachingObjList.Add(obj);
@@ -2207,8 +2273,5 @@ namespace My.Map
 
     }
 }
-
-
-
 
 
