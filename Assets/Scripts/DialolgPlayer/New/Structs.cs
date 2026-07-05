@@ -71,6 +71,14 @@ namespace My.Dialog
         public ImgPos Position;
     }
 
+    [Serializable]
+    public class DialogCommandData4ShowImage : DialogCommandData
+    {
+        public string ImageName;
+        public bool Visible = true;
+        public float Alpha = 1f;
+    }
+
     public enum EDialogSimpleFuncType
     {
         None = 0,
@@ -83,6 +91,7 @@ namespace My.Dialog
 
         SetGlobalSwitch,
         Teleport,
+        OpenFunc,
     }
 
 

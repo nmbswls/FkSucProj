@@ -16,8 +16,8 @@ namespace My.Map.MindFragment
                 return result;
             }
 
-            var mindTag = npc.NpcConfig.MindTag;
-            if (string.IsNullOrEmpty(mindTag))
+            var npcTags = NpcTagUtil.BuildTagSet(npc.NpcConfig);
+            if (npcTags.Count == 0)
             {
                 return result;
             }
@@ -46,7 +46,7 @@ namespace My.Map.MindFragment
 
             foreach (var entry in table.DataList)
             {
-                if (entry == null || entry.MindTag != mindTag || entry.DesireType != desireType)
+                if (entry == null || !npcTags.Contains(entry.MindTag) || entry.DesireType != desireType)
                 {
                     continue;
                 }

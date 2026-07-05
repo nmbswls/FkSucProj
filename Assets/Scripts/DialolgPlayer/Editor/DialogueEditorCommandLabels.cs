@@ -17,6 +17,8 @@ namespace My.Dialog
                     return $"[Branch] {b.SimpleBranch?.Count ?? 0} Options";
                 case DialogCommandData4SetImage _:
                     return "[SetImage]";
+                case DialogCommandData4ShowImage _:
+                    return "[ShowImage]";
                 case DialogCommandData4MoveEntity m:
                     return $"[ActorMove] {m.StaticName}";
                 case DialogCommandData4ActorAnim a:

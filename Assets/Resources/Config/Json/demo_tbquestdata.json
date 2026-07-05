@@ -119,5 +119,65 @@
     "is_auto_accept": false,
     "acceept_cond": [],
     "start_npc_id": "home_merchant"
+  },
+  {
+    "quest_id": 300,
+    "name": "临时包扎",
+    "desc": "检查并稳定昏迷的卡莱尔",
+    "init_step_id": "300_s1",
+    "finish_reward": [],
+    "is_auto_accept": false,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 100,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "carlisle"
+  },
+  {
+    "quest_id": 301,
+    "name": "清理退路",
+    "desc": "清掉附近怪物，确保能带卡莱尔离开",
+    "init_step_id": "301_s1",
+    "finish_reward": [],
+    "is_auto_accept": false,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 300,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "carlisle"
+  },
+  {
+    "quest_id": 302,
+    "name": "简易担架",
+    "desc": "收集材料，带卡莱尔离开地牢",
+    "init_step_id": "302_s1",
+    "finish_reward": [],
+    "is_auto_accept": false,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 301,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "carlisle"
   }
 ]

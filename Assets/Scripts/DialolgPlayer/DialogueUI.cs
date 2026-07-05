@@ -64,6 +64,9 @@ namespace My.UI
 
         public PortraitManager portraits;
 
+        Image _cgImage;
+        CanvasGroup _cgGroup;
+
         public void Awake()
         {
             if (choiceButtonPrefab) choiceButtonPrefab.gameObject.SetActive(false);
@@ -84,6 +87,21 @@ namespace My.UI
             ClickArea.onClick.RemoveAllListeners();
             ClickArea.onClick.AddListener(TryDoContinue);
 
+        }
+
+        void OnDisable()
+        {
+            if (_cgGroup != null)
+            {
+                _cgGroup.alpha = 0f;
+            }
+
+            if (_cgImage != null)
+            {
+                _cgImage.sprite = null;
+                _cgImage.enabled = false;
+                _cgImage.gameObject.SetActive(false);
+            }
         }
 
         
@@ -259,6 +277,55 @@ namespace My.UI
         public void ShowNextIndicator(bool show)
         {
             if (nextIndicator) nextIndicator.SetActive(show);
+        }
+
+        public void ShowCgImage(Sprite sprite, bool visible, float alpha = 1f)
+        {
+            EnsureCgImage();
+            if (_cgImage == null || _cgGroup == null)
+            {
+                return;
+            }
+
+            if (!visible)
+            {
+                _cgGroup.alpha = 0f;
+                _cgImage.gameObject.SetActive(false);
+                return;
+            }
+
+            _cgImage.sprite = sprite;
+            _cgImage.enabled = sprite != null;
+            _cgImage.gameObject.SetActive(sprite != null);
+            _cgGroup.alpha = Mathf.Clamp01(alpha);
+        }
+
+        void EnsureCgImage()
+        {
+            if (_cgImage != null && _cgGroup != null)
+            {
+                return;
+            }
+
+            var go = new GameObject("DialogueCgImage", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+            go.transform.SetParent(transform, false);
+            go.transform.SetAsFirstSibling();
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            _cgGroup = go.GetComponent<CanvasGroup>();
+            _cgGroup.alpha = 0f;
+            _cgGroup.blocksRaycasts = false;
+
+            _cgImage = go.GetComponent<Image>();
+            _cgImage.preserveAspect = true;
+            _cgImage.raycastTarget = false;
+            _cgImage.enabled = false;
+            go.SetActive(false);
         }
 
         // 选择系统

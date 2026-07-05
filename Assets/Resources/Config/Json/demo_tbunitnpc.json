@@ -37,7 +37,10 @@
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "orc"
+    "race_id": "orc",
+    "npc_tags": [
+      "orc_common"
+    ]
   },
   {
     "id": "initial_orc_02",
@@ -77,7 +80,8 @@
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "orc"
+    "race_id": "orc",
+    "npc_tags": []
   },
   {
     "id": "initial_orc_big",
@@ -117,12 +121,13 @@
     "jingyuan_pool_id": "orc",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "orc"
+    "race_id": "orc",
+    "npc_tags": []
   },
   {
     "id": "game_init_luca_injured",
-    "name": "卢卡",
-    "desc": "",
+    "name": "卡莱尔",
+    "desc": "CharacterKey=carlisle; state=unconscious; legacy scene id",
     "prefab_name": "game_init_luca_injured",
     "attr_template_id": 0,
     "emnity_cfg_id": "",
@@ -138,7 +143,7 @@
     ],
     "is_peace": true,
     "no_aggro": false,
-    "peace_dialog_id": "game_init_luca_injured",
+    "peace_dialog_id": "carlisle_unconscious_entry",
     "defeat_drop_id": 0,
     "desire_density_type": 1,
     "not_target": true,
@@ -155,7 +160,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "qigai_default",
@@ -193,7 +199,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "hunhun",
@@ -233,7 +240,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "slime_red",
@@ -273,7 +281,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "civil",
@@ -311,7 +320,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "civil_sleeping",
@@ -349,7 +359,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "default_guard_01",
@@ -387,7 +398,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_small_01",
@@ -428,7 +440,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_small_02",
@@ -469,7 +482,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_small_03",
@@ -510,7 +524,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_middle_01",
@@ -551,7 +566,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_middle_02",
@@ -592,7 +608,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_middle_03",
@@ -633,7 +650,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_big_01",
@@ -674,7 +692,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_big_02",
@@ -715,7 +734,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "h_spirit_big_03",
@@ -756,7 +776,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "city_watcher_01",
@@ -792,7 +813,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "summon_ally_turret_01",
@@ -828,7 +850,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "area_cannon_01",
@@ -864,7 +887,8 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": true,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
   },
   {
     "id": "homestead_elder",
@@ -898,7 +922,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "homestead_merchant",
@@ -932,7 +957,8 @@
     "jingyuan_pool_id": "human",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": "human"
+    "race_id": "human",
+    "npc_tags": []
   },
   {
     "id": "forest_fly_swarm",
@@ -968,6 +994,81 @@
     "jingyuan_pool_id": "",
     "fallback_drop_id": 0,
     "lock_initial_face": false,
-    "race_id": ""
+    "race_id": "",
+    "npc_tags": []
+  },
+  {
+    "id": "game_init_carlisle_unconscious",
+    "name": "卡莱尔",
+    "desc": "CharacterKey=carlisle; state=unconscious",
+    "prefab_name": "game_init_luca_injured",
+    "attr_template_id": 0,
+    "emnity_cfg_id": "",
+    "faction_id": 0,
+    "move_style": 0,
+    "idle_move_behave": 0,
+    "ai_brain_id": "default",
+    "skill_list": [],
+    "h_behave_list": [],
+    "is_peace": true,
+    "no_aggro": false,
+    "peace_dialog_id": "carlisle_unconscious_entry",
+    "defeat_drop_id": 0,
+    "desire_density_type": 0,
+    "not_target": true,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false,
+    "race_id": "human",
+    "npc_tags": [
+      "human"
+    ]
+  },
+  {
+    "id": "game_init_carlisle_awake",
+    "name": "卡莱尔",
+    "desc": "CharacterKey=carlisle; state=awake",
+    "prefab_name": "civil",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_peace",
+    "faction_id": 0,
+    "move_style": 1,
+    "idle_move_behave": 0,
+    "ai_brain_id": "default",
+    "skill_list": [],
+    "h_behave_list": [],
+    "is_peace": true,
+    "no_aggro": false,
+    "peace_dialog_id": "carlisle_awake_entry",
+    "defeat_drop_id": 0,
+    "desire_density_type": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": -1,
+    "vision_fov_deg": -1,
+    "mind_tag": "",
+    "jingyuan_pool_id": "human",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false,
+    "race_id": "human",
+    "npc_tags": [
+      "human"
+    ]
   }
 ]

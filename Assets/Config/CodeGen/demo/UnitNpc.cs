@@ -50,6 +50,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["fallback_drop_id"].IsNumber) { throw new SerializationException(); }  FallbackDropId = _buf["fallback_drop_id"]; }
         { if(!_buf["lock_initial_face"].IsBoolean) { throw new SerializationException(); }  LockInitialFace = _buf["lock_initial_face"]; }
         { if(!_buf["race_id"].IsString) { throw new SerializationException(); }  RaceId = _buf["race_id"]; }
+        { var __json0 = _buf["npc_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } NpcTags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  NpcTags.Add(__v0); }   }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -179,6 +180,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// </summary>
     public bool LockInitialFace;
     public string RaceId;
+    /// <summary>
+    /// Common NPC content tags for drop pools, recipe pools, and other content matching.
+    /// </summary>
+    public System.Collections.Generic.List<string> NpcTags;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -222,6 +227,7 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "fallbackDropId:" + FallbackDropId + ","
         + "lockInitialFace:" + LockInitialFace + ","
         + "raceId:" + RaceId + ","
+        + "npcTags:" + Luban.StringUtil.CollectionToString(NpcTags) + ","
         + "}";
     }
 }

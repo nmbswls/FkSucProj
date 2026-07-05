@@ -1,0 +1,25 @@
+{
+  "DialogId": "game_init_after_first_monsters",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "TODO placeholder; replace with authored dialogue content.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "TODO：game_init_after_first_monsters",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

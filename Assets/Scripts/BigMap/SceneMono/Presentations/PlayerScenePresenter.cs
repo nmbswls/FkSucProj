@@ -546,13 +546,16 @@ namespace My.Map.Scene
                 }
 
                 int sameTypeCount = CountSameAttachType(attach.AttachId);
-                var coverageView = showObj.GetComponent<PlayerAttachCoverageView>();
-                if (coverageView == null)
+                var attachView = showObj.GetComponentInChildren<PlayerAttachViewBase>(true);
+                if (attachView != null)
                 {
-                    coverageView = showObj.AddComponent<PlayerAttachCoverageView>();
+                    attachView.Configure(new PlayerAttachViewContext(attach.AttachId, sameTypeCount, i));
+                }
+                else
+                {
+                    Debug.LogError($"Attach view prefab missing PlayerAttachViewBase: {attach.AttachId}", showObj);
                 }
 
-                coverageView.Configure(attach.AttachId, sameTypeCount);
                 showObj.transform.SetSiblingIndex(i);
             }
 

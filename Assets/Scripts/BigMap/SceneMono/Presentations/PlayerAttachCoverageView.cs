@@ -3,27 +3,14 @@ using UnityEngine;
 
 namespace My.Map.Scene
 {
-    public sealed class PlayerAttachCoverageView : MonoBehaviour
+    public sealed class PlayerAttachCoverageView : PlayerAttachViewBase
     {
         readonly List<Transform> _dots = new();
         readonly List<Vector3> _baseOffsets = new();
 
-        string _attachId;
-        int _sameTypeCount = -1;
         Transform _coverageRoot;
 
-        public void Configure(string attachId, int sameTypeCount)
-        {
-            sameTypeCount = Mathf.Max(0, sameTypeCount);
-            if (_attachId == attachId && _sameTypeCount == sameTypeCount)
-            {
-                return;
-            }
-
-            _attachId = attachId;
-            _sameTypeCount = sameTypeCount;
-            Rebuild();
-        }
+        protected override void OnConfigure(in PlayerAttachViewContext context) => Rebuild(context);
 
         void Update()
         {
@@ -41,7 +28,7 @@ namespace My.Map.Scene
             }
         }
 
-        void Rebuild()
+        void Rebuild(in PlayerAttachViewContext context)
         {
             var root = GetOrCreateCoverageRoot();
             for (int i = root.childCount - 1; i >= 0; i--)
@@ -52,7 +39,7 @@ namespace My.Map.Scene
             _dots.Clear();
             _baseOffsets.Clear();
 
-            var effectCfg = ResolveEffectCfg(_attachId, _sameTypeCount);
+            var effectCfg = ResolveEffectCfg(context.SameTypeCount);
             int dotCount = effectCfg.DotCount;
             root.gameObject.SetActive(dotCount > 0);
             if (dotCount <= 0)
@@ -107,23 +94,17 @@ namespace My.Map.Scene
             return _coverageRoot;
         }
 
-        static CoverageEffectCfg ResolveEffectCfg(string attachId, int sameTypeCount)
+        static CoverageEffectCfg ResolveEffectCfg(int sameTypeCount)
         {
-            switch (attachId)
+            return new CoverageEffectCfg
             {
-                case "forest_fly_attach":
-                    return new CoverageEffectCfg
-                    {
-                        DotCount = ResolveForestFlyDotCount(sameTypeCount),
-                        Radius = 0.42f,
-                        Color = "#1f2a1d",
-                    };
-                default:
-                    return default;
-            }
+                DotCount = ResolveDotCount(sameTypeCount),
+                Radius = 0.42f,
+                Color = "#1f2a1d",
+            };
         }
 
-        static int ResolveForestFlyDotCount(int sameTypeCount)
+        static int ResolveDotCount(int sameTypeCount)
         {
             if (sameTypeCount <= 0)
             {

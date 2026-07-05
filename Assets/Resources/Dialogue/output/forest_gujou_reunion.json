@@ -1,0 +1,243 @@
+{
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "森林废墟中，刚苏醒的远古魅魔与过去使魔咕啾重逢；第一版为纯 CG 对话。",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4ShowImage, Assembly-CSharp",
+          "ImageName": "Assets/Resources/Arts/CG/gujou_bush_placeholder.png",
+          "Visible": true,
+          "Alpha": 1.0
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "森林废墟的石阶被苔痕吞没。风穿过断柱，带来潮湿的泥土味，也带来一阵细小到几乎听不见的哆嗦声。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "那里……有东西在看我。不是野兽，也不是那些冒险者的脚步。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "",
+              "Content": "灌木丛轻轻一晃。一对圆亮的眼睛从叶影后探出来，又飞快缩回去。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "？？？",
+              "Content": "咕……咕啾不在这里。这里没有稀有魔物，也没有值钱的毛球。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "咕啾？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "？？？",
+              "Content": "呜哇！你怎么知道咕啾的名字！难道你也是来抓咕啾卖钱的冒险者吗？",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "冒险者……不。我记得这个名字。很吵，很小，喜欢把重要文件叼进枕头底下。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "那是紧急保管！等等，这个语气，这个眼神，还有这种刚睡醒就能把人吓一跳的魔力味道……",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "主人？！真的是主人？！你终于醒了！",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "灌木丛哗啦一声炸开。小小的使魔扑到莉莉丝脚边，尾巴抖得像一枚要起飞的叶片。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "我……是你的主人？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "是呀！远古魅魔莉莉丝大人，旧月宫的主人，咕啾的契约者，曾经让三十七个王国改写夜禁法的超级麻烦人物！",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "最后那句听起来不像赞美。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "咕啾",
+              "Content": "现在不是纠正传记的时候。咕啾被人类当成珍稀魔物追了三天三夜！他们说抓到咕啾就能卖给收藏家。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "所以咕啾躲进废墟，靠旧契约的气息找你。结果你真的在这里，而且还一脸“我是谁我在哪”的表情。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "我的记忆像被潮水泡过。名字还在，碎片也在，但顺序全乱了。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "没关系！咕啾还记得。虽然咕啾也不是每件事都记得很准，但至少比刚从棺材里坐起来的人可靠一点。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "你想跟着我？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "不是想，是必须！主人刚醒，魔力外漏、常识缺损、还会把危险封印当成漂亮石头摸。咕啾要负责提醒你。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "从现在开始，咕啾会帮你整理地图、记录见过的异常地点，也会在你快把事情搞砸前大声尖叫。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "听起来吵，但有用。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "这就是使魔的最高评价！",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "gujou_joined",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 7,
+          "Param1": 11,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 7,
+          "Param1": 15,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "咕啾重新缔结了随行契约。地图记录与世界进度功能已开启。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "第一条新手建议：先离开灌木丛旁边。追咕啾的人类可能还在附近，而且他们的网兜很没有审美。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "带路吧，咕啾。顺便，把我忘掉的部分慢慢讲给我听。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "包在咕啾身上！不过如果讲到主人以前的黑历史，咕啾可以收一点保密费吗？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "不可以。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4ShowImage, Assembly-CSharp",
+          "ImageName": "",
+          "Visible": false,
+          "Alpha": 0.0
+        }
+      ]
+    }
+  ]
+}

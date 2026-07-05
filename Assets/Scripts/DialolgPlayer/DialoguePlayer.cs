@@ -647,6 +647,12 @@ public partial class DialoguePlayer : MonoBehaviour
                     SafeComplete();
                     break;
                 }
+            case DialogCommandData4ShowImage showImage:
+                {
+                    ApplyShowImage(showImage);
+                    SafeComplete();
+                    break;
+                }
 
             case DialogCommandData4Wait cd4Wait:
                 {
@@ -771,6 +777,14 @@ public partial class DialoguePlayer : MonoBehaviour
                                 string targetPoint = cd4Func.Param6;
 
                                 MainGameManager.Instance.gameLogicManager.PreparePlayerSwitchArea(mapName, false, targetPoint, silent : true);
+                            }
+                            break;
+                        case EDialogSimpleFuncType.OpenFunc:
+                            {
+                                if (Enum.IsDefined(typeof(EFuncOpenType), (int)cd4Func.Param1))
+                                {
+                                    MainGameManager.Instance.gameLogicManager.playerDataManager?.FuncOpenSystem?.TryOpenFunc((EFuncOpenType)cd4Func.Param1);
+                                }
                             }
                             break;
 
@@ -1157,6 +1171,18 @@ public partial class DialoguePlayer : MonoBehaviour
 
         string speakerId = DialoguePortraitCatalog.ResolveSpeaker(setImage.ImageName);
         pm.ShowSlotSprite(slotName, sprite, speakerId);
+    }
+
+    private void ApplyShowImage(DialogCommandData4ShowImage showImage)
+    {
+        if (ui == null || showImage == null)
+            return;
+
+        Sprite sprite = null;
+        if (showImage.Visible && !string.IsNullOrEmpty(showImage.ImageName))
+            sprite = LoadDialogueSprite(showImage.ImageName);
+
+        ui.ShowCgImage(sprite, showImage.Visible, showImage.Alpha);
     }
 
     private static Sprite LoadDialogueSprite(string assetPath)

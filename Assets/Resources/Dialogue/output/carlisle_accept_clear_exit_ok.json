@@ -1,0 +1,25 @@
+{
+  "DialogId": "carlisle_accept_clear_exit_ok",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "TODO placeholder; replace with authored dialogue content.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "",
+              "Content": "TODO：carlisle_accept_clear_exit_ok",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

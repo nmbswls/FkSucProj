@@ -32,5 +32,341 @@
     "unlock_mode": 2,
     "unlock_param": "1|3",
     "unlock_item_min_count": 3
+  },
+  {
+    "id": 2001,
+    "recipe_type": 2,
+    "sort": 101,
+    "display_name": "橡木长餐桌",
+    "result_item_id": "furn_oak_refectory_table",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_seasoned_plank",
+        "count": 8
+      },
+      {
+        "item_id": "mat_iron_ingot",
+        "count": 2
+      },
+      {
+        "item_id": "mat_polishing_wax",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2002,
+    "recipe_type": 2,
+    "sort": 102,
+    "display_name": "胡桃木雕花椅",
+    "result_item_id": "furn_walnut_carved_chair",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_hardwood_log",
+        "count": 3
+      },
+      {
+        "item_id": "mat_linen_cloth",
+        "count": 2
+      },
+      {
+        "item_id": "mat_hide_glue",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2003,
+    "recipe_type": 2,
+    "sort": 103,
+    "display_name": "天鹅绒帷幔床",
+    "result_item_id": "furn_velvet_canopy_bed",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_seasoned_plank",
+        "count": 10
+      },
+      {
+        "item_id": "mat_velvet",
+        "count": 4
+      },
+      {
+        "item_id": "mat_silk_thread",
+        "count": 2
+      },
+      {
+        "item_id": "mat_bronze_ingot",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2004,
+    "recipe_type": 2,
+    "sort": 104,
+    "display_name": "黄铜烛火吊灯",
+    "result_item_id": "furn_brass_candle_chandelier",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_bronze_ingot",
+        "count": 5
+      },
+      {
+        "item_id": "mat_lantern_wax",
+        "count": 4
+      },
+      {
+        "item_id": "mat_conductive_copper_wire",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2005,
+    "recipe_type": 2,
+    "sort": 105,
+    "display_name": "彩绘玻璃魔灯",
+    "result_item_id": "furn_stained_glass_lamp",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_colored_glass",
+        "count": 4
+      },
+      {
+        "item_id": "mat_arcane_copper_plate",
+        "count": 2
+      },
+      {
+        "item_id": "mat_lamp_oil",
+        "count": 2
+      },
+      {
+        "item_id": "mat_mana_shard",
+        "count": 3
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2006,
+    "recipe_type": 2,
+    "sort": 106,
+    "display_name": "大理石盥洗台",
+    "result_item_id": "furn_marble_washstand",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_marble",
+        "count": 5
+      },
+      {
+        "item_id": "mat_copper_ingot",
+        "count": 2
+      },
+      {
+        "item_id": "mat_glass_pane",
+        "count": 1
+      },
+      {
+        "item_id": "mat_lime",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2007,
+    "recipe_type": 2,
+    "sort": 107,
+    "display_name": "炼金药剂柜",
+    "result_item_id": "furn_alchemist_cabinet",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_seasoned_plank",
+        "count": 6
+      },
+      {
+        "item_id": "mat_alchemical_glass",
+        "count": 3
+      },
+      {
+        "item_id": "mat_hide_glue",
+        "count": 2
+      },
+      {
+        "item_id": "mat_bronze_ingot",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2008,
+    "recipe_type": 2,
+    "sort": 108,
+    "display_name": "占星师书写桌",
+    "result_item_id": "furn_astrologer_writing_desk",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_hardwood_log",
+        "count": 5
+      },
+      {
+        "item_id": "loot_brass_inkwell",
+        "count": 1
+      },
+      {
+        "item_id": "mat_crystal_lens",
+        "count": 1
+      },
+      {
+        "item_id": "mat_silver_ingot",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2009,
+    "recipe_type": 2,
+    "sort": 109,
+    "display_name": "符刻藏书架",
+    "result_item_id": "furn_runed_bookshelf",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_spiritwood",
+        "count": 5
+      },
+      {
+        "item_id": "mat_runed_stone",
+        "count": 2
+      },
+      {
+        "item_id": "loot_torn_page",
+        "count": 6
+      },
+      {
+        "item_id": "mat_sealing_wax",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2010,
+    "recipe_type": 2,
+    "sort": 110,
+    "display_name": "镏金折屏",
+    "result_item_id": "furn_gilded_room_divider",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_silk_bolt",
+        "count": 3
+      },
+      {
+        "item_id": "mat_dyed_cloth",
+        "count": 3
+      },
+      {
+        "item_id": "mat_silver_ingot",
+        "count": 2
+      },
+      {
+        "item_id": "mat_polishing_wax",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2011,
+    "recipe_type": 2,
+    "sort": 111,
+    "display_name": "月纹木梳妆台",
+    "result_item_id": "furn_moonwood_vanity",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_moonwood",
+        "count": 4
+      },
+      {
+        "item_id": "mat_silver_ingot",
+        "count": 2
+      },
+      {
+        "item_id": "mat_glass_pane",
+        "count": 2
+      },
+      {
+        "item_id": "loot_chipped_gem",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2012,
+    "recipe_type": 2,
+    "sort": 112,
+    "display_name": "秘法壁炉",
+    "result_item_id": "furn_arcane_hearth",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_granite",
+        "count": 6
+      },
+      {
+        "item_id": "mat_obsidian",
+        "count": 3
+      },
+      {
+        "item_id": "mat_mana_crystal",
+        "count": 2
+      },
+      {
+        "item_id": "mat_warding_wax",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
   }
 ]
