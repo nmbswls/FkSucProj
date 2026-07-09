@@ -5,6 +5,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.MapExport;
+using Map.Logic.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,9 @@ public class SceneAOIManager : MonoBehaviour
 
     // Presenter 已 Bind 且 SetVisible(true) 之后触发；UI 等可订阅，避免在 AOI 内写业务分支
     public event Action<IScenePresentation, ILogicEntity> AfterPresentationShown;
+    private MapLogicSubscription _refreshGroupSwapEventSub;
+    private MapLogicEventAdapter _refreshGroupSwapEventAdapter;
+    private MapLogicEventBus _refreshGroupSwapEventBus;
 
     public string MapName
     {
@@ -83,7 +87,20 @@ public class SceneAOIManager : MonoBehaviour
 
     }
 
+    private sealed class PendingSwapRetire
+    {
+        public string SwapId;
+        public string GroupKey;
+        public long OldEntityId;
+        public long NewEntityId;
+        public float ExpireTime;
+        public IScenePresentation RetainedPresentation;
+        public readonly List<Collider2D> DisabledColliders = new();
+    }
+
     private readonly Dictionary<long, AOIEntry> _aoiStates = new(); // id -> entry
+    private readonly Dictionary<long, PendingSwapRetire> _pendingSwapByOldEntity = new();
+    private readonly Dictionary<long, PendingSwapRetire> _pendingSwapByNewEntity = new();
 
     struct VisualFocusSession
     {
@@ -149,6 +166,12 @@ public class SceneAOIManager : MonoBehaviour
 
             _aoiStates.Clear();
             _buckets.Clear();
+            foreach (var pending in new List<PendingSwapRetire>(_pendingSwapByOldEntity.Values))
+            {
+                RetirePendingSwap(pending);
+            }
+            _pendingSwapByOldEntity.Clear();
+            _pendingSwapByNewEntity.Clear();
         }
         catch (System.Exception ex)
         {
@@ -207,10 +230,18 @@ public class SceneAOIManager : MonoBehaviour
         }
 
         mapChunkManager.Initialize(_asset, _assetAsync, () => CanRefreshStaticChunksNow());
+        EnsureRefreshGroupSwapEventSubscription();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeRefreshGroupSwapEvent();
     }
 
     private void Update()
     {
+        EnsureRefreshGroupSwapEventSubscription();
+
         if (MainGameManager.Instance == null || !MainGameManager.Instance.Initialized)
         {
             return;
@@ -232,6 +263,7 @@ public class SceneAOIManager : MonoBehaviour
         var playerPos = MainGameManager.Instance.gameLogicManager.playerLogicEntity.Pos;
         BuildAoiCenters(playerPos, _aoiCenterScratch);
 
+        CleanupExpiredPendingSwaps();
         RefreshDynamicAOI(_aoiCenterScratch, LogicTime.deltaTime);
 
         _chunkCenterScratch.Clear();
@@ -243,6 +275,66 @@ public class SceneAOIManager : MonoBehaviour
 
         mapChunkManager?.RefreshChunksUnion(_chunkCenterScratch, chunkRing);
         mapChunkManager?.ProcessPendingVisibleChunkRefresh();
+    }
+
+    private void EnsureRefreshGroupSwapEventSubscription()
+    {
+        var logicEventBus = MainGameManager.Instance?.gameLogicManager?.LogicEventBus;
+        if (logicEventBus == null)
+        {
+            return;
+        }
+
+        if (_refreshGroupSwapEventSub != null)
+        {
+            if (ReferenceEquals(_refreshGroupSwapEventBus, logicEventBus))
+            {
+                return;
+            }
+
+            UnsubscribeRefreshGroupSwapEvent();
+        }
+
+        _refreshGroupSwapEventAdapter = new MapLogicEventAdapter(OnRefreshGroupSwapEvent);
+        _refreshGroupSwapEventBus = logicEventBus;
+        _refreshGroupSwapEventSub = logicEventBus.Subscribe(
+            EMapLogicEventType.RefreshGroupSwap,
+            _refreshGroupSwapEventAdapter);
+    }
+
+    private void UnsubscribeRefreshGroupSwapEvent()
+    {
+        if (_refreshGroupSwapEventSub == null)
+        {
+            return;
+        }
+
+        _refreshGroupSwapEventBus?.Unsubscribe(_refreshGroupSwapEventSub);
+        _refreshGroupSwapEventSub = null;
+        _refreshGroupSwapEventAdapter = null;
+        _refreshGroupSwapEventBus = null;
+    }
+
+    private void OnRefreshGroupSwapEvent(IMapLogicEvent evt)
+    {
+        if (!(evt is MLERefreshGroupSwapEvent swapEvent))
+        {
+            return;
+        }
+
+        if (swapEvent.IsBindNewEntity)
+        {
+            BindRefreshGroupSwapNewEntity(swapEvent.OldEntityId, swapEvent.NewEntityId);
+            return;
+        }
+
+        if (swapEvent.MaxRetainSeconds > 0f)
+        {
+            BeginRefreshGroupSwap(swapEvent.OldEntityId, swapEvent.GroupKey, swapEvent.MaxRetainSeconds);
+            return;
+        }
+
+        BeginRefreshGroupSwap(swapEvent.OldEntityId, swapEvent.GroupKey);
     }
 
     void BuildAoiCenters(Vector2 playerPos, List<AoiCenter> centers)
@@ -504,11 +596,153 @@ public class SceneAOIManager : MonoBehaviour
 
         if (entry.pres != null)
         {
-            HideAndRecyclePresentation(entry); // === 修改: 使用 entry 版本 ===
+            if (TryRetainPresentationForPendingSwap(entity.Id, entry))
+            {
+                entry.entity.OnExitAOI();
+                entry.pres = null;
+            }
+            else
+            {
+                HideAndRecyclePresentation(entry); // === 修改: 使用 entry 版本 ===
+            }
         }
         // === 新增结束 ===
 
         _aoiStates.Remove(entity.Id);
+    }
+
+    public void BeginRefreshGroupSwap(long oldEntityId, string groupKey, float maxRetainSeconds = 2f)
+    {
+        if (oldEntityId == 0 || string.IsNullOrEmpty(groupKey))
+        {
+            return;
+        }
+
+        if (_pendingSwapByOldEntity.TryGetValue(oldEntityId, out var existing))
+        {
+            RetirePendingSwap(existing);
+        }
+
+        _pendingSwapByOldEntity[oldEntityId] = new PendingSwapRetire
+        {
+            SwapId = $"{groupKey}:{oldEntityId}:{Time.frameCount}",
+            GroupKey = groupKey,
+            OldEntityId = oldEntityId,
+            ExpireTime = Time.time + Mathf.Max(0.1f, maxRetainSeconds),
+        };
+    }
+
+    public void BindRefreshGroupSwapNewEntity(long oldEntityId, long newEntityId)
+    {
+        if (oldEntityId == 0 || newEntityId == 0)
+        {
+            return;
+        }
+
+        if (!_pendingSwapByOldEntity.TryGetValue(oldEntityId, out var pending))
+        {
+            return;
+        }
+
+        pending.NewEntityId = newEntityId;
+        _pendingSwapByNewEntity[newEntityId] = pending;
+    }
+
+    private bool TryRetainPresentationForPendingSwap(long oldEntityId, AOIEntry entry)
+    {
+        if (!_pendingSwapByOldEntity.TryGetValue(oldEntityId, out var pending) || entry?.pres == null)
+        {
+            return false;
+        }
+
+        var pres = entry.pres;
+        pres.Unbind();
+        pres.SetVisible(true);
+        pending.RetainedPresentation = pres;
+
+        if (pres is Component comp)
+        {
+            var colliders = comp.GetComponentsInChildren<Collider2D>(true);
+            foreach (var col in colliders)
+            {
+                if (col == null || !col.enabled)
+                {
+                    continue;
+                }
+
+                col.enabled = false;
+                pending.DisabledColliders.Add(col);
+            }
+        }
+
+        return true;
+    }
+
+    private void CompleteRefreshGroupSwapIfAny(long newEntityId)
+    {
+        if (_pendingSwapByNewEntity.TryGetValue(newEntityId, out var pending))
+        {
+            RetirePendingSwap(pending);
+        }
+    }
+
+    private void CleanupExpiredPendingSwaps()
+    {
+        if (_pendingSwapByOldEntity.Count == 0)
+        {
+            return;
+        }
+
+        List<PendingSwapRetire> expired = null;
+        foreach (var pending in _pendingSwapByOldEntity.Values)
+        {
+            if (Time.time <= pending.ExpireTime)
+            {
+                continue;
+            }
+
+            expired ??= new List<PendingSwapRetire>();
+            expired.Add(pending);
+        }
+
+        if (expired == null)
+        {
+            return;
+        }
+
+        foreach (var pending in expired)
+        {
+            RetirePendingSwap(pending);
+        }
+    }
+
+    private void RetirePendingSwap(PendingSwapRetire pending)
+    {
+        if (pending == null)
+        {
+            return;
+        }
+
+        _pendingSwapByOldEntity.Remove(pending.OldEntityId);
+        if (pending.NewEntityId != 0)
+        {
+            _pendingSwapByNewEntity.Remove(pending.NewEntityId);
+        }
+
+        for (int i = 0; i < pending.DisabledColliders.Count; i++)
+        {
+            if (pending.DisabledColliders[i] != null)
+            {
+                pending.DisabledColliders[i].enabled = true;
+            }
+        }
+
+        if (pending.RetainedPresentation != null)
+        {
+            pending.RetainedPresentation.SetVisible(false);
+            _ = _presentationFactory.RecycleAsync(pending.RetainedPresentation);
+            pending.RetainedPresentation = null;
+        }
     }
 
     public void MoveEntity(ILogicEntity entity, Vector2 oldPos, Vector2 newPos)
@@ -822,6 +1056,7 @@ public class SceneAOIManager : MonoBehaviour
         entry.pres.SetVisible(true);
         AfterPresentationShown?.Invoke(entry.pres, entry.entity);
         entry.entity.OnEnterAOI();
+        CompleteRefreshGroupSwapIfAny(entry.entity.Id);
 
     }
 

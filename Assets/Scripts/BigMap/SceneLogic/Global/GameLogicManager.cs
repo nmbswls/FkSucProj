@@ -616,16 +616,7 @@ namespace My
             {
 
                 // 死亡
-                var reviveMapName = GetCurrentReviveMap();
-                //var bornP = playerDataManager.SavedBornPoint;
-                //if(!string.IsNullOrEmpty(bornP))
-                //{
-                //    bornP = "initial";
-                //}
-
-                //var bornCfg = CfgMgr.Cfgs.TbBornPoint.GetOrDefault(bornP);
-                // 回城
-                PreparePlayerSwitchArea(reviveMapName, true);
+                RevivePlayerToResolvedDestination(EReviveReason.EncounterDefeat);
             }
         }
 
@@ -637,13 +628,44 @@ namespace My
         /// <returns></returns>
         public string GetCurrentReviveMap()
         {
-            if(playerDataManager == null || !playerDataManager.CheckHasParam("base_clear"))
+            return ResolveReviveDestination(EReviveReason.BigMapFinish).MapOverlayId;
+        }
+
+        public ReviveDestination ResolveReviveDestination(EReviveReason reason)
+        {
+            return ReviveDestinationResolver.Resolve(this, reason);
+        }
+
+        public void RevivePlayerToResolvedDestination(EReviveReason reason, bool beginFreeSession = false)
+        {
+            var destination = ResolveReviveDestination(reason);
+            if (string.IsNullOrWhiteSpace(destination.MapOverlayId))
             {
-                return "game_init";
+                Debug.LogError("Revive destination missing map overlay id.");
+                return;
             }
 
-            return "homestead_01";
-            //return playerDataManager.SavedBornPoint;
+            if (beginFreeSession)
+            {
+                BeginFreeBigMapSession();
+            }
+
+            if (destination.ForceHumanMode)
+            {
+                ForcePlayerHumanMode(true);
+            }
+
+            if (destination.EnterSecretBaseContext)
+            {
+                EnterSecretBase(destination.TargetPoint);
+                return;
+            }
+
+            PreparePlayerSwitchArea(
+                destination.MapOverlayId,
+                destination.ResetMap,
+                destination.TargetPoint,
+                destination.TargetPos);
         }
 
         public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow)
@@ -1011,5 +1033,4 @@ namespace My
     }
 
 }
-
 

@@ -124,6 +124,20 @@ namespace My.MapExport
 
 
     [Serializable]
+    public enum ERefreshGroupHandoffPolicy
+    {
+        None = 0,
+        PreserveTransform = 1,
+    }
+
+    [Serializable]
+    public enum ERefreshGroupTransitionMode
+    {
+        Instant = 0,
+        HiddenSwap = 1,
+    }
+
+    [Serializable]
     public class DynamicEntityRefreshInfo
     {
         /// <summary>
@@ -149,6 +163,11 @@ namespace My.MapExport
         // 重生相关信息
         public bool WillRespawn = false;
         public float RespawnInterval = 0;
+
+        public string RefreshGroupKey = string.Empty;
+        public int RefreshGroupPriority = 0;
+        public ERefreshGroupHandoffPolicy RefreshGroupHandoffPolicy = ERefreshGroupHandoffPolicy.PreserveTransform;
+        public ERefreshGroupTransitionMode RefreshTransitionMode = ERefreshGroupTransitionMode.HiddenSwap;
 
         // 地牢专用：>=0 表示 GraphNodeId；静态地图保持 -1
         public int DungeonNodeId = -1;
@@ -350,4 +369,3 @@ namespace My.MapExport
         public List<PatrolOneInfo> GroupUnits = new();
     }
 }
-

@@ -39,8 +39,8 @@ MonoBehaviour:
       - OutputType: 5
         Param1: 0
         Param2: 0
-        Param3: base_fight
-        Param4: entry_01
+        Param3: test_link_a
+        Param4: enter_a
         DelayTime: 0
         TargetType: 0
         MemberId: 0

@@ -44,7 +44,7 @@ namespace My.Encounter
 
             if (CurContext != null && CurContext.IsDefeatMode)
             {
-                MainGameManager.Instance.QuitToSecretBase();
+                MainGameManager.Instance.QuitEncounterByDefeat();
                 return;
             }
 

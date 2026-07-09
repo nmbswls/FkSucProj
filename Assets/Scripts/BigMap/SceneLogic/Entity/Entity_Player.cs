@@ -11,6 +11,7 @@ using My.Map.Fight;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.Player;
+using My.Quest;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.PackageManager.UI;
@@ -1477,7 +1478,17 @@ namespace My.Map
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
+            var wasDead = IsDead;
             base.OnUnitDie(reason, lastIntent);
+            if (wasDead || !IsDead)
+            {
+                return;
+            }
+
+            PlayerEventBus.Publish(new PlayerKilledEvent
+            {
+                DeathPosition = Pos,
+            });
         }
 
 

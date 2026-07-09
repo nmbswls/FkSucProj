@@ -142,12 +142,12 @@
     "option_text": "检查他的伤势。",
     "show_cond": [
       {
-        "type": 1,
-        "param1": 100,
+        "type": 2,
+        "param1": 0,
         "param2": 0,
         "param3": 0,
         "param4": 0,
-        "param5": "0",
+        "param5": "test_link_a.camp_done",
         "param6": "0"
       }
     ],

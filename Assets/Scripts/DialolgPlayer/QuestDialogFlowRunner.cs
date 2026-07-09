@@ -81,6 +81,11 @@ namespace My.Dialog
                     }
 
                     var ok = questSystem.TryAcceptQuestFromNpc(characterKey, questId, out _);
+                    if (ok)
+                    {
+                        glm.AreaManager?.ForceCheckAllRefreshInfos();
+                    }
+
                     var role = ok ? EQuestDialogRole.AcceptSuccess : EQuestDialogRole.AcceptFail;
                     var dialogId = QuestDialogResolver.Resolve(questId, "", characterKey, role);
                     PlayResultDialog(dialogId, srcEntityId);
@@ -96,6 +101,11 @@ namespace My.Dialog
                     }
 
                     var ok = questSystem.TryFulfillObjective(characterKey, questId, objId, out _);
+                    if (ok)
+                    {
+                        glm.AreaManager?.ForceCheckAllRefreshInfos();
+                    }
+
                     var role = ok ? EQuestDialogRole.FulfillSuccess : EQuestDialogRole.FulfillFail;
                     var dialogId = QuestDialogResolver.Resolve(questId, objId, characterKey, role);
                     PlayResultDialog(dialogId, srcEntityId);

@@ -20,7 +20,7 @@
     "is_auto_trigger": true,
     "only_once": true,
     "json_data_name": "base_fight_end",
-    "need_map": "base_fight",
+    "need_map": "homestead_01_fight",
     "trigger_cond": [
       {
         "type": 1,
@@ -798,6 +798,30 @@
     "lock_global_time": false,
     "controlled_entity_list": [],
     "show_priority": 10,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "transition_a_bandits_north",
+    "is_auto_trigger": true,
+    "only_once": true,
+    "json_data_name": "transition_a_bandits_north",
+    "need_map": "test_link_a",
+    "trigger_cond": [
+      {
+        "type": 1,
+        "param1": 302,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "active_trigger_npc": "",
+    "lock_global_time": true,
+    "controlled_entity_list": [],
+    "show_priority": 120,
     "custom_variables": [],
     "cutscene_id": ""
   }

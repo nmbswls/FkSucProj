@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6212abf8aa90cb84b9a9eccb7abfa07f, type: 3}
+  m_Name: home_01_fight
+  m_EditorClassIdentifier: 
+  AreaId: 
+  Buckets:
+  - Chunk:
+      X: -1
+      Y: 0
+    StaticItems:
+    - ItemId: 101
+      Key: P/Home/Facility_Good
+      Position: {x: -9.58, y: -4.23, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    - ItemId: 102
+      Key: P/Home/Room_01
+      Position: {x: -6.32, y: 3.16, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments: []
+  EntityRefreshInfo: []
+  NamedPoints:
+  - Name: born_01
+    PointType: 1
+    Position: {x: 4.65, y: -5.43, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  NamedPaths: []
+  references:
+    version: 2
+    RefIds: []

@@ -124,12 +124,12 @@ MonoBehaviour:
   - StaticId: 104
     UniqName: init_luca
     AppearCond:
-      Type: 5
-      Param1: 0
+      Type: 1
+      Param1: 100
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 100_s1
+      Param5: 
       Param6: 
     DisappearCond:
       Type: 0
@@ -141,8 +141,38 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: carlisle_intro
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     InitInfo:
       rid: 8510164526873182654
+  - StaticId: 105
+    UniqName: init_carlisle_awake
+    AppearCond:
+      Type: 6
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: carlisle_intro
+    RefreshGroupPriority: 10
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    InitInfo:
+      rid: 8510164526873182655
   NamedPoints:
   - Name: initial_p0
     PointType: 1
@@ -204,3 +234,22 @@ MonoBehaviour:
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 8510164526873182655
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_awake
+        Position: {x: -5, y: -6.88}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []

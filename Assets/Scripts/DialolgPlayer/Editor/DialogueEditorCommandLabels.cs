@@ -21,6 +21,12 @@ namespace My.Dialog
                     return "[ShowImage]";
                 case DialogCommandData4MoveEntity m:
                     return $"[ActorMove] {m.StaticName}";
+                case DialogCommandData4SpawnDialogActor s:
+                    return $"[SpawnActor] {s.StaticName} ({s.CfgId})";
+                case DialogCommandData4ShowCameraOverride c:
+                    return string.IsNullOrEmpty(c.StaticName)
+                        ? $"[Camera] {c.Position}"
+                        : $"[Camera] {c.StaticName}";
                 case DialogCommandData4ActorAnim a:
                     return $"[ActorAnim] {a.AnimName}";
                 case DialogCommandData4SimpleFunc f:

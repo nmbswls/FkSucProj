@@ -77,6 +77,7 @@ public partial class Tables
     public demo.TbHActInfo TbHActInfo {get; }
     public demo.TbTalentNodeLevel TbTalentNodeLevel {get; }
     public demo.TbSavePoint TbSavePoint {get; }
+    public demo.TbReviveRule TbReviveRule {get; }
     public demo.TbDesireDensityTier TbDesireDensityTier {get; }
     public demo.TbMindFragmentPoolEntry TbMindFragmentPoolEntry {get; }
     /// <summary>
@@ -189,6 +190,7 @@ public partial class Tables
         TbHActInfo = new demo.TbHActInfo(loader("demo_tbhactinfo"));
         TbTalentNodeLevel = new demo.TbTalentNodeLevel(loader("demo_tbtalentnodelevel"));
         TbSavePoint = new demo.TbSavePoint(loader("demo_tbsavepoint"));
+        TbReviveRule = new demo.TbReviveRule(loader("demo_tbreviverule"));
         TbDesireDensityTier = new demo.TbDesireDensityTier(loader("demo_tbdesiredensitytier"));
         TbMindFragmentPoolEntry = new demo.TbMindFragmentPoolEntry(loader("demo_tbmindfragmentpoolentry"));
         TbSecretBaseFacility = new demo.TbSecretBaseFacility(loader("demo_tbsecretbasefacility"));
@@ -282,6 +284,7 @@ public partial class Tables
         TbHActInfo.ResolveRef(this);
         TbTalentNodeLevel.ResolveRef(this);
         TbSavePoint.ResolveRef(this);
+        TbReviveRule.ResolveRef(this);
         TbDesireDensityTier.ResolveRef(this);
         TbMindFragmentPoolEntry.ResolveRef(this);
         TbSecretBaseFacility.ResolveRef(this);

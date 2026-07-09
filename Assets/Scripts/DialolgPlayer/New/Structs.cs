@@ -116,6 +116,30 @@ namespace My.Dialog
     }
 
     [Serializable]
+    public class DialogCommandData4SpawnDialogActor : DialogCommandData
+    {
+        public string StaticName;
+        public string CfgId;
+        public Vector2 Position;
+        public Vector2 FaceDir = Vector2.right;
+        public string CharacterKey = "";
+        public bool IsPeace = true;
+        public bool DestroyOnDialogEnd = true;
+    }
+
+    [Serializable]
+    public class DialogCommandData4ShowCameraOverride : DialogCommandData
+    {
+        public string StaticName;
+        public Vector2 Position;
+        public float Duration = 2.0f;
+        public float VisualRadius = 12.0f;
+        public bool PinTarget = true;
+        public bool BlockInput = true;
+        public bool WaitUntilFinished = false;
+    }
+
+    [Serializable]
     public class DialogCommandData4ActorAnim : DialogCommandData
     {
         public string AnimName;

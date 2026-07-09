@@ -1,0 +1,61 @@
+[
+  {
+    "rule_id": "early_current_map_before_secretbase",
+    "priority": 1000,
+    "reason": "Any",
+    "source_overlay_id": "",
+    "source_logic_area_id": "",
+    "match_conds": [
+      {
+        "type": 2,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "revive_secretbase_unlocked",
+        "param6": ""
+      }
+    ],
+    "target_mode": "CurrentMap",
+    "target_overlay_id": "",
+    "target_named_point": "BornPos",
+    "reset_map": true,
+    "force_human_mode": true
+  },
+  {
+    "rule_id": "after_unlock_homestead",
+    "priority": 900,
+    "reason": "Any",
+    "source_overlay_id": "",
+    "source_logic_area_id": "",
+    "match_conds": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "revive_secretbase_unlocked",
+        "param6": ""
+      }
+    ],
+    "target_mode": "FixedMap",
+    "target_overlay_id": "homestead_01",
+    "target_named_point": "BornPos",
+    "reset_map": true,
+    "force_human_mode": true
+  },
+  {
+    "rule_id": "fallback_game_init",
+    "priority": 0,
+    "reason": "Any",
+    "source_overlay_id": "",
+    "source_logic_area_id": "",
+    "match_conds": [],
+    "target_mode": "FixedMap",
+    "target_overlay_id": "game_init",
+    "target_named_point": "BornPos",
+    "reset_map": true,
+    "force_human_mode": true
+  }
+]

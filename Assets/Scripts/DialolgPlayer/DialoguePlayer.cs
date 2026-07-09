@@ -8,6 +8,7 @@ using My;
 using My.Dialog;
 using My.Map;
 using My.Map.Logic;
+using My.MapExport;
 using My.UI;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -89,6 +90,8 @@ public partial class DialoguePlayer : MonoBehaviour
 
     private string currCutsceneName;
     private GameObject cutsceneRootGo;
+    private readonly Dictionary<string, long> dynamicDialogActorIds = new(StringComparer.Ordinal);
+    private readonly HashSet<long> dynamicDialogActorDestroyOnEnd = new();
 
     public PlayableDirector activeDirector; // 当前 Timeline / Cutscene 的 PlayableDirector
     private string waitingSignalName;       // WaitTimelineSignal：等待 Timeline 发出的信号名
@@ -187,6 +190,13 @@ public partial class DialoguePlayer : MonoBehaviour
 
     private IDialogueActor GetDialogueActorByStaticName(string staticName)
     {
+        if (!string.IsNullOrEmpty(staticName) &&
+            dynamicDialogActorIds.TryGetValue(staticName, out var dynamicActorId))
+        {
+            var dynamicEntity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(dynamicActorId, true);
+            return dynamicEntity as IDialogueActor;
+        }
+
         var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(staticName);
         MainGameManager.Instance.gameLogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshInfo);
         if (refreshInfo == null)
@@ -271,6 +281,8 @@ public partial class DialoguePlayer : MonoBehaviour
         stepIndex = 0;
         isPlaying = true;
         pendingJump = false;
+        dynamicDialogActorIds.Clear();
+        dynamicDialogActorDestroyOnEnd.Clear();
         //InputBlocker.Block(true);
         StartStepFromData();
 
@@ -343,6 +355,13 @@ public partial class DialoguePlayer : MonoBehaviour
                 dialogActor.OnDialogEnd();
             }
         }
+
+        foreach (var eId in dynamicDialogActorDestroyOnEnd)
+        {
+            MainGameManager.Instance.gameLogicManager.AreaManager.ForceDestroyEntityNow(eId, "DialogActorEnd");
+        }
+        dynamicDialogActorDestroyOnEnd.Clear();
+        dynamicDialogActorIds.Clear();
 
         MainGameManager.Instance.gameLogicManager.playerDataManager.DialogTriggerSystem.AddTriggerCount(MetaInfo.DialogId);
     }
@@ -690,15 +709,8 @@ public partial class DialoguePlayer : MonoBehaviour
             case DialogCommandData4MoveEntity cd4MoveEntity:
                 {
                     string staticName = cd4MoveEntity.StaticName;
-                    var staticId = MainGameManager.Instance.gameLogicManager.AreaManager.GetStaticIdByUniqName(staticName);
-                    MainGameManager.Instance.gameLogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshInfo);
-                    if(refreshInfo == null)
-                    {
-                        break;
-                    }
-
-                    var entity = MainGameManager.Instance.gameLogicManager.GetLogicEntity(refreshInfo.EntityInstId, true);
-                    if(entity is not IDialogueActor dialogActor)
+                    var dialogActor = GetDialogueActorByStaticName(staticName);
+                    if(dialogActor == null)
                     {
                         break;
                     }
@@ -709,6 +721,19 @@ public partial class DialoguePlayer : MonoBehaviour
                         forcedStartPos = cd4MoveEntity.StartPos;
                     }
                     dialogActor.DoDialogMove(cd4MoveEntity.MovePos, cd4MoveEntity.MoveDuration, forcedStartPos);
+                }
+                break;
+
+            case DialogCommandData4SpawnDialogActor cd4SpawnActor:
+                {
+                    SpawnDialogActor(cd4SpawnActor);
+                    SafeComplete();
+                }
+                break;
+
+            case DialogCommandData4ShowCameraOverride cd4Camera:
+                {
+                    ShowDialogCameraOverride(cd4Camera, SafeComplete);
                 }
                 break;
 
@@ -951,7 +976,141 @@ public partial class DialoguePlayer : MonoBehaviour
                     // 未识别命令类型：直接完成避免卡死
                     SafeComplete();
                     break;
-                }
+            }
+        }
+    }
+
+    private bool TryResolveDialogStaticEntity(string staticName, out LogicEntityBase entity)
+    {
+        entity = null;
+        if (string.IsNullOrEmpty(staticName))
+        {
+            return false;
+        }
+
+        var glm = MainGameManager.Instance?.gameLogicManager;
+        if (glm?.AreaManager == null)
+        {
+            return false;
+        }
+
+        long entityId = 0;
+        if (!dynamicDialogActorIds.TryGetValue(staticName, out entityId))
+        {
+            var staticId = glm.AreaManager.GetStaticIdByUniqName(staticName);
+            if (staticId == 0 ||
+                !glm.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshInfo))
+            {
+                return false;
+            }
+
+            entityId = refreshInfo.EntityInstId;
+        }
+
+        entity = glm.GetLogicEntity(entityId, true) as LogicEntityBase;
+        return entity != null;
+    }
+
+    private void ShowDialogCameraOverride(DialogCommandData4ShowCameraOverride cmd, Action onComplete)
+    {
+        if (cmd == null)
+        {
+            onComplete?.Invoke();
+            return;
+        }
+
+        var focusPos = cmd.Position;
+        long pinEntityId = 0;
+        if (TryResolveDialogStaticEntity(cmd.StaticName, out var focusEntity))
+        {
+            focusPos = focusEntity.Pos;
+            if (cmd.PinTarget)
+            {
+                pinEntityId = focusEntity.Id;
+            }
+        }
+
+        var duration = cmd.Duration > 0f
+            ? cmd.Duration
+            : MainGameManager.DefaultCameraOverrideDuration;
+        var visualRadius = cmd.VisualRadius > 0f
+            ? cmd.VisualRadius
+            : MainGameManager.DefaultCameraOverrideVisualRadius;
+
+        MainGameManager.Instance?.ShowCameraOverrideFix(
+            focusPos,
+            duration,
+            pinEntityId,
+            visualRadius,
+            cmd.BlockInput);
+
+        if (cmd.WaitUntilFinished)
+        {
+            driver.Run(duration, _ => { }, onComplete);
+        }
+        else
+        {
+            onComplete?.Invoke();
+        }
+    }
+
+    private void SpawnDialogActor(DialogCommandData4SpawnDialogActor cmd)
+    {
+        if (cmd == null || string.IsNullOrEmpty(cmd.CfgId))
+        {
+            Debug.LogWarning("[Dialog] SpawnDialogActor skipped: missing cfg id.");
+            return;
+        }
+
+        var glm = MainGameManager.Instance?.gameLogicManager;
+        if (glm?.AreaManager == null)
+        {
+            Debug.LogWarning("[Dialog] SpawnDialogActor skipped: game logic manager missing.");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(cmd.StaticName) &&
+            dynamicDialogActorIds.TryGetValue(cmd.StaticName, out var oldId))
+        {
+            glm.AreaManager.ForceDestroyEntityNow(oldId, "DialogActorReplace");
+            dynamicDialogActorIds.Remove(cmd.StaticName);
+            dynamicDialogActorDestroyOnEnd.Remove(oldId);
+        }
+
+        var faceDir = cmd.FaceDir.sqrMagnitude > 1e-8f ? cmd.FaceDir.normalized : Vector2.right;
+        var initInfo = new EntityInitInfo4Npc
+        {
+            CfgId = cmd.CfgId,
+            Position = cmd.Position,
+            FaceDir = faceDir,
+            IsPeace = cmd.IsPeace,
+            MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+            CharacterKey = cmd.CharacterKey ?? string.Empty,
+        };
+
+        var record = glm.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
+        if (record == null)
+        {
+            Debug.LogWarning($"[Dialog] SpawnDialogActor failed: invalid cfg id {cmd.CfgId}.");
+            return;
+        }
+
+        glm.AreaManager.RegisterEntityRecord(record, true);
+        var entity = glm.GetLogicEntity(record.Id, true);
+        if (entity is IDialogueActor dialogActor)
+        {
+            dialogActor.OnDialogStart();
+            runtimeRef?.ControlledEntityList.Add(record.Id);
+        }
+
+        if (!string.IsNullOrEmpty(cmd.StaticName))
+        {
+            dynamicDialogActorIds[cmd.StaticName] = record.Id;
+        }
+
+        if (cmd.DestroyOnDialogEnd)
+        {
+            dynamicDialogActorDestroyOnEnd.Add(record.Id);
         }
     }
 

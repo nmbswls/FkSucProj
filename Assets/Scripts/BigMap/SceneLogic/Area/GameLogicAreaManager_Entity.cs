@@ -8,6 +8,7 @@ using Config;
 using My.Config;
 using My.Map;
 using My.MapExport;
+using Map.Logic.Events;
 using UnityEngine;
 
 namespace My.Map.Logic
@@ -126,12 +127,46 @@ namespace My.Map.Logic
             }
         }
 
+        public void ForceCheckAllRefreshInfos()
+        {
+            HashSet<string> handledGroups = null;
+            foreach(var refreshInfo in EntityRefreshInfo)
+            {
+                if (refreshInfo == null)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(refreshInfo.RefreshGroupKey))
+                {
+                    handledGroups ??= new HashSet<string>();
+                    if (!handledGroups.Add(refreshInfo.RefreshGroupKey))
+                    {
+                        continue;
+                    }
+                }
+
+                HandleOneRefreshInfo(refreshInfo);
+            }
+        }
+
         /// <summary>
         /// 处理单条动态实体刷新配置（创建、条件隐藏、重生间隔等）。
         /// </summary>
         /// <param name="refreshInfo"></param>
         public void HandleOneRefreshInfo(DynamicEntityRefreshInfo refreshInfo)
         {
+            if (refreshInfo == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(refreshInfo.RefreshGroupKey))
+            {
+                HandleRefreshGroup(refreshInfo.RefreshGroupKey);
+                return;
+            }
+
             RefreshInfoRuntimes.TryGetValue(refreshInfo.StaticId, out var refreshRuntime);
             if (refreshRuntime != null)
             {
@@ -209,22 +244,46 @@ namespace My.Map.Logic
                 }
             }
 
-            if (refreshInfo.InitInfo != null &&
-                refreshInfo.InitInfo.EntityType == EEntityType.FishingSpot &&
+            TrySpawnRefreshInfo(refreshInfo, null, null, out _);
+        }
+
+        private bool TrySpawnRefreshInfo(
+            DynamicEntityRefreshInfo refreshInfo,
+            Vector2? overridePosition,
+            Vector2? overrideFaceDir,
+            out LogicEntityRecord record)
+        {
+            record = null;
+            if (refreshInfo?.InitInfo == null)
+            {
+                return false;
+            }
+
+            if (refreshInfo.InitInfo.EntityType == EEntityType.FishingSpot &&
                 string.IsNullOrEmpty(refreshInfo.UniqName))
             {
                 Debug.LogError(
                     $"[FishingSpot] StaticId={refreshInfo.StaticId}: UniqName is empty. " +
                     "Fishing spots need a non-empty UniqName for save/state; fix the map export or refresh config.");
-                return;
+                return false;
             }
-            
-            LogicEntityRecord record = CreateEntityRecordFromInitInfo(refreshInfo.InitInfo);
+
+            record = CreateEntityRecordFromInitInfo(refreshInfo.InitInfo);
 
             if(record == null)
             {
                 Debug.Log("HandleOneRefreshInfo err not good");
-                return;
+                return false;
+            }
+
+            if (overridePosition.HasValue)
+            {
+                record.Position = overridePosition.Value;
+            }
+
+            if (overrideFaceDir.HasValue && overrideFaceDir.Value.sqrMagnitude > 1e-8f)
+            {
+                record.FaceDir = overrideFaceDir.Value.normalized;
             }
 
             if (refreshInfo.DungeonNodeId >= 0)
@@ -248,6 +307,182 @@ namespace My.Map.Logic
             };
 
             Record2RefreshInfo[record.Id] = refreshInfo.StaticId;
+            return true;
+        }
+
+        private void HandleRefreshGroup(string groupKey)
+        {
+            if (string.IsNullOrEmpty(groupKey))
+            {
+                return;
+            }
+
+            DynamicEntityRefreshInfo desired = null;
+            DynamicEntityRefreshInfo currentInfo = null;
+            SceneRefreshInfoRuntime currentRuntime = null;
+            LogicEntityRecord currentRecord = null;
+
+            for (int i = 0; i < EntityRefreshInfo.Count; i++)
+            {
+                var info = EntityRefreshInfo[i];
+                if (info == null || info.RefreshGroupKey != groupKey)
+                {
+                    continue;
+                }
+
+                if (!RefreshInfoRuntimes.TryGetValue(info.StaticId, out var rt))
+                {
+                    rt = null;
+                }
+                else
+                {
+                    rt.LinkedRefreshInfo = info;
+                }
+
+                if (rt != null &&
+                    rt.EntityInstId != 0 &&
+                    Repo.Records.TryGetValue(rt.EntityInstId, out var rec) &&
+                    !rec.MarkDestroyed)
+                {
+                    if (currentRecord == null)
+                    {
+                        currentInfo = info;
+                        currentRuntime = rt;
+                        currentRecord = rec;
+                    }
+                    else
+                    {
+                        ForceDestroyEntityNow(rt.EntityInstId, "RefreshGroupExtraActive");
+                        if (RefreshInfoRuntimes.TryGetValue(info.StaticId, out var extraRt))
+                        {
+                            extraRt.LastRemovalReason = ERefreshSlotRemovalReason.VisibilityCondition;
+                        }
+                    }
+                }
+
+                if (!CanRefreshInfoBeDesiredInGroup(info, rt))
+                {
+                    continue;
+                }
+
+                if (desired == null ||
+                    info.RefreshGroupPriority > desired.RefreshGroupPriority ||
+                    (info.RefreshGroupPriority == desired.RefreshGroupPriority && info.StaticId > desired.StaticId))
+                {
+                    desired = info;
+                }
+            }
+
+            if (currentInfo != null && desired != null && currentInfo.StaticId == desired.StaticId)
+            {
+                return;
+            }
+
+            Vector2? handoffPos = null;
+            Vector2? handoffFace = null;
+            long oldEntityId = currentRuntime?.EntityInstId ?? 0;
+
+            if (currentRecord != null && desired != null &&
+                desired.RefreshGroupHandoffPolicy == ERefreshGroupHandoffPolicy.PreserveTransform)
+            {
+                if (oldEntityId != 0 && Repo.IsLoaded(oldEntityId) && Repo.GetLoaded(oldEntityId) != null)
+                {
+                    var oldEntity = Repo.GetLoaded(oldEntityId);
+                    handoffPos = oldEntity.Pos;
+                }
+                else
+                {
+                    handoffPos = currentRecord.Position;
+                }
+
+                handoffFace = currentRecord.FaceDir;
+            }
+
+            if (currentRuntime != null && oldEntityId != 0)
+            {
+                if (desired != null && desired.RefreshTransitionMode == ERefreshGroupTransitionMode.HiddenSwap)
+                {
+                    logicManager.LogicEventBus.Publish(new MLERefreshGroupSwapEvent()
+                    {
+                        GroupKey = groupKey,
+                        OldEntityId = oldEntityId,
+                    });
+                }
+
+                ForceDestroyEntityNow(oldEntityId, desired == null ? "RefreshGroupHide" : "RefreshGroupSwap");
+                if (currentInfo != null && RefreshInfoRuntimes.TryGetValue(currentInfo.StaticId, out var oldRt))
+                {
+                    oldRt.LastRemovalReason = ERefreshSlotRemovalReason.VisibilityCondition;
+                }
+            }
+
+            if (desired == null)
+            {
+                return;
+            }
+
+            if (TrySpawnRefreshInfo(desired, handoffPos, handoffFace, out var newRecord) &&
+                oldEntityId != 0 &&
+                desired.RefreshTransitionMode == ERefreshGroupTransitionMode.HiddenSwap)
+            {
+                logicManager.LogicEventBus.Publish(new MLERefreshGroupSwapEvent()
+                {
+                    GroupKey = groupKey,
+                    OldEntityId = oldEntityId,
+                    NewEntityId = newRecord.Id,
+                });
+            }
+        }
+
+        private bool CanRefreshInfoBeDesiredInGroup(DynamicEntityRefreshInfo refreshInfo, SceneRefreshInfoRuntime refreshRuntime)
+        {
+            if (refreshInfo == null)
+            {
+                return false;
+            }
+
+            if (_dungeonRuntime != null && !_dungeonRuntime.ShouldAllowSpawn(refreshInfo))
+            {
+                return false;
+            }
+
+            if (refreshInfo.AppearCond != null && refreshInfo.AppearCond.Type != ECommonCheckType.None)
+            {
+                if (!logicManager.CheckCommonCond(refreshInfo.AppearCond))
+                {
+                    return false;
+                }
+            }
+
+            if (refreshInfo.DisappearCond != null && refreshInfo.DisappearCond.Type != ECommonCheckType.None)
+            {
+                if (logicManager.CheckCommonCond(refreshInfo.DisappearCond))
+                {
+                    return false;
+                }
+            }
+
+            if (refreshRuntime != null)
+            {
+                if (refreshRuntime.LastRemovalReason == ERefreshSlotRemovalReason.PermanentClear)
+                {
+                    return false;
+                }
+
+                if (!refreshInfo.WillRespawn &&
+                    refreshRuntime.LastRemovalReason == ERefreshSlotRemovalReason.Destructive)
+                {
+                    return false;
+                }
+
+                if (refreshInfo.WillRespawn &&
+                    LogicTime.time - refreshRuntime.LastDestroyTime < refreshInfo.RespawnInterval)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void RebuildRefreshInfoByStaticId()

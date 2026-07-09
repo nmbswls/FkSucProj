@@ -27,6 +27,7 @@ namespace Map.Logic.Events
         PlayerExposeStatusChange,
 
         UnitCantAlert,
+        RefreshGroupSwap,
 
     }
 

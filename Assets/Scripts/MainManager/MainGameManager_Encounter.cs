@@ -65,6 +65,24 @@ namespace My
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
+        public void QuitEncounterByDefeat()
+        {
+            if (isSwitchingEncounter)
+            {
+                return;
+            }
+
+            isSwitchingEncounter = true;
+            _ = InnerQuitEncounterAfterDefeat().ContinueWith(t =>
+            {
+                if (t.IsFaulted)
+                {
+                    Debug.LogError("exception " + t.Exception.InnerException.StackTrace);
+                }
+                isSwitchingEncounter = false;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
         protected async Task InnerEnterEncounter(int battleId, string battleReason, bool isDefeatMode = false)
         {
             UIManager.Instance.ShowLoading("good");
@@ -112,6 +130,21 @@ namespace My
             UIManager.Instance.HideLoading();
 
             gameLogicManager.AbandonToSecretBase();
+        }
+
+        protected async Task InnerQuitEncounterAfterDefeat()
+        {
+            UIManager.Instance.ShowLoading("good");
+
+            await UIOrchestrator.Instance.SetStateAsync(UIAppState.Boot, null);
+
+            await EncounterBattleLoader.UnloadBattleAsync();
+
+            LogicTime.ReleasePause("encounter");
+
+            UIManager.Instance.HideLoading();
+
+            gameLogicManager.RevivePlayerToResolvedDestination(EReviveReason.EncounterDefeat);
         }
 
         public void WaitingIntoDefeatedBattle()

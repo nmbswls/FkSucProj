@@ -15,8 +15,8 @@ MonoBehaviour:
   AreaId: test_link_a
   Buckets: []
   EntityRefreshInfo:
-  - StaticId: 9000
-    UniqName: teleporter_to_b
+  - StaticId: 8999
+    UniqName: transition_a_camp_task
     AppearCond:
       Type: 0
       Param1: 0
@@ -38,7 +38,87 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
+      rid: 9000
+  - StaticId: 9000
+    UniqName: teleporter_to_home_01_fight
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: transition_a.bandits_left
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
       rid: 9001
+  - StaticId: 9001
+    UniqName: transition_a_carlisle_unconscious
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: test_link_a.camp_done
+      Param6: 
+    DisappearCond:
+      Type: 1
+      Param1: 302
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: transition_a_carlisle
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 9002
+  - StaticId: 9002
+    UniqName: transition_a_carlisle_awake
+    AppearCond:
+      Type: 1
+      Param1: 302
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: transition_a_carlisle
+    RefreshGroupPriority: 10
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 9003
   NamedPoints:
   - Name: enter_a
     PointType: 0
@@ -54,13 +134,55 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
+    - rid: 9000
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: transition_a_camp_task
+        Position: {x: 0.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          Values: []
     - rid: 9001
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
-        Position: {x: 4.0, y: 0.0}
+        Position: {x: 0.0, y: 4.0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        TargetMapName: test_link_b
-        TargetNamedPoint: enter_b
+        TargetMapName: homestead_01_fight
+        TargetNamedPoint: born_01
+    - rid: 9002
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_unconscious
+        Position: {x: 1.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 9003
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_awake
+        Position: {x: 1.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []

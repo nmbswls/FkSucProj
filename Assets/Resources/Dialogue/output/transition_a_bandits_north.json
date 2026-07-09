@@ -1,0 +1,156 @@
+{
+  "DialogId": "transition_a_bandits_north",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Transition A: Carlisle wakes, bandits move north. Verifies runtime-spawned dialogue actors.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "卡莱尔",
+              "Content": "……我听见脚步声。北边还有人。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "先别动，我去看。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SpawnDialogActor, Assembly-CSharp",
+          "StaticName": "transition_bandit_01",
+          "CfgId": "hunhun",
+          "Position": {
+            "x": -1.5,
+            "y": 1.5
+          },
+          "FaceDir": {
+            "x": 0.0,
+            "y": 1.0
+          },
+          "CharacterKey": "",
+          "IsPeace": false,
+          "DestroyOnDialogEnd": true
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SpawnDialogActor, Assembly-CSharp",
+          "StaticName": "transition_bandit_02",
+          "CfgId": "hunhun",
+          "Position": {
+            "x": 0.0,
+            "y": 1.2
+          },
+          "FaceDir": {
+            "x": 0.0,
+            "y": 1.0
+          },
+          "CharacterKey": "",
+          "IsPeace": false,
+          "DestroyOnDialogEnd": true
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SpawnDialogActor, Assembly-CSharp",
+          "StaticName": "transition_bandit_03",
+          "CfgId": "hunhun",
+          "Position": {
+            "x": 1.5,
+            "y": 1.5
+          },
+          "FaceDir": {
+            "x": 0.0,
+            "y": 1.0
+          },
+          "CharacterKey": "",
+          "IsPeace": false,
+          "DestroyOnDialogEnd": true
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "强盗",
+              "Content": "往北撤，别在这里耗着。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4ShowCameraOverride, Assembly-CSharp",
+          "StaticName": "transition_bandit_02",
+          "Position": {
+            "x": 0.0,
+            "y": 2.0
+          },
+          "Duration": 2.5,
+          "VisualRadius": 10.0,
+          "PinTarget": true,
+          "BlockInput": true,
+          "WaitUntilFinished": false
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4MoveEntity, Assembly-CSharp",
+          "StaticName": "transition_bandit_01",
+          "MovePos": {
+            "x": -1.5,
+            "y": 6.0
+          },
+          "ForceStartPos": false,
+          "StartPos": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "MoveDuration": 1.5
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4MoveEntity, Assembly-CSharp",
+          "StaticName": "transition_bandit_02",
+          "MovePos": {
+            "x": 0.0,
+            "y": 6.2
+          },
+          "ForceStartPos": false,
+          "StartPos": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "MoveDuration": 1.5
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4MoveEntity, Assembly-CSharp",
+          "StaticName": "transition_bandit_03",
+          "MovePos": {
+            "x": 1.5,
+            "y": 6.0
+          },
+          "ForceStartPos": false,
+          "StartPos": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "MoveDuration": 1.5
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "transition_a.bandits_left",
+          "Param6": null
+        }
+      ]
+    }
+  ]
+}

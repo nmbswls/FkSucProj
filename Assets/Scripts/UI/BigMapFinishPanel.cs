@@ -32,12 +32,7 @@ namespace My.UI
         private void DoConfirm()
         {
             var glm = MainGameManager.Instance.gameLogicManager;
-            string tpMapName = "homestead_01";
-            tpMapName = glm.GetCurrentReviveMap();
-            glm.BeginFreeBigMapSession();
-            glm.PreparePlayerSwitchArea(tpMapName, true);
-
-            glm.ForcePlayerHumanMode(true);
+            glm.RevivePlayerToResolvedDestination(EReviveReason.BigMapFinish, beginFreeSession: true);
         }
     }
 }

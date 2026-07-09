@@ -81,6 +81,19 @@ namespace Map.Logic.Events
         public MapLogicEventContext Ctx { get; set; }
         public EMapLogicEventType Type { get { return EMapLogicEventType.PlayerExposeStatusChange; } }
     }
+
+    public partial struct MLERefreshGroupSwapEvent : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.RefreshGroupSwap; } }
+
+        public string GroupKey;
+        public long OldEntityId;
+        public long NewEntityId;
+        public float MaxRetainSeconds;
+
+        public bool IsBindNewEntity { get { return NewEntityId != 0; } }
+    }
     
 
 

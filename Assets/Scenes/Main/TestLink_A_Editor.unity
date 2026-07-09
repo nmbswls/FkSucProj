@@ -681,7 +681,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 221}
   - {fileID: 135}
+  - {fileID: 201}
+  - {fileID: 211}
   m_Father: {fileID: 129}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &134
@@ -695,7 +698,7 @@ GameObject:
   - component: {fileID: 135}
   - component: {fileID: 136}
   m_Layer: 0
-  m_Name: teleporter_to_b
+  m_Name: teleporter_to_home_01_fight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -710,7 +713,7 @@ Transform:
   m_GameObject: {fileID: 134}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.0, y: 0.0, z: 0}
+  m_LocalPosition: {x: 0.0, y: 4.0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -730,14 +733,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RefreshInfo:
     StaticId: 9000
-    UniqName: teleporter_to_b
+    UniqName: teleporter_to_home_01_fight
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: transition_a.bandits_left
       Param6: 
     DisappearCond:
       Type: 0
@@ -760,12 +763,12 @@ MonoBehaviour:
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
-        Position: {x: 4.0, y: 0.0}
+        Position: {x: 0.0, y: 4.0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        TargetMapName: test_link_b
-        TargetNamedPoint: enter_b
+        TargetMapName: homestead_01_fight
+        TargetNamedPoint: born_01
 --- !u!1 &137
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,6 +813,272 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e8c2a91b5d4e6f807192a3b4c5d6e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 201}
+  - component: {fileID: 202}
+  m_Layer: 0
+  m_Name: transition_a_carlisle_unconscious
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.0, y: -1.0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 9001
+    UniqName: transition_a_carlisle_unconscious
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: test_link_a.camp_done
+      Param6: 
+    DisappearCond:
+      Type: 1
+      Param1: 302
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: transition_a_carlisle
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 8800000000000100002
+  references:
+    version: 2
+    RefIds:
+    - rid: 8800000000000100002
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_unconscious
+        Position: {x: 1.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+--- !u!1 &210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 211}
+  - component: {fileID: 212}
+  m_Layer: 0
+  m_Name: transition_a_carlisle_awake
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &211
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.0, y: -1.0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 9002
+    UniqName: transition_a_carlisle_awake
+    AppearCond:
+      Type: 1
+      Param1: 302
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: transition_a_carlisle
+    RefreshGroupPriority: 10
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 8800000000000100003
+  references:
+    version: 2
+    RefIds:
+    - rid: 8800000000000100003
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_awake
+        Position: {x: 1.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+--- !u!1 &220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 221}
+  - component: {fileID: 222}
+  m_Layer: 0
+  m_Name: transition_a_camp_task
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &221
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0, y: -1.0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 133}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 8999
+    UniqName: transition_a_camp_task
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 8800000000000100004
+  references:
+    version: 2
+    RefIds:
+    - rid: 8800000000000100004
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: transition_a_camp_task
+        Position: {x: 0.0, y: -1.0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          Values: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

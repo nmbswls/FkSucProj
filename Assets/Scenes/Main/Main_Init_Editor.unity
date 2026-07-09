@@ -393,12 +393,12 @@ MonoBehaviour:
     StaticId: 0
     UniqName: init_luca
     AppearCond:
-      Type: 5
-      Param1: 0
+      Type: 1
+      Param1: 100
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 100_s1
+      Param5: 
       Param6: 
     DisappearCond:
       Type: 0
@@ -410,6 +410,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: carlisle_intro
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     InitInfo:
       rid: 8510164526873182390
   references:
@@ -428,6 +432,99 @@ MonoBehaviour:
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+--- !u!1 &2001050001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2001050002}
+  - component: {fileID: 2001050003}
+  m_Layer: 0
+  m_Name: carlisle_awake
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2001050002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001050001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5, y: -6.88, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1907280483}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2001050003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2001050001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 0
+    UniqName: init_carlisle_awake
+    AppearCond:
+      Type: 6
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: carlisle_intro
+    RefreshGroupPriority: 10
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    InitInfo:
+      rid: 8510164526873182391
+  references:
+    version: 2
+    RefIds:
+    - rid: 8510164526873182391
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: game_init_carlisle_awake
+        Position: {x: 0, y: 0}
+        FaceDir: {x: 1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: carlisle
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
 --- !u!1 &1027415961
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,6 +883,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1004488224}
+  - {fileID: 2001050002}
   - {fileID: 1078570254}
   m_Father: {fileID: 1606442274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
