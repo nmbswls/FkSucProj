@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using DG.Tweening;
 using My.Config;
@@ -9,7 +8,6 @@ using UnityEngine.UI;
 
 namespace My.UI
 {
-
     public class QuestFloatingPanel : PanelBase
     {
         public static QuestFloatingPanel Instance
@@ -17,10 +15,11 @@ namespace My.UI
             get
             {
                 var panel = UIManager.Instance.GetShowingPanel("QuestFloatingPanel");
-                if (panel != null && panel is QuestFloatingPanel hudPanel)
+                if (panel is QuestFloatingPanel hudPanel)
                 {
                     return hudPanel;
                 }
+
                 return null;
             }
         }
@@ -40,35 +39,21 @@ namespace My.UI
             public TextMeshProUGUI ObjDesc;
             public TextMeshProUGUI CurrProgressText;
             public TextMeshProUGUI MaxProgressText;
-
             public Image CompleteHint;
-
             public Tween CompleteTween;
-
             public QuestObjectiveRuntime? BindingObjective = null;
 
             public void Refresh()
             {
-                if(BindingObjective == null)
+                if (BindingObjective == null)
                 {
                     Clear();
                     return;
                 }
 
                 UpdateObjectiveDescText();
-
-
-                if (BindingObjective.GetCurrProgress() >= BindingObjective.GetRequireProgress())
-                {
-                    CompleteHint.gameObject.SetActive(true);
-                }
-                else
-                {
-                    CompleteHint.gameObject.SetActive(false);
-                }
-
+                CompleteHint.gameObject.SetActive(BindingObjective.GetCurrProgress() >= BindingObjective.GetRequireProgress());
                 RootGo.gameObject.SetActive(true);
-
             }
 
             public void UpdateObjectiveDescText()
@@ -76,58 +61,61 @@ namespace My.UI
                 if (BindingObjective.Data.CustomDesc)
                 {
                     ObjDesc.text = BindingObjective.Data.FormatDesc;
+                    return;
                 }
-                else
+
+                ObjDesc.text = "Unknown objective";
+                switch (BindingObjective.Data.ObjType)
                 {
-                    ObjDesc.text = "未知条件需求";
-                    switch (BindingObjective.Data.ObjType)
+                    case cfg.demo.EQuestObjectiveType.KillMonster:
                     {
-                        case cfg.demo.EQuestObjectiveType.KillMonster:
-                            {
-                                if (!string.IsNullOrEmpty(BindingObjective.Data.ObjP4))
-                                {
-                                    var unitCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(BindingObjective.Data.ObjP4);
-                                    string mName = unitCfg?.Name ?? "未知单位";
-                                    ObjDesc.text = $"击杀{mName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
-                                }
-                            }
-                            break;
-                        case cfg.demo.EQuestObjectiveType.OwnItem:
-                            {
-                                var itemId = BindingObjective.Data.ObjP4;
-                                var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
-                                var itemName = itemDef?.DisplayName ?? itemId ?? "物品";
-                                ObjDesc.text = $"搜集{itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
-                            }
-                            break;
-                        case cfg.demo.EQuestObjectiveType.SubmitItem:
-                            {
-                                var itemId = BindingObjective.Data.ObjP4;
-                                var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
-                                var itemName = itemDef?.DisplayName ?? itemId ?? "物品";
-                                ObjDesc.text = $"向NPC递交{itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
-                            }
-                            break;
+                        if (!string.IsNullOrEmpty(BindingObjective.Data.ObjP4))
+                        {
+                            var unitCfg = CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(BindingObjective.Data.ObjP4);
+                            var unitName = unitCfg?.Name ?? "Unknown unit";
+                            ObjDesc.text = $"Defeat {unitName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                        }
+
+                        break;
                     }
-
+                    case cfg.demo.EQuestObjectiveType.OwnItem:
+                    {
+                        var itemId = BindingObjective.Data.ObjP4;
+                        var itemDef = ItemCatalog.GetItemDef(itemId);
+                        var itemName = itemDef?.DisplayName ?? itemId ?? "Item";
+                        ObjDesc.text = $"Collect {itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                        break;
+                    }
+                    case cfg.demo.EQuestObjectiveType.SubmitItem:
+                    {
+                        var itemId = BindingObjective.Data.ObjP4;
+                        var itemDef = ItemCatalog.GetItemDef(itemId);
+                        var itemName = itemDef?.DisplayName ?? itemId ?? "Item";
+                        ObjDesc.text = $"Submit {itemName} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                        break;
+                    }
+                    case cfg.demo.EQuestObjectiveType.Talk:
+                    {
+                        var desc = string.IsNullOrEmpty(BindingObjective.Data.FormatDesc)
+                            ? "Talk"
+                            : BindingObjective.Data.FormatDesc;
+                        ObjDesc.text = $"{desc} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                        break;
+                    }
                 }
-
             }
 
             public void Clear()
             {
                 BindingObjective = null;
-
                 CompleteTween?.Kill();
                 CompleteTween = null;
-
                 ObjDesc.text = string.Empty;
                 CompleteHint.gameObject.SetActive(false);
-
                 RootGo.gameObject.SetActive(false);
             }
-
         }
+
         public List<QuestObjectiveLine> ObjectiveLines = new();
 
         private QuestInstance _bindingQuestInst { get; set; }
@@ -138,14 +126,15 @@ namespace My.UI
 
         void Awake()
         {
-            for(int i=0;i<5;i++)
+            for (int i = 0; i < 5; i++)
             {
-                var objLineGo = GameObject.Instantiate(ObjectiveLineTemplate, QuestObjLineContainer);
-
-                var runtime = new QuestObjectiveLine();
-                runtime.RootGo = objLineGo;
-                runtime.ObjDesc = objLineGo.transform.Find("DescText").GetComponent<TextMeshProUGUI>();
-                runtime.CompleteHint = objLineGo.transform.Find("CompleteMark").GetComponent<Image>();
+                var objLineGo = Instantiate(ObjectiveLineTemplate, QuestObjLineContainer);
+                var runtime = new QuestObjectiveLine
+                {
+                    RootGo = objLineGo,
+                    ObjDesc = objLineGo.transform.Find("DescText").GetComponent<TextMeshProUGUI>(),
+                    CompleteHint = objLineGo.transform.Find("CompleteMark").GetComponent<Image>(),
+                };
 
                 ObjectiveLines.Add(runtime);
                 objLineGo.gameObject.SetActive(false);
@@ -157,49 +146,36 @@ namespace My.UI
         private void Update()
         {
             var questSys = MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem;
-            int markQuestId = questSys.MarkQuestId;
-
-            bool hasPendingTween = false;
-            foreach(var line in ObjectiveLines)
+            var hasPendingTween = NextStepTween != null;
+            foreach (var line in ObjectiveLines)
             {
-                if(line.CompleteTween != null)
+                if (line.CompleteTween != null)
                 {
                     hasPendingTween = true;
                 }
             }
 
-            if(NextStepTween != null)
+            if (hasPendingTween)
             {
-                hasPendingTween = true;
+                return;
             }
 
-            if(!hasPendingTween)
+            CheckSwitchShowQuest();
+            if (!_flagPendingStep)
             {
-                CheckSwitchShowQuest();
-
-                if (_flagPendingStep)
-                {
-                    // 切换任务 此时因为一定没有特效播放 选择是否使用渐变
-
-                    //ForceUpdateQuestView();
-                    var seq = DOTween.Sequence();
-                    
-                    NextStepTween = seq
-                        .Append(QuestDetailCanvasGroup.DOFade(0, 0.3f))
-                        .AppendCallback(() =>
-                        {
-                            ForceUpdateQuestView();
-                        })
-                        .Append(QuestDetailCanvasGroup.DOFade(1, 0.3f))
-                        .OnComplete(() =>
-                        {
-                            NextStepTween = null;
-                        }).SetLink(gameObject);
-
-                    _currStepId = _bindingQuestInst?.ActiveStep?.CurrStepId ?? string.Empty;
-                    _flagPendingStep = false;
-                }
+                return;
             }
+
+            var seq = DOTween.Sequence();
+            NextStepTween = seq
+                .Append(QuestDetailCanvasGroup.DOFade(0, 0.3f))
+                .AppendCallback(ForceUpdateQuestView)
+                .Append(QuestDetailCanvasGroup.DOFade(1, 0.3f))
+                .OnComplete(() => { NextStepTween = null; })
+                .SetLink(gameObject);
+
+            _currStepId = _bindingQuestInst?.ActiveStep?.CurrStepId ?? string.Empty;
+            _flagPendingStep = false;
         }
 
         private void CheckSwitchShowQuest()
@@ -207,7 +183,7 @@ namespace My.UI
             var questSys = MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem;
             int markQuestId = questSys.MarkQuestId;
 
-            if(_bindingQuestInst == null && markQuestId == 0)
+            if (_bindingQuestInst == null && markQuestId == 0)
             {
                 return;
             }
@@ -217,7 +193,7 @@ namespace My.UI
                 return;
             }
 
-            if(markQuestId == 0)
+            if (markQuestId == 0)
             {
                 _bindingQuestInst = null;
                 _currStepId = string.Empty;
@@ -231,11 +207,9 @@ namespace My.UI
             RefreshBindingQuest();
         }
 
-
         public override void Show()
         {
             base.Show();
-
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestObjUpdate += UpdateQuestObjectiveDetailView;
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestStepUpdate += UpdateQuestStepView;
         }
@@ -243,22 +217,18 @@ namespace My.UI
         public override void Hide()
         {
             base.Hide();
-
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestObjUpdate -= UpdateQuestObjectiveDetailView;
             MainGameManager.Instance.gameLogicManager.playerDataManager.QuestSystem.EventOnQuestStepUpdate -= UpdateQuestStepView;
-
-            // 清理一切
 
             NextStepTween?.Kill();
             NextStepTween = null;
 
-            foreach(var line in ObjectiveLines)
+            foreach (var line in ObjectiveLines)
             {
                 line.Clear();
             }
 
             ClearView();
-
             _flagPendingStep = false;
             _bindingQuestInst = null;
             _currStepId = string.Empty;
@@ -266,7 +236,7 @@ namespace My.UI
 
         public void RefreshBindingQuest()
         {
-            if(_bindingQuestInst == null)
+            if (_bindingQuestInst == null)
             {
                 ClearView();
             }
@@ -278,14 +248,9 @@ namespace My.UI
             _flagPendingStep = false;
         }
 
-
-        /// <summary>
-        /// 强制刷新一次任务视窗
-        /// 通常用于切换显示
-        /// </summary>
         public void ForceUpdateQuestView()
         {
-            if(_bindingQuestInst == null || !_bindingQuestInst.IsActive)
+            if (_bindingQuestInst == null || !_bindingQuestInst.IsActive)
             {
                 QuestEmptyHint.gameObject.SetActive(true);
                 QuestDetailPanel.gameObject.SetActive(false);
@@ -294,7 +259,6 @@ namespace My.UI
 
             QuestEmptyHint.gameObject.SetActive(false);
             QuestDetailPanel.gameObject.SetActive(true);
-
             QuestTitle.text = _bindingQuestInst.cacheCfg.Name;
 
             foreach (var oneLine in ObjectiveLines)
@@ -302,24 +266,19 @@ namespace My.UI
                 oneLine.Clear();
             }
 
-            if (_bindingQuestInst.ActiveStep != null)
+            if (_bindingQuestInst.ActiveStep == null)
             {
-                for (int i = 0; i < _bindingQuestInst.ActiveStep.ObjectiveRuntimes.Length; i++)
-                {
-                    var objRuntime = _bindingQuestInst.ActiveStep.ObjectiveRuntimes[i];
+                return;
+            }
 
-                    ObjectiveLines[i].BindingObjective = objRuntime;
-                    ObjectiveLines[i].Refresh();
-                }
+            for (int i = 0; i < _bindingQuestInst.ActiveStep.ObjectiveRuntimes.Length; i++)
+            {
+                var objRuntime = _bindingQuestInst.ActiveStep.ObjectiveRuntimes[i];
+                ObjectiveLines[i].BindingObjective = objRuntime;
+                ObjectiveLines[i].Refresh();
             }
         }
 
-        
-
-        /// <summary>
-        /// 更新单条目标变化
-        /// </summary>
-        /// <param name="questId"></param>
         public void UpdateQuestObjectiveDetailView(int questId)
         {
             if (_bindingQuestInst == null || questId != _bindingQuestInst.cacheCfg.QuestId)
@@ -335,65 +294,43 @@ namespace My.UI
             for (int i = 0; i < _bindingQuestInst.ActiveStep.ObjectiveRuntimes.Length; i++)
             {
                 var objRuntime = _bindingQuestInst.ActiveStep.ObjectiveRuntimes[i];
-
                 var lineStruct = ObjectiveLines[i];
                 lineStruct.UpdateObjectiveDescText();
 
-                // 检查播放完成动效
-                if(!lineStruct.CompleteHint.gameObject.activeSelf && objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
+                if (!lineStruct.CompleteHint.gameObject.activeSelf && objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
                 {
-                    if(lineStruct.CompleteTween != null)
-                    {
-                        lineStruct.CompleteTween.Kill();
-                        lineStruct.CompleteTween = null;
-                    }
-
+                    lineStruct.CompleteTween?.Kill();
+                    lineStruct.CompleteTween = null;
                     lineStruct.CompleteHint.gameObject.SetActive(true);
-                    lineStruct.CompleteHint.color = new Color(lineStruct.CompleteHint.color.r, lineStruct.CompleteHint.color.g, lineStruct.CompleteHint.color.b, 0);
+                    lineStruct.CompleteHint.color = new Color(
+                        lineStruct.CompleteHint.color.r,
+                        lineStruct.CompleteHint.color.g,
+                        lineStruct.CompleteHint.color.b,
+                        0);
 
                     lineStruct.CompleteTween = lineStruct.CompleteHint.DOFade(1, 1.5f)
-                        .OnComplete(() =>
-                        {
-                            //UIManager.Instance.HidePanel("DeepAbsorbPanel");
-                            lineStruct.CompleteTween = null;
-                        }).OnKill(() =>
-                        {
-                            lineStruct.CompleteTween = null;
-                        }).SetLink(gameObject);
+                        .OnComplete(() => { lineStruct.CompleteTween = null; })
+                        .OnKill(() => { lineStruct.CompleteTween = null; })
+                        .SetLink(gameObject);
                 }
-                // 否则执行隐藏
-                else if(objRuntime.GetCurrProgress() < objRuntime.GetRequireProgress())
+                else if (objRuntime.GetCurrProgress() < objRuntime.GetRequireProgress())
                 {
-                    if (lineStruct.CompleteTween != null)
-                    {
-                        lineStruct.CompleteTween.Kill();
-                        lineStruct.CompleteTween = null;
-                    }
+                    lineStruct.CompleteTween?.Kill();
+                    lineStruct.CompleteTween = null;
                     lineStruct.CompleteHint.gameObject.SetActive(false);
                 }
             }
-
         }
 
-        /// <summary>
-        /// 播放步进特效
-        /// </summary>
-        /// <param name="questId"></param>
         public void UpdateQuestStepView(int questId)
         {
             _flagPendingStep = true;
         }
 
-        /// <summary>
-        /// 清理所有view
-        /// </summary>
         private void ClearView()
         {
             QuestEmptyHint.gameObject.SetActive(true);
             QuestDetailPanel.gameObject.SetActive(false);
         }
     }
-
-
-
 }

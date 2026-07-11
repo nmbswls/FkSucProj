@@ -1,0 +1,10 @@
+{
+    "area_id": "test_link_b",
+    "networks": [
+        {
+            "network_id": "PortalNetworks",
+            "nodes": [],
+            "edges": []
+        }
+    ]
+}

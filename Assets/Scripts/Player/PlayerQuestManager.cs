@@ -348,6 +348,8 @@ namespace My.Player
                 return;
             }
 
+            ApplyOutcomeEffects(outcomeCfg);
+
             if(_activeStep.CompletedOptions != null)
             {
                 foreach(var oneOptionId in _activeStep.CompletedOptions)
@@ -388,6 +390,37 @@ namespace My.Player
                     ErrFlag = true;
                     Debug.Log($"ResolveNextSteps no outcome next step:{outcomeCfg.NextStepId}!");
                 }
+            }
+        }
+
+        private void ApplyOutcomeEffects(cfg.demo.QuestStepOutcome outcomeCfg)
+        {
+            if (outcomeCfg?.SetVariables == null || outcomeCfg.SetVariables.Count == 0)
+            {
+                return;
+            }
+
+            var playerData = ctx?.Ctx?.playerDataManager;
+            if (playerData == null)
+            {
+                return;
+            }
+
+            var changed = false;
+            foreach (var variable in outcomeCfg.SetVariables)
+            {
+                if (string.IsNullOrWhiteSpace(variable))
+                {
+                    continue;
+                }
+
+                playerData.SetVariable(variable.Trim());
+                changed = true;
+            }
+
+            if (changed)
+            {
+                ctx.Ctx.AreaManager?.ForceCheckAllRefreshInfos();
             }
         }
 
@@ -608,10 +641,37 @@ namespace My.Player
             {
                 case cfg.demo.EQuestObjectiveType.SubmitItem:
                     return TryFulfillSubmitItem(objRuntime, out failReason);
+                case cfg.demo.EQuestObjectiveType.Talk:
+                    return TryFulfillTalk(characterKey, objRuntime, out failReason);
                 default:
                     failReason = "not_fulfillable_type";
                     return false;
             }
+        }
+
+        private bool TryFulfillTalk(string characterKey, QuestObjectiveRuntime objRuntime, out string failReason)
+        {
+            failReason = null;
+            var needCharacterKey = objRuntime.Data.ObjP5;
+            if (!string.IsNullOrEmpty(needCharacterKey)
+                && !string.Equals(needCharacterKey, characterKey, StringComparison.Ordinal))
+            {
+                failReason = "wrong_npc";
+                return false;
+            }
+
+            objRuntime.ProgressVal = objRuntime.GetRequireProgress();
+            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+
+            if (_activeStep.CacheStepCfg.AutoNext)
+            {
+                if (_activeStep.CheckCompletion(out string outcomeId, out var options))
+                {
+                    _activeStep.OnStepCompleted(outcomeId, options);
+                }
+            }
+
+            return true;
         }
 
         private bool TryFulfillSubmitItem(QuestObjectiveRuntime objRuntime, out string failReason)

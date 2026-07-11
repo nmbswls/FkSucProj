@@ -187,6 +187,678 @@ MonoBehaviour:
     FovStaticSegments: []
   EntityRefreshInfo:
   - StaticId: 100
+    UniqName: north_fly_swarm_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017148
+  - StaticId: 101
+    UniqName: north_slime_crystal_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017149
+  - StaticId: 102
+    UniqName: north_root_cluster_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017150
+  - StaticId: 103
+    UniqName: north_relic_scrap_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017151
+  - StaticId: 104
+    UniqName: north_dew_patch_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017152
+  - StaticId: 105
+    UniqName: north_dew_patch_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017153
+  - StaticId: 106
+    UniqName: east_slime_crystal_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017154
+  - StaticId: 107
+    UniqName: east_slime_brown_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017155
+  - StaticId: 108
+    UniqName: poacher_loot_bag_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017156
+  - StaticId: 109
+    UniqName: poacher_hunter_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017157
+  - StaticId: 110
+    UniqName: poacher_guard_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017158
+  - StaticId: 111
+    UniqName: poacher_guard_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017159
+  - StaticId: 112
+    UniqName: south_fly_swarm_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017160
+  - StaticId: 113
+    UniqName: south_slime_green_03
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017161
+  - StaticId: 114
+    UniqName: south_slime_green_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017162
+  - StaticId: 115
+    UniqName: south_scrap_patch_02
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017163
+  - StaticId: 116
+    UniqName: south_scrap_patch_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017164
+  - StaticId: 117
+    UniqName: south_leaf_loot_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017165
+  - StaticId: 118
+    UniqName: south_grass_loot_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017166
+  - StaticId: 119
+    UniqName: forest_mid_spring_leaf_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017167
+  - StaticId: 120
+    UniqName: forest_mid_vine_top_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017168
+  - StaticId: 121
+    UniqName: forest_mid_vine_gate_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017169
+  - StaticId: 122
+    UniqName: forest_mid_reed_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017170
+  - StaticId: 123
+    UniqName: forest_fly_swarm_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876834701017171
+  - StaticId: 124
     UniqName: forest_cannon_east_01
     AppearCond:
       Type: 0
@@ -194,23 +866,27 @@ MonoBehaviour:
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5:
-      Param6:
+      Param5: 
+      Param6: 
     DisappearCond:
       Type: 0
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5:
-      Param6:
+      Param5: 
+      Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319629
-  - StaticId: 101
+      rid: 4481876834701017172
+  - StaticId: 125
     UniqName: forest_cannon_north_01
     AppearCond:
       Type: 0
@@ -230,11 +906,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319630
-  - StaticId: 102
+      rid: 4481876834701017173
+  - StaticId: 126
     UniqName: forest_slime_crystal_01
     AppearCond:
       Type: 0
@@ -254,11 +934,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 1
     RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319631
-  - StaticId: 103
+      rid: 4481876834701017174
+  - StaticId: 127
     UniqName: forest_slime_brown_01
     AppearCond:
       Type: 0
@@ -278,11 +962,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 1
     RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319632
-  - StaticId: 104
+      rid: 4481876834701017175
+  - StaticId: 128
     UniqName: forest_slime_green_01
     AppearCond:
       Type: 0
@@ -302,11 +990,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 1
     RespawnInterval: 30
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319633
-  - StaticId: 105
+      rid: 4481876834701017176
+  - StaticId: 129
     UniqName: forest_heart_altar
     AppearCond:
       Type: 0
@@ -326,12 +1018,16 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319634
-  - StaticId: 106
-    UniqName: forest_dew_center_01
+      rid: 4481876834701017177
+  - StaticId: 130
+    UniqName: forest_bush_center_01
     AppearCond:
       Type: 0
       Param1: 0
@@ -350,12 +1046,16 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319635
-  - StaticId: 107
-    UniqName: forest_dew_ne_01
+      rid: 4481876834701017178
+  - StaticId: 131
+    UniqName: forest_grass_ne_01
     AppearCond:
       Type: 0
       Param1: 0
@@ -374,12 +1074,16 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319636
-  - StaticId: 108
-    UniqName: forest_dew_nw_01
+      rid: 4481876834701017179
+  - StaticId: 132
+    UniqName: forest_grass_nw_01
     AppearCond:
       Type: 0
       Param1: 0
@@ -398,12 +1102,16 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319637
-  - StaticId: 109
-    UniqName: forest_dew_sw_01
+      rid: 4481876834701017180
+  - StaticId: 133
+    UniqName: forest_leaf_pile_sw_01
     AppearCond:
       Type: 0
       Param1: 0
@@ -422,11 +1130,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319638
-  - StaticId: 110
+      rid: 4481876834701017181
+  - StaticId: 134
     UniqName: forest_obstacle_east_01
     AppearCond:
       Type: 0
@@ -446,11 +1158,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319639
-  - StaticId: 111
+      rid: 4481876834701017182
+  - StaticId: 135
     UniqName: forest_obstacle_west_01
     AppearCond:
       Type: 0
@@ -470,11 +1186,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319640
-  - StaticId: 112
+      rid: 4481876834701017183
+  - StaticId: 136
     UniqName: forest_obstacle_south_01
     AppearCond:
       Type: 0
@@ -494,35 +1214,40 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884501006319641
-  - StaticId: 113
-    UniqName: forest_fly_swarm_01
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5:
-      Param6:
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5:
-      Param6:
-    WillRespawn: 1
-    RespawnInterval: 30
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 958884501006319642
+      rid: 4481876834701017184
   NamedPoints:
+  - Name: forest_mid_jump_land
+    PointType: 0
+    Position: {x: 29, y: 39, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: forest_mid_jump_takeoff
+    PointType: 0
+    Position: {x: 23, y: 36, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: forest_mid_vine_land
+    PointType: 0
+    Position: {x: 31, y: 42, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: forest_mid_vine_top
+    PointType: 0
+    Position: {x: 31, y: 39, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: enter_from_home_east
+    PointType: 0
+    Position: {x: 2, y: 2, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
   - Name: heart_gate
     PointType: 0
     Position: {x: 32, y: 56, z: 0}
@@ -546,23 +1271,315 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 958884501006319629
+    - rid: 4481876834701017148
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 29, y: 55}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017149
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_crystal
+        Position: {x: 34, y: 51}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017150
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_bush
+        Position: {x: 34, y: 56}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017151
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_leaf_pile
+        Position: {x: 31, y: 53}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017152
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_grass_clump
+        Position: {x: 36, y: 50}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017153
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_grass_clump
+        Position: {x: 28, y: 49}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017154
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_crystal
+        Position: {x: 51, y: 39}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017155
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_brown
+        Position: {x: 44, y: 23}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017156
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_bush
+        Position: {x: 50, y: 34}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017157
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: home_robber_n
+        Position: {x: 45, y: 35}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017158
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: home_robber_n
+        Position: {x: 51, y: 32}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017159
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: home_robber_n
+        Position: {x: 48, y: 28}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017160
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 33, y: 18}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017161
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: 37, y: 16}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017162
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: 27, y: 16}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 0
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017163
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_bush
+        Position: {x: 36, y: 13}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017164
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_bush
+        Position: {x: 28, y: 12}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017165
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_leaf_pile
+        Position: {x: 34, y: 10}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017166
+      type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_grass_clump
+        Position: {x: 31, y: 15}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+    - rid: 4481876834701017167
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_spring_leaf
+        Position: {x: 22, y: 35}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876834701017168
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_mid_vine_top
+        Position: {x: 31, y: 40}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876834701017169
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_mid_vine_gate
+        Position: {x: 31, y: 36}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876834701017170
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_reed_pillar
+        Position: {x: 24, y: 33}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876834701017171
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 47, y: 47}
+        FaceDir: {x: -1, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876834701017172
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon
         Position: {x: 53, y: 32}
         FaceDir: {x: -1, y: 0}
-        BindRoomId:
+        BindRoomId: 
         OrgFactionId: 0
         MoveMode: 0
-        EnmityConfId:
+        EnmityConfId: 
         IsPeace: 0
         InitUnsensored: 0
         InitNoLogic: 0
-        CharacterKey:
-        PatrolPortalNetworkId:
+        CharacterKey: 
+        PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884501006319630
+    - rid: 4481876834701017173
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon
@@ -578,7 +1595,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884501006319631
+    - rid: 4481876834701017174
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_crystal
@@ -594,7 +1611,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884501006319632
+    - rid: 4481876834701017175
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_brown
@@ -610,7 +1627,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884501006319633
+    - rid: 4481876834701017176
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -626,7 +1643,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884501006319634
+    - rid: 4481876834701017177
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_heart_altar
@@ -637,39 +1654,39 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884501006319635
+    - rid: 4481876834701017178
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: spoil_small
+        CfgId: forest_bush
         Position: {x: 35, y: 35}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884501006319636
+    - rid: 4481876834701017179
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: spoil_small
+        CfgId: forest_grass_clump
         Position: {x: 50, y: 49}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884501006319637
+    - rid: 4481876834701017180
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: spoil_small
+        CfgId: forest_grass_clump
         Position: {x: 14, y: 48}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884501006319638
+    - rid: 4481876834701017181
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: spoil_small
+        CfgId: forest_leaf_pile
         Position: {x: 15, y: 16}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884501006319639
+    - rid: 4481876834701017182
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -680,7 +1697,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884501006319640
+    - rid: 4481876834701017183
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -691,7 +1708,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884501006319641
+    - rid: 4481876834701017184
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -702,19 +1719,3 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884501006319642
-      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
-      data:
-        CfgId: forest_fly_swarm
-        Position: {x: 47, y: 47}
-        FaceDir: {x: -1, y: 0}
-        BindRoomId:
-        OrgFactionId: 0
-        MoveMode: 0
-        EnmityConfId:
-        IsPeace: 0
-        InitUnsensored: 0
-        InitNoLogic: 0
-        CharacterKey:
-        PatrolPortalNetworkId:
-        PatrolCycleNodeIds: []

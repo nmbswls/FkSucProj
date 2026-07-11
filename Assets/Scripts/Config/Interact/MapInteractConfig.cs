@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Generic;
 using cfg.demo;
@@ -53,6 +53,8 @@ namespace My.Config
 
             // Param3 = rune_id
             GrantRune,
+
+            AddBuff,
 
             // Param1=(int)EFactionId；Param2=1 保持战斗状态；TargetType=StaticName，StaticName=刷新点 uniq 名
             ChangeUnitFaction,
@@ -111,6 +113,10 @@ namespace My.Config
 
             // Param1 = count, Param2 = 0 by attach_id / 1 by attach_type, Param3 = attach id or type
             PlayerAttachCountAtLeast,
+
+            PlayerHasBuff,
+
+            PlayerNoBuff,
         }
 
         public ECheckType CheckType;
@@ -137,3 +143,5 @@ namespace My.Config
         public List<LogicInteractOutput> Outputs = new();
     }
 }
+
+

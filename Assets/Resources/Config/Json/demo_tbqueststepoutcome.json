@@ -7,7 +7,8 @@
     "is_final": false,
     "is_fail": false,
     "next_step_id": "100_s2",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "100_s2_Main",
@@ -17,7 +18,8 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "101_s1_Main",
@@ -27,7 +29,8 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "102_s1_Main",
@@ -37,47 +40,8 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
-  },
-  {
-    "outcome_id": "200_s1_Main",
-    "need_objective_ids": [
-      "200_s1_Main"
-    ],
-    "is_final": false,
-    "is_fail": false,
-    "next_step_id": "200_s2",
-    "finish_reward": []
-  },
-  {
-    "outcome_id": "200_s2_Main",
-    "need_objective_ids": [
-      "200_s2_Main"
-    ],
-    "is_final": true,
-    "is_fail": false,
-    "next_step_id": "",
-    "finish_reward": []
-  },
-  {
-    "outcome_id": "201_s1_Main",
-    "need_objective_ids": [
-      "201_s1_Main"
-    ],
-    "is_final": false,
-    "is_fail": false,
-    "next_step_id": "201_s2",
-    "finish_reward": []
-  },
-  {
-    "outcome_id": "201_s2_Main",
-    "need_objective_ids": [
-      "201_s2_Main"
-    ],
-    "is_final": true,
-    "is_fail": false,
-    "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "300_s1_Main",
@@ -87,7 +51,8 @@
     "is_final": false,
     "is_fail": false,
     "next_step_id": "300_s2",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "300_s2_Main",
@@ -97,7 +62,8 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "301_s1_Main",
@@ -107,7 +73,8 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "302_s1_Main",
@@ -117,7 +84,8 @@
     "is_final": false,
     "is_fail": false,
     "next_step_id": "302_s2",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
   },
   {
     "outcome_id": "302_s2_Main",
@@ -127,6 +95,168 @@
     "is_final": true,
     "is_fail": false,
     "next_step_id": "",
-    "finish_reward": []
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "200_s1_Main",
+    "need_objective_ids": [
+      "200_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.reclaimed"
+    ]
+  },
+  {
+    "outcome_id": "201_s1_Main",
+    "need_objective_ids": [
+      "201_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.fire_pact_done"
+    ]
+  },
+  {
+    "outcome_id": "202_s1_Main",
+    "need_objective_ids": [
+      "202_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.survivors_counted"
+    ]
+  },
+  {
+    "outcome_id": "203_s1_Main",
+    "need_objective_ids": [
+      "203_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "203_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "203_s2_Main",
+    "need_objective_ids": [
+      "203_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.hearth_stable"
+    ]
+  },
+  {
+    "outcome_id": "204_s1_Main",
+    "need_objective_ids": [
+      "204_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "204_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "204_s2_Main",
+    "need_objective_ids": [
+      "204_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.gray_dew_saved"
+    ]
+  },
+  {
+    "outcome_id": "205_s1_Main",
+    "need_objective_ids": [
+      "205_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.cleaning_done"
+    ]
+  },
+  {
+    "outcome_id": "206_s1_Main",
+    "need_objective_ids": [
+      "206_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "206_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "206_s2_Main",
+    "need_objective_ids": [
+      "206_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.watch_paths_marked"
+    ]
+  },
+  {
+    "outcome_id": "207_s1_Main",
+    "need_objective_ids": [
+      "207_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.east_unlocked"
+    ]
+  },
+  {
+    "outcome_id": "208_s1_Main",
+    "need_objective_ids": [
+      "208_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "208_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "208_s2_Main",
+    "need_objective_ids": [
+      "208_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.forest_route_unlocked"
+    ]
   }
 ]

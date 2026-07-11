@@ -128,5 +128,35 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 920,
+    "name": "森林草丛搜刮",
+    "drop_group_ids": [
+      9200
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 921,
+    "name": "森林灌木搜刮",
+    "drop_group_ids": [
+      9201
+    ],
+    "drop_group_weights": [
+      10000
+    ]
+  },
+  {
+    "id": 922,
+    "name": "森林落叶堆搜刮",
+    "drop_group_ids": [
+      9202
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

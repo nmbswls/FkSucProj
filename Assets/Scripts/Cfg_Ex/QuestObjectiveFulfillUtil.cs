@@ -2,19 +2,19 @@ using cfg.demo;
 
 namespace My.Cfg_Ex
 {
-    // 对话交互「尝试完成 objective」：按 obj_type 判断是否支持及展示名
     public static class QuestObjectiveFulfillUtil
     {
         public static bool SupportsDialogFulfill(EQuestObjectiveType objType)
         {
-            return objType == EQuestObjectiveType.SubmitItem;
+            return objType == EQuestObjectiveType.SubmitItem
+                || objType == EQuestObjectiveType.Talk;
         }
 
         public static string GetFulfillOptionFallbackText(QuestStepObjective objData)
         {
             if (objData == null)
             {
-                return "完成目标";
+                return "Complete objective";
             }
 
             if (objData.ObjType == EQuestObjectiveType.SubmitItem)
@@ -22,10 +22,17 @@ namespace My.Cfg_Ex
                 var itemId = objData.ObjP4;
                 var itemDef = My.Config.ItemCatalog.GetItemDef(itemId);
                 var itemName = itemDef?.DisplayName ?? itemId;
-                return $"递交 {itemName}";
+                return $"Submit {itemName}";
             }
 
-            return objData.FormatDesc ?? "完成目标";
+            if (objData.ObjType == EQuestObjectiveType.Talk)
+            {
+                return string.IsNullOrEmpty(objData.FormatDesc)
+                    ? "Talk"
+                    : objData.FormatDesc;
+            }
+
+            return objData.FormatDesc ?? "Complete objective";
         }
     }
 }

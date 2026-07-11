@@ -27,6 +27,10 @@ namespace cfg.demo
         /// P0: obj_p4=item_id obj_p5=character_key
         /// </summary>
         SubmitItem = 4,
+        /// <summary>
+        /// obj_p5=character_key
+        /// </summary>
+        Talk = 5,
     }
 
 } 

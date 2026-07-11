@@ -17,14 +17,34 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 0
-    height: 0
+    width: 64
+    height: 64
   ChunkOrigin: {x: 0, y: 0}
   ChunkWorldSize: 32
   TexturePPU: 16
   PaintExportPPU: 16
-  SlicePixelSize: 0
+  SlicePixelSize: 512
   MaskColor: {r: 1, g: 0, b: 1, a: 1}
-  ExportRevision: 0
-  ContextExpandRatio: 0
-  Chunks: []
+  ExportRevision: 8
+  ContextExpandRatio: 0.25
+  Chunks:
+  - X: 0
+    Y: 0
+    Source: 0
+    TemplateStale: 0
+    TileCoverageRatio: 0.4923172
+  - X: 1
+    Y: 0
+    Source: 0
+    TemplateStale: 0
+    TileCoverageRatio: 0.50348663
+  - X: 0
+    Y: 1
+    Source: 0
+    TemplateStale: 0
+    TileCoverageRatio: 0.5203438
+  - X: 1
+    Y: 1
+    Source: 0
+    TemplateStale: 0
+    TileCoverageRatio: 0.5806618

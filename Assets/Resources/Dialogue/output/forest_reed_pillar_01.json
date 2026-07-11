@@ -1,0 +1,29 @@
+﻿{
+  "$type": "DialogueData, Assembly-CSharp",
+  "Steps": [
+    {
+      "$type": "DialogStepData, Assembly-CSharp",
+      "Label": "start",
+      "Speaker": "",
+      "Content": "这株柱状灯心草的髓心里流着温热的微光。",
+      "Portrait": "",
+      "Commands": []
+    },
+    {
+      "$type": "DialogStepData, Assembly-CSharp",
+      "Label": "step_02",
+      "Speaker": "",
+      "Content": "指尖触碰时，像有稀薄花露渗入了皮肤。",
+      "Portrait": "",
+      "Commands": []
+    },
+    {
+      "$type": "DialogStepData, Assembly-CSharp",
+      "Label": "step_03",
+      "Speaker": "",
+      "Content": "你暂时获得了花露祝福。带着这股气息，部分藤蔓会回应你的触碰。",
+      "Portrait": "",
+      "Commands": []
+    }
+  ]
+}

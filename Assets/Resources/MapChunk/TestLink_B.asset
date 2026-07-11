@@ -17,15 +17,15 @@ MonoBehaviour:
   ChunkWorldSize: 32
   TexturePPU: 16
   ChunkOrigin: {x: 0, y: 0}
-  SourceTextureWidth: 32
-  SourceTextureHeight: 32
-  WalkGridKey: 
+  SourceTextureWidth: 0
+  SourceTextureHeight: 0
+  WalkGridKey: MapChunk/TestLink_B/Prefabs/GridRoot
   GroundLayerNames:
   - Ground
   Chunks: []
   LogicWorldRect:
     serializedVersion: 2
-    x: -16
-    y: -16
-    width: 32
-    height: 32
+    x: 0
+    y: 0
+    width: 0
+    height: 0

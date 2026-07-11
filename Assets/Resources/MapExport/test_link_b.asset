@@ -15,8 +15,36 @@ MonoBehaviour:
   AreaId: test_link_b
   Buckets: []
   EntityRefreshInfo:
-  - StaticId: 9100
-    UniqName: teleporter_to_a
+  - StaticId: 100
+    UniqName: teleporter_to_forest_01
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: home_01.forest_route_unlocked
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876832140394539
+  - StaticId: 101
+    UniqName: teleporter_to_home_01
     AppearCond:
       Type: 0
       Param1: 0
@@ -35,32 +63,60 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 9101
+      rid: 4481876832140394540
   NamedPoints:
-  - Name: enter_b
+  - Name: enter_from_forest_01
     PointType: 0
-    Position: {x: 0.0, y: 0.0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    Position: {x: 4, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: enter_from_home_01
+    PointType: 0
+    Position: {x: -4, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: BornPos
-    PointType: 1
-    Position: {x: 0.0, y: 0.0, z: 0}
-    Rotation: {x: 0, y: 0, z: 0, w: 1}
+    PointType: 0
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: enter_b
+    PointType: 0
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths: []
+  PortalNetworks:
+  - NetworkId: PortalNetworks
+    Nodes: []
+    Edges: []
   references:
     version: 2
     RefIds:
-    - rid: 9101
+    - rid: 4481876832140394539
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
-        Position: {x: -4.0, y: 0.0}
+        Position: {x: 4, y: 0}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        TargetMapName: test_link_a
-        TargetNamedPoint: enter_a
+        TargetMapName: forest_01
+        TargetNamedPoint: enter_from_home_east
+    - rid: 4481876832140394540
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: -4, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: homestead_01
+        TargetNamedPoint: home_east_exit

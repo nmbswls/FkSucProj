@@ -1,4 +1,4 @@
-
+﻿
 using System.Collections.Generic;
 using My.Config;
 using My.Map.Entity;
@@ -273,6 +273,24 @@ namespace My.Map
                                 ? playerEntity.CountAttachByType(attachKey)
                                 : playerEntity.CountAttachById(attachKey);
                             if (count < needCount)
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
+                    case InteractCheckCond.ECheckType.PlayerHasBuff:
+                        {
+                            if (string.IsNullOrEmpty(oneCond.Param3)
+                                || !logicManager.globalBuffManager.CheckHasBuff(playerEntity.Id, oneCond.Param3))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
+                    case InteractCheckCond.ECheckType.PlayerNoBuff:
+                        {
+                            if (!string.IsNullOrEmpty(oneCond.Param3)
+                                && logicManager.globalBuffManager.CheckHasBuff(playerEntity.Id, oneCond.Param3))
                             {
                                 passed = false;
                             }
@@ -987,3 +1005,4 @@ namespace My.Map
     }
 
 }
+

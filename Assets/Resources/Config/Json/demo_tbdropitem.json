@@ -336,5 +336,83 @@
       1,
       1
     ]
+  },
+  {
+    "id": 9201,
+    "name": "草丛野果",
+    "group_id": 9200,
+    "weight_in_group": 70,
+    "item_id_list": [
+      "berry"
+    ],
+    "item_count_range_list": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 9202,
+    "name": "草丛草药",
+    "group_id": 9200,
+    "weight_in_group": 30,
+    "item_id_list": [
+      "quest_mat_herb"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 9211,
+    "name": "灌木野果",
+    "group_id": 9201,
+    "weight_in_group": 60,
+    "item_id_list": [
+      "berry"
+    ],
+    "item_count_range_list": [
+      1,
+      3
+    ]
+  },
+  {
+    "id": 9212,
+    "name": "灌木木材",
+    "group_id": 9201,
+    "weight_in_group": 40,
+    "item_id_list": [
+      "quest_mat_wood"
+    ],
+    "item_count_range_list": [
+      1,
+      1
+    ]
+  },
+  {
+    "id": 9221,
+    "name": "落叶堆小石子",
+    "group_id": 9202,
+    "weight_in_group": 50,
+    "item_id_list": [
+      "small_stone"
+    ],
+    "item_count_range_list": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 9222,
+    "name": "落叶堆零钱",
+    "group_id": 9202,
+    "weight_in_group": 50,
+    "item_id_list": [
+      "gold"
+    ],
+    "item_count_range_list": [
+      5,
+      12
+    ]
   }
 ]

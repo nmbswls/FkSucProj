@@ -46,15 +46,15 @@
     "force_human_mode": true
   },
   {
-    "rule_id": "fallback_game_init",
+    "rule_id": "fallback_secretbase",
     "priority": 0,
     "reason": "Any",
     "source_overlay_id": "",
     "source_logic_area_id": "",
     "match_conds": [],
-    "target_mode": "FixedMap",
-    "target_overlay_id": "game_init",
-    "target_named_point": "BornPos",
+    "target_mode": "SecretBase",
+    "target_overlay_id": "",
+    "target_named_point": "default",
     "reset_map": true,
     "force_human_mode": true
   }

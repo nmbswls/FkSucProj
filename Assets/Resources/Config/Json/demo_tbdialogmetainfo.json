@@ -824,5 +824,19 @@
     "show_priority": 120,
     "custom_variables": [],
     "cutscene_id": ""
+  },
+  {
+    "dialog_id": "forest_reed_pillar_01",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "forest_reed_pillar_01",
+    "need_map": "forest_01",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": ""
   }
 ]

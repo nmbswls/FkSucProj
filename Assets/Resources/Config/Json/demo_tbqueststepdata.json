@@ -56,62 +56,6 @@
     ]
   },
   {
-    "step_id": "200_s1",
-    "quest_id": 200,
-    "desc": "搜集草药",
-    "is_root": true,
-    "auto_next": true,
-    "push_npc_id": "",
-    "objectives": [
-      "200_s1_Main"
-    ],
-    "outcomes": [
-      "200_s1_Main"
-    ]
-  },
-  {
-    "step_id": "200_s2",
-    "quest_id": 200,
-    "desc": "递交草药",
-    "is_root": false,
-    "auto_next": true,
-    "push_npc_id": "home_elder",
-    "objectives": [
-      "200_s2_Main"
-    ],
-    "outcomes": [
-      "200_s2_Main"
-    ]
-  },
-  {
-    "step_id": "201_s1",
-    "quest_id": 201,
-    "desc": "搜集木材",
-    "is_root": true,
-    "auto_next": true,
-    "push_npc_id": "",
-    "objectives": [
-      "201_s1_Main"
-    ],
-    "outcomes": [
-      "201_s1_Main"
-    ]
-  },
-  {
-    "step_id": "201_s2",
-    "quest_id": 201,
-    "desc": "递交木材",
-    "is_root": false,
-    "auto_next": true,
-    "push_npc_id": "home_merchant",
-    "objectives": [
-      "201_s2_Main"
-    ],
-    "outcomes": [
-      "201_s2_Main"
-    ]
-  },
-  {
     "step_id": "300_s1",
     "quest_id": 300,
     "desc": "搜集可用于包扎的草药",
@@ -179,6 +123,188 @@
     ],
     "outcomes": [
       "302_s2_Main"
+    ]
+  },
+  {
+    "step_id": "200_s1",
+    "quest_id": 200,
+    "desc": "击退占村流匪",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "200_s1_Main"
+    ],
+    "outcomes": [
+      "200_s1_Main"
+    ]
+  },
+  {
+    "step_id": "201_s1",
+    "quest_id": 201,
+    "desc": "火堆边的感谢与戒备",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "201_s1_Main"
+    ],
+    "outcomes": [
+      "201_s1_Main"
+    ]
+  },
+  {
+    "step_id": "202_s1",
+    "quest_id": 202,
+    "desc": "清点幸存者",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "202_s1_Main"
+    ],
+    "outcomes": [
+      "202_s1_Main"
+    ]
+  },
+  {
+    "step_id": "203_s1",
+    "quest_id": 203,
+    "desc": "收集可烧的木料",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "203_s1_Main"
+    ],
+    "outcomes": [
+      "203_s1_Main"
+    ]
+  },
+  {
+    "step_id": "203_s2",
+    "quest_id": 203,
+    "desc": "交给管火堆的人",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "home_merchant",
+    "objectives": [
+      "203_s2_Main"
+    ],
+    "outcomes": [
+      "203_s2_Main"
+    ]
+  },
+  {
+    "step_id": "204_s1",
+    "quest_id": 204,
+    "desc": "收集能处理的灰露草",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "204_s1_Main"
+    ],
+    "outcomes": [
+      "204_s1_Main"
+    ]
+  },
+  {
+    "step_id": "204_s2",
+    "quest_id": 204,
+    "desc": "送到灰露棚预处理",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "home_merchant",
+    "objectives": [
+      "204_s2_Main"
+    ],
+    "outcomes": [
+      "204_s2_Main"
+    ]
+  },
+  {
+    "step_id": "205_s1",
+    "quest_id": 205,
+    "desc": "整理临时住处",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "205_s1_Main"
+    ],
+    "outcomes": [
+      "205_s1_Main"
+    ]
+  },
+  {
+    "step_id": "206_s1",
+    "quest_id": 206,
+    "desc": "收集路标材料",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "206_s1_Main"
+    ],
+    "outcomes": [
+      "206_s1_Main"
+    ]
+  },
+  {
+    "step_id": "206_s2",
+    "quest_id": 206,
+    "desc": "交给巡夜的人安排",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "206_s2_Main"
+    ],
+    "outcomes": [
+      "206_s2_Main"
+    ]
+  },
+  {
+    "step_id": "207_s1",
+    "quest_id": 207,
+    "desc": "开放村东通路",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "207_s1_Main"
+    ],
+    "outcomes": [
+      "207_s1_Main"
+    ]
+  },
+  {
+    "step_id": "208_s1",
+    "quest_id": 208,
+    "desc": "带回雾线样本",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "208_s1_Main"
+    ],
+    "outcomes": [
+      "208_s1_Main"
+    ]
+  },
+  {
+    "step_id": "208_s2",
+    "quest_id": 208,
+    "desc": "交给埃蒙判断路线",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "home_elder",
+    "objectives": [
+      "208_s2_Main"
+    ],
+    "outcomes": [
+      "208_s2_Main"
     ]
   }
 ]

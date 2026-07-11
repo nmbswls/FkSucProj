@@ -17,27 +17,27 @@ MonoBehaviour:
   ChunkWorldSize: 32
   TexturePPU: 16
   ChunkOrigin: {x: 0, y: 0}
-  SourceTextureWidth: 0
-  SourceTextureHeight: 0
+  SourceTextureWidth: 1024
+  SourceTextureHeight: 1024
   WalkGridKey: MapChunk/Forest_01/Prefabs/GridRoot
   GroundLayerNames:
   - Ground
   Chunks:
   - X: 0
     Y: 0
-    BackgroundKey: 
+    BackgroundKey: MapChunk/Forest_01/Prefabs/bg_0_0
     TilemapKey: MapChunk/Forest_01/Prefabs/tm_0_0
   - X: 1
     Y: 0
-    BackgroundKey: 
+    BackgroundKey: MapChunk/Forest_01/Prefabs/bg_1_0
     TilemapKey: MapChunk/Forest_01/Prefabs/tm_1_0
   - X: 0
     Y: 1
-    BackgroundKey: 
+    BackgroundKey: MapChunk/Forest_01/Prefabs/bg_0_1
     TilemapKey: MapChunk/Forest_01/Prefabs/tm_0_1
   - X: 1
     Y: 1
-    BackgroundKey: 
+    BackgroundKey: MapChunk/Forest_01/Prefabs/bg_1_1
     TilemapKey: MapChunk/Forest_01/Prefabs/tm_1_1
   LogicWorldRect:
     serializedVersion: 2

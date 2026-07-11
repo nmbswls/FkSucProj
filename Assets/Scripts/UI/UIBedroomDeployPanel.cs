@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
 using My.Map;
@@ -255,3 +255,4 @@ namespace My.UI
         }
     }
 }
+
