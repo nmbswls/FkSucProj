@@ -470,3 +470,4 @@ static void EnsureSouthOuterRingExpansion(MapChunkEditorRoot root)
 
 }
 
+

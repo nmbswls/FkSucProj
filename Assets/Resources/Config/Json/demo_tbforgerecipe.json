@@ -368,5 +368,237 @@
     "unlock_mode": 0,
     "unlock_param": "",
     "unlock_item_min_count": 0
+  },
+  {
+    "id": 2101,
+    "recipe_type": 2,
+    "sort": 201,
+    "display_name": "树脂壁灯",
+    "result_item_id": "furn_resin_wall_lamp",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_softwood_log",
+        "count": 3
+      },
+      {
+        "item_id": "mat_resin",
+        "count": 2
+      },
+      {
+        "item_id": "mat_lantern_wax",
+        "count": 1
+      },
+      {
+        "item_id": "mat_copper_ingot",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2102,
+    "recipe_type": 2,
+    "sort": 202,
+    "display_name": "藤编储物篮",
+    "result_item_id": "furn_woven_storage_basket",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "quest_mat_herb",
+        "count": 4
+      },
+      {
+        "item_id": "mat_linen_cloth",
+        "count": 1
+      },
+      {
+        "item_id": "mat_hide_glue",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2103,
+    "recipe_type": 2,
+    "sort": 203,
+    "display_name": "林地草药架",
+    "result_item_id": "furn_herb_drying_rack",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_softwood_log",
+        "count": 4
+      },
+      {
+        "item_id": "quest_mat_herb",
+        "count": 3
+      },
+      {
+        "item_id": "mat_linen_cloth",
+        "count": 1
+      },
+      {
+        "item_id": "mat_iron_ingot",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2104,
+    "recipe_type": 2,
+    "sort": 204,
+    "display_name": "炼金凝胶坐垫",
+    "result_item_id": "furn_alchemical_gel_cushion",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_alchemical_gel",
+        "count": 2
+      },
+      {
+        "item_id": "mat_wool_cloth",
+        "count": 3
+      },
+      {
+        "item_id": "mat_tanned_leather",
+        "count": 1
+      },
+      {
+        "item_id": "mat_preserving_wax",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2105,
+    "recipe_type": 2,
+    "sort": 205,
+    "display_name": "花露玻璃灯",
+    "result_item_id": "furn_dew_glass_lantern",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "quest_mat_herb",
+        "count": 2
+      },
+      {
+        "item_id": "mat_colored_glass",
+        "count": 3
+      },
+      {
+        "item_id": "mat_copper_ingot",
+        "count": 2
+      },
+      {
+        "item_id": "mat_mana_shard",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2106,
+    "recipe_type": 2,
+    "sort": 206,
+    "display_name": "灵木共鸣摆件",
+    "result_item_id": "furn_spiritwood_resonator",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_spiritwood",
+        "count": 3
+      },
+      {
+        "item_id": "mat_mana_shard",
+        "count": 2
+      },
+      {
+        "item_id": "mat_polishing_wax",
+        "count": 1
+      },
+      {
+        "item_id": "mat_runed_stone",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2107,
+    "recipe_type": 2,
+    "sort": 207,
+    "display_name": "林地材料分拣台",
+    "result_item_id": "furn_forest_sorting_bench",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_seasoned_plank",
+        "count": 8
+      },
+      {
+        "item_id": "mat_iron_ingot",
+        "count": 3
+      },
+      {
+        "item_id": "mat_linen_cloth",
+        "count": 2
+      },
+      {
+        "item_id": "mat_hide_glue",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2108,
+    "recipe_type": 2,
+    "sort": 208,
+    "display_name": "玛娜沉淀槽",
+    "result_item_id": "furn_mana_settling_vat",
+    "icon_sprite": "",
+    "materials": [
+      {
+        "item_id": "mat_seasoned_plank",
+        "count": 6
+      },
+      {
+        "item_id": "mat_alchemical_glass",
+        "count": 4
+      },
+      {
+        "item_id": "mat_copper_ingot",
+        "count": 3
+      },
+      {
+        "item_id": "mat_mana_shard",
+        "count": 2
+      },
+      {
+        "item_id": "mat_alchemical_gel",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
   }
 ]
