@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a8dde87f003ad47b2a2066a0bdb8ee, type: 3}
+  m_Name: forest_heart_dew_patch
+  m_EditorClassIdentifier: 
+  CfgId: forest_heart_dew_patch
+  ShowName: "\u5FC3\u6728\u82B1\u9732"
+  PrefabName: forest_grass_clump
+  DefaultLocked: 0
+  UnlockItemCost: []
+  LootOpenTime: 0.2
+  LootOverrideAnim: 
+  LootRequiment:
+    ReqType: 0
+    Param1: 0
+    Param2: 0
+    Param3: 
+    Param4: 
+  DefaultDropId: 923
+  HasOwner: 0
+  IsPrecious: 1

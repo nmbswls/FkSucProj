@@ -1,0 +1,35 @@
+{
+  "DialogId": "forest_quest_211_fulfill",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "任务211交付",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "埃蒙",
+              "Content": "就是这个。它不是古树本身的恩赐，只是森林魔力经过心木根系后留下的凝露。能稳定采到它，说明北路暂时承认了你的脚步。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "暂时承认？听上去这片森林还会反悔。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "埃蒙",
+              "Content": "所以接下来别再采露了。去触碰森林中心的心木祭坛，看看它愿不愿意回应你。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

@@ -4,8 +4,9 @@
     "display_name": "精元",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 500,
-    "stack_tags": [
+    "stack_profile": 7,
+    "stack_count": 0,
+    "tags": [
       "jingyuan"
     ],
     "sprite_name": "jingyuan",
@@ -20,15 +21,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "gift_rose_01",
     "display_name": "gift_rose_01",
     "item_type": 5,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -41,15 +44,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "small_stone",
     "display_name": "small_stone",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "small_stone",
     "can_drop": true,
     "rare_tier": 0,
@@ -62,15 +67,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "stick",
     "display_name": "stick",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [
       "small"
     ],
     "sprite_name": "stick",
@@ -85,15 +92,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "wood",
     "display_name": "wood",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [
       "big"
     ],
     "sprite_name": "wood",
@@ -108,15 +117,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "banana",
     "display_name": "banana",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "banana",
     "can_drop": true,
     "rare_tier": 0,
@@ -129,15 +140,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "qiezi",
     "display_name": "qiezi",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "qiezi",
     "can_drop": true,
     "rare_tier": 0,
@@ -150,15 +163,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "bangbangtang",
     "display_name": "bangbangtang",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "bangbangtang",
     "can_drop": true,
     "rare_tier": 0,
@@ -171,15 +186,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "flower_01",
     "display_name": "flower_01",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 0,
@@ -192,15 +209,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "flower_02",
     "display_name": "flower_02",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_02",
     "can_drop": true,
     "rare_tier": 0,
@@ -213,15 +232,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "flower_03",
     "display_name": "flower_03",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_03",
     "can_drop": true,
     "rare_tier": 0,
@@ -234,15 +255,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "berry",
     "display_name": "berry",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "berry",
     "can_drop": true,
     "rare_tier": 0,
@@ -255,15 +278,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "gold",
     "display_name": "gold",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "gold",
     "can_drop": true,
     "rare_tier": 0,
@@ -276,15 +301,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j",
     "display_name": "j",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j",
     "can_drop": true,
     "rare_tier": 0,
@@ -297,15 +324,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "chanzi",
     "display_name": "训练铲",
     "item_type": 2,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "chanzi",
     "can_drop": true,
     "rare_tier": 0,
@@ -318,15 +347,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "key_a1_001",
     "display_name": "key_a1_001",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "key_a1_01",
     "can_drop": true,
     "rare_tier": 0,
@@ -339,15 +370,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "key_a1_002",
     "display_name": "key_a1_002",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "key_a1_02",
     "can_drop": true,
     "rare_tier": 0,
@@ -360,15 +393,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "insertion_maoqiu",
     "display_name": "毛球插入",
     "item_type": 4,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "insertion_maoqiu",
     "can_drop": false,
     "rare_tier": 0,
@@ -381,15 +416,17 @@
     "special_buff_interval": 5,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_small",
     "display_name": "j_drop_small",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_small",
     "can_drop": true,
     "rare_tier": 0,
@@ -402,15 +439,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "evil_scroll_01",
     "display_name": "evil_scroll_01",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "evil_scroll_01",
     "can_drop": true,
     "rare_tier": 0,
@@ -423,15 +462,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "human_sword_lv1",
     "display_name": "1级剑",
     "item_type": 6,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "human_sword_lv1",
     "can_drop": true,
     "rare_tier": 0,
@@ -444,15 +485,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1
+    "quick_bar_kind": 1,
+    "can_dismantle": false
   },
   {
     "item_id": "human_lancer_lv1",
     "display_name": "1级枪",
     "item_type": 6,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "human_lancer_lv1",
     "can_drop": true,
     "rare_tier": 0,
@@ -465,15 +508,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1
+    "quick_bar_kind": 1,
+    "can_dismantle": false
   },
   {
     "item_id": "small_knife",
     "display_name": "飞刀",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "small_knife",
     "can_drop": true,
     "rare_tier": 0,
@@ -486,15 +531,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1
+    "quick_bar_kind": 1,
+    "can_dismantle": false
   },
   {
     "item_id": "smoke_grenade",
     "display_name": "烟雾弹",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 8,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "smoke_grenade",
     "can_drop": true,
     "rare_tier": 0,
@@ -507,15 +554,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 2
+    "quick_bar_kind": 2,
+    "can_dismantle": false
   },
   {
     "item_id": "sound_ball",
     "display_name": "声玉",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 8,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "sound_ball",
     "can_drop": true,
     "rare_tier": 0,
@@ -528,15 +577,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 2
+    "quick_bar_kind": 2,
+    "can_dismantle": false
   },
   {
     "item_id": "desire_shard",
     "display_name": "欲望碎片",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "",
     "can_drop": false,
     "rare_tier": 0,
@@ -549,15 +600,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "knowledge_shard",
     "display_name": "通识碎片",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "",
     "can_drop": false,
     "rare_tier": 0,
@@ -570,15 +623,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "random_desire_crystal",
     "display_name": "随机欲望结晶",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "random_desire_crystal",
     "can_drop": false,
     "rare_tier": 0,
@@ -591,15 +646,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "desire_crystal_01",
     "display_name": "欲望结晶-1",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "desire_crystal_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -612,15 +669,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "desire_crystal_02",
     "display_name": "欲望结晶-2",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "desire_crystal_02",
     "can_drop": false,
     "rare_tier": 0,
@@ -633,15 +692,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "desire_crystal_03",
     "display_name": "欲望结晶-3",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "desire_crystal_03",
     "can_drop": false,
     "rare_tier": 0,
@@ -654,15 +715,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "desire_crystal_04",
     "display_name": "欲望结晶-4",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "desire_crystal_04",
     "can_drop": false,
     "rare_tier": 0,
@@ -675,15 +738,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "rumor_points",
     "display_name": "秘闻",
     "item_type": 1,
     "stackable": false,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "rumor_points",
     "can_drop": false,
     "rare_tier": 0,
@@ -696,15 +761,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_shard_common",
     "display_name": "心相碎片",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "",
     "can_drop": true,
     "rare_tier": 0,
@@ -717,15 +784,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_shard_rare",
     "display_name": "稀有心相碎片",
     "item_type": 1,
     "stackable": true,
-    "stack_count": 999999,
-    "stack_tags": [],
+    "stack_profile": 8,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "",
     "can_drop": true,
     "rare_tier": 0,
@@ -738,15 +807,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "part_mouth_lollipop",
     "display_name": "棒棒糖环",
     "item_type": 7,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -759,15 +830,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "part_breast_brooch",
     "display_name": "感知胸针",
     "item_type": 7,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -780,15 +853,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "part_womb_bead",
     "display_name": "温养念珠",
     "item_type": 7,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -801,15 +876,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "part_tail_bell",
     "display_name": "尾铃",
     "item_type": 7,
     "stackable": false,
-    "stack_count": 5,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -822,15 +899,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_01",
     "display_name": "酣眠",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -843,15 +922,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_02",
     "display_name": "一晌贪欢",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -864,15 +945,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_03",
     "display_name": "灯影",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -885,15 +968,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_04",
     "display_name": "幽闭之间",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -906,15 +991,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_05",
     "display_name": "燃烧",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -927,15 +1014,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mind_facet_06",
     "display_name": "夜色",
     "item_type": 10,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 9999,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "mind_facet_01",
     "can_drop": false,
     "rare_tier": 0,
@@ -948,15 +1037,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "rune_unlock_lady_up_1",
     "display_name": "",
     "item_type": 0,
     "stackable": false,
+    "stack_profile": 1,
     "stack_count": 0,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "rune_unlock",
     "can_drop": false,
     "rare_tier": 0,
@@ -969,15 +1060,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "rune_unlock_lady_up_2",
     "display_name": "",
     "item_type": 0,
     "stackable": false,
+    "stack_profile": 1,
     "stack_count": 0,
-    "stack_tags": [],
+    "tags": [],
     "sprite_name": "rune_unlock",
     "can_drop": false,
     "rare_tier": 0,
@@ -990,15 +1083,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "quest_mat_herb",
     "display_name": "草药",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "stick",
     "can_drop": true,
     "rare_tier": 0,
@@ -1011,15 +1106,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "quest_mat_wood",
     "display_name": "木材",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "wood",
     "can_drop": true,
     "rare_tier": 0,
@@ -1032,15 +1129,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "quest_control_village01",
     "display_name": "村子影响力",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 0,
-    "stack_tags": [],
+    "stack_profile": 0,
+    "stack_count": 10,
+    "tags": [],
     "sprite_name": "",
     "can_drop": false,
     "rare_tier": 0,
@@ -1053,15 +1152,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "item_jingyuan_codex_orc",
     "display_name": "兽人精元样本",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "item_jingyuan_codex_orc",
     "can_drop": true,
     "rare_tier": 0,
@@ -1074,15 +1175,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_orc_common",
     "display_name": "兽人精元滴",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_orc_common",
     "can_drop": true,
     "rare_tier": 0,
@@ -1095,15 +1198,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_orc_elite",
     "display_name": "兽人精英精元滴",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [],
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_orc_elite",
     "can_drop": true,
     "rare_tier": 0,
@@ -1116,15 +1221,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_aries",
     "display_name": "sign_aries滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_aries",
     "can_drop": true,
     "rare_tier": 0,
@@ -1137,15 +1244,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_taurus",
     "display_name": "sign_taurus滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_taurus",
     "can_drop": true,
     "rare_tier": 0,
@@ -1158,15 +1267,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_gemini",
     "display_name": "sign_gemini滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_gemini",
     "can_drop": true,
     "rare_tier": 0,
@@ -1179,15 +1290,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_cancer",
     "display_name": "sign_cancer滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_cancer",
     "can_drop": true,
     "rare_tier": 0,
@@ -1200,15 +1313,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_leo",
     "display_name": "sign_leo滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_leo",
     "can_drop": true,
     "rare_tier": 0,
@@ -1221,15 +1336,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_virgo",
     "display_name": "sign_virgo滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_virgo",
     "can_drop": true,
     "rare_tier": 0,
@@ -1242,15 +1359,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_libra",
     "display_name": "sign_libra滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_libra",
     "can_drop": true,
     "rare_tier": 0,
@@ -1263,15 +1382,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_scorpio",
     "display_name": "sign_scorpio滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_scorpio",
     "can_drop": true,
     "rare_tier": 0,
@@ -1284,15 +1405,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_sagittarius",
     "display_name": "sign_sagittarius滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_sagittarius",
     "can_drop": true,
     "rare_tier": 0,
@@ -1305,15 +1428,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_capricorn",
     "display_name": "sign_capricorn滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_capricorn",
     "can_drop": true,
     "rare_tier": 0,
@@ -1326,15 +1451,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_aquarius",
     "display_name": "sign_aquarius滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_aquarius",
     "can_drop": true,
     "rare_tier": 0,
@@ -1347,15 +1474,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "j_drop_sign_pisces",
     "display_name": "sign_pisces滴",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [],
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [],
     "sprite_name": "j_drop_sign_pisces",
     "can_drop": true,
     "rare_tier": 0,
@@ -1368,15 +1497,17 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "wood_board",
     "display_name": "木板",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "wood"
     ],
@@ -1392,15 +1523,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_softwood_log",
     "display_name": "软木原木",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "wood",
       "big"
@@ -1417,15 +1550,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_hardwood_log",
     "display_name": "硬木原木",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "wood",
       "big"
@@ -1442,15 +1577,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_seasoned_plank",
     "display_name": "干燥木板",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "wood"
     ],
@@ -1466,15 +1603,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_ironwood",
     "display_name": "铁木",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "material",
       "wood",
       "big"
@@ -1491,15 +1630,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_spiritwood",
     "display_name": "灵木",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "material",
       "wood",
       "magic",
@@ -1517,15 +1658,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_moonwood",
     "display_name": "月纹木",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "material",
       "wood",
       "magic",
@@ -1543,15 +1686,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_resin",
     "display_name": "树脂",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -1567,15 +1712,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_charcoal",
     "display_name": "木炭",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "fuel"
     ],
@@ -1591,15 +1738,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_plant_fiber",
     "display_name": "植物纤维",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "fiber"
     ],
@@ -1615,15 +1764,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_fieldstone",
     "display_name": "杂石",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "stone",
       "big"
@@ -1640,15 +1791,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_limestone",
     "display_name": "石灰岩",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "stone",
       "big"
@@ -1665,15 +1818,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_granite",
     "display_name": "花岗岩",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "stone",
       "big"
@@ -1690,15 +1845,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_marble",
     "display_name": "大理石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "stone",
       "big"
@@ -1715,15 +1872,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_obsidian",
     "display_name": "黑曜石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "stone",
       "glass"
@@ -1740,15 +1899,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_runed_stone",
     "display_name": "符刻石",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "material",
       "stone",
       "magic",
@@ -1766,15 +1927,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_clay",
     "display_name": "黏土",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "clay"
     ],
@@ -1790,15 +1953,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_brick",
     "display_name": "砖块",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "stone",
       "ceramic",
@@ -1816,15 +1981,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_sand",
     "display_name": "细沙",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass"
     ],
@@ -1840,15 +2007,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_quartz_sand",
     "display_name": "石英砂",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass"
     ],
@@ -1864,15 +2033,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_glass_shard",
     "display_name": "玻璃碎片",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass"
     ],
@@ -1888,15 +2059,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_glass_pane",
     "display_name": "玻璃板",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass"
     ],
@@ -1912,15 +2085,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_colored_glass",
     "display_name": "彩色玻璃",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "glass",
       "luxury"
@@ -1937,15 +2112,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_crystal_lens",
     "display_name": "水晶透镜",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass",
       "craft"
@@ -1962,15 +2139,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_alchemical_glass",
     "display_name": "炼金玻璃",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glass",
       "alchemy",
@@ -1988,15 +2167,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_copper_ore",
     "display_name": "铜矿石",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "ore",
       "big"
@@ -2013,15 +2194,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_tin_ore",
     "display_name": "锡矿石",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "ore",
       "big"
@@ -2038,15 +2221,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_iron_ore",
     "display_name": "铁矿石",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "ore",
       "big"
@@ -2063,15 +2248,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_silver_ore",
     "display_name": "银矿石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 60,
-    "stack_tags": [
+    "tags": [
       "material",
       "ore",
       "big"
@@ -2088,15 +2275,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mana_ore",
     "display_name": "魔晶矿石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "ore",
       "magic",
@@ -2114,15 +2303,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_copper_ingot",
     "display_name": "铜锭",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "metal"
     ],
@@ -2138,15 +2329,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_bronze_ingot",
     "display_name": "青铜锭",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "metal"
     ],
@@ -2162,15 +2355,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_iron_ingot",
     "display_name": "铁锭",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "metal"
     ],
@@ -2186,15 +2381,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_steel_ingot",
     "display_name": "钢锭",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "metal"
     ],
@@ -2210,15 +2407,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_silver_ingot",
     "display_name": "银锭",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "metal",
       "precious"
@@ -2235,15 +2434,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mana_ingot",
     "display_name": "魔晶锭",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "metal",
       "magic"
@@ -2260,15 +2461,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_linen_thread",
     "display_name": "亚麻线",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "textile"
     ],
@@ -2284,15 +2487,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_linen_cloth",
     "display_name": "亚麻布",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "textile"
     ],
@@ -2308,15 +2513,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_wool_fleece",
     "display_name": "羊毛",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "textile"
     ],
@@ -2332,15 +2539,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_wool_cloth",
     "display_name": "呢布",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile"
     ],
@@ -2356,15 +2565,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_cotton_cloth",
     "display_name": "棉布",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile"
     ],
@@ -2380,15 +2591,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_silk_thread",
     "display_name": "丝线",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "textile",
       "luxury"
@@ -2405,15 +2618,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_silk_bolt",
     "display_name": "丝绸",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "textile",
       "luxury"
@@ -2430,15 +2645,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_dyed_cloth",
     "display_name": "染色布",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile"
     ],
@@ -2454,15 +2671,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_velvet",
     "display_name": "天鹅绒",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile",
       "luxury"
@@ -2479,15 +2698,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_brocade",
     "display_name": "织锦",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile",
       "luxury"
@@ -2504,15 +2725,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_rough_hide",
     "display_name": "粗皮",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "leather"
     ],
@@ -2528,15 +2751,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_tanned_leather",
     "display_name": "鞣制皮革",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "leather"
     ],
@@ -2552,15 +2777,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_fine_leather",
     "display_name": "精制皮革",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "leather",
       "luxury"
@@ -2577,15 +2804,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mageweave",
     "display_name": "魔纹布",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "material",
       "textile",
       "magic"
@@ -2602,15 +2831,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_beeswax",
     "display_name": "蜂蜡",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -2626,15 +2857,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_tallow",
     "display_name": "油脂",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -2650,15 +2883,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_bone",
     "display_name": "兽骨",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "bone"
     ],
@@ -2674,15 +2909,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_bone_dust",
     "display_name": "骨粉",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -2698,15 +2935,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_sulfur",
     "display_name": "硫磺",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -2722,15 +2961,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_saltpeter",
     "display_name": "硝石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "alchemy"
     ],
@@ -2746,15 +2987,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_alum",
     "display_name": "明矾",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "alchemy",
       "dye"
@@ -2771,15 +3014,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_lime",
     "display_name": "石灰",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "alchemy",
       "stone"
@@ -2796,15 +3041,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_lamp_oil",
     "display_name": "灯油",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "fuel",
       "alchemy"
@@ -2821,15 +3068,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_hide_glue",
     "display_name": "皮胶",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "glue",
       "alchemy"
@@ -2846,15 +3095,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_natural_latex",
     "display_name": "天然胶乳",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 60,
-    "stack_tags": [
+    "tags": [
       "material",
       "latex",
       "alchemy"
@@ -2871,15 +3122,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_elastic_gum",
     "display_name": "弹性树胶",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 40,
-    "stack_tags": [
+    "tags": [
       "material",
       "latex",
       "alchemy",
@@ -2897,15 +3150,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_alchemical_rubber",
     "display_name": "炼金胶料",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "material",
       "latex",
       "alchemy",
@@ -2923,15 +3178,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_rusty_nail",
     "display_name": "生锈铁钉",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "metal"
     ],
@@ -2947,15 +3204,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_bent_hinge",
     "display_name": "弯曲合页",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "metal"
     ],
@@ -2971,15 +3230,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_broken_gear",
     "display_name": "破损齿轮",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "metal",
       "craft"
@@ -2996,15 +3257,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_cracked_cup",
     "display_name": "裂口陶杯",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "ceramic"
     ],
@@ -3020,15 +3283,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_empty_bottle",
     "display_name": "空玻璃瓶",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "glass"
     ],
@@ -3044,15 +3309,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_candle_stub",
     "display_name": "残烛",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "alchemy"
     ],
@@ -3068,15 +3335,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_cloth_scrap",
     "display_name": "碎布片",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "textile"
     ],
@@ -3092,15 +3361,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_rope_end",
     "display_name": "短绳头",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "fiber"
     ],
@@ -3116,15 +3387,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_torn_page",
     "display_name": "残破书页",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "paper"
     ],
@@ -3140,15 +3413,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_wax_seal",
     "display_name": "旧蜡封",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "paper",
       "alchemy"
@@ -3165,15 +3440,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_old_coin",
     "display_name": "旧钱币",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "precious"
     ],
@@ -3189,15 +3466,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_spice_pinch",
     "display_name": "香料撮",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "food",
       "alchemy"
@@ -3214,15 +3493,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_key_blank",
     "display_name": "钥匙坯",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "metal",
       "craft"
@@ -3239,15 +3520,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "loot_chipped_gem",
     "display_name": "缺角宝石",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "loot",
       "precious",
       "craft"
@@ -3264,15 +3547,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_bone_charm",
     "display_name": "骨制护符",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "loot",
       "bone",
       "magic"
@@ -3289,15 +3574,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_broken_lens",
     "display_name": "破裂透镜",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "loot",
       "glass",
       "craft"
@@ -3314,15 +3601,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": true
   },
   {
     "item_id": "mat_alchemical_gel",
     "display_name": "炼金凝胶",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "alchemy",
       "gel"
@@ -3339,15 +3628,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mana_shard",
     "display_name": "玛娜碎晶",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "crystal",
       "magic"
@@ -3364,15 +3655,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mana_crystal",
     "display_name": "玛娜晶体",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 60,
-    "stack_tags": [
+    "tags": [
       "material",
       "crystal",
       "magic"
@@ -3389,15 +3682,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_mana_storage_core",
     "display_name": "蓄魔晶芯",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "material",
       "crystal",
       "magic",
@@ -3415,15 +3710,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_conductive_copper_wire",
     "display_name": "导魔铜丝",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "metal",
       "magic",
@@ -3441,15 +3738,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_arcane_copper_plate",
     "display_name": "符纹铜片",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "metal",
       "magic",
@@ -3467,15 +3766,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_insulating_ceramic",
     "display_name": "绝魔瓷片",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "ceramic",
       "magic",
@@ -3493,15 +3794,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_switch_rune_plate",
     "display_name": "启魔符片",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 50,
-    "stack_tags": [
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
       "material",
       "stone",
       "magic",
@@ -3519,15 +3822,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_lantern_wax",
     "display_name": "灯烛蜡",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 99,
-    "stack_tags": [
+    "stack_profile": 6,
+    "stack_count": 0,
+    "tags": [
       "material",
       "wax"
     ],
@@ -3543,15 +3848,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_sealing_wax",
     "display_name": "封印蜡",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "wax",
       "alchemy"
@@ -3568,15 +3875,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_polishing_wax",
     "display_name": "抛光蜡",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 80,
-    "stack_tags": [
+    "tags": [
       "material",
       "wax",
       "craft"
@@ -3593,15 +3902,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_warding_wax",
     "display_name": "避魔蜡",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 60,
-    "stack_tags": [
+    "tags": [
       "material",
       "wax",
       "magic",
@@ -3619,15 +3930,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "mat_preserving_wax",
     "display_name": "防腐蜡",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 60,
-    "stack_tags": [
+    "tags": [
       "material",
       "wax",
       "alchemy"
@@ -3644,15 +3957,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_painted_wooden_doll",
     "display_name": "彩绘木偶",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "toy"
@@ -3669,15 +3984,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_tin_knight_figure",
     "display_name": "锡铸骑士",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "toy",
@@ -3695,15 +4012,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_bone_chess_piece",
     "display_name": "骨雕棋子",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 30,
-    "stack_tags": [
+    "tags": [
       "loot",
       "craft",
       "toy",
@@ -3721,15 +4040,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_illustrated_cards",
     "display_name": "手绘纸牌",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "toy",
@@ -3747,15 +4068,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_miniature_ship",
     "display_name": "微缩帆船",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "toy",
@@ -3773,15 +4096,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_glass_wind_chime",
     "display_name": "玻璃风铃",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "glass",
@@ -3799,15 +4124,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_enameled_cup",
     "display_name": "彩釉小杯",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "ceramic",
@@ -3825,15 +4152,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_carved_spice_box",
     "display_name": "雕花香料匣",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "wood",
@@ -3851,15 +4180,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_silver_candlestick",
     "display_name": "银饰烛台",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "metal",
@@ -3878,15 +4209,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_embroidery_pillow",
     "display_name": "刺绣靠枕",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "textile",
@@ -3904,15 +4237,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_lacquered_tray",
     "display_name": "漆绘托盘",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "wood",
@@ -3931,15 +4266,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_brass_inkwell",
     "display_name": "黄铜墨水瓶",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "metal",
@@ -3957,15 +4294,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_stained_glass_icon",
     "display_name": "彩玻小圣像",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 8,
-    "stack_tags": [
+    "tags": [
       "loot",
       "craft",
       "glass",
@@ -3984,15 +4323,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_porcelain_mask",
     "display_name": "瓷制假面",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "ceramic",
@@ -4010,15 +4351,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_table_astrolabe",
     "display_name": "桌上星盘",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 8,
-    "stack_tags": [
+    "tags": [
       "loot",
       "craft",
       "metal",
@@ -4037,15 +4380,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_blessing_wall_charm",
     "display_name": "祈福挂饰",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "decor",
@@ -4063,15 +4408,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_scripture_copy",
     "display_name": "经文抄本",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "paper",
@@ -4089,15 +4436,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_illuminated_prayer_book",
     "display_name": "彩饰祈祷书",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "paper",
@@ -4116,15 +4465,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_blessed_prayer_beads",
     "display_name": "祝圣念珠",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 20,
-    "stack_tags": [
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "church",
@@ -4142,15 +4493,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_incense_censer",
     "display_name": "熏香吊炉",
     "item_type": 0,
     "stackable": true,
-    "stack_count": 10,
-    "stack_tags": [
+    "stack_profile": 3,
+    "stack_count": 0,
+    "tags": [
       "loot",
       "craft",
       "metal",
@@ -4168,15 +4521,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "loot_silver_reliquary",
     "display_name": "银制圣匣",
     "item_type": 0,
     "stackable": true,
+    "stack_profile": 0,
     "stack_count": 8,
-    "stack_tags": [
+    "tags": [
       "loot",
       "craft",
       "metal",
@@ -4196,15 +4551,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_oak_refectory_table",
     "display_name": "橡木长餐桌",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "wood"
@@ -4221,15 +4578,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_walnut_carved_chair",
     "display_name": "胡桃木雕花椅",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "wood"
@@ -4246,15 +4605,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_velvet_canopy_bed",
     "display_name": "天鹅绒帷幔床",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "textile",
@@ -4272,15 +4633,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_brass_candle_chandelier",
     "display_name": "黄铜烛火吊灯",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "metal",
@@ -4298,15 +4661,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_stained_glass_lamp",
     "display_name": "彩绘玻璃魔灯",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "glass",
@@ -4325,15 +4690,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_marble_washstand",
     "display_name": "大理石盥洗台",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "stone",
@@ -4351,15 +4718,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_alchemist_cabinet",
     "display_name": "炼金药剂柜",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "alchemy",
@@ -4377,15 +4746,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_astrologer_writing_desk",
     "display_name": "占星师书写桌",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "study",
@@ -4403,15 +4774,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_runed_bookshelf",
     "display_name": "符刻藏书架",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "study",
@@ -4430,15 +4803,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_gilded_room_divider",
     "display_name": "镏金折屏",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "decor",
@@ -4456,15 +4831,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_moonwood_vanity",
     "display_name": "月纹木梳妆台",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "magic",
@@ -4482,15 +4859,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_arcane_hearth",
     "display_name": "秘法壁炉",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "stone",
@@ -4508,15 +4887,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_resin_wall_lamp",
     "display_name": "树脂壁灯",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4535,15 +4916,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_woven_storage_basket",
     "display_name": "藤编储物篮",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4562,15 +4945,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_herb_drying_rack",
     "display_name": "林地草药架",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4589,15 +4974,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_alchemical_gel_cushion",
     "display_name": "炼金凝胶坐垫",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4616,15 +5003,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_dew_glass_lantern",
     "display_name": "花露玻璃灯",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4644,15 +5033,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_spiritwood_resonator",
     "display_name": "灵木共鸣摆件",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4672,15 +5063,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_forest_sorting_bench",
     "display_name": "林地材料分拣台",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4699,15 +5092,17 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   },
   {
     "item_id": "furn_mana_settling_vat",
     "display_name": "玛娜沉淀槽",
     "item_type": 0,
     "stackable": false,
-    "stack_count": 1,
-    "stack_tags": [
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
       "furniture",
       "home",
       "forest",
@@ -4727,6 +5122,63 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0
+    "quick_bar_kind": 0,
+    "can_dismantle": false
+  },
+  {
+    "item_id": "mat_iron_scrap",
+    "display_name": "废铁料",
+    "item_type": 0,
+    "stackable": true,
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
+      "material",
+      "metal",
+      "basic",
+      "salvage"
+    ],
+    "sprite_name": "mat_iron_scrap",
+    "can_drop": true,
+    "rare_tier": 1,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "quick_bar_kind": 0,
+    "can_dismantle": false
+  },
+  {
+    "item_id": "mat_ceramic_shard",
+    "display_name": "陶片",
+    "item_type": 0,
+    "stackable": true,
+    "stack_profile": 5,
+    "stack_count": 0,
+    "tags": [
+      "material",
+      "ceramic",
+      "basic",
+      "salvage"
+    ],
+    "sprite_name": "mat_ceramic_shard",
+    "can_drop": true,
+    "rare_tier": 1,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "quick_bar_kind": 0,
+    "can_dismantle": false
   }
 ]

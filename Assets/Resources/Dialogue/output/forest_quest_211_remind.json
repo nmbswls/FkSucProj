@@ -1,0 +1,25 @@
+{
+  "DialogId": "forest_quest_211_remind",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "任务211提示",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "埃蒙",
+              "Content": "北路高处的叶尖会悬着银绿色花露。普通露水一碰就散，那种花露会贴着容器内壁缓慢游动。带两份回来，别和沿路的寻常草汁混在一起。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

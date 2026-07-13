@@ -1,0 +1,30 @@
+{
+  "DialogId": "forest_quest_212_fulfill",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "任务212交付",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "祭坛醒了一瞬。它没有攻击，只是顺着我的魔力确认了什么。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "埃蒙",
+              "Content": "那就不是警告，而是谈判的开端。村子今后能否稳定进入森林，要看我们拿什么交换，而不是还能砍倒多少东西。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "DialogId": "forest_quest_212_remind",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "start",
+      "Note": "任务212提示",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "埃蒙",
+              "Content": "森林之心不是一只等着讨伐的怪物，更像一份活着的旧契约。循着花露最浓的方向深入，触碰祭坛后立刻回来，不要试着从它身上带走任何东西。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

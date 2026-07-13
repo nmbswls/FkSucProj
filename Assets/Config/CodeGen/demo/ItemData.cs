@@ -22,8 +22,9 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["item_type"].IsNumber) { throw new SerializationException(); }  ItemType = (demo.EItemType)_buf["item_type"].AsInt; }
         { if(!_buf["stackable"].IsBoolean) { throw new SerializationException(); }  Stackable = _buf["stackable"]; }
+        { if(!_buf["stack_profile"].IsNumber) { throw new SerializationException(); }  StackProfile = (demo.EItemStackProfile)_buf["stack_profile"].AsInt; }
         { if(!_buf["stack_count"].IsNumber) { throw new SerializationException(); }  StackCount = _buf["stack_count"]; }
-        { var __json0 = _buf["stack_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } StackTags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  StackTags.Add(__v0); }   }
+        { var __json0 = _buf["tags"]; if(!__json0.IsArray) { throw new SerializationException(); } Tags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  Tags.Add(__v0); }   }
         { if(!_buf["sprite_name"].IsString) { throw new SerializationException(); }  SpriteName = _buf["sprite_name"]; }
         { if(!_buf["can_drop"].IsBoolean) { throw new SerializationException(); }  CanDrop = _buf["can_drop"]; }
         { if(!_buf["rare_tier"].IsNumber) { throw new SerializationException(); }  RareTier = _buf["rare_tier"]; }
@@ -37,6 +38,7 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
         { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
         { if(!_buf["quick_bar_kind"].IsNumber) { throw new SerializationException(); }  QuickBarKind = (demo.EQuickBarItemKind)_buf["quick_bar_kind"].AsInt; }
+        { if(!_buf["can_dismantle"].IsBoolean) { throw new SerializationException(); }  CanDismantle = _buf["can_dismantle"]; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -61,13 +63,17 @@ public sealed partial class ItemData : Luban.BeanBase
     /// </summary>
     public bool Stackable;
     /// <summary>
+    /// 非Custom使用通用档位；Custom读取stack_count
+    /// </summary>
+    public demo.EItemStackProfile StackProfile;
+    /// <summary>
     /// stack_count
     /// </summary>
     public int StackCount;
     /// <summary>
-    /// stack_tags
+    /// 物品语义标签；供容器、Perk和筛选规则匹配
     /// </summary>
-    public System.Collections.Generic.List<string> StackTags;
+    public System.Collections.Generic.List<string> Tags;
     /// <summary>
     /// sprite_name
     /// </summary>
@@ -120,6 +126,10 @@ public sealed partial class ItemData : Luban.BeanBase
     /// 快速使用类型
     /// </summary>
     public demo.EQuickBarItemKind QuickBarKind;
+    /// <summary>
+    /// 是否允许进入分解系统；仍需item_dismantle存在对应规则
+    /// </summary>
+    public bool CanDismantle;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -135,8 +145,9 @@ public sealed partial class ItemData : Luban.BeanBase
         + "displayName:" + DisplayName + ","
         + "itemType:" + ItemType + ","
         + "stackable:" + Stackable + ","
+        + "stackProfile:" + StackProfile + ","
         + "stackCount:" + StackCount + ","
-        + "stackTags:" + Luban.StringUtil.CollectionToString(StackTags) + ","
+        + "tags:" + Luban.StringUtil.CollectionToString(Tags) + ","
         + "spriteName:" + SpriteName + ","
         + "canDrop:" + CanDrop + ","
         + "rareTier:" + RareTier + ","
@@ -150,6 +161,7 @@ public sealed partial class ItemData : Luban.BeanBase
         + "autoPick:" + AutoPick + ","
         + "isAutoUse:" + IsAutoUse + ","
         + "quickBarKind:" + QuickBarKind + ","
+        + "canDismantle:" + CanDismantle + ","
         + "}";
     }
 }

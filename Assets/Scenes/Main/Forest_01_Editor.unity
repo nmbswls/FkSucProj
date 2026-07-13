@@ -1719,7 +1719,7 @@ MonoBehaviour:
     - rid: 4481876835251781637
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: forest_grass_clump
+        CfgId: forest_heart_dew_patch
         Position: {x: 28, y: 49}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
@@ -4339,7 +4339,7 @@ MonoBehaviour:
     - rid: 4481876835251781636
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: forest_grass_clump
+        CfgId: forest_heart_dew_patch
         Position: {x: 36, y: 50}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 

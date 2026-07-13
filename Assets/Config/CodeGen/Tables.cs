@@ -124,6 +124,10 @@ public partial class Tables
     /// </summary>
     public demo.TbProgressionHubTab TbProgressionHubTab {get; }
     public demo.TbPlayerAttachInfo TbPlayerAttachInfo {get; }
+    /// <summary>
+    /// 物品分解产物配置
+    /// </summary>
+    public demo.TbItemDismantle TbItemDismantle {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -216,6 +220,7 @@ public partial class Tables
         TbJingYuanTypePoolEntry = new demo.TbJingYuanTypePoolEntry(loader("demo_tbjingyuantypepoolentry"));
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
+        TbItemDismantle = new demo.TbItemDismantle(loader("demo_tbitemdismantle"));
         ResolveRef();
     }
     
@@ -310,6 +315,7 @@ public partial class Tables
         TbJingYuanTypePoolEntry.ResolveRef(this);
         TbProgressionHubTab.ResolveRef(this);
         TbPlayerAttachInfo.ResolveRef(this);
+        TbItemDismantle.ResolveRef(this);
     }
 }
 
