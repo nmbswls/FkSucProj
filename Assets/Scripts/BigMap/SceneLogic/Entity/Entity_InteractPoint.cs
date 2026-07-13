@@ -105,6 +105,7 @@ namespace My.Map.Entity
 
             CheckStatusCondition();
             ApplyInitialDormantState();
+            SyncRenewableNodeStatus();
         }
 
         protected override void OnLocalSwitchesMutated()
@@ -280,6 +281,33 @@ namespace My.Map.Entity
 
             TickPoisonBait(dt);
             TickDormantReveal();
+            SyncRenewableNodeStatus();
+        }
+
+        void SyncRenewableNodeStatus()
+        {
+            if (string.IsNullOrEmpty(SrcUniqName) || CfgMgr.Cfgs?.TbRenewableResourceNode == null)
+            {
+                return;
+            }
+
+            var cfg = CfgMgr.Cfgs.TbRenewableResourceNode.GetOrDefault(CfgId);
+            if (cfg == null)
+            {
+                return;
+            }
+
+            var state = LogicManager.worldPersistState.GetOrCreateRenewableNodeState(
+                SrcUniqName,
+                CfgId,
+                LogicManager.SettlementDayIndex);
+            int desired = !state.PermanentlyUnlocked
+                ? cfg.LockedStatusId
+                : state.StoredResources > 0 ? cfg.ReadyStatusId : cfg.WaitingStatusId;
+            if (CurrStatusId != desired)
+            {
+                ChangeSelfStatus(desired);
+            }
         }
 
         protected override bool CanTickGroundOverlay()

@@ -474,6 +474,11 @@ namespace My.Player
                                 eType = EPlayerEventType.PlayerKilled;
                             }
                             break;
+                        case cfg.demo.EQuestObjectiveType.InteractEntity:
+                            {
+                                eType = EPlayerEventType.EntityInteractionCompleted;
+                            }
+                            break;
                     }
 
                     if(eType == EPlayerEventType.Inlivad)
@@ -510,6 +515,17 @@ namespace My.Player
             {
                 if(obj.Data.ObjType == cfg.demo.EQuestObjectiveType.KillMonster)
                 {
+                    if (!string.IsNullOrEmpty(obj.Data.ObjP4)
+                        && !string.Equals(obj.Data.ObjP4, e.KilledCfgId, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    if (obj.Data.ObjP0 != 0 && !e.KilledByPlayer)
+                    {
+                        continue;
+                    }
+
                     obj.ProgressVal += 1;
                     updated = true;
                 }
@@ -649,6 +665,55 @@ namespace My.Player
             }
         }
 
+        public void OnEntityInteractionCompleted(PlayerEntityInteractionCompletedEvent e)
+        {
+            if (_activeStep == null)
+            {
+                return;
+            }
+
+            bool updated = false;
+            foreach (var obj in _activeStep.objectiveMap.Values)
+            {
+                if (obj.Data.ObjType != cfg.demo.EQuestObjectiveType.InteractEntity)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(obj.Data.ObjP4)
+                    && !string.Equals(obj.Data.ObjP4, e.CfgId, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(obj.Data.ObjP5)
+                    && !string.Equals(obj.Data.ObjP5, e.UniqName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (obj.Data.ObjP0 > 0 && obj.Data.ObjP0 != e.InteractId)
+                {
+                    continue;
+                }
+
+                obj.ProgressVal += 1;
+                updated = true;
+            }
+
+            if (!updated)
+            {
+                return;
+            }
+
+            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+            if (_activeStep.CacheStepCfg.AutoNext
+                && _activeStep.CheckCompletion(out string outcomeId, out var options))
+            {
+                _activeStep.OnStepCompleted(outcomeId, options);
+            }
+        }
+
         private bool TryFulfillTalk(string characterKey, QuestObjectiveRuntime objRuntime, out string failReason)
         {
             failReason = null;
@@ -784,6 +849,7 @@ namespace My.Player
             PlayerEventBus.Subscribe<PlayerKillUnitEvent>(OnPlayerKillUnit);
             PlayerEventBus.Subscribe<PlayerKilledEvent>(OnPlayerKilled);
             PlayerEventBus.Subscribe<PlayerItemChangeEvent>(OnPlayerItemChange);
+            PlayerEventBus.Subscribe<PlayerEntityInteractionCompletedEvent>(OnEntityInteractionCompleted);
         }
 
         private List<int> _removedQuests = new();
@@ -1137,6 +1203,19 @@ namespace My.Player
             foreach (var q in listeners.Values)
             {
                 q.OnPlayerItemChange(e);
+            }
+        }
+
+        private void OnEntityInteractionCompleted(PlayerEntityInteractionCompletedEvent e)
+        {
+            if (!EventRouter.TryGetValue(e.EventType, out var listeners))
+            {
+                return;
+            }
+
+            foreach (var q in listeners.Values)
+            {
+                q.OnEntityInteractionCompleted(e);
             }
         }
 

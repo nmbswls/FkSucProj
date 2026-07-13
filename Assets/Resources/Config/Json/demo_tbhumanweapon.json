@@ -31,5 +31,16 @@
     "weapon_level": 5000,
     "stun_value": 12000,
     "bullet_id": ""
+  },
+  {
+    "item_id": "meat_baton",
+    "func_type": 0,
+    "skill_id": "use_human_weapon",
+    "view_prefab": "Prefab/HumanWeaponView",
+    "view_sprite": "stick",
+    "anim_name": "player_weapon01_01",
+    "weapon_level": 5000,
+    "stun_value": 12000,
+    "bullet_id": ""
   }
 ]

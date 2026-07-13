@@ -21,7 +21,7 @@ public sealed partial class ContainerStackTagRule : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["container_type"].IsNumber) { throw new SerializationException(); }  ContainerType = (demo.EContainerType)_buf["container_type"].AsInt; }
         { if(!_buf["priority"].IsNumber) { throw new SerializationException(); }  Priority = _buf["priority"]; }
-        { var __json0 = _buf["tags"]; if(!__json0.IsArray) { throw new SerializationException(); } Tags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  Tags.Add(__v0); }   }
+        { var __json0 = _buf["tags"]; if(!__json0.IsArray) { throw new SerializationException(); } Tags = new System.Collections.Generic.List<demo.EItemTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EItemTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EItemTag)__e0.AsInt; }  Tags.Add(__v0); }   }
         { if(!_buf["stack_ratio"].IsNumber) { throw new SerializationException(); }  StackRatio = _buf["stack_ratio"]; }
     }
 
@@ -45,7 +45,7 @@ public sealed partial class ContainerStackTagRule : Luban.BeanBase
     /// <summary>
     /// 物品tags全部匹配时应用倍率；空表示容器默认
     /// </summary>
-    public System.Collections.Generic.List<string> Tags;
+    public System.Collections.Generic.List<demo.EItemTag> Tags;
     /// <summary>
     /// stack_ratio
     /// </summary>

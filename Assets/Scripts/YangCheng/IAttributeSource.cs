@@ -25,6 +25,10 @@ namespace My.Player
 
         TiaoJingSlotCap,
 
+        PlantBagSlots,
+        KeyBagSlots,
+        PotionBagSlots,
+
         FixDmgReduceFinal,
 
         FixFallenAdd,

@@ -187,6 +187,258 @@ MonoBehaviour:
     FovStaticSegments: []
   EntityRefreshInfo:
   - StaticId: 100
+    UniqName: forest_deep_treant_boss
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737838
+  - StaticId: 101
+    UniqName: forest_trapped_fairy_01_c
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737839
+  - StaticId: 102
+    UniqName: forest_trapped_fairy_01_b
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737840
+  - StaticId: 103
+    UniqName: forest_trapped_fairy_01_a
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737841
+  - StaticId: 104
+    UniqName: forest_fairy_bud_house_01
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737842
+  - StaticId: 105
+    UniqName: dew_guard_02_b
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 45
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737843
+  - StaticId: 106
+    UniqName: dew_guard_02_a
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 45
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737844
+  - StaticId: 107
+    UniqName: dew_guard_01_b
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 45
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737845
+  - StaticId: 108
+    UniqName: dew_guard_01_a
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 1
+    RespawnInterval: 45
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876881720737846
+  - StaticId: 109
     UniqName: north_fly_swarm_02
     AppearCond:
       Type: 0
@@ -213,8 +465,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781692
-  - StaticId: 101
+      rid: 4481876881720737847
+  - StaticId: 110
     UniqName: north_slime_crystal_02
     AppearCond:
       Type: 0
@@ -241,8 +493,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781693
-  - StaticId: 102
+      rid: 4481876881720737848
+  - StaticId: 111
     UniqName: north_root_cluster_01
     AppearCond:
       Type: 0
@@ -269,8 +521,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781694
-  - StaticId: 103
+      rid: 4481876881720737849
+  - StaticId: 112
     UniqName: north_relic_scrap_01
     AppearCond:
       Type: 0
@@ -297,8 +549,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781695
-  - StaticId: 104
+      rid: 4481876881720737850
+  - StaticId: 113
     UniqName: north_dew_patch_02
     AppearCond:
       Type: 0
@@ -325,8 +577,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781696
-  - StaticId: 105
+      rid: 4481876881720737851
+  - StaticId: 114
     UniqName: north_dew_patch_01
     AppearCond:
       Type: 0
@@ -353,8 +605,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781697
-  - StaticId: 106
+      rid: 4481876881720737852
+  - StaticId: 115
     UniqName: east_slime_crystal_02
     AppearCond:
       Type: 0
@@ -381,8 +633,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781698
-  - StaticId: 107
+      rid: 4481876881720737853
+  - StaticId: 116
     UniqName: east_slime_brown_02
     AppearCond:
       Type: 0
@@ -409,8 +661,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781699
-  - StaticId: 108
+      rid: 4481876881720737854
+  - StaticId: 117
     UniqName: poacher_loot_bag_01
     AppearCond:
       Type: 0
@@ -437,8 +689,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781700
-  - StaticId: 109
+      rid: 4481876881720737855
+  - StaticId: 118
     UniqName: poacher_hunter_01
     AppearCond:
       Type: 0
@@ -465,8 +717,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781701
-  - StaticId: 110
+      rid: 4481876881720737856
+  - StaticId: 119
     UniqName: poacher_guard_02
     AppearCond:
       Type: 0
@@ -493,8 +745,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781702
-  - StaticId: 111
+      rid: 4481876881720737857
+  - StaticId: 120
     UniqName: poacher_guard_01
     AppearCond:
       Type: 0
@@ -521,8 +773,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781703
-  - StaticId: 112
+      rid: 4481876881720737858
+  - StaticId: 121
     UniqName: south_fly_swarm_02
     AppearCond:
       Type: 0
@@ -549,8 +801,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781704
-  - StaticId: 113
+      rid: 4481876881720737859
+  - StaticId: 122
     UniqName: south_slime_green_03
     AppearCond:
       Type: 0
@@ -577,8 +829,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781705
-  - StaticId: 114
+      rid: 4481876881720737860
+  - StaticId: 123
     UniqName: south_slime_green_02
     AppearCond:
       Type: 0
@@ -605,8 +857,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781706
-  - StaticId: 115
+      rid: 4481876881720737861
+  - StaticId: 124
     UniqName: south_scrap_patch_02
     AppearCond:
       Type: 0
@@ -633,8 +885,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781707
-  - StaticId: 116
+      rid: 4481876881720737862
+  - StaticId: 125
     UniqName: south_scrap_patch_01
     AppearCond:
       Type: 0
@@ -661,8 +913,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781708
-  - StaticId: 117
+      rid: 4481876881720737863
+  - StaticId: 126
     UniqName: south_leaf_loot_01
     AppearCond:
       Type: 0
@@ -689,8 +941,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781709
-  - StaticId: 118
+      rid: 4481876881720737864
+  - StaticId: 127
     UniqName: south_grass_loot_01
     AppearCond:
       Type: 0
@@ -717,8 +969,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781710
-  - StaticId: 119
+      rid: 4481876881720737865
+  - StaticId: 128
     UniqName: forest_mid_spring_leaf_01
     AppearCond:
       Type: 0
@@ -745,8 +997,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781711
-  - StaticId: 120
+      rid: 4481876881720737866
+  - StaticId: 129
     UniqName: forest_mid_vine_top_01
     AppearCond:
       Type: 0
@@ -773,8 +1025,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781712
-  - StaticId: 121
+      rid: 4481876881720737867
+  - StaticId: 130
     UniqName: forest_mid_vine_gate_01
     AppearCond:
       Type: 0
@@ -801,8 +1053,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781713
-  - StaticId: 122
+      rid: 4481876881720737868
+  - StaticId: 131
     UniqName: forest_mid_reed_01
     AppearCond:
       Type: 0
@@ -829,8 +1081,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781714
-  - StaticId: 123
+      rid: 4481876881720737869
+  - StaticId: 132
     UniqName: forest_fly_swarm_01
     AppearCond:
       Type: 0
@@ -857,8 +1109,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781715
-  - StaticId: 124
+      rid: 4481876881720737870
+  - StaticId: 133
     UniqName: forest_cannon_east_01
     AppearCond:
       Type: 0
@@ -885,8 +1137,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781716
-  - StaticId: 125
+      rid: 4481876881720737871
+  - StaticId: 134
     UniqName: forest_cannon_north_01
     AppearCond:
       Type: 0
@@ -913,8 +1165,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781717
-  - StaticId: 126
+      rid: 4481876881720737872
+  - StaticId: 135
     UniqName: forest_slime_crystal_01
     AppearCond:
       Type: 0
@@ -941,8 +1193,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781718
-  - StaticId: 127
+      rid: 4481876881720737873
+  - StaticId: 136
     UniqName: forest_slime_brown_01
     AppearCond:
       Type: 0
@@ -969,8 +1221,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781719
-  - StaticId: 128
+      rid: 4481876881720737874
+  - StaticId: 137
     UniqName: forest_slime_green_01
     AppearCond:
       Type: 0
@@ -997,8 +1249,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781720
-  - StaticId: 129
+      rid: 4481876881720737875
+  - StaticId: 138
     UniqName: forest_heart_altar
     AppearCond:
       Type: 0
@@ -1025,8 +1277,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781721
-  - StaticId: 130
+      rid: 4481876881720737876
+  - StaticId: 139
     UniqName: forest_bush_center_01
     AppearCond:
       Type: 0
@@ -1053,8 +1305,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781722
-  - StaticId: 131
+      rid: 4481876881720737877
+  - StaticId: 140
     UniqName: forest_grass_ne_01
     AppearCond:
       Type: 0
@@ -1081,8 +1333,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781723
-  - StaticId: 132
+      rid: 4481876881720737878
+  - StaticId: 141
     UniqName: forest_grass_nw_01
     AppearCond:
       Type: 0
@@ -1109,8 +1361,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781724
-  - StaticId: 133
+      rid: 4481876881720737879
+  - StaticId: 142
     UniqName: forest_leaf_pile_sw_01
     AppearCond:
       Type: 0
@@ -1137,8 +1389,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781725
-  - StaticId: 134
+      rid: 4481876881720737880
+  - StaticId: 143
     UniqName: forest_obstacle_east_01
     AppearCond:
       Type: 0
@@ -1165,8 +1417,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781726
-  - StaticId: 135
+      rid: 4481876881720737881
+  - StaticId: 144
     UniqName: forest_obstacle_west_01
     AppearCond:
       Type: 0
@@ -1193,8 +1445,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781727
-  - StaticId: 136
+      rid: 4481876881720737882
+  - StaticId: 145
     UniqName: forest_obstacle_south_01
     AppearCond:
       Type: 0
@@ -1221,7 +1473,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876835251781728
+      rid: 4481876881720737883
   NamedPoints:
   - Name: forest_mid_jump_land
     PointType: 0
@@ -1268,10 +1520,163 @@ MonoBehaviour:
   - NetworkId: PortalNetworks
     Nodes: []
     Edges: []
+  BossEncounters:
+  - EncounterId: forest_deep_treant_encounter
+    BossUniqName: forest_deep_treant_boss
+    DisplayName: "\u6DF1\u6797\u6811\u5996"
+    ArenaBounds:
+      serializedVersion: 2
+      x: 22
+      y: 53
+      width: 14
+      height: 10
+    ResetPosition: {x: 29, y: 58}
+    OutsideGraceTime: 0.75
+    ReturnMoveSpeedRate: 1.6
+    RecoverDuration: 3
+    ReengageDelay: 2
+    InvulnerableWhileReturning: 1
+    Phases:
+    - EnterHpRatio: 1
+      SelectableSkills:
+      - default_normal_attack
+    - EnterHpRatio: 0.65
+      SelectableSkills:
+      - default_normal_attack
+      - default_enemy_knockdown_push
+    - EnterHpRatio: 0.3
+      SelectableSkills:
+      - default_normal_attack
+      - default_enemy_harass
+      - default_enemy_knockdown_push
   references:
     version: 2
     RefIds:
-    - rid: 4481876835251781692
+    - rid: 4481876881720737838
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_big
+        Position: {x: 29, y: 58}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 4
+        MoveMode: 3
+        EnmityConfId: default_monster
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876881720737839
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_trapped_fairy
+        Position: {x: 43, y: 55}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876881720737840
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_trapped_fairy
+        Position: {x: 41.5, y: 51.5}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876881720737841
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_trapped_fairy
+        Position: {x: 37.5, y: 53}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876881720737842
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fairy_bud_house
+        Position: {x: 40, y: 54}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 4481876881720737843
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 38, y: 50.5}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876881720737844
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_crystal
+        Position: {x: 34.5, y: 49}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876881720737845
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: forest_fly_swarm
+        Position: {x: 29.5, y: 50}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876881720737846
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: 26.5, y: 49.5}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876881720737847
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_fly_swarm
@@ -1287,7 +1692,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781693
+    - rid: 4481876881720737848
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_crystal
@@ -1303,7 +1708,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781694
+    - rid: 4481876881720737849
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_bush
@@ -1311,7 +1716,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781695
+    - rid: 4481876881720737850
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_leaf_pile
@@ -1319,23 +1724,23 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781696
+    - rid: 4481876881720737851
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: forest_grass_clump
+        CfgId: forest_heart_dew_patch
         Position: {x: 36, y: 50}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781697
+    - rid: 4481876881720737852
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
-        CfgId: forest_grass_clump
+        CfgId: forest_heart_dew_patch
         Position: {x: 28, y: 49}
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781698
+    - rid: 4481876881720737853
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_crystal
@@ -1351,7 +1756,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781699
+    - rid: 4481876881720737854
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_brown
@@ -1367,7 +1772,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781700
+    - rid: 4481876881720737855
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_bush
@@ -1375,7 +1780,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781701
+    - rid: 4481876881720737856
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_robber_n
@@ -1391,7 +1796,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781702
+    - rid: 4481876881720737857
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_robber_n
@@ -1407,7 +1812,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781703
+    - rid: 4481876881720737858
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_robber_n
@@ -1423,7 +1828,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781704
+    - rid: 4481876881720737859
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_fly_swarm
@@ -1439,7 +1844,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781705
+    - rid: 4481876881720737860
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -1455,7 +1860,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781706
+    - rid: 4481876881720737861
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -1471,7 +1876,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781707
+    - rid: 4481876881720737862
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_bush
@@ -1479,7 +1884,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781708
+    - rid: 4481876881720737863
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_bush
@@ -1487,7 +1892,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781709
+    - rid: 4481876881720737864
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_leaf_pile
@@ -1495,7 +1900,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781710
+    - rid: 4481876881720737865
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_grass_clump
@@ -1503,7 +1908,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781711
+    - rid: 4481876881720737866
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_spring_leaf
@@ -1514,7 +1919,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781712
+    - rid: 4481876881720737867
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_mid_vine_top
@@ -1525,7 +1930,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781713
+    - rid: 4481876881720737868
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_mid_vine_gate
@@ -1536,7 +1941,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781714
+    - rid: 4481876881720737869
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_reed_pillar
@@ -1547,7 +1952,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781715
+    - rid: 4481876881720737870
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_fly_swarm
@@ -1563,7 +1968,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781716
+    - rid: 4481876881720737871
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon
@@ -1579,7 +1984,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781717
+    - rid: 4481876881720737872
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon
@@ -1595,7 +2000,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781718
+    - rid: 4481876881720737873
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_crystal
@@ -1611,7 +2016,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781719
+    - rid: 4481876881720737874
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_brown
@@ -1627,7 +2032,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781720
+    - rid: 4481876881720737875
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -1643,7 +2048,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876835251781721
+    - rid: 4481876881720737876
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_heart_altar
@@ -1654,7 +2059,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781722
+    - rid: 4481876881720737877
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_bush
@@ -1662,7 +2067,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781723
+    - rid: 4481876881720737878
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_grass_clump
@@ -1670,7 +2075,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781724
+    - rid: 4481876881720737879
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_grass_clump
@@ -1678,7 +2083,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781725
+    - rid: 4481876881720737880
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: forest_leaf_pile
@@ -1686,7 +2091,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876835251781726
+    - rid: 4481876881720737881
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -1697,7 +2102,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781727
+    - rid: 4481876881720737882
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -1708,7 +2113,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876835251781728
+    - rid: 4481876881720737883
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01

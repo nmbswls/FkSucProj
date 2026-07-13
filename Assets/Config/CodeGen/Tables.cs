@@ -128,6 +128,22 @@ public partial class Tables
     /// 物品分解产物配置
     /// </summary>
     public demo.TbItemDismantle TbItemDismantle {get; }
+    /// <summary>
+    /// 周期恢复资源节点
+    /// </summary>
+    public demo.TbRenewableResourceNode TbRenewableResourceNode {get; }
+    /// <summary>
+    /// 物品标签元数据：显示字、隐藏控制、实例需求
+    /// </summary>
+    public demo.TbItemTagInfo TbItemTagInfo {get; }
+    /// <summary>
+    /// 玩家背包定义
+    /// </summary>
+    public demo.TbPlayerBagDef TbPlayerBagDef {get; }
+    /// <summary>
+    /// 仓库筛选定义
+    /// </summary>
+    public demo.TbWarehouseFilter TbWarehouseFilter {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -221,6 +237,10 @@ public partial class Tables
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
         TbItemDismantle = new demo.TbItemDismantle(loader("demo_tbitemdismantle"));
+        TbRenewableResourceNode = new demo.TbRenewableResourceNode(loader("demo_tbrenewableresourcenode"));
+        TbItemTagInfo = new demo.TbItemTagInfo(loader("demo_tbitemtaginfo"));
+        TbPlayerBagDef = new demo.TbPlayerBagDef(loader("demo_tbplayerbagdef"));
+        TbWarehouseFilter = new demo.TbWarehouseFilter(loader("demo_tbwarehousefilter"));
         ResolveRef();
     }
     
@@ -316,6 +336,10 @@ public partial class Tables
         TbProgressionHubTab.ResolveRef(this);
         TbPlayerAttachInfo.ResolveRef(this);
         TbItemDismantle.ResolveRef(this);
+        TbRenewableResourceNode.ResolveRef(this);
+        TbItemTagInfo.ResolveRef(this);
+        TbPlayerBagDef.ResolveRef(this);
+        TbWarehouseFilter.ResolveRef(this);
     }
 }
 

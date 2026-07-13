@@ -388,5 +388,53 @@
     "option_text": "把雾线样本交给埃蒙。",
     "show_cond": [],
     "priority": 20
+  },
+  {
+    "id": 139,
+    "quest_id": 211,
+    "step_id": "211_s1",
+    "obj_id": "",
+    "character_key": "home_elder",
+    "dialog_role": 3,
+    "dialog_id": "forest_quest_211_remind",
+    "option_text": "北路的花露有什么特征？",
+    "show_cond": [],
+    "priority": 10
+  },
+  {
+    "id": 140,
+    "quest_id": 211,
+    "step_id": "",
+    "obj_id": "211_s2_Main",
+    "character_key": "home_elder",
+    "dialog_role": 2,
+    "dialog_id": "forest_quest_211_fulfill",
+    "option_text": "交出两份森林花露。",
+    "show_cond": [],
+    "priority": 20
+  },
+  {
+    "id": 141,
+    "quest_id": 212,
+    "step_id": "212_s1",
+    "obj_id": "",
+    "character_key": "home_elder",
+    "dialog_role": 3,
+    "dialog_id": "forest_quest_212_remind",
+    "option_text": "森林之心究竟是什么？",
+    "show_cond": [],
+    "priority": 10
+  },
+  {
+    "id": 142,
+    "quest_id": 212,
+    "step_id": "",
+    "obj_id": "212_s2_Main",
+    "character_key": "home_elder",
+    "dialog_role": 2,
+    "dialog_id": "forest_quest_212_fulfill",
+    "option_text": "汇报森林之心的反应。",
+    "show_cond": [],
+    "priority": 20
   }
 ]

@@ -275,9 +275,18 @@ namespace My.Map.Entity
             int.TryParse(srcIdxStr, out var srcIdx);
 
             ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, useRow);
-            if(useRow.CostOnUse)
+            if(ItemCatalog.ShouldConsumeOnUse(useRow))
             {
-                ctx.Env.playerDataManager.CostItem(useItemId, 1);
+                var inv = ctx.Env.playerDataManager.InventorySystem;
+                var bag = inv.GetBagById((int)EPlayerBagId.Default);
+                if (bag != null && bag.IsSlotIdxValid(srcIdx))
+                {
+                    inv.TryConsumeItemUse(bag, srcIdx, useRow);
+                }
+                else
+                {
+                    ctx.Env.playerDataManager.CostItem(useItemId, 1);
+                }
             }
         }
     }

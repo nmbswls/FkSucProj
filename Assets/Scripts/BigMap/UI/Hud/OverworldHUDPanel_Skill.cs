@@ -421,7 +421,7 @@ namespace My.UI
 
             var itemId = binding.ItemId;
             var itemUseCfg = ItemCatalog.GetPrimaryUse(itemId);
-            if (itemUseCfg == null || !itemUseCfg.Usable)
+            if (itemUseCfg == null)
             {
                 return;
             }
@@ -444,9 +444,9 @@ namespace My.UI
                         PlayerHumanItemBarPanel.RefreshFromGame();
                     }
 
-                    if (ret && itemUseCfg.CostOnUse)
+                    if (ret && ItemCatalog.ShouldConsumeOnUse(itemUseCfg))
                     {
-                        inv.CostQuickSlotBinding(binding, 1);
+                        inv.TryConsumeQuickSlotUse(binding, itemUseCfg);
                         pdm.HumanQuickBar?.PruneInvalidSlots();
                     }
                 });

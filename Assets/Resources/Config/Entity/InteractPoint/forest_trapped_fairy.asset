@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: forest_trapped_fairy
+  m_EditorClassIdentifier: 
+  CfgId: forest_trapped_fairy
+  ShowName: "\u88AB\u56F0\u5996\u7CBE"
+  PrefabName: forest_heart_altar
+  NameOffset: 0.5
+  IsAlwaysActive: 0
+  PersistByUniqName: 1
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u88AB\u675F\u7F1A"
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u7528\u68EE\u6797\u82B1\u9732\u89E3\u6551"
+      UnLabel: "\u9700\u8981\u68EE\u6797\u82B1\u9732 x1"
+      HideWhenFail: 0
+      NeedDist: 0.5
+      Passive: 0
+      CheckCommonCond:
+      - Type: 4
+        Param1: 1
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: mat_forest_dew
+        Param6: 
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 4
+        Param1: 1
+        Param2: 0
+        Param3: mat_forest_dew
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 15
+        Param1: 900
+        Param2: 0
+        Param3: release
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 110
+        Param1: 1
+        Param2: 0
+        Param3: forest_fairy_bud_house
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 2
+        MemberId: 0
+        StaticName: forest_fairy_bud_house_01
+        DynamicEntityVariable: 
+      - OutputType: 11
+        Param1: 0
+        Param2: 0
+        Param3: fairy_rescued
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+      - OutputType: 1
+        Param1: 1
+        Param2: 0
+        Param3: 
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName: 
+        DynamicEntityVariable: 
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+    AutoTriggerInteractId: 1
+    AutoTriggerCheckInterval: 0.25
+  ExtraStatusInfos:
+  - StatusId: 1
+    Desp: "\u5DF2\u83B7\u6551"
+    InteractInfos: []
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+    AutoTriggerInteractId: 1
+    AutoTriggerCheckInterval: 0.25
+  InitState: 0
+  StateChangeRules:
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag:
+    - fairy_rescued
+    ToStatus: 1
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName: 
+      ChangingEffect: 
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId: 
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: "\u4E0B\u6BD2"
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 0
+    RevealDurationSeconds: 8
+    GcLiquidCheckRadius: 0.3

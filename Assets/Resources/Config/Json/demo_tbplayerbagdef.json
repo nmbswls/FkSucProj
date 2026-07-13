@@ -1,0 +1,109 @@
+[
+  {
+    "bag_id": 0,
+    "display_name": "主背包",
+    "base_capacity": 60,
+    "extra_capacity": 0,
+    "layout": "Grid",
+    "yc_attribute_id": 0,
+    "accepted_tags": [],
+    "auto_create": true,
+    "gain_priority": 0
+  },
+  {
+    "bag_id": 1,
+    "display_name": "秘密包",
+    "base_capacity": 5,
+    "extra_capacity": 3,
+    "layout": "Compact",
+    "yc_attribute_id": 0,
+    "accepted_tags": [],
+    "auto_create": true,
+    "gain_priority": 0
+  },
+  {
+    "bag_id": 3,
+    "display_name": "精神包",
+    "base_capacity": 30,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 0,
+    "accepted_tags": [],
+    "auto_create": true,
+    "gain_priority": 0
+  },
+  {
+    "bag_id": 4,
+    "display_name": "重要物品包",
+    "base_capacity": 8,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 0,
+    "accepted_tags": [],
+    "auto_create": true,
+    "gain_priority": 0
+  },
+  {
+    "bag_id": 5,
+    "display_name": "植物包",
+    "base_capacity": 0,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 8,
+    "accepted_tags": [
+      8
+    ],
+    "auto_create": false,
+    "gain_priority": 10
+  },
+  {
+    "bag_id": 6,
+    "display_name": "钥匙包",
+    "base_capacity": 0,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 9,
+    "accepted_tags": [
+      9
+    ],
+    "auto_create": false,
+    "gain_priority": 20
+  },
+  {
+    "bag_id": 7,
+    "display_name": "药水包",
+    "base_capacity": 0,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 10,
+    "accepted_tags": [
+      10
+    ],
+    "auto_create": false,
+    "gain_priority": 30
+  },
+  {
+    "bag_id": 100,
+    "display_name": "通用仓库",
+    "base_capacity": 100,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 0,
+    "accepted_tags": [],
+    "auto_create": true,
+    "gain_priority": 0
+  },
+  {
+    "bag_id": 101,
+    "display_name": "家具仓库",
+    "base_capacity": 100,
+    "extra_capacity": 0,
+    "layout": "Compact",
+    "yc_attribute_id": 0,
+    "accepted_tags": [
+      11
+    ],
+    "auto_create": true,
+    "gain_priority": 0
+  }
+]

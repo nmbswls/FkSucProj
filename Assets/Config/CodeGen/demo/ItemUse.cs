@@ -21,8 +21,7 @@ public sealed partial class ItemUse : Luban.BeanBase
         { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
         { if(!_buf["slot"].IsNumber) { throw new SerializationException(); }  Slot = _buf["slot"]; }
-        { if(!_buf["usable"].IsBoolean) { throw new SerializationException(); }  Usable = _buf["usable"]; }
-        { if(!_buf["cost_on_use"].IsBoolean) { throw new SerializationException(); }  CostOnUse = _buf["cost_on_use"]; }
+        { if(!_buf["consume_policy"].IsNumber) { throw new SerializationException(); }  ConsumePolicy = (demo.EItemUseConsumePolicy)_buf["consume_policy"].AsInt; }
         { if(!_buf["use_cd"].IsNumber) { throw new SerializationException(); }  UseCd = _buf["use_cd"]; }
         { if(!_buf["use_time"].IsNumber) { throw new SerializationException(); }  UseTime = _buf["use_time"]; }
         { if(!_buf["use_type"].IsNumber) { throw new SerializationException(); }  UseType = (demo.EItemUseType)_buf["use_type"].AsInt; }
@@ -32,6 +31,7 @@ public sealed partial class ItemUse : Luban.BeanBase
         { if(!_buf["p4"].IsNumber) { throw new SerializationException(); }  P4 = _buf["p4"]; }
         { if(!_buf["s1"].IsString) { throw new SerializationException(); }  S1 = _buf["s1"]; }
         { if(!_buf["s2"].IsString) { throw new SerializationException(); }  S2 = _buf["s2"]; }
+        { if(!_buf["initial_charges"].IsNumber) { throw new SerializationException(); }  InitialCharges = _buf["initial_charges"]; }
     }
 
     public static ItemUse DeserializeItemUse(JSONNode _buf)
@@ -52,13 +52,9 @@ public sealed partial class ItemUse : Luban.BeanBase
     /// </summary>
     public int Slot;
     /// <summary>
-    /// usable
+    /// 使用成功后的消耗结算策略
     /// </summary>
-    public bool Usable;
-    /// <summary>
-    /// cost_on_use
-    /// </summary>
-    public bool CostOnUse;
+    public demo.EItemUseConsumePolicy ConsumePolicy;
     /// <summary>
     /// use_cd
     /// </summary>
@@ -95,6 +91,10 @@ public sealed partial class ItemUse : Luban.BeanBase
     /// s2
     /// </summary>
     public string S2;
+    /// <summary>
+    /// Charge标签物品创建ItemInstance4UseCharge时的初始/最大次数
+    /// </summary>
+    public long InitialCharges;
    
     public const int __ID__ = -1738430391;
     public override int GetTypeId() => __ID__;
@@ -109,8 +109,7 @@ public sealed partial class ItemUse : Luban.BeanBase
         + "id:" + Id + ","
         + "itemId:" + ItemId + ","
         + "slot:" + Slot + ","
-        + "usable:" + Usable + ","
-        + "costOnUse:" + CostOnUse + ","
+        + "consumePolicy:" + ConsumePolicy + ","
         + "useCd:" + UseCd + ","
         + "useTime:" + UseTime + ","
         + "useType:" + UseType + ","
@@ -120,6 +119,7 @@ public sealed partial class ItemUse : Luban.BeanBase
         + "p4:" + P4 + ","
         + "s1:" + S1 + ","
         + "s2:" + S2 + ","
+        + "initialCharges:" + InitialCharges + ","
         + "}";
     }
 }

@@ -11,11 +11,12 @@
 
 namespace cfg.demo
 { 
-    public enum EQuickBarItemKind
+    public enum EItemUseConsumePolicy
     {
         None = 0,
-        Weapon = 1,
-        Consumable = 2,
+        StackCount = 1,
+        InstanceCharge = 2,
+        DestroyInstance = 3,
     }
 
 } 

@@ -64,6 +64,8 @@ namespace My.MapExport
 
         public List<PortalNetworkExport> PortalNetworks = new List<PortalNetworkExport>();
 
+        public List<BossEncounterExportInfo> BossEncounters = new List<BossEncounterExportInfo>();
+
         // 运行时便捷查询（可选）
         private Dictionary<(int x, int y), List<StaticPrefabItem>> _prefabMap;
 

@@ -365,8 +365,7 @@ namespace My.UI
                 return false;
             }
 
-            var itemUseCfg = ItemCatalog.GetPrimaryUse(binding.ItemId);
-            return itemUseCfg != null && itemUseCfg.Usable;
+            return ItemCatalog.CanUse(binding.ItemId);
         }
 
         void OnDestroy()

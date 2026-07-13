@@ -102,6 +102,14 @@ namespace My.UI
                         ObjDesc.text = $"{desc} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
                         break;
                     }
+                    case cfg.demo.EQuestObjectiveType.InteractEntity:
+                    {
+                        var desc = string.IsNullOrEmpty(BindingObjective.Data.FormatDesc)
+                            ? "Interact"
+                            : BindingObjective.Data.FormatDesc;
+                        ObjDesc.text = $"{desc} {BindingObjective.GetCurrProgress()}/{BindingObjective.GetRequireProgress()}";
+                        break;
+                    }
                 }
             }
 

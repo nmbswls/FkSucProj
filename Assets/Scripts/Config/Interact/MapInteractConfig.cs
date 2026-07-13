@@ -71,6 +71,11 @@ namespace My.Config
 
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
+
+            // Param1=progress; StaticName=renewable node uniq name
+            AddRenewableNodeUnlockProgress = 110,
+            // Target defaults to owner; grants configured stored reward when ready
+            HarvestRenewableNode = 111,
         }
 
         public EOutputType OutputType;
@@ -117,6 +122,9 @@ namespace My.Config
             PlayerHasBuff,
 
             PlayerNoBuff,
+
+            RenewableNodeUnlocked,
+            RenewableNodeReady,
         }
 
         public ECheckType CheckType;

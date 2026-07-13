@@ -4,6 +4,7 @@ using My.Config;
 using My.Map.Entity;
 using My.Map.Scene;
 using My.Player;
+using My.Quest;
 using My.UI;
 using UnityEngine;
 using static My.GameLogicManager;
@@ -54,6 +55,7 @@ namespace My.Map
         private const float ExternalNotifyFallbackMarginSec = 0.5f;
 
         public IEntityInteractable Owner;
+        LogicEntityBase OwnerEntity => Owner as LogicEntityBase;
 
         private List<MapInteractInfo> interactInfos = new();
         public List<MapInteractInfo> InteractInfos { get { return interactInfos; } }
@@ -69,6 +71,7 @@ namespace My.Map
         private float _pendingElapsed;
         private float _pendingTimeoutSec;
         private bool _pendingNotified;
+        private bool _interactFailed;
 
         public EntityInteractComp(IEntityInteractable owner)
         {
@@ -296,6 +299,24 @@ namespace My.Map
                             }
                         }
                         break;
+                    case InteractCheckCond.ECheckType.RenewableNodeUnlocked:
+                        {
+                            string uniqName = string.IsNullOrEmpty(oneCond.Param3) ? OwnerEntity?.SrcUniqName : oneCond.Param3;
+                            if (!logicManager.worldPersistState.IsRenewableNodeUnlocked(uniqName, OwnerEntity?.CfgId, logicManager.SettlementDayIndex))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
+                    case InteractCheckCond.ECheckType.RenewableNodeReady:
+                        {
+                            string uniqName = string.IsNullOrEmpty(oneCond.Param3) ? OwnerEntity?.SrcUniqName : oneCond.Param3;
+                            if (!logicManager.worldPersistState.IsRenewableNodeReady(uniqName, OwnerEntity?.CfgId, logicManager.SettlementDayIndex))
+                            {
+                                passed = false;
+                            }
+                        }
+                        break;
                         
                 }
             }
@@ -467,6 +488,7 @@ namespace My.Map
             _isInteracting = true;
             _currOutputIdx = 0;
             _currInteract = interactItem;
+            _interactFailed = false;
 
             HandleInteractOutputs();
 
@@ -968,6 +990,41 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.AddRenewableNodeUnlockProgress:
+                        {
+                            string uniqName = output.StaticName;
+                            if (string.IsNullOrEmpty(uniqName))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            Owner.LogicManager.worldPersistState.AddRenewableNodeUnlockProgress(
+                                uniqName,
+                                output.Param3,
+                                output.Param1 > 0 ? (int)output.Param1 : 1,
+                                Owner.LogicManager.SettlementDayIndex);
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.HarvestRenewableNode:
+                        {
+                            string uniqName = string.IsNullOrEmpty(output.StaticName) ? OwnerEntity?.SrcUniqName : output.StaticName;
+                            if (!Owner.LogicManager.worldPersistState.TryHarvestRenewableNode(
+                                    uniqName,
+                                    OwnerEntity?.CfgId,
+                                    Owner.LogicManager.SettlementDayIndex,
+                                    out var itemId,
+                                    out var count))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            GetInteractingPlayerSystem()?.GiveItemToPlayer(itemId, count);
+                        }
+                        break;
+
                     #endregion
 
 
@@ -982,6 +1039,7 @@ namespace My.Map
 
             if (_currInteract == null || errOccur || _currOutputIdx >= _currInteract.Outputs.Count)
             {
+                _interactFailed |= errOccur;
                 DoInteractEnd();
             }
         }
@@ -996,9 +1054,20 @@ namespace My.Map
             if (_currInteract == null) return;
             Debug.Log($"DoInteractEnd. {_currInteract?.InteractId}");
 
+            if (!_interactFailed)
+            {
+                PlayerEventBus.Publish(new PlayerEntityInteractionCompletedEvent
+                {
+                    CfgId = OwnerEntity?.CfgId,
+                    UniqName = OwnerEntity?.SrcUniqName,
+                    InteractId = _currInteract.InteractId,
+                });
+            }
+
             _isInteracting = false;
             _currOutputIdx = 0;
             _currInteract = null;
+            _interactFailed = false;
 
             ResetInteractPending();
         }

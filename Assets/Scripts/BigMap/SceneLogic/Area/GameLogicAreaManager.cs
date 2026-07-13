@@ -85,6 +85,7 @@ namespace My.Map.Logic
         private Dictionary<int, DynamicEntityRefreshInfo> _refreshInfoByStaticId;
 
         private DungeonAreaRuntime _dungeonRuntime;
+        public BossEncounterAreaRuntime BossEncounters { get; private set; }
 
         public List<int> DialogForceStaticIds = new();
 
@@ -246,10 +247,15 @@ namespace My.Map.Logic
 
             SetupDesireCrystalSession(mapOVerlayId);
 
+            BossEncounters?.Dispose();
+            BossEncounters = new BossEncounterAreaRuntime(this, cacheDatabase);
+
         }
 
         public void CleanArea()
         {
+            BossEncounters?.Dispose();
+            BossEncounters = null;
             logicManager?.MapMicroPlot?.AbortForMapChange();
 
             _dungeonRuntime?.Dispose();
@@ -441,6 +447,8 @@ namespace My.Map.Logic
             _dungeonRuntime?.Tick(dt);
 
             TickEntityLifeCycle(dt);
+
+            BossEncounters?.Tick(dt);
 
             TickRefreshWalker();
 

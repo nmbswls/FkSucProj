@@ -21,6 +21,12 @@ namespace My.UI
 
             var lines = new System.Text.StringBuilder();
             lines.AppendLine($"类型: {def.ItemType}");
+            var tagNames = ItemTagCatalog.GetVisibleTagDisplayNames(def);
+            if (tagNames.Count > 0)
+            {
+                lines.AppendLine($"标签: {string.Join(" / ", tagNames)}");
+            }
+
             if (stackCount > 1)
             {
                 lines.AppendLine($"数量: {stackCount}");

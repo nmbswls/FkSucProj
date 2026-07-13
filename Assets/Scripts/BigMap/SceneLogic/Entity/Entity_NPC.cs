@@ -39,6 +39,18 @@ namespace My.Map
 
         public AIBrainV2? AIBrain;
 
+        public List<SkillRuntime> GetAiReadySkills()
+        {
+            var skills = ablilityManager.GetAllReadySkills();
+            LogicManager?.AreaManager?.BossEncounters?.FilterReadySkills(this, skills);
+            return skills;
+        }
+
+        public bool IsAiSkillSelectable(string skillId)
+        {
+            return LogicManager?.AreaManager?.BossEncounters?.IsSkillSelectable(this, skillId) ?? true;
+        }
+
         private float _lastHModeTimer;
 
         public event Action EventOnHModeChange;
@@ -740,6 +752,14 @@ namespace My.Map
 
             var delta = intent.delta;
 
+            if (attrId == AttrIdConsts.HP
+                && delta < 0
+                && AIBrain?.CurrentState == AIBrain.StateReturn
+                && AIBrain.StateReturn.IsInvulnerableDuringReturn)
+            {
+                return 0;
+            }
+
             switch (attrId)
             {
                 
@@ -1005,4 +1025,3 @@ namespace My.Map
         }
     }
 }
-

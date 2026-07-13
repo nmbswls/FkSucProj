@@ -325,5 +325,105 @@
       }
     ],
     "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 209,
+    "name": "林缘立足",
+    "desc": "清理森林入口附近的魔物，确认一条可靠的退路。",
+    "init_step_id": "209_s1",
+    "finish_reward": [
+      [
+        "berry",
+        2
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 208,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 210,
+    "name": "不属于森林的脚印",
+    "desc": "调查林中的人类活动痕迹，并击退盘踞在中段的偷猎者。",
+    "init_step_id": "210_s1",
+    "finish_reward": [
+      [
+        "gold",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 209,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 211,
+    "name": "北路花露",
+    "desc": "从森林北路取得两份森林花露，并带回村庄交给埃蒙判断。",
+    "init_step_id": "211_s1",
+    "finish_reward": [
+      [
+        "gold",
+        15
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 210,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 212,
+    "name": "心木回声",
+    "desc": "触碰森林之心，确认它对主角的反应后向埃蒙汇报。",
+    "init_step_id": "212_s1",
+    "finish_reward": [
+      [
+        "gold",
+        30
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 211,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
   }
 ]

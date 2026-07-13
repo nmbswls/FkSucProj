@@ -781,7 +781,7 @@ namespace My.Map.Unit
                 return;
             }
 
-            var skills = _brain.NpcEntity.ablilityManager.GetAllReadySkills();
+            var skills = _brain.NpcEntity.GetAiReadySkills();
 
             if (skills.Count == 0)
             {
@@ -1212,6 +1212,11 @@ namespace My.Map.Unit
 
                 if(canCast)
                 {
+                    if (!_brain.NpcEntity.IsAiSkillSelectable(intentSkillCfgOrigin.SkillId))
+                    {
+                        ResetAttackState();
+                        return;
+                    }
                     (Vector2? vecParam, ILogicEntity? targetParam) = AIActionUtils.GetSkillCastParams(intentAbilityCfgCurrent, _brain.NpcEntity, targetId);
                     _brain.NpcEntity.ablilityManager.UseSkill(intentSkillCfgOrigin.SkillId, castVec: vecParam, target: targetParam);
                     _brain.NpcEntity.StopMove();
@@ -1410,25 +1415,51 @@ namespace My.Map.Unit
         public AIStateReturn(AIBrainV2 brain) : base(brain) {  }
 
         public override string StateName => "Return";
-        public override bool CanBeAttract => true;
+        public override bool CanBeAttract => !_context.IgnoreAttract;
+        public override bool SuppressSharedBrainTransitions => _context.IgnoreAttract;
 
         private float _homeLessMinStayTime = 5.0f;
         private float _startReturnTime = 0;
+        private float _lastRecoverTime;
+        private bool _prepared;
+        private AIReturnContext _context = AIReturnContext.Default;
+
+        public bool IsFromSource(string sourceId) =>
+            !string.IsNullOrEmpty(sourceId) && _context.SourceId == sourceId;
+        public bool IsInvulnerableDuringReturn => _context.InvulnerableDuringReturn;
+        public void Prepare(AIReturnContext context)
+        {
+            _context = context;
+            _prepared = true;
+        }
+
+        public void RestartPreparedReturn()
+        {
+            _brain.NpcEntity.StopMove();
+            OnEnter();
+        }
 
         public override bool CanEnterCombat 
         { 
             get 
             {
-                return LogicTime.time - _startReturnTime > 5.0f;
+                return LogicTime.time - _startReturnTime > _context.ReengageDelay;
             } 
         }
 
         public override void OnEnter()
         {
             base.OnEnter();
-            if(_brain.HomePos != null)
+            if (!_prepared)
             {
-                _brain.NpcEntity.TryMoveTo(_brain.HomePos.Value, moveSpeedRate: 0.7f);
+                _context = AIReturnContext.Default;
+            }
+            _prepared = false;
+            _lastRecoverTime = LogicTime.time;
+            var target = _context.TargetPosition ?? _brain.HomePos;
+            if(target != null)
+            {
+                _brain.NpcEntity.TryMoveTo(target.Value, moveSpeedRate: _context.MoveSpeedRate);
             }
             _startReturnTime = LogicTime.time;
         }
@@ -1436,14 +1467,16 @@ namespace My.Map.Unit
         public override void OnUpdate()
         {
 
-            if (_brain.SuspiciousPos != null)
+            TickHealthRecovery();
+
+            if (!_context.IgnoreSuspicion && _brain.SuspiciousPos != null)
             {
                 _brain.ChangeState(_brain.StateSearch);
                 return;
             }
 
             // 检查是否需要进入通缉状态（与 wanted_level_info 星级一致）
-            if (_brain.Config.IsGuard)
+            if (!_context.IgnoreWanted && _brain.Config.IsGuard)
             {
                 if (_brain.LogicManager.WantedManager.GetWantedStarLevel() >= 1
                     && _brain.NpcEntity.IsTargetWitnessed(_brain.LogicManager.playerLogicEntity.Id))
@@ -1453,19 +1486,23 @@ namespace My.Map.Unit
                 }
             }
 
-            if (_brain.HomePos != null)
+            var target = _context.TargetPosition ?? _brain.HomePos;
+            if (target != null)
             {
-                if (Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value) < 0.5f)
+                if (Vector3.Distance(_brain.NpcEntity.Pos, target.Value) < 0.5f)
                 {
                     // 到家了，切回 Idle
-                    _brain.ChangeState(_brain.StateIdle);
+                    if (IsRecoveryComplete())
+                    {
+                        _brain.ChangeState(_brain.StateIdle);
+                    }
                     return;
                 }
 
                 // 防卡死：定期重设路径
                 if (Time.frameCount % 60 == 0)
                 {
-                    _brain.NpcEntity.TryMoveTo(_brain.HomePos.Value, moveSpeedRate: 0.7f);
+                    _brain.NpcEntity.TryMoveTo(target.Value, moveSpeedRate: _context.MoveSpeedRate);
                 }
             }
             else
@@ -1477,6 +1514,39 @@ namespace My.Map.Unit
                 }
             }
 
+        }
+
+        void TickHealthRecovery()
+        {
+            if (_context.HealthRecoverDuration <= 0f)
+            {
+                return;
+            }
+
+            var now = LogicTime.time;
+            var dt = Mathf.Max(0f, now - _lastRecoverTime);
+            _lastRecoverTime = now;
+            var maxHp = _brain.NpcEntity.GetResourceMax(AttrIdConsts.HP);
+            var hp = _brain.NpcEntity.GetAttr(AttrIdConsts.HP);
+            if (maxHp <= 0 || hp >= maxHp)
+            {
+                return;
+            }
+
+            var amount = Mathf.CeilToInt(maxHp * dt / _context.HealthRecoverDuration);
+            _brain.NpcEntity.ApplyResourceChange(
+                AttrIdConsts.HP,
+                Mathf.Max(1, amount),
+                false,
+                Fight.FightStruct.EDmgFlag.None,
+                null);
+        }
+
+        bool IsRecoveryComplete()
+        {
+            return _context.HealthRecoverDuration <= 0f
+                || _brain.NpcEntity.GetAttr(AttrIdConsts.HP) >=
+                   _brain.NpcEntity.GetResourceMax(AttrIdConsts.HP);
         }
     }
 
@@ -1843,7 +1913,7 @@ namespace My.Map.Unit
             skillCfg = null;
             ability = null;
 
-            var ready = npc.ablilityManager.GetAllReadySkills();
+            var ready = npc.GetAiReadySkills();
             if (ready == null || ready.Count == 0)
             {
                 return false;

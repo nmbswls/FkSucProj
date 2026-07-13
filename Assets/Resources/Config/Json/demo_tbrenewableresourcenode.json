@@ -1,0 +1,15 @@
+[
+  {
+    "id": "forest_fairy_bud_house",
+    "display_name": "妖精花苞房",
+    "unlock_required_progress": 3,
+    "reward_item_id": "mat_fairy_honeydew",
+    "reward_count": 1,
+    "restock_every_n_days": 3,
+    "capacity": 1,
+    "immediate_ready_on_unlock": true,
+    "locked_status_id": 0,
+    "waiting_status_id": 1,
+    "ready_status_id": 2
+  }
+]

@@ -258,5 +258,79 @@
     "set_variables": [
       "home_01.forest_route_unlocked"
     ]
+  },
+  {
+    "outcome_id": "209_s1_Main",
+    "need_objective_ids": [
+      "209_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "forest_01.foothold_secured"
+    ]
+  },
+  {
+    "outcome_id": "210_s1_Main",
+    "need_objective_ids": [
+      "210_s1_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "forest_01.poachers_driven_off"
+    ]
+  },
+  {
+    "outcome_id": "211_s1_Main",
+    "need_objective_ids": [
+      "211_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "211_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "211_s2_Main",
+    "need_objective_ids": [
+      "211_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "forest_01.dew_sample_delivered"
+    ]
+  },
+  {
+    "outcome_id": "212_s1_Main",
+    "need_objective_ids": [
+      "212_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "212_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "212_s2_Main",
+    "need_objective_ids": [
+      "212_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "forest_01.heart_reported"
+    ]
   }
 ]

@@ -306,6 +306,8 @@ namespace My
             }
 
             SecretBaseSceneRoot.FindLoaded()?.ExitMode();
+            UIManager.Instance?.HidePanel(My.UI.Dismantle.ItemDismantlePanel.Pid);
+            UIManager.Instance?.HidePanel("WarehousePanel");
             SecretBaseHudPanel.TryHide();
         }
 

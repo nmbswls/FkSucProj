@@ -158,5 +158,15 @@
     "drop_group_weights": [
       10000
     ]
+  },
+  {
+    "id": 923,
+    "name": "森林花露采集",
+    "drop_group_ids": [
+      9203
+    ],
+    "drop_group_weights": [
+      10000
+    ]
   }
 ]

@@ -922,6 +922,15 @@ namespace My.UI
                 return;
             }
 
+            if (MainGameManager.Instance?.gameLogicManager?.AreaManager?.BossEncounters?.IsBossEntity(entity.Id) == true)
+            {
+                if (_activeHpBars.ContainsKey(entity.Id))
+                {
+                    RecycleHpBarUI(entity.Id);
+                }
+                return;
+            }
+
             ReadRawHp(entity, out var hp, out var hpMax);
 
             long entityId = presenter.Id;

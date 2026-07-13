@@ -1,0 +1,72 @@
+[
+  {
+    "id": -1,
+    "display_name": "全部",
+    "item_types": [],
+    "tags": [],
+    "priority": 0
+  },
+  {
+    "id": 10,
+    "display_name": "普通",
+    "item_types": [
+      0
+    ],
+    "tags": [],
+    "priority": 10
+  },
+  {
+    "id": 20,
+    "display_name": "货币",
+    "item_types": [
+      1
+    ],
+    "tags": [],
+    "priority": 20
+  },
+  {
+    "id": 30,
+    "display_name": "精神",
+    "item_types": [
+      10
+    ],
+    "tags": [],
+    "priority": 30
+  },
+  {
+    "id": 40,
+    "display_name": "材料",
+    "item_types": [],
+    "tags": [
+      16
+    ],
+    "priority": 40
+  },
+  {
+    "id": 50,
+    "display_name": "家具",
+    "item_types": [],
+    "tags": [
+      11
+    ],
+    "priority": 50
+  },
+  {
+    "id": 60,
+    "display_name": "人类武器",
+    "item_types": [],
+    "tags": [
+      4
+    ],
+    "priority": 60
+  },
+  {
+    "id": 70,
+    "display_name": "部位装备",
+    "item_types": [],
+    "tags": [
+      3
+    ],
+    "priority": 70
+  }
+]

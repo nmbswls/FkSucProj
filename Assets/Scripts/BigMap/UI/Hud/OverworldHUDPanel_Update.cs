@@ -81,6 +81,7 @@ namespace My.UI
             ControlDegreeIndicator?.RefreshView();
             RetreatHintIndicator?.RefreshView();
             ExposeSkillIndicator?.RefreshView();
+            BossHealthBar?.RefreshView();
             RefreshHoldCancelHint();
 
             CheckDisguiseState();

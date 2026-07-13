@@ -414,5 +414,18 @@
       5,
       12
     ]
+  },
+  {
+    "id": 9231,
+    "name": "森林花露",
+    "group_id": 9203,
+    "weight_in_group": 100,
+    "item_id_list": [
+      "mat_forest_dew"
+    ],
+    "item_count_range_list": [
+      1,
+      2
+    ]
   }
 ]

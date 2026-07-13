@@ -31,6 +31,10 @@ namespace cfg.demo
         /// obj_p5=character_key
         /// </summary>
         Talk = 5,
+        /// <summary>
+        /// obj_p0=interact_id(0=any) obj_p4=cfg_id obj_p5=uniq_name
+        /// </summary>
+        InteractEntity = 6,
     }
 
 } 

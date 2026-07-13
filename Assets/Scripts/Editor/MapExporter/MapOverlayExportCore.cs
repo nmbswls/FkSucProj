@@ -41,6 +41,7 @@ public static class MapOverlayExportCore
         public Dictionary<string, NamedPoint> NamedPoints;
         public Dictionary<string, NamedPath> NamedPaths;
         public List<PortalNetworkExport> PortalNetworks;
+        public List<BossEncounterProvider> BossEncounterProviders;
     }
 
     public static ScanSummary ScanAll(GameObject areaRoot, MapChunkEditorRoot chunkEditor, string mapVariantSceneName)
@@ -190,6 +191,7 @@ public static class MapOverlayExportCore
         }
 
         ScanPortalNetworks(areaRoot.transform, data.PortalNetworks);
+        ScanBossEncounters(areaRoot.transform, data.BossEncounterProviders);
         ScanFovSegments(MapVariantSceneHierarchy.ResolveMapVariantRoot(areaRoot.transform), chunkSize, chunkOrigin, data.ChunkSegments);
         return data;
     }
@@ -852,7 +854,51 @@ public static class MapOverlayExportCore
         }
 
         asset.PortalNetworks.AddRange(sharedData.PortalNetworks);
+        foreach (var provider in sharedData.BossEncounterProviders)
+        {
+            asset.BossEncounters.Add(BuildBossEncounterExport(provider));
+        }
         return asset;
+    }
+
+    static void ScanBossEncounters(Transform root, List<BossEncounterProvider> cache)
+    {
+        foreach (var provider in root.GetComponentsInChildren<BossEncounterProvider>(true))
+        {
+            if (provider.gameObject.activeInHierarchy)
+            {
+                cache.Add(provider);
+            }
+        }
+    }
+
+    static BossEncounterExportInfo BuildBossEncounterExport(BossEncounterProvider provider)
+    {
+        var collider = provider.GetComponent<BoxCollider2D>();
+        var center = provider.transform.TransformPoint(collider.offset);
+        var scale = provider.transform.lossyScale;
+        var size = new Vector2(
+            Mathf.Abs(collider.size.x * scale.x),
+            Mathf.Abs(collider.size.y * scale.y));
+
+        return new BossEncounterExportInfo
+        {
+            EncounterId = provider.EncounterId,
+            BossUniqName = provider.BossUniqName,
+            DisplayName = provider.DisplayName,
+            ArenaBounds = new Rect((Vector2)center - size * 0.5f, size),
+            ResetPosition = provider.ResetPoint != null
+                ? (Vector2)provider.ResetPoint.position
+                : (Vector2)provider.transform.position,
+            OutsideGraceTime = provider.OutsideGraceTime,
+            ReturnMoveSpeedRate = provider.ReturnMoveSpeedRate,
+            RecoverDuration = provider.RecoverDuration,
+            ReengageDelay = provider.ReengageDelay,
+            InvulnerableWhileReturning = provider.InvulnerableWhileReturning,
+            Phases = provider.Phases != null
+                ? new List<BossEncounterPhaseExportInfo>(provider.Phases)
+                : new List<BossEncounterPhaseExportInfo>(),
+        };
     }
 
     static void MergeBuckets(
@@ -1050,6 +1096,7 @@ public static class MapOverlayExportCore
             NamedPoints = new Dictionary<string, NamedPoint>(),
             NamedPaths = new Dictionary<string, NamedPath>(),
             PortalNetworks = new List<PortalNetworkExport>(),
+            BossEncounterProviders = new List<BossEncounterProvider>(),
         };
     }
 

@@ -13,6 +13,7 @@ namespace My.Quest
 
         PlayerKillUnit,
         PlayerKilled,
+        EntityInteractionCompleted,
 
         ItemChange,
 
@@ -45,8 +46,18 @@ namespace My.Quest
     {
         public string KilledCfgId;
         public EEntityType UnitType;
+        public bool KilledByPlayer;
 
         public EPlayerEventType EventType { get { return EPlayerEventType.PlayerKillUnit; } }
+    }
+
+    public struct PlayerEntityInteractionCompletedEvent
+    {
+        public string CfgId;
+        public string UniqName;
+        public int InteractId;
+
+        public EPlayerEventType EventType { get { return EPlayerEventType.EntityInteractionCompleted; } }
     }
 
     // 玩家死亡事件

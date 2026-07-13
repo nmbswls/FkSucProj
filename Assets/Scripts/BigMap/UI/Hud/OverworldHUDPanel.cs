@@ -58,6 +58,7 @@ namespace My.UI
         public Image PleasureBar;
         // 发情值进度条（PlayerCoreCircle/HeadProfile/DesireBar），需在 Inspector 重新绑定
         public Image DesireBar;
+        public BossHealthBarView BossHealthBar;
 
         // HUD 内的位置锚点，供 PlayerHumanItemBarPanel 折叠/展开定位使用
         public RectTransform ItemAnchor;
@@ -117,6 +118,14 @@ namespace My.UI
 
         void Awake()
         {
+            if (BossHealthBar == null)
+            {
+                BossHealthBar = transform.Find("BossHealthBar")?.GetComponent<BossHealthBarView>();
+                if (BossHealthBar == null)
+                {
+                    BossHealthBar = BossHealthBarView.Create(transform);
+                }
+            }
             BtnZhaZhiSwitch.onClick.AddListener(() =>
             {
                 DoSwitchZhaZhiMode();

@@ -57,20 +57,11 @@ namespace My.UI.Bag
 
         public List<WarehousePageTabEntry> warehousePageTabs = new List<WarehousePageTabEntry>();
 
-        private static readonly int[] WarehouseTypeFilterValues =
-        {
-            -1,
-            (int)EItemType.Normal,
-            (int)EItemType.Currency,
-            (int)EItemType.Equip,
-            (int)EItemType.Pocket,
-            (int)EItemType.Insertion,
-        };
-
         private bool markDirty;
-        private int typeFilter = -1;
+        private int filterId = -1;
 
         readonly List<int> _visibleBagIndices = new List<int>();
+        readonly List<WarehouseFilter> _filters = new List<WarehouseFilter>();
         int _cachedPageCount = 1;
         int _cachedItemsPerPage = 1;
 
@@ -88,26 +79,63 @@ namespace My.UI.Bag
 
         private void BindWarehouseTypeFilters()
         {
+            RebuildWarehouseFilters();
             if (warehouseTypeFilterButtons == null)
             {
                 return;
             }
-            for (int i = 0; i < warehouseTypeFilterButtons.Length && i < WarehouseTypeFilterValues.Length; i++)
+
+            for (int i = 0; i < warehouseTypeFilterButtons.Length; i++)
             {
                 var btn = warehouseTypeFilterButtons[i];
                 if (btn == null)
                 {
                     continue;
                 }
-                int fv = WarehouseTypeFilterValues[i];
+
+                bool show = i < _filters.Count;
+                btn.gameObject.SetActive(show);
+                if (!show)
+                {
+                    continue;
+                }
+
+                var filter = _filters[i];
+                var label = btn.GetComponentInChildren<Text>();
+                if (label != null && !string.IsNullOrEmpty(filter.DisplayName))
+                {
+                    label.text = filter.DisplayName;
+                }
+
+                int fv = filter.Id;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
                 {
-                    typeFilter = fv;
+                    filterId = fv;
                     currentWarehousePage = 0;
                     OnWarehouseDataChanged();
                 });
             }
+        }
+
+        void RebuildWarehouseFilters()
+        {
+            _filters.Clear();
+            var rows = CfgMgr.Cfgs?.TbWarehouseFilter?.DataList;
+            if (rows == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (rows[i] != null)
+                {
+                    _filters.Add(rows[i]);
+                }
+            }
+
+            _filters.Sort((a, b) => a.Priority.CompareTo(b.Priority));
         }
 
         WarehousePageTabEntry BuildTabEntry(Transform childOne, int pageIndex)
@@ -184,6 +212,7 @@ namespace My.UI.Bag
         public override void Show()
         {
             base.Show();
+            BindWarehouseTypeFilters();
             foreach (var it in warehousePageTabs)
             {
                 if (it.SelectHint != null)
@@ -222,7 +251,8 @@ namespace My.UI.Bag
                 return;
             }
 
-            if (typeFilter < 0)
+            var filter = GetCurrentFilter();
+            if (filter == null || filter.Id < 0)
             {
                 for (int i = 0; i < bag.BasicCapacity; i++)
                 {
@@ -235,12 +265,22 @@ namespace My.UI.Bag
             }
             else
             {
-                var filtered = BindingInventory.GetWarehouseSlotIndicesForItemTypeFilter(typeFilter);
-                if (filtered != null && filtered.Count > 0)
+                for (int i = 0; i < bag.BasicCapacity; i++)
                 {
-                    for (int k = 0; k < filtered.Count; k++)
+                    var stack = bag.GetItemByIdx(i);
+                    if (PassesFilter(stack, filter))
                     {
-                        _visibleBagIndices.Add(filtered[k]);
+                        _visibleBagIndices.Add(i);
+                    }
+                }
+
+                for (int j = 0; j < bag.MaxExtraCapacity; j++)
+                {
+                    int idx = bag.BasicCapacity + j;
+                    var stack = bag.GetItemByIdx(idx);
+                    if (PassesFilter(stack, filter))
+                    {
+                        _visibleBagIndices.Add(idx);
                     }
                 }
             }
@@ -262,7 +302,7 @@ namespace My.UI.Bag
             int remain = Mathf.Max(0, _visibleBagIndices.Count - start);
             if (remain <= 0)
             {
-                return typeFilter < 0 ? 0 : ipp;
+                return filterId < 0 ? 0 : ipp;
             }
             return Mathf.Min(ipp, remain);
         }
@@ -280,7 +320,7 @@ namespace My.UI.Bag
             EnsurePageTabCapacity(pageCount);
 
             int gridCount = CurrentPageGridItemCount();
-            if (gridCount <= 0 && typeFilter >= 0 && _visibleBagIndices.Count == 0)
+            if (gridCount <= 0 && filterId >= 0 && _visibleBagIndices.Count == 0)
             {
                 gridCount = ippPlaceholder();
             }
@@ -326,7 +366,7 @@ namespace My.UI.Bag
             UpdatePageSelectHints();
 
             int gridCount = CurrentPageGridItemCount();
-            if (gridCount <= 0 && typeFilter >= 0 && _visibleBagIndices.Count == 0)
+            if (gridCount <= 0 && filterId >= 0 && _visibleBagIndices.Count == 0)
             {
                 gridCount = ippPlaceholder();
             }
@@ -405,7 +445,7 @@ namespace My.UI.Bag
             int bid = (int)EPlayerBagId.Storage;
             cell.Bind(stack, bagIdx, EContainerType.Warehouse, bid, null);
 
-            bool dim = typeFilter < 0 && stack != null && !stack.IsEmpty && !PassesTypeFilter(stack);
+            bool dim = filterId >= 0 && stack != null && !stack.IsEmpty && !PassesFilter(stack, GetCurrentFilter());
             cell.icon.color = dim ? new Color(1f, 1f, 1f, 0.28f) : Color.white;
             if (cell.countText != null)
             {
@@ -417,18 +457,49 @@ namespace My.UI.Bag
             return item;
         }
 
-        private bool PassesTypeFilter(ItemStack stack)
+        WarehouseFilter GetCurrentFilter()
         {
-            if (typeFilter < 0)
+            for (int i = 0; i < _filters.Count; i++)
+            {
+                if (_filters[i].Id == filterId)
+                {
+                    return _filters[i];
+                }
+            }
+
+            return null;
+        }
+
+        private bool PassesFilter(ItemStack stack, WarehouseFilter filter)
+        {
+            if (filter == null || filter.Id < 0)
             {
                 return true;
             }
+            if (stack == null || stack.IsEmpty)
+            {
+                return false;
+            }
+
             var def = ItemCatalog.GetItemDef(stack.ItemID);
             if (def == null)
             {
+                return false;
+            }
+
+            bool hasTypeRule = filter.ItemTypes != null && filter.ItemTypes.Count > 0;
+            if (hasTypeRule && filter.ItemTypes.Contains(def.ItemType))
+            {
                 return true;
             }
-            return (int)def.ItemType == typeFilter;
+
+            bool hasTagRule = filter.Tags != null && filter.Tags.Count > 0;
+            if (hasTagRule && ItemTagCatalog.HasAnyTag(def, filter.Tags))
+            {
+                return true;
+            }
+
+            return !hasTypeRule && !hasTagRule;
         }
 
         public bool OnConfirm()

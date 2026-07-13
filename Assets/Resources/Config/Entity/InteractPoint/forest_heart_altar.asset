@@ -51,8 +51,8 @@ MonoBehaviour:
         StaticName: 
         DynamicEntityVariable: 
     - InteractId: 2
-      Label: "\u732E\u4E0A\u82B1\u9732"
-      UnLabel: "\u732E\u4E0A\u82B1\u9732"
+      Label: "\u518D\u6B21\u8046\u542C\u5FC3\u6728"
+      UnLabel: "\u518D\u6B21\u8046\u542C\u5FC3\u6728"
       HideWhenFail: 1
       NeedDist: 0.4
       Passive: 0
@@ -64,10 +64,10 @@ MonoBehaviour:
         Param3: heart_intro_seen
         Param4: 
       Outputs:
-      - OutputType: 1
-        Param1: 1
+      - OutputType: 14
+        Param1: 0
         Param2: 0
-        Param3: 
+        Param3: forest_01_heart_first
         Param4: 
         Param5: 0
         Param6: 0

@@ -257,6 +257,7 @@ namespace My.Player
 
             InventorySystem?.WriteMainBagToSave(data);
             InventorySystem?.WriteWarehouseToSave(data);
+            InventorySystem?.WriteSpecialBagsToSave(data);
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
@@ -493,16 +494,6 @@ namespace My.Player
 
             if(evt is MLEUnitDie deadEvent)
             {
-                if(deadEvent.LastIntent == null)
-                {
-                    return;
-                }
-
-                if(deadEvent.LastIntent.srcEntityId != logicManager.playerLogicEntity.Id)
-                {
-                    return;
-                }
-
                 logicManager.AreaManager.Repo.Records.TryGetValue(deadEvent.EntityId, out var logicRecord);
                 if(logicRecord == null)
                 {
@@ -515,6 +506,7 @@ namespace My.Player
                     var e = new PlayerKillUnitEvent();
                     e.UnitType = Map.EEntityType.Npc;
                     e.KilledCfgId = cfgId;
+                    e.KilledByPlayer = deadEvent.LastIntent?.srcEntityId == logicManager.playerLogicEntity.Id;
 
                     PlayerEventBus.Publish(e);
                 }

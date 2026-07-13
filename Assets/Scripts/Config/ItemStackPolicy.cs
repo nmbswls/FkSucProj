@@ -11,7 +11,7 @@ namespace My.Config
         struct TagRuleRow
         {
             public int Priority;
-            public string[] Tags;
+            public EItemTag[] Tags;
             public float Ratio;
         }
 
@@ -46,19 +46,19 @@ namespace My.Config
                     _tagRulesByContainer[ct] = list;
                 }
 
-                string[] tags = Array.Empty<string>();
-                if (row.StackTags != null && row.StackTags.Count > 0)
+                EItemTag[] tags = Array.Empty<EItemTag>();
+                if (row.Tags != null && row.Tags.Count > 0)
                 {
-                    var t = new List<string>();
-                    foreach (var s in row.StackTags)
+                    var t = new List<EItemTag>();
+                    foreach (var tag in row.Tags)
                     {
-                        if (!string.IsNullOrWhiteSpace(s))
+                        if (tag != EItemTag.None)
                         {
-                            t.Add(s.Trim());
+                            t.Add(tag);
                         }
                     }
 
-                    tags = t.Count > 0 ? t.ToArray() : Array.Empty<string>();
+                    tags = t.Count > 0 ? t.ToArray() : Array.Empty<EItemTag>();
                 }
 
                 list.Add(new TagRuleRow
@@ -126,19 +126,19 @@ namespace My.Config
             return 1f;
         }
 
-        static HashSet<string> BuildItemTagSet(ItemData def)
+        static HashSet<EItemTag> BuildItemTagSet(ItemData def)
         {
-            var set = new HashSet<string>(StringComparer.Ordinal);
-            if (def?.StackTags == null)
+            var set = new HashSet<EItemTag>();
+            if (def?.Tags == null)
             {
                 return set;
             }
 
-            foreach (var s in def.StackTags)
+            foreach (var tag in def.Tags)
             {
-                if (!string.IsNullOrWhiteSpace(s))
+                if (tag != EItemTag.None)
                 {
-                    set.Add(s.Trim());
+                    set.Add(tag);
                 }
             }
 

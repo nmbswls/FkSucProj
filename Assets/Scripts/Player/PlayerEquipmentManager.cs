@@ -203,22 +203,13 @@ namespace My.Player
                     for (int i = 0; i < kv.Value.Count; i++)
                     {
                         var e = kv.Value[i];
-                        var def = ItemCatalog.GetItemDef(e.ItemId);
-                        ItemInstanceInfo instCopy = null;
-                        if (def != null && def.ItemType == EItemType.Equip)
-                        {
-                            instCopy = new ItemInstance4Equip { RandVal = e.EquipAuxData };
-                        }
-                        else if (def != null && def.ItemType == EItemType.Insertion)
-                        {
-                            instCopy = new ItemInstance4Insertion();
-                        }
+                        var restored = ItemCatalog.HydrateItemStackFromPersist(e.ItemId, 1, e.ItemInstanceId, e.InstanceInfo);
 
                         list.Add(new EquippedGearRuntimeSlot
                         {
                             ItemId = e.ItemId,
                             ItemInstanceId = e.ItemInstanceId,
-                            InstanceInfoCopy = instCopy,
+                            InstanceInfoCopy = restored?.InstanceInfo?.Clone(),
                         });
                     }
                 }
@@ -254,19 +245,13 @@ namespace My.Player
                         continue;
                     }
 
-                    long aux = 0;
-                    if (s.InstanceInfoCopy is ItemInstance4Equip eq)
-                    {
-                        aux = eq.RandVal;
-                    }
-
                     pd.EquippedGear.Add(new EquippedGearEntry
                     {
                         PartId = (int)part,
                         EquippedIndex = i,
                         ItemId = s.ItemId,
                         ItemInstanceId = s.ItemInstanceId,
-                        EquipAuxData = aux,
+                        InstanceInfo = s.InstanceInfoCopy?.Clone(),
                     });
                 }
             }
@@ -428,10 +413,9 @@ namespace My.Player
 
             list.RemoveAt(equippedIndex);
 
-            if (back != null && Inv != null)
+            if (back != null && Inv?.MainBag != null)
             {
-                long put = Inv.GiveItemToPlayer(back.ItemID, back.Count);
-                if (put < 1)
+                if (!Inv.MainBag.TryPlaceStackWithoutMerge(back))
                 {
                     failReason = "bag_full";
                     list.Insert(equippedIndex, slot);
@@ -491,7 +475,7 @@ namespace My.Player
                 return false;
             }
 
-            if (ItemCatalog.IsInstanceType(def.ItemType) && stack.ItemInstanceId == 0)
+            if (ItemCatalog.RequiresInstance(def) && stack.ItemInstanceId == 0)
             {
                 failReason = "need_instance";
                 return false;
@@ -542,7 +526,7 @@ namespace My.Player
                 return false;
             }
 
-            if (ItemCatalog.IsInstanceType(def.ItemType))
+            if (ItemCatalog.RequiresInstance(def))
             {
                 if (stack.ItemInstanceId == 0)
                 {
@@ -585,17 +569,7 @@ namespace My.Player
                 return null;
             }
 
-            if (src is ItemInstance4Equip e)
-            {
-                return new ItemInstance4Equip { RandVal = e.RandVal };
-            }
-
-            if (src is ItemInstance4Insertion i)
-            {
-                return new ItemInstance4Insertion { Lifetime = i.Lifetime, BuffTickTimer = i.BuffTickTimer };
-            }
-
-            return null;
+            return src.Clone();
         }
 
         void TryReconcileMainBagAgainstEquipped()
@@ -642,7 +616,7 @@ namespace My.Player
                         continue;
                     }
 
-                    if (def != null && ItemCatalog.IsInstanceType(def.ItemType))
+                    if (def != null && ItemCatalog.RequiresInstance(def))
                     {
                         if (instanceId != 0 && st.ItemInstanceId != instanceId)
                         {

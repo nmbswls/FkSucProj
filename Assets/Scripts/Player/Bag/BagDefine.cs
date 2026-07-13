@@ -2,6 +2,7 @@
 
 using My;
 using My.Config;
+using cfg.demo;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -26,12 +27,14 @@ namespace My.Player
         public bool Locked = false;
 
         public EBagStorageLayout StorageLayout { get; private set; }
+        public List<EItemTag> AcceptedAnyTags { get; private set; } = new List<EItemTag>();
 
         public static EContainerType ResolveStackContainerType(EPlayerBagId bagId)
         {
             switch (bagId)
             {
                 case EPlayerBagId.Storage:
+                case EPlayerBagId.FurnitureStorage:
                     return EContainerType.Warehouse;
                 case EPlayerBagId.Default:
                     return EContainerType.Inventory;
@@ -42,7 +45,39 @@ namespace My.Player
 
         public long GetMaxStack(string itemId)
         {
+            if (!CanAcceptItem(itemId))
+            {
+                return 0;
+            }
+
             return ItemCatalog.GetMaxStackByType(itemId, StackContainerType);
+        }
+
+        public void SetAcceptedAnyTags(IEnumerable<EItemTag> tags)
+        {
+            AcceptedAnyTags.Clear();
+            if (tags == null)
+            {
+                return;
+            }
+
+            foreach (var tag in tags)
+            {
+                if (tag != EItemTag.None && !AcceptedAnyTags.Contains(tag))
+                {
+                    AcceptedAnyTags.Add(tag);
+                }
+            }
+        }
+
+        public bool CanAcceptItem(string itemId)
+        {
+            if (AcceptedAnyTags == null || AcceptedAnyTags.Count == 0)
+            {
+                return true;
+            }
+
+            return ItemTagCatalog.HasAnyTag(ItemCatalog.GetItemDef(itemId), AcceptedAnyTags);
         }
 
         public long GetItemCount(string itemId)
@@ -198,6 +233,7 @@ namespace My.Player
             this.BasicCapacity = capacity;
             this.MaxExtraCapacity = extraCapacity;
             StorageLayout = layout;
+            AcceptedAnyTags.Clear();
 
             NormalSlots.Clear();
             ExtraSlots.Clear();
@@ -302,9 +338,10 @@ namespace My.Player
             if (itemId == null || count <= 0) return 0;
             var itemConf = ItemCatalog.GetItemDef(itemId);
             if (itemConf == null) return 0;
+            if (!CanAcceptItem(itemId)) return 0;
 
             // 实例型须逐件独立格；批量发放请走 PlayerInventorySystem.GiveItemToPlayer
-            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
+            if (ItemCatalog.RequiresInstance(itemConf))
             {
                 if (count != 1)
                 {
@@ -438,6 +475,11 @@ namespace My.Player
                 return false;
             }
 
+            if (!CanAcceptItem(stack.ItemID))
+            {
+                return false;
+            }
+
             for (int i = 0; i < NormalSlots.Count; i++)
             {
                 if (NormalSlots[i] == null || NormalSlots[i].IsEmpty)
@@ -540,6 +582,12 @@ namespace My.Player
 
         public void SetItemData(int idx, ItemStack item)
         {
+            if (item != null && !item.IsEmpty && !CanAcceptItem(item.ItemID))
+            {
+                Debug.LogWarning($"PlayerBag {BagId} rejected item '{item.ItemID}' by tag rule.");
+                return;
+            }
+
             if (idx < NormalSlots.Count)
             {
                 NormalSlots[idx] = item;
@@ -624,6 +672,10 @@ namespace My.Player
         Pet = 2,
         Mind = 3,
         Important = 4,
+        Plant = 5,
+        Key = 6,
+        Potion = 7,
         Storage = 100,
+        FurnitureStorage = 101,
     }
 }

@@ -405,6 +405,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = Dismantle.ItemDismantlePanel.Pid,
+                resourcePath = "UI/Prefabs/ItemDismantlePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = PlayerProgressionHubPanel.Pid,
                 resourcePath = "UI/Prefabs/PlayerProgressionHubPanel",
                 defaultLayer = UILayer.Popup,
@@ -775,6 +783,13 @@ namespace My.UI
         /// </summary>
         public void ToggleWarehousePanel()
         {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null || !glm.IsInSecretBaseContext())
+            {
+                UIManager.Instance.HidePanel("WarehousePanel");
+                return;
+            }
+
             if (UIManager.Instance.IsPanelVisible("WarehousePanel"))
             {
                 UIManager.Instance.HidePanel("WarehousePanel");

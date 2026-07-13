@@ -1,0 +1,344 @@
+[
+  {
+    "tag": 0,
+    "display_name": "",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 1,
+    "display_name": "礼物提示",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 3,
+    "display_name": "部位装备",
+    "hidden": false,
+    "requires_instance": true
+  },
+  {
+    "tag": 4,
+    "display_name": "人类武器",
+    "hidden": false,
+    "requires_instance": true
+  },
+  {
+    "tag": 5,
+    "display_name": "人类工具",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 6,
+    "display_name": "口袋",
+    "hidden": true,
+    "requires_instance": true
+  },
+  {
+    "tag": 7,
+    "display_name": "插入物",
+    "hidden": true,
+    "requires_instance": true
+  },
+  {
+    "tag": 8,
+    "display_name": "植物",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 9,
+    "display_name": "钥匙",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 10,
+    "display_name": "药水",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 11,
+    "display_name": "家具",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 12,
+    "display_name": "可分解",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 13,
+    "display_name": "精元",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 14,
+    "display_name": "小型",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 15,
+    "display_name": "大型",
+    "hidden": true,
+    "requires_instance": false
+  },
+  {
+    "tag": 16,
+    "display_name": "材料",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 17,
+    "display_name": "木材",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 18,
+    "display_name": "魔法",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 19,
+    "display_name": "炼金",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 20,
+    "display_name": "燃料",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 21,
+    "display_name": "纤维",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 22,
+    "display_name": "石材",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 23,
+    "display_name": "玻璃",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 24,
+    "display_name": "黏土",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 25,
+    "display_name": "陶瓷",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 26,
+    "display_name": "奢侈品",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 27,
+    "display_name": "工艺",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 28,
+    "display_name": "矿石",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 29,
+    "display_name": "金属",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 30,
+    "display_name": "贵重",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 31,
+    "display_name": "纺织",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 32,
+    "display_name": "皮革",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 33,
+    "display_name": "骨",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 34,
+    "display_name": "染料",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 35,
+    "display_name": "胶",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 36,
+    "display_name": "乳胶",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 37,
+    "display_name": "异域",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 38,
+    "display_name": "杂物",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 39,
+    "display_name": "纸张",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 40,
+    "display_name": "食物",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 41,
+    "display_name": "凝胶",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 42,
+    "display_name": "水晶",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 43,
+    "display_name": "蜡",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 44,
+    "display_name": "玩具",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 45,
+    "display_name": "装饰",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 46,
+    "display_name": "家园",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 47,
+    "display_name": "书房",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 48,
+    "display_name": "教堂",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 49,
+    "display_name": "照明",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 50,
+    "display_name": "森林",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 51,
+    "display_name": "仓储",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 52,
+    "display_name": "设施",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 53,
+    "display_name": "基础",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 54,
+    "display_name": "回收",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 55,
+    "display_name": "露水",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 56,
+    "display_name": "妖精",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 57,
+    "display_name": "充能",
+    "hidden": true,
+    "requires_instance": true
+  }
+]

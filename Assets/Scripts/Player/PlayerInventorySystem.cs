@@ -34,10 +34,10 @@ namespace My.Player.Bag
 
 
         public PlayerBag WarehouseBag;
+        public PlayerBag FurnitureWarehouseBag;
+        public PlayerBag PlantBag;
         public Dictionary<EPlayerBagId, PlayerBag> SpeBags = new Dictionary<EPlayerBagId, PlayerBag>();
 
-        readonly Dictionary<EItemType, List<int>> _warehouseTypeToIndices = new Dictionary<EItemType, List<int>>();
-        bool _warehouseCategoryDirty = true;
 
         public PlayerBag ImportantItemBag; // 仅用来存放珍贵物品 极少量
 
@@ -47,11 +47,11 @@ namespace My.Player.Bag
 
         public event Action<EPlayerBagId, string, long> EventOnGainItem;
 
-
         public PlayerInventorySystem()
         {
             MainBag = new PlayerBag();
             WarehouseBag = new PlayerBag();
+            FurnitureWarehouseBag = new PlayerBag();
 
             MindFacetBag = new PlayerBag();
         }
@@ -60,33 +60,167 @@ namespace My.Player.Bag
         {
             this.LogicManager = ctx;
 
-            MainBag.InitBag(0, 60, 0, layout: EBagStorageLayout.Grid);
-            MindFacetBag.InitBag(EPlayerBagId.Mind, 30, 0, EBagStorageLayout.Compact);
+            MainBag = InitConfiguredBag(EPlayerBagId.Default, MainBag, 60, 0, EBagStorageLayout.Grid);
+            MindFacetBag = InitConfiguredBag(EPlayerBagId.Mind, MindFacetBag, 30, 0, EBagStorageLayout.Compact);
+            ImportantItemBag = InitConfiguredBag(EPlayerBagId.Important, ImportantItemBag, 8, 0, EBagStorageLayout.Compact);
+            WarehouseBag = InitConfiguredBag(EPlayerBagId.Storage, WarehouseBag, 100, 0, EBagStorageLayout.Compact);
+            FurnitureWarehouseBag = InitConfiguredBag(EPlayerBagId.FurnitureStorage, FurnitureWarehouseBag, 100, 0, EBagStorageLayout.Compact);
+            SpeBags[EPlayerBagId.Secret] = InitConfiguredBag(EPlayerBagId.Secret, GetBagById((int)EPlayerBagId.Secret), 5, 3, EBagStorageLayout.Compact);
 
-            ImportantItemBag = new PlayerBag();
-            ImportantItemBag.InitBag(EPlayerBagId.Important, 8, 0, EBagStorageLayout.Compact);
-
-            int storageSlots = 100;
-            WarehouseBag.InitBag(EPlayerBagId.Storage, storageSlots, 0);
-
-            var secretBag = new PlayerBag();
-            var slots = ctx.playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.SecretSlot);
-            secretBag.InitBag(EPlayerBagId.Secret, 5, 3);
-            SpeBags[EPlayerBagId.Secret] = secretBag;
-
-            WarehouseBag.EvOnBagUpdate += delegate { MarkWarehouseCategoryDirty(); };
-
+            RefreshSpecialBagsFromProgression();
             ApplyMainBagFromSave(savingData);
             ApplyWarehouseFromSave(savingData);
+            ApplySpecialBagsFromSave(savingData);
         }
 
         public void PostInit(PlayerSystemManager owner)
         {
+            if (owner?.ProgressionSystem?.ProgressionRoot != null)
+            {
+                owner.ProgressionSystem.ProgressionRoot.OnStatsChanged += delegate
+                {
+                    RefreshSpecialBagsFromProgression();
+                };
+            }
         }
 
-        static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId)
+        static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId, ItemInstanceInfo instanceInfo = null)
         {
-            return ItemCatalog.HydrateItemStackFromPersist(itemId, count, itemInstanceId);
+            return ItemCatalog.HydrateItemStackFromPersist(itemId, count, itemInstanceId, instanceInfo);
+        }
+
+        PlayerBag InitConfiguredBag(
+            EPlayerBagId bagId,
+            PlayerBag bag,
+            int fallbackCapacity,
+            int fallbackExtraCapacity,
+            EBagStorageLayout fallbackLayout)
+        {
+            bag ??= new PlayerBag();
+            var def = PlayerBagCatalog.GetDef(bagId);
+            int capacity = PlayerBagCatalog.ResolveCapacity(def, LogicManager?.playerDataManager, fallbackCapacity);
+            int extraCapacity = PlayerBagCatalog.ResolveExtraCapacity(def, fallbackExtraCapacity);
+            var layout = PlayerBagCatalog.ResolveLayout(def, fallbackLayout);
+
+            bag.InitBag(bagId, capacity, extraCapacity, layout);
+            PlayerBagCatalog.ApplyAcceptedTags(bag, def);
+            return bag;
+        }
+
+        static My.Saving.PlayerBagPersist FindBagPersist(List<My.Saving.PlayerBagPersist> bags, EPlayerBagId bagId)
+        {
+            if (bags == null)
+            {
+                return null;
+            }
+
+            int id = (int)bagId;
+            for (int i = 0; i < bags.Count; i++)
+            {
+                if (bags[i] != null && bags[i].BagId == id)
+                {
+                    return bags[i];
+                }
+            }
+
+            return null;
+        }
+
+        static My.Saving.PlayerBagPersist BuildBagPersist(PlayerBag bag)
+        {
+            if (bag == null)
+            {
+                return null;
+            }
+
+            var bagSave = new My.Saving.PlayerBagPersist
+            {
+                BagId = (int)bag.BagId,
+            };
+
+            int bc = bag.BasicCapacity;
+            for (int i = 0; i < bag.NormalSlots.Count; i++)
+            {
+                AddSlotPersist(bagSave, i, bag.NormalSlots[i]);
+            }
+
+            for (int e = 0; e < bag.ExtraSlots.Count; e++)
+            {
+                AddSlotPersist(bagSave, bc + e, bag.ExtraSlots[e]);
+            }
+
+            return bagSave;
+        }
+
+        void RefreshSpecialBagsFromProgression()
+        {
+            var defs = PlayerBagCatalog.GetAutoGainBagDefs();
+            for (int i = 0; i < defs.Count; i++)
+            {
+                EnsureProgressionBag(defs[i]);
+            }
+        }
+
+        void EnsureProgressionBag(cfg.demo.PlayerBagDef def)
+        {
+            if (def == null)
+            {
+                return;
+            }
+
+            var bagId = (EPlayerBagId)def.BagId;
+            int capacity = PlayerBagCatalog.ResolveCapacity(def, LogicManager?.playerDataManager, 0);
+            if (capacity <= 0)
+            {
+                return;
+            }
+
+            if (!SpeBags.TryGetValue(bagId, out var bag) || bag == null)
+            {
+                bag = new PlayerBag();
+                bag.InitBag(
+                    bagId,
+                    capacity,
+                    PlayerBagCatalog.ResolveExtraCapacity(def, 0),
+                    PlayerBagCatalog.ResolveLayout(def, EBagStorageLayout.Compact));
+                SpeBags[bagId] = bag;
+            }
+            else
+            {
+                ResizePrimaryCapacity(bag, capacity);
+            }
+
+            PlayerBagCatalog.ApplyAcceptedTags(bag, def);
+            AssignKnownSpecialBagField(bagId, bag);
+        }
+
+        void AssignKnownSpecialBagField(EPlayerBagId bagId, PlayerBag bag)
+        {
+            if (bagId == EPlayerBagId.Plant)
+            {
+                PlantBag = bag;
+            }
+        }
+
+        static void ResizePrimaryCapacity(PlayerBag bag, int capacity)
+        {
+            if (bag == null || capacity <= 0 || bag.BasicCapacity == capacity)
+            {
+                return;
+            }
+
+            if (capacity < bag.BasicCapacity)
+            {
+                return;
+            }
+
+            bag.BasicCapacity = capacity;
+            while (bag.NormalSlots.Count < capacity)
+            {
+                bag.NormalSlots.Add(null);
+            }
+
+            bag.AfterSlotMutation();
         }
 
         void ApplyMainBagFromSave(SaveData save)
@@ -103,7 +237,8 @@ namespace My.Player.Bag
                 MainBag.NormalSlots[si] = null;
             }
 
-            var entries = save?.MainInventorySlots;
+            var entries = FindBagPersist(save?.PlayerInventoryBags, EPlayerBagId.Default)?.Slots
+                          ?? save?.MainInventorySlots;
             if (entries == null || entries.Count == 0)
             {
                 MainBag.FinishHydrateMutation();
@@ -125,7 +260,7 @@ namespace My.Player.Bag
                     continue;
                 }
 
-                var stack = HydratePersistedStack(row.ItemId, row.Count, row.ItemInstanceId);
+                var stack = HydratePersistedStack(row.ItemId, row.Count, row.ItemInstanceId, row.InstanceInfo);
                 if (stack == null)
                 {
                     Debug.LogWarning($"[ApplyMainBagFromSave] Invalid item at SlotIndex={row.SlotIndex} (missing id or zero count).");
@@ -169,53 +304,6 @@ namespace My.Player.Bag
             MainBag.FinishHydrateMutation();
         }
 
-        void MarkWarehouseCategoryDirty()
-        {
-            _warehouseCategoryDirty = true;
-        }
-
-        void EnsureWarehouseCategoryIndex()
-        {
-            if (!_warehouseCategoryDirty || WarehouseBag == null)
-            {
-                return;
-            }
-            _warehouseTypeToIndices.Clear();
-            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
-            {
-                var st = WarehouseBag.NormalSlots[i];
-                if (st == null || st.IsEmpty)
-                {
-                    continue;
-                }
-                var def = ItemCatalog.GetItemDef(st.ItemID);
-                var et = def != null ? def.ItemType : EItemType.Normal;
-                if (!_warehouseTypeToIndices.TryGetValue(et, out var li))
-                {
-                    li = new List<int>();
-                    _warehouseTypeToIndices[et] = li;
-                }
-                li.Add(i);
-            }
-            _warehouseCategoryDirty = false;
-        }
-
-        public IReadOnlyList<int> GetWarehouseSlotIndicesForItemTypeFilter(int typeFilterInt)
-        {
-            EnsureWarehouseCategoryIndex();
-            if (typeFilterInt < 0)
-            {
-                return null;
-            }
-            var t = (EItemType)typeFilterInt;
-            if (_warehouseTypeToIndices.TryGetValue(t, out var list))
-            {
-                return list;
-            }
-            return Array.Empty<int>();
-        }
-
-
         /// <summary>
         /// 从存档中读取
         /// </summary>
@@ -226,6 +314,33 @@ namespace My.Player.Bag
             {
                 return;
             }
+
+            var commonPersist = save?.SecretBaseStorage?.CommonWarehouse;
+            if (commonPersist != null
+                && (commonPersist.BagId == (int)EPlayerBagId.Storage
+                    || (commonPersist.Slots != null && commonPersist.Slots.Count > 0)))
+            {
+                ApplyBagPersistToBag(WarehouseBag, commonPersist);
+            }
+            else
+            {
+                ApplyLegacyWarehousePagesFromSave(save);
+            }
+
+            var furniturePersist = save?.SecretBaseStorage?.FurnitureWarehouse;
+            if (FurnitureWarehouseBag != null && furniturePersist != null)
+            {
+                ApplyBagPersistToBag(FurnitureWarehouseBag, furniturePersist);
+            }
+        }
+
+        void ApplyLegacyWarehousePagesFromSave(SaveData save)
+        {
+            if (WarehouseBag == null)
+            {
+                return;
+            }
+
             for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
             {
                 WarehouseBag.NormalSlots[i] = null;
@@ -234,7 +349,6 @@ namespace My.Player.Bag
 
             if (save?.WarehousePages == null || save.WarehousePages.Count == 0)
             {
-                MarkWarehouseCategoryDirty();
                 return;
             }
 
@@ -251,7 +365,7 @@ namespace My.Player.Bag
                     {
                         continue;
                     }
-                    var st = HydratePersistedStack(slot.ItemId, slot.Count, slot.ItemInstanceId);
+                    var st = HydratePersistedStack(slot.ItemId, slot.Count, slot.ItemInstanceId, slot.InstanceInfo);
                     if (st != null)
                     {
                         flat.Add(st);
@@ -264,7 +378,161 @@ namespace My.Player.Bag
                 WarehouseBag.NormalSlots[i] = i < flat.Count ? flat[i] : null;
             }
             WarehouseBag.AfterSlotMutation();
-            MarkWarehouseCategoryDirty();
+        }
+
+        void ApplyBagPersistToBag(PlayerBag bag, My.Saving.PlayerBagPersist bagSave)
+        {
+            if (bag == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < bag.NormalSlots.Count; i++)
+            {
+                bag.NormalSlots[i] = null;
+            }
+            bag.ExtraSlots.Clear();
+
+            if (bagSave?.Slots == null)
+            {
+                bag.FinishHydrateMutation();
+                return;
+            }
+
+            int bc = bag.BasicCapacity;
+            foreach (var row in bagSave.Slots)
+            {
+                if (row == null || row.SlotIndex < 0)
+                {
+                    continue;
+                }
+
+                var stack = HydratePersistedStack(row.ItemId, row.Count, row.ItemInstanceId, row.InstanceInfo);
+                if (stack == null || !bag.CanAcceptItem(stack.ItemID))
+                {
+                    continue;
+                }
+
+                if (row.SlotIndex < bag.NormalSlots.Count)
+                {
+                    bag.NormalSlots[row.SlotIndex] = stack;
+                    continue;
+                }
+
+                int extraIdx = row.SlotIndex - bc;
+                if (extraIdx < 0 || extraIdx >= bag.MaxExtraCapacity)
+                {
+                    continue;
+                }
+
+                while (bag.ExtraSlots.Count < extraIdx + 1 && bag.ExtraSlots.Count < bag.MaxExtraCapacity)
+                {
+                    bag.ExtraSlots.Add(null);
+                }
+
+                if (extraIdx < bag.ExtraSlots.Count)
+                {
+                    bag.ExtraSlots[extraIdx] = stack;
+                }
+            }
+
+            bag.FinishHydrateMutation();
+        }
+
+        void ApplySpecialBagsFromSave(SaveData save)
+        {
+            bool appliedAny = false;
+            if (save?.PlayerInventoryBags != null && save.PlayerInventoryBags.Count > 0)
+            {
+                foreach (var bagSave in save.PlayerInventoryBags)
+                {
+                    if (bagSave == null || bagSave.BagId == (int)EPlayerBagId.Default
+                        || bagSave.BagId == (int)EPlayerBagId.Storage
+                        || bagSave.BagId == (int)EPlayerBagId.FurnitureStorage)
+                    {
+                        continue;
+                    }
+
+                    var bag = GetBagById(bagSave.BagId);
+                    if (bag == null)
+                    {
+                        continue;
+                    }
+
+                    ApplyBagPersistToBag(bag, bagSave);
+                    appliedAny = true;
+                }
+            }
+
+            if (appliedAny || save?.SpecialInventoryBags == null || save.SpecialInventoryBags.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var bagSave in save.SpecialInventoryBags)
+            {
+                if (bagSave == null)
+                {
+                    continue;
+                }
+
+                var bag = GetBagById(bagSave.BagId);
+                if (bag == null)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < bag.NormalSlots.Count; i++)
+                {
+                    bag.NormalSlots[i] = null;
+                }
+                bag.ExtraSlots.Clear();
+
+                if (bagSave.Slots == null)
+                {
+                    bag.FinishHydrateMutation();
+                    continue;
+                }
+
+                int bc = bag.BasicCapacity;
+                foreach (var row in bagSave.Slots)
+                {
+                    if (row == null || row.SlotIndex < 0)
+                    {
+                        continue;
+                    }
+
+                    var stack = HydratePersistedStack(row.ItemId, row.Count, row.ItemInstanceId, row.InstanceInfo);
+                    if (stack == null || !bag.CanAcceptItem(stack.ItemID))
+                    {
+                        continue;
+                    }
+
+                    if (row.SlotIndex < bag.NormalSlots.Count)
+                    {
+                        bag.NormalSlots[row.SlotIndex] = stack;
+                        continue;
+                    }
+
+                    int extraIdx = row.SlotIndex - bc;
+                    if (extraIdx < 0 || extraIdx >= bag.MaxExtraCapacity)
+                    {
+                        continue;
+                    }
+
+                    while (bag.ExtraSlots.Count < extraIdx + 1 && bag.ExtraSlots.Count < bag.MaxExtraCapacity)
+                    {
+                        bag.ExtraSlots.Add(null);
+                    }
+
+                    if (extraIdx < bag.ExtraSlots.Count)
+                    {
+                        bag.ExtraSlots[extraIdx] = stack;
+                    }
+                }
+
+                bag.FinishHydrateMutation();
+            }
         }
 
         private float _bagTimer;
@@ -284,6 +552,7 @@ namespace My.Player.Bag
 
             TickInsertionBuffsOnBag(MainBag, dt);
             TickInsertionBuffsOnBag(WarehouseBag, dt);
+            TickInsertionBuffsOnBag(FurnitureWarehouseBag, dt);
             foreach (var bag in SpeBags.Values)
             {
                 TickInsertionBuffsOnBag(bag, dt);
@@ -304,7 +573,8 @@ namespace My.Player.Bag
                     continue;
                 }
 
-                if (bag.NormalSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                var insertion = bag.NormalSlots[i].InstanceInfo?.Get<ItemInstance4Insertion>();
+                if (insertion != null)
                 {
                     var itemConf = ItemCatalog.GetItemDef(bag.NormalSlots[i].ItemID);
                     if (itemConf != null && itemConf.AutoDestroy)
@@ -333,7 +603,8 @@ namespace My.Player.Bag
                     continue;
                 }
 
-                if (bag.ExtraSlots[i].InstanceInfo is ItemInstance4Insertion insertion)
+                var insertion = bag.ExtraSlots[i].InstanceInfo?.Get<ItemInstance4Insertion>();
+                if (insertion != null)
                 {
                     var itemConf = ItemCatalog.GetItemDef(bag.ExtraSlots[i].ItemID);
                     if (itemConf != null && itemConf.AutoDestroy)
@@ -382,6 +653,11 @@ namespace My.Player.Bag
             {
                 return true;
             }
+            Acc(FurnitureWarehouseBag);
+            if (totalNum >= count)
+            {
+                return true;
+            }
             foreach (var bag in SpeBags.Values)
             {
                 Acc(bag);
@@ -410,7 +686,7 @@ namespace My.Player.Bag
 
             if (binding.ItemInstanceId == 0)
             {
-                return CheckHaveItem(binding.ItemId, 1);
+                return GetCarriedItemTotal(binding.ItemId) > 0;
             }
 
             return TryFindCarriedStack(binding, out _, out _);
@@ -418,7 +694,13 @@ namespace My.Player.Bag
 
         public bool TryFindCarriedStack(QuickSlotBinding binding, out int bagFlatIndex, out ItemStack stack)
         {
+            return TryFindCarriedStackWithBag(binding, out _, out bagFlatIndex, out stack);
+        }
+
+        bool TryFindCarriedStackWithBag(QuickSlotBinding binding, out PlayerBag foundBag, out int bagFlatIndex, out ItemStack stack)
+        {
             bagFlatIndex = -1;
+            foundBag = null;
             stack = null;
 
             if (binding.IsEmpty)
@@ -428,7 +710,7 @@ namespace My.Player.Bag
 
             if (binding.ItemInstanceId == 0)
             {
-                if (!TryFindFirstCarriedStackByItemId(binding.ItemId, out bagFlatIndex, out stack))
+                if (!TryFindFirstCarriedStackByItemId(binding.ItemId, out foundBag, out bagFlatIndex, out stack))
                 {
                     return false;
                 }
@@ -438,6 +720,7 @@ namespace My.Player.Bag
 
             if (TryFindStackInBag(MainBag, binding, out bagFlatIndex, out stack))
             {
+                foundBag = MainBag;
                 return true;
             }
 
@@ -445,6 +728,7 @@ namespace My.Player.Bag
             {
                 if (TryFindStackInBag(bag, binding, out bagFlatIndex, out stack))
                 {
+                    foundBag = bag;
                     return true;
                 }
             }
@@ -452,10 +736,12 @@ namespace My.Player.Bag
             return false;
         }
 
-        bool TryFindFirstCarriedStackByItemId(string itemId, out int bagFlatIndex, out ItemStack stack)
+        bool TryFindFirstCarriedStackByItemId(string itemId, out PlayerBag foundBag, out int bagFlatIndex, out ItemStack stack)
         {
+            foundBag = null;
             if (TryFindFirstStackInBagByItemId(MainBag, itemId, out bagFlatIndex, out stack))
             {
+                foundBag = MainBag;
                 return true;
             }
 
@@ -463,6 +749,7 @@ namespace My.Player.Bag
             {
                 if (TryFindFirstStackInBagByItemId(bag, itemId, out bagFlatIndex, out stack))
                 {
+                    foundBag = bag;
                     return true;
                 }
             }
@@ -536,7 +823,7 @@ namespace My.Player.Bag
 
             if (binding.ItemInstanceId == 0)
             {
-                return CostItem(binding.ItemId, count);
+                return CostCarriedItem(binding.ItemId, count);
             }
 
             if (TryFindStackInBag(MainBag, binding, out var flatIndex, out _))
@@ -557,6 +844,68 @@ namespace My.Player.Bag
             return count;
         }
 
+        public bool TryConsumeItemUse(PlayerBag bag, int flatIndex, ItemUse useRow, long count = 1)
+        {
+            if (bag == null || useRow == null || count <= 0)
+            {
+                return false;
+            }
+
+            var stack = bag.GetItemByIdx(flatIndex);
+            if (stack == null || stack.IsEmpty)
+            {
+                return false;
+            }
+
+            return TryConsumeStackUse(bag, flatIndex, stack, useRow, count);
+        }
+
+        public bool TryConsumeQuickSlotUse(QuickSlotBinding binding, ItemUse useRow, long count = 1)
+        {
+            if (binding.IsEmpty || useRow == null || count <= 0)
+            {
+                return false;
+            }
+
+            if (TryFindCarriedStackWithBag(binding, out var bag, out var flatIndex, out var stack))
+            {
+                if (bag != null)
+                {
+                    return TryConsumeStackUse(bag, flatIndex, stack, useRow, count);
+                }
+            }
+
+            return false;
+        }
+
+        bool TryConsumeStackUse(PlayerBag bag, int flatIndex, ItemStack stack, ItemUse useRow, long count)
+        {
+            switch (ItemCatalog.GetUseConsumePolicy(useRow))
+            {
+                case EItemUseConsumePolicy.None:
+                    return true;
+                case EItemUseConsumePolicy.StackCount:
+                    return bag.RemoveAt(flatIndex, count) == count;
+                case EItemUseConsumePolicy.DestroyInstance:
+                    return bag.RemoveAt(flatIndex, stack.Count) > 0;
+                case EItemUseConsumePolicy.InstanceCharge:
+                {
+                    var charge = stack.InstanceInfo?.Get<ItemInstance4UseCharge>();
+                    if (charge == null || charge.Charges < count)
+                    {
+                        Debug.LogWarning($"TryConsumeStackUse: missing or insufficient charges itemId={stack.ItemID}");
+                        return false;
+                    }
+
+                    charge.Charges -= count;
+                    bag.AfterSlotMutation();
+                    return true;
+                }
+                default:
+                    return false;
+            }
+        }
+
         public long GetCarriedItemTotal(string itemId)
         {
             long totalNum = 0;
@@ -571,7 +920,6 @@ namespace My.Player.Bag
             }
 
             Acc(MainBag);
-            Acc(WarehouseBag);
             foreach (var bag in SpeBags.Values)
             {
                 Acc(bag);
@@ -688,6 +1036,10 @@ namespace My.Player.Bag
             {
                 leftCount = WarehouseBag.TryCostItem(itemId, leftCount);
             }
+            if (leftCount > 0 && FurnitureWarehouseBag != null)
+            {
+                leftCount = FurnitureWarehouseBag.TryCostItem(itemId, leftCount);
+            }
 
             return leftCount;
         }
@@ -713,15 +1065,7 @@ namespace My.Player.Bag
                 return amount;
             }
 
-            PlayerBag targetBag = null;
-            if (itemConf.ItemType == EItemType.MindFacet)
-            {
-                targetBag = GetBagById((int)EPlayerBagId.Mind);
-            }
-            else
-            {
-                targetBag = GetBagById(0);
-            }
+            var targetBags = GetGainTargetBags(itemConf);
 
             
             if (itemConf.IsAutoUse)
@@ -736,7 +1080,7 @@ namespace My.Player.Bag
             }
             
 
-            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
+            if (ItemCatalog.RequiresInstance(itemConf))
             {
                 if (amount > MaxInstanceGrantBatch)
                 {
@@ -754,7 +1098,17 @@ namespace My.Player.Bag
                         break;
                     }
 
-                    if (!targetBag.TryPlaceStackWithoutMerge(stack))
+                    bool placed = false;
+                    foreach (var bag in targetBags)
+                    {
+                        if (bag != null && bag.TryPlaceStackWithoutMerge(stack))
+                        {
+                            placed = true;
+                            break;
+                        }
+                    }
+
+                    if (!placed)
                     {
                         break;
                     }
@@ -770,7 +1124,18 @@ namespace My.Player.Bag
                 return total;
             }
 
-            var put = targetBag.TryGiveItem(itemId, amount);
+            long remaining = amount;
+            foreach (var bag in targetBags)
+            {
+                if (bag == null || remaining <= 0)
+                {
+                    continue;
+                }
+
+                remaining -= bag.TryGiveItem(itemId, remaining);
+            }
+
+            var put = amount - remaining;
 
             EventOnGainItem?.Invoke(EPlayerBagId.Default, itemId, put);
 
@@ -860,6 +1225,10 @@ namespace My.Player.Bag
             {
                 return WarehouseBag;
             }
+            if (bagId == (int)EPlayerBagId.FurnitureStorage)
+            {
+                return FurnitureWarehouseBag;
+            }
             SpeBags.TryGetValue((EPlayerBagId)bagId, out var bag);
             return bag;
         }
@@ -873,41 +1242,10 @@ namespace My.Player.Bag
 
             save.MainInventorySlots ??= new List<My.Saving.MainBagSlotPersist>();
             save.MainInventorySlots.Clear();
-            int bc = MainBag.BasicCapacity;
 
-            for (int i = 0; i < MainBag.NormalSlots.Count; i++)
-            {
-                var st = MainBag.NormalSlots[i];
-                if (st == null || st.IsEmpty)
-                {
-                    continue;
-                }
-
-                save.MainInventorySlots.Add(new My.Saving.MainBagSlotPersist
-                {
-                    SlotIndex = i,
-                    ItemId = st.ItemID,
-                    Count = st.Count,
-                    ItemInstanceId = st.ItemInstanceId,
-                });
-            }
-
-            for (int e = 0; e < MainBag.ExtraSlots.Count; e++)
-            {
-                var st = MainBag.ExtraSlots[e];
-                if (st == null || st.IsEmpty)
-                {
-                    continue;
-                }
-
-                save.MainInventorySlots.Add(new My.Saving.MainBagSlotPersist
-                {
-                    SlotIndex = bc + e,
-                    ItemId = st.ItemID,
-                    Count = st.Count,
-                    ItemInstanceId = st.ItemInstanceId,
-                });
-            }
+            save.PlayerInventoryBags ??= new List<My.Saving.PlayerBagPersist>();
+            save.PlayerInventoryBags.Clear();
+            save.PlayerInventoryBags.Add(BuildBagPersist(MainBag));
         }
 
         public void WriteWarehouseToSave(My.Saving.SaveData save)
@@ -918,25 +1256,79 @@ namespace My.Player.Bag
             }
             save.WarehousePages ??= new List<My.Saving.WarehousePagePersist>();
             save.WarehousePages.Clear();
-            var page = new My.Saving.WarehousePagePersist();
-            for (int i = 0; i < WarehouseBag.NormalSlots.Count; i++)
+
+            save.SecretBaseStorage ??= new My.Saving.SecretBaseStoragePersist();
+            save.SecretBaseStorage.CommonWarehouse = BuildBagPersist(WarehouseBag);
+            save.SecretBaseStorage.FurnitureWarehouse = BuildBagPersist(FurnitureWarehouseBag);
+        }
+
+        public void WriteSpecialBagsToSave(My.Saving.SaveData save)
+        {
+            if (save == null)
             {
-                var st = WarehouseBag.NormalSlots[i];
-                if (st == null || st.IsEmpty)
+                return;
+            }
+
+            save.SpecialInventoryBags ??= new List<My.Saving.PlayerBagPersist>();
+            save.SpecialInventoryBags.Clear();
+            save.PlayerInventoryBags ??= new List<My.Saving.PlayerBagPersist>();
+
+            var seen = new HashSet<EPlayerBagId>();
+            seen.Add(EPlayerBagId.Default);
+            for (int i = 0; i < save.PlayerInventoryBags.Count; i++)
+            {
+                if (save.PlayerInventoryBags[i] != null)
                 {
-                    page.Slots.Add(new My.Saving.WarehouseSlotPersist());
-                }
-                else
-                {
-                    page.Slots.Add(new My.Saving.WarehouseSlotPersist
-                    {
-                        ItemId = st.ItemID,
-                        Count = st.Count,
-                        ItemInstanceId = st.ItemInstanceId,
-                    });
+                    seen.Add((EPlayerBagId)save.PlayerInventoryBags[i].BagId);
                 }
             }
-            save.WarehousePages.Add(page);
+            WriteSpecialBagToSave(save, MindFacetBag, seen);
+            WriteSpecialBagToSave(save, ImportantItemBag, seen);
+            foreach (var bag in SpeBags.Values)
+            {
+                WriteSpecialBagToSave(save, bag, seen);
+            }
+        }
+
+        static void WriteSpecialBagToSave(
+            My.Saving.SaveData save,
+            PlayerBag bag,
+            HashSet<EPlayerBagId> seen)
+        {
+            if (save == null || bag == null || bag.BagId == EPlayerBagId.Default
+                || bag.BagId == EPlayerBagId.Storage || bag.BagId == EPlayerBagId.FurnitureStorage)
+            {
+                return;
+            }
+
+            if (!seen.Add(bag.BagId))
+            {
+                return;
+            }
+
+            var bagSave = BuildBagPersist(bag);
+
+            if (bagSave.Slots.Count > 0)
+            {
+                save.PlayerInventoryBags.Add(bagSave);
+            }
+        }
+
+        static void AddSlotPersist(My.Saving.PlayerBagPersist bagSave, int slotIndex, ItemStack st)
+        {
+            if (bagSave == null || st == null || st.IsEmpty)
+            {
+                return;
+            }
+
+            bagSave.Slots.Add(new My.Saving.MainBagSlotPersist
+            {
+                SlotIndex = slotIndex,
+                ItemId = st.ItemID,
+                Count = st.Count,
+                ItemInstanceId = st.ItemInstanceId,
+                InstanceInfo = st.InstanceInfo?.Clone(),
+            });
         }
 
         public bool CanGainItems(string itemId, long count)
@@ -962,70 +1354,138 @@ namespace My.Player.Bag
                 return true;
             }
 
-            var targetBag = GetGainTargetBag(itemConf);
-            if (targetBag == null)
+            var targetBags = GetGainTargetBags(itemConf);
+            if (targetBags.Count == 0)
             {
                 return false;
             }
 
-            if (ItemCatalog.IsInstanceType(itemConf.ItemType))
+            if (ItemCatalog.RequiresInstance(itemConf))
             {
                 if (count > MaxInstanceGrantBatch)
                 {
                     return false;
                 }
 
-                return targetBag.CountDiscreteEmptySlots() >= count;
+                long empty = 0;
+                foreach (var bag in targetBags)
+                {
+                    if (bag != null && bag.CanAcceptItem(itemId))
+                    {
+                        empty += bag.CountDiscreteEmptySlots();
+                    }
+                }
+
+                return empty >= count;
             }
 
-            return CanBagGainStackableItems(targetBag, itemId, count);
+            long remaining = count;
+            foreach (var bag in targetBags)
+            {
+                remaining = ConsumeBagStackableSpace(bag, itemId, remaining);
+                if (remaining <= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
-        PlayerBag GetGainTargetBag(cfg.demo.ItemData itemConf)
+        List<PlayerBag> GetGainTargetBags(cfg.demo.ItemData itemConf)
         {
+            var result = new List<PlayerBag>();
             if (itemConf == null)
             {
-                return null;
+                return result;
             }
 
             if (itemConf.ItemType == EItemType.MindFacet)
             {
-                return GetBagById((int)EPlayerBagId.Mind);
+                AddDistinctBag(result, GetBagById((int)EPlayerBagId.Mind));
+                return result;
             }
 
-            return GetBagById(0);
+            if (TryGetTagSpecialBagForItem(itemConf, out var tagBag))
+            {
+                AddDistinctBag(result, tagBag);
+            }
+
+            AddDistinctBag(result, GetBagById(0));
+            return result;
         }
 
-        static bool CanBagGainStackableItems(PlayerBag bag, string itemId, long count)
+        static void AddDistinctBag(List<PlayerBag> result, PlayerBag bag)
+        {
+            if (bag == null || result.Contains(bag))
+            {
+                return;
+            }
+
+            result.Add(bag);
+        }
+
+        bool TryGetTagSpecialBagForItem(cfg.demo.ItemData itemConf, out PlayerBag bag)
+        {
+            bag = null;
+            if (itemConf == null)
+            {
+                return false;
+            }
+
+            var defs = PlayerBagCatalog.GetAutoGainBagDefs();
+            for (int i = 0; i < defs.Count; i++)
+            {
+                var def = defs[i];
+                if (def == null
+                    || def.AcceptedTags == null
+                    || def.AcceptedTags.Count == 0
+                    || !ItemTagCatalog.HasAnyTag(itemConf, def.AcceptedTags))
+                {
+                    continue;
+                }
+
+                var bagId = (EPlayerBagId)def.BagId;
+                if (SpeBags.TryGetValue(bagId, out bag) && bag != null)
+                {
+                    return true;
+                }
+            }
+
+            bag = null;
+            return false;
+        }
+
+        static long ConsumeBagStackableSpace(PlayerBag bag, string itemId, long count)
         {
             if (bag == null || string.IsNullOrEmpty(itemId) || count <= 0)
             {
-                return false;
+                return count;
             }
 
             long remaining = count;
             var maxStack = bag.GetMaxStack(itemId);
             if (maxStack <= 0)
             {
-                return false;
+                return remaining;
             }
 
             remaining = ConsumeStackableSpace(remaining, itemId, maxStack, bag.NormalSlots);
             if (remaining <= 0)
             {
-                return true;
+                return 0;
             }
 
             remaining = ConsumeEmptySlotSpace(remaining, maxStack, bag.NormalSlots);
             if (remaining <= 0)
             {
-                return true;
+                return 0;
             }
 
             remaining = ConsumeStackableSpace(remaining, itemId, maxStack, bag.ExtraSlots);
             if (remaining <= 0)
             {
-                return true;
+                return 0;
             }
 
             if (bag.MaxExtraCapacity > 0)
@@ -1034,7 +1494,7 @@ namespace My.Player.Bag
                 remaining -= appendableExtraSlots * maxStack;
             }
 
-            return remaining <= 0;
+            return Math.Max(0, remaining);
         }
 
         static long ConsumeStackableSpace(long remaining, string itemId, long maxStack, List<ItemStack> slots)

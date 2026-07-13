@@ -24,7 +24,7 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["stackable"].IsBoolean) { throw new SerializationException(); }  Stackable = _buf["stackable"]; }
         { if(!_buf["stack_profile"].IsNumber) { throw new SerializationException(); }  StackProfile = (demo.EItemStackProfile)_buf["stack_profile"].AsInt; }
         { if(!_buf["stack_count"].IsNumber) { throw new SerializationException(); }  StackCount = _buf["stack_count"]; }
-        { var __json0 = _buf["tags"]; if(!__json0.IsArray) { throw new SerializationException(); } Tags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  Tags.Add(__v0); }   }
+        { var __json0 = _buf["tags"]; if(!__json0.IsArray) { throw new SerializationException(); } Tags = new System.Collections.Generic.List<demo.EItemTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EItemTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EItemTag)__e0.AsInt; }  Tags.Add(__v0); }   }
         { if(!_buf["sprite_name"].IsString) { throw new SerializationException(); }  SpriteName = _buf["sprite_name"]; }
         { if(!_buf["can_drop"].IsBoolean) { throw new SerializationException(); }  CanDrop = _buf["can_drop"]; }
         { if(!_buf["rare_tier"].IsNumber) { throw new SerializationException(); }  RareTier = _buf["rare_tier"]; }
@@ -37,7 +37,6 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["special_buff_interval"].IsNumber) { throw new SerializationException(); }  SpecialBuffInterval = _buf["special_buff_interval"]; }
         { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
         { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
-        { if(!_buf["quick_bar_kind"].IsNumber) { throw new SerializationException(); }  QuickBarKind = (demo.EQuickBarItemKind)_buf["quick_bar_kind"].AsInt; }
         { if(!_buf["can_dismantle"].IsBoolean) { throw new SerializationException(); }  CanDismantle = _buf["can_dismantle"]; }
     }
 
@@ -73,7 +72,7 @@ public sealed partial class ItemData : Luban.BeanBase
     /// <summary>
     /// 物品语义标签；供容器、Perk和筛选规则匹配
     /// </summary>
-    public System.Collections.Generic.List<string> Tags;
+    public System.Collections.Generic.List<demo.EItemTag> Tags;
     /// <summary>
     /// sprite_name
     /// </summary>
@@ -123,10 +122,6 @@ public sealed partial class ItemData : Luban.BeanBase
     /// </summary>
     public bool IsAutoUse;
     /// <summary>
-    /// 快速使用类型
-    /// </summary>
-    public demo.EQuickBarItemKind QuickBarKind;
-    /// <summary>
     /// 是否允许进入分解系统；仍需item_dismantle存在对应规则
     /// </summary>
     public bool CanDismantle;
@@ -160,7 +155,6 @@ public sealed partial class ItemData : Luban.BeanBase
         + "specialBuffInterval:" + SpecialBuffInterval + ","
         + "autoPick:" + AutoPick + ","
         + "isAutoUse:" + IsAutoUse + ","
-        + "quickBarKind:" + QuickBarKind + ","
         + "canDismantle:" + CanDismantle + ","
         + "}";
     }

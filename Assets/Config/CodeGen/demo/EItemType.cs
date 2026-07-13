@@ -15,12 +15,6 @@ namespace cfg.demo
     {
         Normal = 0,
         Currency = 1,
-        Equip = 2,
-        Pocket = 3,
-        Insertion = 4,
-        Gift = 5,
-        HumanWeapon = 6,
-        PartGear = 7,
         MindFacet = 10,
     }
 

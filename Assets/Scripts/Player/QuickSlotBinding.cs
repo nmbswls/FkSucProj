@@ -34,7 +34,7 @@ namespace My.Player
                 return false;
             }
 
-            return ItemCatalog.IsInstanceType(def.ItemType) || !def.Stackable;
+            return ItemCatalog.RequiresInstance(def) || !def.Stackable;
         }
 
         public static bool TryNormalizeAssign(string itemId, long itemInstanceId, out QuickSlotBinding binding, out string failReason)

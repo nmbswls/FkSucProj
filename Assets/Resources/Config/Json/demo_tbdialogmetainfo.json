@@ -838,5 +838,61 @@
     "show_priority": 0,
     "custom_variables": [],
     "cutscene_id": ""
+  },
+  {
+    "dialog_id": "forest_quest_211_remind",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "forest_quest_211_remind",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 20,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "forest_quest_211_fulfill",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "forest_quest_211_fulfill",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 20,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "forest_quest_212_remind",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "forest_quest_212_remind",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 20,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "forest_quest_212_fulfill",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "forest_quest_212_fulfill",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 20,
+    "custom_variables": [],
+    "cutscene_id": ""
   }
 ]

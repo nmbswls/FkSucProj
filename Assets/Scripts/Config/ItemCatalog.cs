@@ -63,20 +63,6 @@ namespace My.Config
                 return;
             }
 
-            foreach (var def in CfgMgr.Cfgs.TbItemData.DataList)
-            {
-                if (def.ItemType != EItemType.Gift)
-                {
-                    continue;
-                }
-
-                if (GetGiftDef(def.ItemId) == null)
-                {
-                    Debug.LogWarning(
-                        $"ItemCatalog: Gift item '{def.ItemId}' has no row in TbItemGift (item_gift sheet).");
-                }
-            }
-
             foreach (var gift in CfgMgr.Cfgs.TbItemGift.DataList)
             {
                 var def = GetItemDef(gift.ItemId);
@@ -84,11 +70,6 @@ namespace My.Config
                 {
                     Debug.LogWarning(
                         $"ItemCatalog: TbItemGift row '{gift.ItemId}' has no matching TbItemData row.");
-                }
-                else if (def.ItemType != EItemType.Gift)
-                {
-                    Debug.LogWarning(
-                        $"ItemCatalog: TbItemGift row '{gift.ItemId}' but item_type is {def.ItemType}, expected Gift.");
                 }
             }
         }
@@ -130,22 +111,33 @@ namespace My.Config
         public static bool CanUse(string itemId)
         {
             var u = GetPrimaryUse(itemId);
-            return u != null && u.Usable;
+            return u != null;
         }
 
+        public static EItemUseConsumePolicy GetUseConsumePolicy(ItemUse useRow)
+        {
+            return useRow?.ConsumePolicy ?? EItemUseConsumePolicy.None;
+        }
+
+        public static bool ShouldConsumeOnUse(ItemUse useRow)
+        {
+            return GetUseConsumePolicy(useRow) != EItemUseConsumePolicy.None;
+        }
+
+        public static bool RequiresInstance(ItemData def)
+        {
+            return ItemTagCatalog.RequiresInstance(def);
+        }
+
+        public static bool RequiresInstance(string itemId)
+        {
+            return RequiresInstance(GetItemDef(itemId));
+        }
+
+        [System.Obsolete("Use tag-based RequiresInstance(ItemData) instead.")]
         public static bool IsInstanceType(EItemType itemType)
         {
-            switch (itemType)
-            {
-                case EItemType.Equip:
-                case EItemType.Pocket:
-                case EItemType.Insertion:
-                case EItemType.HumanWeapon:
-                case EItemType.PartGear:
-                    return true;
-                default:
-                    return false;
-            }
+            return false;
         }
 
         public static ItemStack CreateItemStack(string itemId, long count)
@@ -171,7 +163,7 @@ namespace My.Config
 
             var item = new ItemStack(itemId, count);
 
-            if (IsInstanceType(def.ItemType))
+            if (RequiresInstance(def))
             {
                 item.ItemInstanceId = My.GameLogicManager.ItemInstanceIdCounter++;
                 ApplyFreshInstanceInfo(item, def);
@@ -181,7 +173,7 @@ namespace My.Config
         }
 
         // 从存档还原堆栈：已有 ItemInstanceId 时不占用新 id
-        public static ItemStack HydrateItemStackFromPersist(string itemId, long count, long itemInstanceId)
+        public static ItemStack HydrateItemStackFromPersist(string itemId, long count, long itemInstanceId, ItemInstanceInfo persistedInstanceInfo = null)
         {
             if (string.IsNullOrEmpty(itemId) || count <= 0)
             {
@@ -202,8 +194,9 @@ namespace My.Config
             }
 
             var item = new ItemStack(itemId, count);
-            if (!IsInstanceType(def.ItemType))
+            if (!RequiresInstance(def))
             {
+                item.InstanceInfo = persistedInstanceInfo?.Clone();
                 return item;
             }
 
@@ -216,28 +209,83 @@ namespace My.Config
                 item.ItemInstanceId = My.GameLogicManager.ItemInstanceIdCounter++;
             }
 
+            item.InstanceInfo = persistedInstanceInfo?.Clone();
             ApplyFreshInstanceInfo(item, def);
             return item;
         }
 
         static void ApplyFreshInstanceInfo(ItemStack item, ItemData def)
         {
-            switch (def.ItemType)
+            if (item == null || def == null || !RequiresInstance(def))
             {
-                case EItemType.Equip:
-                    item.InstanceInfo = new ItemInstance4Equip();
-                    break;
-                case EItemType.Insertion:
-                {
-                    var instInfo = new ItemInstance4Insertion
-                    {
-                        BuffTickTimer = LogicTime.time,
-                        Lifetime = def.AutoDestroyTime,
-                    };
-                    item.InstanceInfo = instInfo;
-                }
-                    break;
+                return;
             }
+
+            item.InstanceInfo ??= new ItemInstanceInfo();
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.PartGear))
+            {
+                item.InstanceInfo.GetOrAdd<ItemInstance4PartGear>();
+            }
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.HumanWeapon))
+            {
+                item.InstanceInfo.GetOrAdd<ItemInstance4HumanWeapon>();
+            }
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.Charge))
+            {
+                var charge = item.InstanceInfo.GetOrAdd<ItemInstance4UseCharge>();
+                if (charge.MaxCharges <= 0)
+                {
+                    charge.MaxCharges = GetInitialUseCharges(def.ItemId);
+                }
+
+                if (charge.Charges <= 0)
+                {
+                    charge.Charges = charge.MaxCharges;
+                }
+            }
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.Insertion))
+            {
+                var insertion = item.InstanceInfo.GetOrAdd<ItemInstance4Insertion>();
+                if (insertion.BuffTickTimer <= 0)
+                {
+                    insertion.BuffTickTimer = LogicTime.time;
+                }
+
+                if (insertion.Lifetime <= 0 && def.AutoDestroyTime > 0)
+                {
+                    insertion.Lifetime = def.AutoDestroyTime;
+                }
+            }
+        }
+
+        static long GetInitialUseCharges(string itemId)
+        {
+            EnsureUseCache();
+            if (string.IsNullOrEmpty(itemId)
+                || _usesByItemId == null
+                || !_usesByItemId.TryGetValue(itemId, out var uses)
+                || uses == null)
+            {
+                return 1;
+            }
+
+            long result = 0;
+            for (int i = 0; i < uses.Count; i++)
+            {
+                var use = uses[i];
+                if (GetUseConsumePolicy(use) != EItemUseConsumePolicy.InstanceCharge)
+                {
+                    continue;
+                }
+
+                result = System.Math.Max(result, use.InitialCharges);
+            }
+
+            return result > 0 ? result : 1;
         }
 
         public static int GetMaxStackByType(string itemId, EContainerType containerMode)
@@ -271,7 +319,7 @@ namespace My.Config
             var scaled = (long)System.Math.Floor(intrinsic * (double)ratio);
             var result = (int)System.Math.Max(1L, scaled);
 
-            if (def.StackCount >= quasiUnlimitedThreshold)
+            if (intrinsic >= quasiUnlimitedThreshold)
             {
                 return (int)System.Math.Min(999_999L, result);
             }
@@ -288,12 +336,28 @@ namespace My.Config
                 return 1;
             }
 
-            if (def.StackCount > 0)
+            switch (def.StackProfile)
             {
-                return def.StackCount;
+                case EItemStackProfile.Single:
+                    return 1;
+                case EItemStackProfile.Tiny:
+                    return 5;
+                case EItemStackProfile.Small:
+                    return 10;
+                case EItemStackProfile.Normal:
+                    return 20;
+                case EItemStackProfile.Bulk:
+                    return 50;
+                case EItemStackProfile.Large:
+                    return 99;
+                case EItemStackProfile.Massive:
+                    return 500;
+                case EItemStackProfile.Unlimited:
+                    return 999_999;
+                case EItemStackProfile.Custom:
+                default:
+                    return def.StackCount > 0 ? def.StackCount : 10;
             }
-
-            return 10;
         }
 
         public static Sprite GetIcon(string id)
@@ -309,25 +373,14 @@ namespace My.Config
             }
         }
 
-        public static EQuickBarItemKind GetQuickBarKind(string itemId)
-        {
-            var def = GetItemDef(itemId);
-            if (def == null)
-            {
-                return EQuickBarItemKind.None;
-            }
-
-            return def.QuickBarKind;
-        }
-
         public static bool IsQuickBarWeapon(string itemId)
         {
-            return GetQuickBarKind(itemId) == EQuickBarItemKind.Weapon;
+            return ItemTagCatalog.HasTag(itemId, EItemTag.HumanWeapon);
         }
 
         public static bool IsQuickBarConsumable(string itemId)
         {
-            return GetQuickBarKind(itemId) == EQuickBarItemKind.Consumable;
+            return ItemTagCatalog.HasTag(itemId, EItemTag.HumanTool);
         }
     }
 }

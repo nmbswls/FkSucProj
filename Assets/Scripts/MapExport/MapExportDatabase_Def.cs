@@ -179,6 +179,30 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class BossEncounterPhaseExportInfo
+    {
+        [Range(0f, 1f)]
+        public float EnterHpRatio = 1f;
+        public List<string> SelectableSkills = new();
+    }
+
+    [Serializable]
+    public class BossEncounterExportInfo
+    {
+        public string EncounterId = string.Empty;
+        public string BossUniqName = string.Empty;
+        public string DisplayName = string.Empty;
+        public Rect ArenaBounds;
+        public Vector2 ResetPosition;
+        public float OutsideGraceTime = 0.75f;
+        public float ReturnMoveSpeedRate = 1.4f;
+        public float RecoverDuration = 3f;
+        public float ReengageDelay = 1.5f;
+        public bool InvulnerableWhileReturning = true;
+        public List<BossEncounterPhaseExportInfo> Phases = new();
+    }
+
+    [Serializable]
     public abstract class EntityInitInfo
     {
         public abstract EEntityType EntityType { get; }

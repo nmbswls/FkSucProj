@@ -1,27 +1,92 @@
 <module name="demo">
 
-    <!-- 道具主表用枚举；可堆叠用 stackable + stack_count（0 表示走默认基数 10；货币等大堆叠填 stack_count=999999）；堆叠 tag 见 stack_tags；容器规则见 container_stack.xlsx -->
+    <!-- ?????? Custom ?? stack_profile ?????Custom ?? stack_count?tags ????Perk ???????? -->
     <!-- EItemUseType 各类型参数见 item.xlsx 的 item_use 表头注释与 schema 末尾说明 -->
     <enum name="EItemType">
         <var name="Normal" value="0"/>
         <var name="Currency" value="1"/>
-        <var name="Equip" value="2"/>
-        <var name="Pocket" value="3"/>
-        <var name="Insertion" value="4"/>
-        <var name="Gift" value="5"/>
-		<var name="HumanWeapon" value="6"/>
-		<var name="PartGear" value="7"/>
-		
 		<var name="MindFacet" value="10"/> 
     </enum>
 
     <!-- 礼物 tag：item_gift.gift_tags 多选；好感/赠礼匹配用 -->
+    <enum name="EItemStackProfile">
+        <var name="Custom" value="0"/>
+        <var name="Single" value="1"/>
+        <var name="Tiny" value="2"/>
+        <var name="Small" value="3"/>
+        <var name="Normal" value="4"/>
+        <var name="Bulk" value="5"/>
+        <var name="Large" value="6"/>
+        <var name="Massive" value="7"/>
+        <var name="Unlimited" value="8"/>
+    </enum>
+
     <enum name="EGiftTag">
         <var name="None" value="0"/>
         <var name="Food" value="1"/>
         <var name="Luxury" value="2"/>
         <var name="Quest" value="3"/>
         <var name="Daily" value="4"/>
+    </enum>
+
+    <enum name="EItemTag">
+        <var name="None" value="0"/>
+        <var name="Gift" value="1"/>
+        <var name="PartGear" value="3"/>
+        <var name="HumanWeapon" value="4"/>
+        <var name="HumanTool" value="5"/>
+        <var name="Pocket" value="6"/>
+        <var name="Insertion" value="7"/>
+        <var name="Plant" value="8"/>
+        <var name="Key" value="9"/>
+        <var name="Potion" value="10"/>
+        <var name="Furniture" value="11"/>
+        <var name="Dismantleable" value="12"/>
+        <var name="Jingyuan" value="13"/>
+        <var name="Small" value="14"/>
+        <var name="Big" value="15"/>
+        <var name="Material" value="16"/>
+        <var name="Wood" value="17"/>
+        <var name="Magic" value="18"/>
+        <var name="Alchemy" value="19"/>
+        <var name="Fuel" value="20"/>
+        <var name="Fiber" value="21"/>
+        <var name="Stone" value="22"/>
+        <var name="Glass" value="23"/>
+        <var name="Clay" value="24"/>
+        <var name="Ceramic" value="25"/>
+        <var name="Luxury" value="26"/>
+        <var name="Craft" value="27"/>
+        <var name="Ore" value="28"/>
+        <var name="Metal" value="29"/>
+        <var name="Precious" value="30"/>
+        <var name="Textile" value="31"/>
+        <var name="Leather" value="32"/>
+        <var name="Bone" value="33"/>
+        <var name="Dye" value="34"/>
+        <var name="Glue" value="35"/>
+        <var name="Latex" value="36"/>
+        <var name="Exotic" value="37"/>
+        <var name="Loot" value="38"/>
+        <var name="Paper" value="39"/>
+        <var name="Food" value="40"/>
+        <var name="Gel" value="41"/>
+        <var name="Crystal" value="42"/>
+        <var name="Wax" value="43"/>
+        <var name="Toy" value="44"/>
+        <var name="Decor" value="45"/>
+        <var name="Home" value="46"/>
+        <var name="Study" value="47"/>
+        <var name="Church" value="48"/>
+        <var name="Light" value="49"/>
+        <var name="Forest" value="50"/>
+        <var name="Storage" value="51"/>
+        <var name="Facility" value="52"/>
+        <var name="Basic" value="53"/>
+        <var name="Salvage" value="54"/>
+        <var name="Dew" value="55"/>
+        <var name="Fairy" value="56"/>
+        <var name="Charge" value="57"/>
     </enum>
 
     <!-- 与 My.EContainerType 数值必须一致 -->
@@ -51,10 +116,11 @@
         <var name="AddJingYuanCodexBlurtDrop" value="7"/>
     </enum>
 
-    <enum name="EQuickBarItemKind">
+    <enum name="EItemUseConsumePolicy">
         <var name="None" value="0"/>
-        <var name="Weapon" value="1"/>
-        <var name="Consumable" value="2"/>
+        <var name="StackCount" value="1"/>
+        <var name="InstanceCharge" value="2"/>
+        <var name="DestroyInstance" value="3"/>
     </enum>
 
     <enum name="EHumanWeaponFuncType">
@@ -227,6 +293,11 @@
         <var name="HasItem" value="2"/>
         <var name="GlobalSwitch" value="3"/>
     </enum>
+
+    <bean name="ItemAmount" tags="sep=,">
+        <var name="item_id" type="string"/>
+        <var name="count" type="long"/>
+    </bean>
 
     <bean name="ForgeMaterialCost" tags="sep=,">
         <var name="item_id" type="string" comment="材料道具 id"/>

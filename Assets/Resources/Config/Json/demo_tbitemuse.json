@@ -3,8 +3,7 @@
     "id": 1,
     "item_id": "banana",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 10,
     "use_time": 1.5,
     "use_type": 0,
@@ -13,14 +12,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 2,
     "item_id": "j_drop_small",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -29,14 +28,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 3,
     "item_id": "evil_scroll_01",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 5,
     "use_time": 0,
     "use_type": 3,
@@ -45,14 +44,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "queen_pull_all",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 4,
     "item_id": "random_desire_crystal",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 2,
@@ -61,14 +60,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 5,
     "item_id": "small_knife",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 5,
     "use_time": 0,
     "use_type": 3,
@@ -77,14 +76,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "shoot_knife",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 6,
     "item_id": "smoke_grenade",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 5,
     "use_time": 0,
     "use_type": 3,
@@ -93,14 +92,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "item_throw_smoke_grenade",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 7,
     "item_id": "sound_ball",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 5,
     "use_time": 0,
     "use_type": 3,
@@ -109,14 +108,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "item_throw_smoke_grenade",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 11,
     "item_id": "rune_unlock_lady_up_1",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 4,
@@ -125,14 +124,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "lady_up_1",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 12,
     "item_id": "rune_unlock_lady_up_2",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": true,
+    "consume_policy": 1,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 4,
@@ -141,14 +140,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "lady_up_2",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 13,
     "item_id": "quest_control_village01",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 5,
@@ -157,14 +156,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "village_01",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 14,
     "item_id": "item_jingyuan_codex_orc",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 6,
@@ -173,14 +172,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "orc_common",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 16,
     "item_id": "j_drop_orc_common",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -189,14 +188,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "orc_common",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 17,
     "item_id": "j_drop_orc_elite",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -205,14 +204,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "orc_elite",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 18,
     "item_id": "j_drop_sign_aries",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -221,14 +220,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_aries",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 19,
     "item_id": "j_drop_sign_taurus",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -237,14 +236,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_taurus",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 20,
     "item_id": "j_drop_sign_gemini",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -253,14 +252,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_gemini",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 21,
     "item_id": "j_drop_sign_cancer",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -269,14 +268,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_cancer",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 22,
     "item_id": "j_drop_sign_leo",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -285,14 +284,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_leo",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 23,
     "item_id": "j_drop_sign_virgo",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -301,14 +300,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_virgo",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 24,
     "item_id": "j_drop_sign_libra",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -317,14 +316,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_libra",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 25,
     "item_id": "j_drop_sign_scorpio",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -333,14 +332,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_scorpio",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 26,
     "item_id": "j_drop_sign_sagittarius",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -349,14 +348,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_sagittarius",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 27,
     "item_id": "j_drop_sign_capricorn",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -365,14 +364,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_capricorn",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 28,
     "item_id": "j_drop_sign_aquarius",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -381,14 +380,14 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_aquarius",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
   },
   {
     "id": 29,
     "item_id": "j_drop_sign_pisces",
     "slot": 0,
-    "usable": true,
-    "cost_on_use": false,
+    "consume_policy": 0,
     "use_cd": 0,
     "use_time": 0,
     "use_type": 7,
@@ -397,6 +396,23 @@
     "p3": 0,
     "p4": 0,
     "s1": "sign_pisces",
-    "s2": ""
+    "s2": "",
+    "initial_charges": 0
+  },
+  {
+    "id": 30,
+    "item_id": "meat_baton",
+    "slot": 0,
+    "consume_policy": 2,
+    "use_cd": 3,
+    "use_time": 1,
+    "use_type": 1,
+    "p1": 8,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "",
+    "s2": "",
+    "initial_charges": 8
   }
 ]

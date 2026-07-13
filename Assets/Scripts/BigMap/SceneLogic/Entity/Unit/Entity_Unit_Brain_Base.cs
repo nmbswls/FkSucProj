@@ -143,6 +143,84 @@ namespace My.Map.Unit
         FollowGroup,
     }
 
+    public enum EUnitReturnReason
+    {
+        Default,
+        TargetLost,
+        ChaseRangeExceeded,
+        EncounterBoundary,
+        Scripted,
+    }
+
+    public readonly struct AIReturnContext
+    {
+        public readonly EUnitReturnReason Reason;
+        public readonly string SourceId;
+        public readonly Vector2? TargetPosition;
+        public readonly float MoveSpeedRate;
+        public readonly float ReengageDelay;
+        public readonly bool IgnoreSuspicion;
+        public readonly bool IgnoreWanted;
+        public readonly bool IgnoreAttract;
+        public readonly float HealthRecoverDuration;
+        public readonly bool InvulnerableDuringReturn;
+
+        public AIReturnContext(
+            EUnitReturnReason reason,
+            string sourceId = null,
+            Vector2? targetPosition = null,
+            float moveSpeedRate = 0.7f,
+            float reengageDelay = 5f,
+            bool ignoreSuspicion = false,
+            bool ignoreWanted = false,
+            bool ignoreAttract = false,
+            float healthRecoverDuration = 0f,
+            bool invulnerableDuringReturn = false)
+        {
+            Reason = reason;
+            SourceId = sourceId ?? string.Empty;
+            TargetPosition = targetPosition;
+            MoveSpeedRate = moveSpeedRate;
+            ReengageDelay = reengageDelay;
+            IgnoreSuspicion = ignoreSuspicion;
+            IgnoreWanted = ignoreWanted;
+            IgnoreAttract = ignoreAttract;
+            HealthRecoverDuration = healthRecoverDuration;
+            InvulnerableDuringReturn = invulnerableDuringReturn;
+        }
+
+        public static AIReturnContext Default => new(EUnitReturnReason.Default);
+    }
+
+    public readonly struct CombatDisengageRequest
+    {
+        public readonly string SourceId;
+        public readonly EUnitReturnReason Reason;
+        public readonly Vector2 ReturnPosition;
+        public readonly float MoveSpeedRate;
+        public readonly float RecoverDuration;
+        public readonly float ReengageDelay;
+        public readonly bool InvulnerableDuringReturn;
+
+        public CombatDisengageRequest(
+            string sourceId,
+            EUnitReturnReason reason,
+            Vector2 returnPosition,
+            float moveSpeedRate,
+            float recoverDuration,
+            float reengageDelay,
+            bool invulnerableDuringReturn)
+        {
+            SourceId = sourceId ?? string.Empty;
+            Reason = reason;
+            ReturnPosition = returnPosition;
+            MoveSpeedRate = moveSpeedRate;
+            RecoverDuration = recoverDuration;
+            ReengageDelay = reengageDelay;
+            InvulnerableDuringReturn = invulnerableDuringReturn;
+        }
+    }
+
     // --- 大脑 (Controller) ---
     public class AIBrainV2
     {
@@ -321,6 +399,50 @@ namespace My.Map.Unit
             {
                 TryArmAttractTriggerForExistingFocus();
             }
+        }
+
+        public bool TryDisengageFromCombat(CombatDisengageRequest request)
+        {
+            if (NpcEntity == null || NpcEntity.IsDead || NpcEntity.MarkDestroyed)
+            {
+                return false;
+            }
+
+            if (CurrentState == StateReturn && StateReturn.IsFromSource(request.SourceId))
+            {
+                return true;
+            }
+
+            if (CurrentState != StateCombat
+                && CurrentState != StateReturn
+                && !Aggro.CombatEngaged)
+            {
+                return false;
+            }
+
+            NpcEntity.abilityController?.Cancel();
+            NpcEntity.StopMove();
+            Aggro.ClearTarget(request.ReengageDelay);
+            SuspiciousPos = null;
+
+            StateReturn.Prepare(new AIReturnContext(
+                request.Reason,
+                request.SourceId,
+                request.ReturnPosition,
+                request.MoveSpeedRate,
+                request.ReengageDelay,
+                ignoreSuspicion: true,
+                ignoreWanted: true,
+                ignoreAttract: true,
+                request.RecoverDuration,
+                request.InvulnerableDuringReturn));
+            if (CurrentState == StateReturn)
+            {
+                StateReturn.RestartPreparedReturn();
+                return true;
+            }
+            ChangeState(StateReturn);
+            return CurrentState == StateReturn;
         }
 
         // 进入 Idle/Return 等可吸引状态时，焦点未变也应能再次进入 Attracted

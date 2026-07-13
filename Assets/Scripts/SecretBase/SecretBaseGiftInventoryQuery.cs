@@ -67,12 +67,6 @@ namespace My.SecretBase
                 return;
             }
 
-            var def = ItemCatalog.GetItemDef(stack.ItemID);
-            if (def == null || def.ItemType != EItemType.Gift)
-            {
-                return;
-            }
-
             if (ItemCatalog.GetGiftDef(stack.ItemID) == null)
             {
                 return;

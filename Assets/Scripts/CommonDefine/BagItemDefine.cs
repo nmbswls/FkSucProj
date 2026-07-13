@@ -1,29 +1,130 @@
 
 using System;
+using System.Collections.Generic;
 using My.Config;
+using My.Player;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace My
 {
 
     [Serializable]
-    public abstract class ItemInstanceInfo
+    public class ItemInstanceInfo
     {
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public List<ItemInstanceComponent> Components = new();
+
+        public T Get<T>() where T : ItemInstanceComponent
+        {
+            if (Components == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < Components.Count; i++)
+            {
+                if (Components[i] is T found)
+                {
+                    return found;
+                }
+            }
+
+            return null;
+        }
+
+        public T GetOrAdd<T>() where T : ItemInstanceComponent, new()
+        {
+            var found = Get<T>();
+            if (found != null)
+            {
+                return found;
+            }
+
+            Components ??= new List<ItemInstanceComponent>();
+            found = new T();
+            Components.Add(found);
+            return found;
+        }
+
+        public ItemInstanceInfo Clone()
+        {
+            var clone = new ItemInstanceInfo();
+            if (Components == null)
+            {
+                return clone;
+            }
+
+            foreach (var component in Components)
+            {
+                var copied = component?.Clone();
+                if (copied != null)
+                {
+                    clone.Components.Add(copied);
+                }
+            }
+
+            return clone;
+        }
+    }
+
+    [Serializable]
+    public abstract class ItemInstanceComponent
+    {
+        public abstract ItemInstanceComponent Clone();
 
     }
 
     [Serializable]
-    public class ItemInstance4Equip : ItemInstanceInfo
+    public class ItemInstance4PartGear : ItemInstanceComponent
     {
-        public long RandVal;
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4PartGear();
+        }
     }
 
     [Serializable]
-    public class ItemInstance4Insertion : ItemInstanceInfo
+    public class ItemInstance4HumanWeapon : ItemInstanceComponent
+    {
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4HumanWeapon();
+        }
+    }
+
+    [Serializable]
+    public class ItemInstance4Insertion : ItemInstanceComponent
     {
         public float Lifetime;
 
         public float BuffTickTimer;
+
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4Insertion
+            {
+                Lifetime = Lifetime,
+                BuffTickTimer = BuffTickTimer,
+            };
+        }
+    }
+
+    [Serializable]
+    public class ItemInstance4UseCharge : ItemInstanceComponent
+    {
+        public long Charges;
+
+        public long MaxCharges;
+
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4UseCharge
+            {
+                Charges = Charges,
+                MaxCharges = MaxCharges,
+            };
+        }
     }
 
 
@@ -33,6 +134,7 @@ namespace My
         public string ItemID;
         public long Count;
         public long ItemInstanceId;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
         public ItemInstanceInfo InstanceInfo;
 
         public ItemStack(string id, long count)
@@ -98,6 +200,16 @@ namespace My
             //}
         }
 
+        static bool CanContainerAccept(IItemContainer container, ItemStack item)
+        {
+            if (item == null || item.IsEmpty)
+            {
+                return true;
+            }
+
+            return container is not PlayerBag bag || bag.CanAcceptItem(item.ItemID);
+        }
+
         public static bool MoveOrMergeOrSwapItem(IItemContainer srcContainer, int srcIdx, IItemContainer dstContainer, int dstIdx)
         {
             if (!srcContainer.IsSlotIdxValid(srcIdx))
@@ -118,6 +230,10 @@ namespace My
             }
 
             var dstItem = dstContainer.GetItemByIdx(dstIdx);
+            if (!CanContainerAccept(dstContainer, srcItem) || !CanContainerAccept(srcContainer, dstItem))
+            {
+                return false;
+            }
 
             // ?????????????????????????????????????????
             if (dstItem == null || dstItem.Count <= 0)

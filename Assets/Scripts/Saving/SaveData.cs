@@ -61,6 +61,7 @@ namespace My.Saving
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
+        public Dictionary<string, RenewableResourceNodeRuntimeSave> RenewableResourceNodeByUniqName = new();
         public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
 
         // 具名交互点 / 可移除障碍：键为地图刷新项 UniqName，仅存 LocalSwitches
@@ -191,11 +192,8 @@ namespace My.Saving
         public int EquippedIndex;
         public string ItemId;
         public long ItemInstanceId;
-        public long EquipAuxData;
-
-        // 旧档字段，读档时忽略
-        public int Category;
-        public int SlotIndex;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public ItemInstanceInfo InstanceInfo;
     }
 
     [Serializable]
@@ -265,6 +263,8 @@ namespace My.Saving
         public string ItemId;
         public long Count;
         public long ItemInstanceId;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public ItemInstanceInfo InstanceInfo;
     }
 
     /// <summary>
@@ -276,12 +276,28 @@ namespace My.Saving
         public string ItemId;
         public long Count;
         public long ItemInstanceId;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public ItemInstanceInfo InstanceInfo;
     }
 
     [Serializable]
     public class WarehousePagePersist
     {
         public List<WarehouseSlotPersist> Slots = new List<WarehouseSlotPersist>();
+    }
+
+    [Serializable]
+    public class PlayerBagPersist
+    {
+        public int BagId;
+        public List<MainBagSlotPersist> Slots = new List<MainBagSlotPersist>();
+    }
+
+    [Serializable]
+    public class SecretBaseStoragePersist
+    {
+        public PlayerBagPersist CommonWarehouse = new PlayerBagPersist();
+        public PlayerBagPersist FurnitureWarehouse = new PlayerBagPersist();
     }
 
     // 跨地图的全局运行时（警戒条、通缉等），不随单张地图卸载而丢失
@@ -323,6 +339,16 @@ namespace My.Saving
         public string CfgId;
         public int Remaining;
         public int LastRestockSettlementDayIndex;
+    }
+
+    [Serializable]
+    public class RenewableResourceNodeRuntimeSave
+    {
+        public string CfgId;
+        public bool PermanentlyUnlocked;
+        public int UnlockProgress;
+        public int StoredResources;
+        public int NextReadySettlementDay = -1;
     }
 
 
@@ -418,6 +444,12 @@ namespace My.Saving
         /// </summary>
         public List<WarehousePagePersist> WarehousePages;
 
+        public List<PlayerBagPersist> PlayerInventoryBags;
+
+        public List<PlayerBagPersist> SpecialInventoryBags;
+
+        public SecretBaseStoragePersist SecretBaseStorage;
+
         public string CurrentMapId;
         public Vector2 CurrentPos;
 
@@ -442,6 +474,9 @@ namespace My.Saving
             PlayerData = new PlayerData();
             MainInventorySlots = new List<MainBagSlotPersist>();
             WarehousePages = new List<WarehousePagePersist>();
+            PlayerInventoryBags = new List<PlayerBagPersist>();
+            SpecialInventoryBags = new List<PlayerBagPersist>();
+            SecretBaseStorage = new SecretBaseStoragePersist();
             PlayerBuffs = new List<BuffPersistData>();
         }
 
@@ -452,6 +487,7 @@ namespace My.Saving
             data.PlayerData ??= new PlayerData();
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
+            data.PlayerData.RenewableResourceNodeByUniqName ??= new Dictionary<string, RenewableResourceNodeRuntimeSave>();
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
             data.PlayerData.InteractPointByUniqName ??= new Dictionary<string, MapInteractPointPersistData>();
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
@@ -484,6 +520,11 @@ namespace My.Saving
 
             data.MainInventorySlots ??= new List<MainBagSlotPersist>();
             data.WarehousePages ??= new List<WarehousePagePersist>();
+            data.PlayerInventoryBags ??= new List<PlayerBagPersist>();
+            data.SpecialInventoryBags ??= new List<PlayerBagPersist>();
+            data.SecretBaseStorage ??= new SecretBaseStoragePersist();
+            data.SecretBaseStorage.CommonWarehouse ??= new PlayerBagPersist();
+            data.SecretBaseStorage.FurnitureWarehouse ??= new PlayerBagPersist();
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.GlobalRuntime ??= new GlobalRuntimePersistData();
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
@@ -551,6 +592,25 @@ namespace My.Saving
                 }
             }
 
+            if (data.PlayerInventoryBags != null)
+            {
+                foreach (var bag in data.PlayerInventoryBags)
+                {
+                    CollectMaxItemInstanceIdFromBagPersist(bag, ref maxId);
+                }
+            }
+
+            if (data.SpecialInventoryBags != null)
+            {
+                foreach (var bag in data.SpecialInventoryBags)
+                {
+                    CollectMaxItemInstanceIdFromBagPersist(bag, ref maxId);
+                }
+            }
+
+            CollectMaxItemInstanceIdFromBagPersist(data.SecretBaseStorage?.CommonWarehouse, ref maxId);
+            CollectMaxItemInstanceIdFromBagPersist(data.SecretBaseStorage?.FurnitureWarehouse, ref maxId);
+
             var pd = data.PlayerData;
             if (pd != null)
             {
@@ -570,6 +630,22 @@ namespace My.Saving
             }
 
             return maxId;
+        }
+
+        static void CollectMaxItemInstanceIdFromBagPersist(PlayerBagPersist bag, ref long maxId)
+        {
+            if (bag?.Slots == null)
+            {
+                return;
+            }
+
+            foreach (var row in bag.Slots)
+            {
+                if (row != null && row.ItemInstanceId > 0)
+                {
+                    maxId = Math.Max(maxId, row.ItemInstanceId);
+                }
+            }
         }
 
         static long CollectMaxItemInstanceIdFromQuickSlots(List<QuickSlotBindingPersist> bindings)

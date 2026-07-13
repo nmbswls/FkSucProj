@@ -7,7 +7,7 @@
     "stack_profile": 7,
     "stack_count": 0,
     "tags": [
-      "jingyuan"
+      13
     ],
     "sprite_name": "jingyuan",
     "can_drop": true,
@@ -21,17 +21,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "gift_rose_01",
     "display_name": "gift_rose_01",
-    "item_type": 5,
+    "item_type": 0,
     "stackable": true,
     "stack_profile": 2,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      1
+    ],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -44,7 +45,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -67,7 +67,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -78,7 +77,7 @@
     "stack_profile": 2,
     "stack_count": 0,
     "tags": [
-      "small"
+      14
     ],
     "sprite_name": "stick",
     "can_drop": true,
@@ -92,7 +91,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -103,7 +101,7 @@
     "stack_profile": 2,
     "stack_count": 0,
     "tags": [
-      "big"
+      15
     ],
     "sprite_name": "wood",
     "can_drop": true,
@@ -117,7 +115,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -140,7 +137,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -163,7 +159,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -186,7 +181,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -209,7 +203,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -232,7 +225,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -255,7 +247,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -278,7 +269,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -301,7 +291,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -324,17 +313,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "chanzi",
     "display_name": "训练铲",
-    "item_type": 2,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      5
+    ],
     "sprite_name": "chanzi",
     "can_drop": true,
     "rare_tier": 0,
@@ -347,7 +337,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -370,7 +359,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -393,17 +381,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "insertion_maoqiu",
     "display_name": "毛球插入",
-    "item_type": 4,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      7
+    ],
     "sprite_name": "insertion_maoqiu",
     "can_drop": false,
     "rare_tier": 0,
@@ -416,7 +405,6 @@
     "special_buff_interval": 5,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -439,7 +427,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -462,17 +449,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "human_sword_lv1",
     "display_name": "1级剑",
-    "item_type": 6,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      4
+    ],
     "sprite_name": "human_sword_lv1",
     "can_drop": true,
     "rare_tier": 0,
@@ -485,17 +473,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1,
     "can_dismantle": false
   },
   {
     "item_id": "human_lancer_lv1",
     "display_name": "1级枪",
-    "item_type": 6,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      4
+    ],
     "sprite_name": "human_lancer_lv1",
     "can_drop": true,
     "rare_tier": 0,
@@ -508,7 +497,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1,
     "can_dismantle": false
   },
   {
@@ -518,7 +506,9 @@
     "stackable": true,
     "stack_profile": 6,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      4
+    ],
     "sprite_name": "small_knife",
     "can_drop": true,
     "rare_tier": 0,
@@ -531,7 +521,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 1,
     "can_dismantle": false
   },
   {
@@ -541,7 +530,9 @@
     "stackable": true,
     "stack_profile": 0,
     "stack_count": 8,
-    "tags": [],
+    "tags": [
+      5
+    ],
     "sprite_name": "smoke_grenade",
     "can_drop": true,
     "rare_tier": 0,
@@ -554,7 +545,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 2,
     "can_dismantle": false
   },
   {
@@ -564,7 +554,9 @@
     "stackable": true,
     "stack_profile": 0,
     "stack_count": 8,
-    "tags": [],
+    "tags": [
+      5
+    ],
     "sprite_name": "sound_ball",
     "can_drop": true,
     "rare_tier": 0,
@@ -577,7 +569,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 2,
     "can_dismantle": false
   },
   {
@@ -600,7 +591,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -623,7 +613,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -646,7 +635,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -669,7 +657,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -692,7 +679,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -715,7 +701,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -738,7 +723,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -761,7 +745,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -784,7 +767,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -807,17 +789,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "part_mouth_lollipop",
     "display_name": "棒棒糖环",
-    "item_type": 7,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      3
+    ],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -830,17 +813,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "part_breast_brooch",
     "display_name": "感知胸针",
-    "item_type": 7,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      3
+    ],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -853,17 +837,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "part_womb_bead",
     "display_name": "温养念珠",
-    "item_type": 7,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      3
+    ],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -876,17 +861,18 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
     "item_id": "part_tail_bell",
     "display_name": "尾铃",
-    "item_type": 7,
+    "item_type": 0,
     "stackable": false,
     "stack_profile": 1,
     "stack_count": 0,
-    "tags": [],
+    "tags": [
+      3
+    ],
     "sprite_name": "flower_01",
     "can_drop": true,
     "rare_tier": 1,
@@ -899,7 +885,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -922,7 +907,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -945,7 +929,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -968,7 +951,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -991,7 +973,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1014,7 +995,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1037,7 +1017,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1060,7 +1039,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1083,7 +1061,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1106,7 +1083,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1129,7 +1105,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1152,7 +1127,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1175,7 +1149,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1198,7 +1171,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1221,7 +1193,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1244,7 +1215,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1267,7 +1237,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1290,7 +1259,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1313,7 +1281,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1336,7 +1303,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1359,7 +1325,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1382,7 +1347,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1405,7 +1369,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1428,7 +1391,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1451,7 +1413,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1474,7 +1435,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1497,7 +1457,6 @@
     "special_buff_interval": 0,
     "auto_pick": true,
     "is_auto_use": true,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1508,8 +1467,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "wood"
+      16,
+      17
     ],
     "sprite_name": "wood_board",
     "can_drop": true,
@@ -1523,7 +1482,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1534,9 +1492,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "wood",
-      "big"
+      16,
+      17,
+      15
     ],
     "sprite_name": "mat_softwood_log",
     "can_drop": true,
@@ -1550,7 +1508,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1561,9 +1518,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "wood",
-      "big"
+      16,
+      17,
+      15
     ],
     "sprite_name": "mat_hardwood_log",
     "can_drop": true,
@@ -1577,7 +1534,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1588,8 +1544,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "wood"
+      16,
+      17
     ],
     "sprite_name": "mat_seasoned_plank",
     "can_drop": true,
@@ -1603,7 +1559,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1614,9 +1569,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "material",
-      "wood",
-      "big"
+      16,
+      17,
+      15
     ],
     "sprite_name": "mat_ironwood",
     "can_drop": true,
@@ -1630,7 +1585,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1641,10 +1595,10 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "material",
-      "wood",
-      "magic",
-      "big"
+      16,
+      17,
+      18,
+      15
     ],
     "sprite_name": "mat_spiritwood",
     "can_drop": true,
@@ -1658,7 +1612,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1669,10 +1622,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "material",
-      "wood",
-      "magic",
-      "big"
+      16,
+      17,
+      18,
+      15
     ],
     "sprite_name": "mat_moonwood",
     "can_drop": true,
@@ -1686,7 +1639,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1697,8 +1649,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_resin",
     "can_drop": true,
@@ -1712,7 +1664,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1723,8 +1674,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "fuel"
+      16,
+      20
     ],
     "sprite_name": "mat_charcoal",
     "can_drop": true,
@@ -1738,7 +1689,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1749,8 +1699,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "fiber"
+      16,
+      21
     ],
     "sprite_name": "mat_plant_fiber",
     "can_drop": true,
@@ -1764,7 +1714,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1775,9 +1724,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "stone",
-      "big"
+      16,
+      22,
+      15
     ],
     "sprite_name": "mat_fieldstone",
     "can_drop": true,
@@ -1791,7 +1740,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1802,9 +1750,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "stone",
-      "big"
+      16,
+      22,
+      15
     ],
     "sprite_name": "mat_limestone",
     "can_drop": true,
@@ -1818,7 +1766,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1829,9 +1776,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "stone",
-      "big"
+      16,
+      22,
+      15
     ],
     "sprite_name": "mat_granite",
     "can_drop": true,
@@ -1845,7 +1792,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1856,9 +1802,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "stone",
-      "big"
+      16,
+      22,
+      15
     ],
     "sprite_name": "mat_marble",
     "can_drop": true,
@@ -1872,7 +1818,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1883,9 +1828,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "stone",
-      "glass"
+      16,
+      22,
+      23
     ],
     "sprite_name": "mat_obsidian",
     "can_drop": true,
@@ -1899,7 +1844,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1910,10 +1854,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "material",
-      "stone",
-      "magic",
-      "big"
+      16,
+      22,
+      18,
+      15
     ],
     "sprite_name": "mat_runed_stone",
     "can_drop": true,
@@ -1927,7 +1871,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1938,8 +1881,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "clay"
+      16,
+      24
     ],
     "sprite_name": "mat_clay",
     "can_drop": true,
@@ -1953,7 +1896,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1964,10 +1906,10 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "stone",
-      "ceramic",
-      "big"
+      16,
+      22,
+      25,
+      15
     ],
     "sprite_name": "mat_brick",
     "can_drop": true,
@@ -1981,7 +1923,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -1992,8 +1933,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass"
+      16,
+      23
     ],
     "sprite_name": "mat_sand",
     "can_drop": true,
@@ -2007,7 +1948,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2018,8 +1958,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass"
+      16,
+      23
     ],
     "sprite_name": "mat_quartz_sand",
     "can_drop": true,
@@ -2033,7 +1973,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2044,8 +1983,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass"
+      16,
+      23
     ],
     "sprite_name": "mat_glass_shard",
     "can_drop": true,
@@ -2059,7 +1998,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2070,8 +2008,8 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass"
+      16,
+      23
     ],
     "sprite_name": "mat_glass_pane",
     "can_drop": true,
@@ -2085,7 +2023,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2096,9 +2033,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "glass",
-      "luxury"
+      16,
+      23,
+      26
     ],
     "sprite_name": "mat_colored_glass",
     "can_drop": true,
@@ -2112,7 +2049,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2123,9 +2059,9 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass",
-      "craft"
+      16,
+      23,
+      27
     ],
     "sprite_name": "mat_crystal_lens",
     "can_drop": true,
@@ -2139,7 +2075,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2150,10 +2085,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glass",
-      "alchemy",
-      "magic"
+      16,
+      23,
+      19,
+      18
     ],
     "sprite_name": "mat_alchemical_glass",
     "can_drop": true,
@@ -2167,7 +2102,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2178,9 +2112,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "ore",
-      "big"
+      16,
+      28,
+      15
     ],
     "sprite_name": "mat_copper_ore",
     "can_drop": true,
@@ -2194,7 +2128,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2205,9 +2138,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "ore",
-      "big"
+      16,
+      28,
+      15
     ],
     "sprite_name": "mat_tin_ore",
     "can_drop": true,
@@ -2221,7 +2154,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2232,9 +2164,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "ore",
-      "big"
+      16,
+      28,
+      15
     ],
     "sprite_name": "mat_iron_ore",
     "can_drop": true,
@@ -2248,7 +2180,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2259,9 +2190,9 @@
     "stack_profile": 0,
     "stack_count": 60,
     "tags": [
-      "material",
-      "ore",
-      "big"
+      16,
+      28,
+      15
     ],
     "sprite_name": "mat_silver_ore",
     "can_drop": true,
@@ -2275,7 +2206,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2286,10 +2216,10 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "ore",
-      "magic",
-      "big"
+      16,
+      28,
+      18,
+      15
     ],
     "sprite_name": "mat_mana_ore",
     "can_drop": true,
@@ -2303,7 +2233,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2314,8 +2243,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "metal"
+      16,
+      29
     ],
     "sprite_name": "mat_copper_ingot",
     "can_drop": true,
@@ -2329,7 +2258,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2340,8 +2268,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "metal"
+      16,
+      29
     ],
     "sprite_name": "mat_bronze_ingot",
     "can_drop": true,
@@ -2355,7 +2283,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2366,8 +2293,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "metal"
+      16,
+      29
     ],
     "sprite_name": "mat_iron_ingot",
     "can_drop": true,
@@ -2381,7 +2308,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2392,8 +2318,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "metal"
+      16,
+      29
     ],
     "sprite_name": "mat_steel_ingot",
     "can_drop": true,
@@ -2407,7 +2333,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2418,9 +2343,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "metal",
-      "precious"
+      16,
+      29,
+      30
     ],
     "sprite_name": "mat_silver_ingot",
     "can_drop": true,
@@ -2434,7 +2359,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2445,9 +2369,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "metal",
-      "magic"
+      16,
+      29,
+      18
     ],
     "sprite_name": "mat_mana_ingot",
     "can_drop": true,
@@ -2461,7 +2385,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2472,8 +2395,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_linen_thread",
     "can_drop": true,
@@ -2487,7 +2410,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2498,8 +2420,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_linen_cloth",
     "can_drop": true,
@@ -2513,7 +2435,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2524,8 +2445,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_wool_fleece",
     "can_drop": true,
@@ -2539,7 +2460,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2550,8 +2470,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_wool_cloth",
     "can_drop": true,
@@ -2565,7 +2485,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2576,8 +2495,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_cotton_cloth",
     "can_drop": true,
@@ -2591,7 +2510,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2602,9 +2520,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "textile",
-      "luxury"
+      16,
+      31,
+      26
     ],
     "sprite_name": "mat_silk_thread",
     "can_drop": true,
@@ -2618,7 +2536,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2629,9 +2546,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "textile",
-      "luxury"
+      16,
+      31,
+      26
     ],
     "sprite_name": "mat_silk_bolt",
     "can_drop": true,
@@ -2645,7 +2562,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2656,8 +2572,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "textile"
+      16,
+      31
     ],
     "sprite_name": "mat_dyed_cloth",
     "can_drop": true,
@@ -2671,7 +2587,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2682,9 +2597,9 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "textile",
-      "luxury"
+      16,
+      31,
+      26
     ],
     "sprite_name": "mat_velvet",
     "can_drop": true,
@@ -2698,7 +2613,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2709,9 +2623,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "material",
-      "textile",
-      "luxury"
+      16,
+      31,
+      26
     ],
     "sprite_name": "mat_brocade",
     "can_drop": true,
@@ -2725,7 +2639,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2736,8 +2649,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "leather"
+      16,
+      32
     ],
     "sprite_name": "mat_rough_hide",
     "can_drop": true,
@@ -2751,7 +2664,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2762,8 +2674,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "leather"
+      16,
+      32
     ],
     "sprite_name": "mat_tanned_leather",
     "can_drop": true,
@@ -2777,7 +2689,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2788,9 +2699,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "leather",
-      "luxury"
+      16,
+      32,
+      26
     ],
     "sprite_name": "mat_fine_leather",
     "can_drop": true,
@@ -2804,7 +2715,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2815,9 +2725,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "material",
-      "textile",
-      "magic"
+      16,
+      31,
+      18
     ],
     "sprite_name": "mat_mageweave",
     "can_drop": true,
@@ -2831,7 +2741,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2842,8 +2751,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_beeswax",
     "can_drop": true,
@@ -2857,7 +2766,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2868,8 +2776,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_tallow",
     "can_drop": true,
@@ -2883,7 +2791,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2894,8 +2801,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "bone"
+      16,
+      33
     ],
     "sprite_name": "mat_bone",
     "can_drop": true,
@@ -2909,7 +2816,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2920,8 +2826,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_bone_dust",
     "can_drop": true,
@@ -2935,7 +2841,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2946,8 +2851,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_sulfur",
     "can_drop": true,
@@ -2961,7 +2866,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2972,8 +2876,8 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "alchemy"
+      16,
+      19
     ],
     "sprite_name": "mat_saltpeter",
     "can_drop": true,
@@ -2987,7 +2891,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -2998,9 +2901,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "alchemy",
-      "dye"
+      16,
+      19,
+      34
     ],
     "sprite_name": "mat_alum",
     "can_drop": true,
@@ -3014,7 +2917,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3025,9 +2927,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "alchemy",
-      "stone"
+      16,
+      19,
+      22
     ],
     "sprite_name": "mat_lime",
     "can_drop": true,
@@ -3041,7 +2943,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3052,9 +2953,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "fuel",
-      "alchemy"
+      16,
+      20,
+      19
     ],
     "sprite_name": "mat_lamp_oil",
     "can_drop": true,
@@ -3068,7 +2969,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3079,9 +2979,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "glue",
-      "alchemy"
+      16,
+      35,
+      19
     ],
     "sprite_name": "mat_hide_glue",
     "can_drop": true,
@@ -3095,7 +2995,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3106,9 +3005,9 @@
     "stack_profile": 0,
     "stack_count": 60,
     "tags": [
-      "material",
-      "latex",
-      "alchemy"
+      16,
+      36,
+      19
     ],
     "sprite_name": "mat_natural_latex",
     "can_drop": true,
@@ -3122,7 +3021,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3133,10 +3031,10 @@
     "stack_profile": 0,
     "stack_count": 40,
     "tags": [
-      "material",
-      "latex",
-      "alchemy",
-      "exotic"
+      16,
+      36,
+      19,
+      37
     ],
     "sprite_name": "mat_elastic_gum",
     "can_drop": true,
@@ -3150,7 +3048,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3161,10 +3058,10 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "material",
-      "latex",
-      "alchemy",
-      "magic"
+      16,
+      36,
+      19,
+      18
     ],
     "sprite_name": "mat_alchemical_rubber",
     "can_drop": true,
@@ -3178,7 +3075,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3189,8 +3085,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "metal"
+      38,
+      29
     ],
     "sprite_name": "loot_rusty_nail",
     "can_drop": true,
@@ -3204,7 +3100,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3215,8 +3110,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "metal"
+      38,
+      29
     ],
     "sprite_name": "loot_bent_hinge",
     "can_drop": true,
@@ -3230,7 +3125,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3241,9 +3135,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "metal",
-      "craft"
+      38,
+      29,
+      27
     ],
     "sprite_name": "loot_broken_gear",
     "can_drop": true,
@@ -3257,7 +3151,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3268,8 +3161,8 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "ceramic"
+      38,
+      25
     ],
     "sprite_name": "loot_cracked_cup",
     "can_drop": true,
@@ -3283,7 +3176,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3294,8 +3186,8 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "glass"
+      38,
+      23
     ],
     "sprite_name": "loot_empty_bottle",
     "can_drop": true,
@@ -3309,7 +3201,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3320,8 +3211,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "alchemy"
+      38,
+      19
     ],
     "sprite_name": "loot_candle_stub",
     "can_drop": true,
@@ -3335,7 +3226,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3346,8 +3236,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "textile"
+      38,
+      31
     ],
     "sprite_name": "loot_cloth_scrap",
     "can_drop": true,
@@ -3361,7 +3251,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3372,8 +3261,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "fiber"
+      38,
+      21
     ],
     "sprite_name": "loot_rope_end",
     "can_drop": true,
@@ -3387,7 +3276,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3398,8 +3286,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "paper"
+      38,
+      39
     ],
     "sprite_name": "loot_torn_page",
     "can_drop": true,
@@ -3413,7 +3301,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3424,9 +3311,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "paper",
-      "alchemy"
+      38,
+      39,
+      19
     ],
     "sprite_name": "loot_wax_seal",
     "can_drop": true,
@@ -3440,7 +3327,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3451,8 +3337,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "precious"
+      38,
+      30
     ],
     "sprite_name": "loot_old_coin",
     "can_drop": true,
@@ -3466,7 +3352,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3477,9 +3362,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "food",
-      "alchemy"
+      38,
+      40,
+      19
     ],
     "sprite_name": "loot_spice_pinch",
     "can_drop": true,
@@ -3493,7 +3378,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3504,9 +3388,9 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "metal",
-      "craft"
+      38,
+      29,
+      27
     ],
     "sprite_name": "loot_key_blank",
     "can_drop": true,
@@ -3520,7 +3404,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3531,9 +3414,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "loot",
-      "precious",
-      "craft"
+      38,
+      30,
+      27
     ],
     "sprite_name": "loot_chipped_gem",
     "can_drop": true,
@@ -3547,7 +3430,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3558,9 +3440,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "loot",
-      "bone",
-      "magic"
+      38,
+      33,
+      18
     ],
     "sprite_name": "loot_bone_charm",
     "can_drop": true,
@@ -3574,7 +3456,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3585,9 +3466,9 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "loot",
-      "glass",
-      "craft"
+      38,
+      23,
+      27
     ],
     "sprite_name": "loot_broken_lens",
     "can_drop": true,
@@ -3601,7 +3482,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": true
   },
   {
@@ -3612,9 +3492,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "alchemy",
-      "gel"
+      16,
+      19,
+      41
     ],
     "sprite_name": "mat_alchemical_gel",
     "can_drop": true,
@@ -3628,7 +3508,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3639,9 +3518,9 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "crystal",
-      "magic"
+      16,
+      42,
+      18
     ],
     "sprite_name": "mat_mana_shard",
     "can_drop": true,
@@ -3655,7 +3534,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3666,9 +3544,9 @@
     "stack_profile": 0,
     "stack_count": 60,
     "tags": [
-      "material",
-      "crystal",
-      "magic"
+      16,
+      42,
+      18
     ],
     "sprite_name": "mat_mana_crystal",
     "can_drop": true,
@@ -3682,7 +3560,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3693,10 +3570,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "material",
-      "crystal",
-      "magic",
-      "craft"
+      16,
+      42,
+      18,
+      27
     ],
     "sprite_name": "mat_mana_storage_core",
     "can_drop": true,
@@ -3710,7 +3587,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3721,10 +3597,10 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "metal",
-      "magic",
-      "craft"
+      16,
+      29,
+      18,
+      27
     ],
     "sprite_name": "mat_conductive_copper_wire",
     "can_drop": true,
@@ -3738,7 +3614,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3749,10 +3624,10 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "metal",
-      "magic",
-      "craft"
+      16,
+      29,
+      18,
+      27
     ],
     "sprite_name": "mat_arcane_copper_plate",
     "can_drop": true,
@@ -3766,7 +3641,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3777,10 +3651,10 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "ceramic",
-      "magic",
-      "craft"
+      16,
+      25,
+      18,
+      27
     ],
     "sprite_name": "mat_insulating_ceramic",
     "can_drop": true,
@@ -3794,7 +3668,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3805,10 +3678,10 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "stone",
-      "magic",
-      "craft"
+      16,
+      22,
+      18,
+      27
     ],
     "sprite_name": "mat_switch_rune_plate",
     "can_drop": true,
@@ -3822,7 +3695,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3833,8 +3705,8 @@
     "stack_profile": 6,
     "stack_count": 0,
     "tags": [
-      "material",
-      "wax"
+      16,
+      43
     ],
     "sprite_name": "mat_lantern_wax",
     "can_drop": true,
@@ -3848,7 +3720,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3859,9 +3730,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "wax",
-      "alchemy"
+      16,
+      43,
+      19
     ],
     "sprite_name": "mat_sealing_wax",
     "can_drop": true,
@@ -3875,7 +3746,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3886,9 +3756,9 @@
     "stack_profile": 0,
     "stack_count": 80,
     "tags": [
-      "material",
-      "wax",
-      "craft"
+      16,
+      43,
+      27
     ],
     "sprite_name": "mat_polishing_wax",
     "can_drop": true,
@@ -3902,7 +3772,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3913,10 +3782,10 @@
     "stack_profile": 0,
     "stack_count": 60,
     "tags": [
-      "material",
-      "wax",
-      "magic",
-      "alchemy"
+      16,
+      43,
+      18,
+      19
     ],
     "sprite_name": "mat_warding_wax",
     "can_drop": true,
@@ -3930,7 +3799,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3941,9 +3809,9 @@
     "stack_profile": 0,
     "stack_count": 60,
     "tags": [
-      "material",
-      "wax",
-      "alchemy"
+      16,
+      43,
+      19
     ],
     "sprite_name": "mat_preserving_wax",
     "can_drop": true,
@@ -3957,7 +3825,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3968,9 +3835,9 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "toy"
+      38,
+      27,
+      44
     ],
     "sprite_name": "loot_painted_wooden_doll",
     "can_drop": true,
@@ -3984,7 +3851,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -3995,10 +3861,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "toy",
-      "metal"
+      38,
+      27,
+      44,
+      29
     ],
     "sprite_name": "loot_tin_knight_figure",
     "can_drop": true,
@@ -4012,7 +3878,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4023,10 +3888,10 @@
     "stack_profile": 0,
     "stack_count": 30,
     "tags": [
-      "loot",
-      "craft",
-      "toy",
-      "bone"
+      38,
+      27,
+      44,
+      33
     ],
     "sprite_name": "loot_bone_chess_piece",
     "can_drop": true,
@@ -4040,7 +3905,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4051,10 +3915,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "toy",
-      "paper"
+      38,
+      27,
+      44,
+      39
     ],
     "sprite_name": "loot_illustrated_cards",
     "can_drop": true,
@@ -4068,7 +3932,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4079,10 +3942,10 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "toy",
-      "decor"
+      38,
+      27,
+      44,
+      45
     ],
     "sprite_name": "loot_miniature_ship",
     "can_drop": true,
@@ -4096,7 +3959,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4107,10 +3969,10 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "glass",
-      "decor"
+      38,
+      27,
+      23,
+      45
     ],
     "sprite_name": "loot_glass_wind_chime",
     "can_drop": true,
@@ -4124,7 +3986,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4135,10 +3996,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "ceramic",
-      "home"
+      38,
+      27,
+      25,
+      46
     ],
     "sprite_name": "loot_enameled_cup",
     "can_drop": true,
@@ -4152,7 +4013,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4163,10 +4023,10 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "wood",
-      "home"
+      38,
+      27,
+      17,
+      46
     ],
     "sprite_name": "loot_carved_spice_box",
     "can_drop": true,
@@ -4180,7 +4040,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4191,11 +4050,11 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "metal",
-      "home",
-      "luxury"
+      38,
+      27,
+      29,
+      46,
+      26
     ],
     "sprite_name": "loot_silver_candlestick",
     "can_drop": true,
@@ -4209,7 +4068,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4220,10 +4078,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "textile",
-      "home"
+      38,
+      27,
+      31,
+      46
     ],
     "sprite_name": "loot_embroidery_pillow",
     "can_drop": true,
@@ -4237,7 +4095,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4248,11 +4105,11 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "wood",
-      "home",
-      "luxury"
+      38,
+      27,
+      17,
+      46,
+      26
     ],
     "sprite_name": "loot_lacquered_tray",
     "can_drop": true,
@@ -4266,7 +4123,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4277,10 +4133,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "metal",
-      "study"
+      38,
+      27,
+      29,
+      47
     ],
     "sprite_name": "loot_brass_inkwell",
     "can_drop": true,
@@ -4294,7 +4150,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4305,11 +4160,11 @@
     "stack_profile": 0,
     "stack_count": 8,
     "tags": [
-      "loot",
-      "craft",
-      "glass",
-      "decor",
-      "magic"
+      38,
+      27,
+      23,
+      45,
+      18
     ],
     "sprite_name": "loot_stained_glass_icon",
     "can_drop": true,
@@ -4323,7 +4178,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4334,10 +4188,10 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "ceramic",
-      "decor"
+      38,
+      27,
+      25,
+      45
     ],
     "sprite_name": "loot_porcelain_mask",
     "can_drop": true,
@@ -4351,7 +4205,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4362,11 +4215,11 @@
     "stack_profile": 0,
     "stack_count": 8,
     "tags": [
-      "loot",
-      "craft",
-      "metal",
-      "study",
-      "magic"
+      38,
+      27,
+      29,
+      47,
+      18
     ],
     "sprite_name": "loot_table_astrolabe",
     "can_drop": true,
@@ -4380,7 +4233,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4391,10 +4243,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "decor",
-      "magic"
+      38,
+      27,
+      45,
+      18
     ],
     "sprite_name": "loot_blessing_wall_charm",
     "can_drop": true,
@@ -4408,7 +4260,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4419,10 +4270,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "paper",
-      "church"
+      38,
+      27,
+      39,
+      48
     ],
     "sprite_name": "loot_scripture_copy",
     "can_drop": true,
@@ -4436,7 +4287,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4447,11 +4297,11 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "paper",
-      "church",
-      "luxury"
+      38,
+      27,
+      39,
+      48,
+      26
     ],
     "sprite_name": "loot_illuminated_prayer_book",
     "can_drop": true,
@@ -4465,7 +4315,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4476,10 +4325,10 @@
     "stack_profile": 4,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "church",
-      "magic"
+      38,
+      27,
+      48,
+      18
     ],
     "sprite_name": "loot_blessed_prayer_beads",
     "can_drop": true,
@@ -4493,7 +4342,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4504,10 +4352,10 @@
     "stack_profile": 3,
     "stack_count": 0,
     "tags": [
-      "loot",
-      "craft",
-      "metal",
-      "church"
+      38,
+      27,
+      29,
+      48
     ],
     "sprite_name": "loot_incense_censer",
     "can_drop": true,
@@ -4521,7 +4369,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4532,12 +4379,12 @@
     "stack_profile": 0,
     "stack_count": 8,
     "tags": [
-      "loot",
-      "craft",
-      "metal",
-      "church",
-      "luxury",
-      "magic"
+      38,
+      27,
+      29,
+      48,
+      26,
+      18
     ],
     "sprite_name": "loot_silver_reliquary",
     "can_drop": true,
@@ -4551,7 +4398,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4562,9 +4408,9 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "wood"
+      11,
+      46,
+      17
     ],
     "sprite_name": "furn_oak_refectory_table",
     "can_drop": true,
@@ -4578,7 +4424,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4589,9 +4434,9 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "wood"
+      11,
+      46,
+      17
     ],
     "sprite_name": "furn_walnut_carved_chair",
     "can_drop": true,
@@ -4605,7 +4450,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4616,10 +4460,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "textile",
-      "luxury"
+      11,
+      46,
+      31,
+      26
     ],
     "sprite_name": "furn_velvet_canopy_bed",
     "can_drop": true,
@@ -4633,7 +4477,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4644,10 +4487,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "metal",
-      "light"
+      11,
+      46,
+      29,
+      49
     ],
     "sprite_name": "furn_brass_candle_chandelier",
     "can_drop": true,
@@ -4661,7 +4504,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4672,11 +4514,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "glass",
-      "magic",
-      "light"
+      11,
+      46,
+      23,
+      18,
+      49
     ],
     "sprite_name": "furn_stained_glass_lamp",
     "can_drop": true,
@@ -4690,7 +4532,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4701,10 +4542,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "stone",
-      "luxury"
+      11,
+      46,
+      22,
+      26
     ],
     "sprite_name": "furn_marble_washstand",
     "can_drop": true,
@@ -4718,7 +4559,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4729,10 +4569,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "alchemy",
-      "craft"
+      11,
+      46,
+      19,
+      27
     ],
     "sprite_name": "furn_alchemist_cabinet",
     "can_drop": true,
@@ -4746,7 +4586,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4757,10 +4596,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "study",
-      "magic"
+      11,
+      46,
+      47,
+      18
     ],
     "sprite_name": "furn_astrologer_writing_desk",
     "can_drop": true,
@@ -4774,7 +4613,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4785,11 +4623,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "study",
-      "magic",
-      "wood"
+      11,
+      46,
+      47,
+      18,
+      17
     ],
     "sprite_name": "furn_runed_bookshelf",
     "can_drop": true,
@@ -4803,7 +4641,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4814,10 +4651,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "decor",
-      "luxury"
+      11,
+      46,
+      45,
+      26
     ],
     "sprite_name": "furn_gilded_room_divider",
     "can_drop": true,
@@ -4831,7 +4668,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4842,10 +4678,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "magic",
-      "luxury"
+      11,
+      46,
+      18,
+      26
     ],
     "sprite_name": "furn_moonwood_vanity",
     "can_drop": true,
@@ -4859,7 +4695,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4870,10 +4705,10 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "stone",
-      "magic"
+      11,
+      46,
+      22,
+      18
     ],
     "sprite_name": "furn_arcane_hearth",
     "can_drop": true,
@@ -4887,7 +4722,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4898,11 +4732,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "wood",
-      "light"
+      11,
+      46,
+      50,
+      17,
+      49
     ],
     "sprite_name": "furn_resin_wall_lamp",
     "can_drop": true,
@@ -4916,7 +4750,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4927,11 +4760,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "plant",
-      "storage"
+      11,
+      46,
+      50,
+      8,
+      51
     ],
     "sprite_name": "furn_woven_storage_basket",
     "can_drop": true,
@@ -4945,7 +4778,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4956,11 +4788,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "alchemy",
-      "craft"
+      11,
+      46,
+      50,
+      19,
+      27
     ],
     "sprite_name": "furn_herb_drying_rack",
     "can_drop": true,
@@ -4974,7 +4806,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -4985,11 +4816,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "alchemy",
-      "textile"
+      11,
+      46,
+      50,
+      19,
+      31
     ],
     "sprite_name": "furn_alchemical_gel_cushion",
     "can_drop": true,
@@ -5003,7 +4834,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5014,12 +4844,12 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "glass",
-      "magic",
-      "light"
+      11,
+      46,
+      50,
+      23,
+      18,
+      49
     ],
     "sprite_name": "furn_dew_glass_lantern",
     "can_drop": true,
@@ -5033,7 +4863,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5044,12 +4873,12 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "wood",
-      "magic",
-      "decor"
+      11,
+      46,
+      50,
+      17,
+      18,
+      45
     ],
     "sprite_name": "furn_spiritwood_resonator",
     "can_drop": true,
@@ -5063,7 +4892,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5074,11 +4902,11 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "craft",
-      "facility"
+      11,
+      46,
+      50,
+      27,
+      52
     ],
     "sprite_name": "furn_forest_sorting_bench",
     "can_drop": true,
@@ -5092,7 +4920,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5103,12 +4930,12 @@
     "stack_profile": 1,
     "stack_count": 0,
     "tags": [
-      "furniture",
-      "home",
-      "forest",
-      "alchemy",
-      "magic",
-      "facility"
+      11,
+      46,
+      50,
+      19,
+      18,
+      52
     ],
     "sprite_name": "furn_mana_settling_vat",
     "can_drop": true,
@@ -5122,7 +4949,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5133,10 +4959,10 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "metal",
-      "basic",
-      "salvage"
+      16,
+      29,
+      53,
+      54
     ],
     "sprite_name": "mat_iron_scrap",
     "can_drop": true,
@@ -5150,7 +4976,6 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
     "can_dismantle": false
   },
   {
@@ -5161,10 +4986,10 @@
     "stack_profile": 5,
     "stack_count": 0,
     "tags": [
-      "material",
-      "ceramic",
-      "basic",
-      "salvage"
+      16,
+      25,
+      53,
+      54
     ],
     "sprite_name": "mat_ceramic_shard",
     "can_drop": true,
@@ -5178,7 +5003,89 @@
     "special_buff_interval": 0,
     "auto_pick": false,
     "is_auto_use": false,
-    "quick_bar_kind": 0,
+    "can_dismantle": false
+  },
+  {
+    "item_id": "mat_forest_dew",
+    "display_name": "森林花露",
+    "item_type": 0,
+    "stackable": true,
+    "stack_profile": 4,
+    "stack_count": 0,
+    "tags": [
+      16,
+      50,
+      55,
+      19,
+      53
+    ],
+    "sprite_name": "flower_03",
+    "can_drop": true,
+    "rare_tier": 1,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "can_dismantle": false
+  },
+  {
+    "item_id": "mat_fairy_honeydew",
+    "display_name": "妖精蜜露",
+    "item_type": 0,
+    "stackable": true,
+    "stack_profile": 2,
+    "stack_count": 0,
+    "tags": [
+      16,
+      50,
+      55,
+      56,
+      19,
+      30
+    ],
+    "sprite_name": "flower_02",
+    "can_drop": true,
+    "rare_tier": 3,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
+    "can_dismantle": false
+  },
+  {
+    "item_id": "meat_baton",
+    "display_name": "肉棒",
+    "item_type": 0,
+    "stackable": false,
+    "stack_profile": 1,
+    "stack_count": 0,
+    "tags": [
+      4,
+      40,
+      57
+    ],
+    "sprite_name": "stick",
+    "can_drop": true,
+    "rare_tier": 0,
+    "reveal_effect_type": 0,
+    "reveal_p1": 0,
+    "reveal_p2": 0,
+    "auto_destroy": false,
+    "auto_destroy_time": 0,
+    "special_buff_id": "",
+    "special_buff_interval": 0,
+    "auto_pick": false,
+    "is_auto_use": false,
     "can_dismantle": false
   }
 ]

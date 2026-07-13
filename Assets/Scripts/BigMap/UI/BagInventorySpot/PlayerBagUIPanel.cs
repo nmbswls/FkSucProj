@@ -68,6 +68,7 @@ namespace My.UI.Bag
             public Button Btn;
             public Image SelectHint;
             public TextMeshProUGUI StackCount;
+            public EPlayerBagId BagId;
         }
 
         static readonly EPlayerBagId[] MainBagTabOrder =
@@ -82,6 +83,15 @@ namespace My.UI.Bag
             "背包",
             "精神",
             "珍贵",
+        };
+
+        static readonly EPlayerBagId[] SpeBagOrder =
+        {
+            EPlayerBagId.Secret,
+            EPlayerBagId.Pet,
+            EPlayerBagId.Plant,
+            EPlayerBagId.Key,
+            EPlayerBagId.Potion,
         };
 
         public List<InnerMainBagTabItem> MainBagTabs = new();
@@ -109,27 +119,33 @@ namespace My.UI.Bag
             }
             
 
-            List<EPlayerBagId> enableBags = new() { EPlayerBagId.Secret, EPlayerBagId.Pet };
             for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
             {
                 var childOne = SpecBagSelectionsTr.GetChild(i);
 
-                if (i >= enableBags.Count)
+                if (i >= SpeBagOrder.Length)
                 {
                     childOne.gameObject.SetActive(false);
                     continue;
                 }
 
+                EPlayerBagId bagId = SpeBagOrder[i];
+                if (BindingInventory.GetBagById((int)bagId) == null)
+                {
+                    childOne.gameObject.SetActive(false);
+                    continue;
+                }
+
+                childOne.gameObject.SetActive(true);
                 var item = new InnerSpeBagItem()
                 {
-                    Root = childOne.GetComponent<RectTransform>()
+                    Root = childOne.GetComponent<RectTransform>(),
+                    BagId = bagId,
                 };
 
 
                 var btn = childOne.GetComponentInChildren<Button>();
                 item.Btn = btn;
-
-                EPlayerBagId bagId = enableBags[i];
 
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() =>
@@ -368,15 +384,9 @@ namespace My.UI.Bag
             }
 
             var useRow = ItemCatalog.GetPrimaryUse(stack.ItemID);
-            if (useRow == null || !useRow.Usable)
+            if (useRow == null)
             {
                 return;
-            }
-
-            stack.RemoveFromStack(1);
-            if (stack.Count <= 0) 
-            {
-                bag.ClearEmptyItems();
             }
 
             MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.ItemUseCd.TryGetValue(stack.ItemID, out var lastUseTime);
@@ -399,9 +409,9 @@ namespace My.UI.Bag
                 }
                 OverworldHUDPanel.Instance.OnClickUseSkill(skillName, (ret) =>
                 {
-                    if(useRow.CostOnUse)
+                    if(ret && ItemCatalog.ShouldConsumeOnUse(useRow))
                     {
-                        bag.TryCostItem(stack.ItemID, 1);
+                        BindingInventory.TryConsumeItemUse(bag, index, useRow);
                     }
                 });
                 //MainGameManager.Instance.gameLogicManager.playerDataManager
@@ -412,6 +422,7 @@ namespace My.UI.Bag
                 {
                     ["PhaseExecutingTime"] = useRow.UseTime.ToString(),
                     ["ItemId"] = stack.ItemID,
+                    ["ItemSrcIdx"] = index.ToString(),
                 }); ;
             }
             
@@ -474,14 +485,21 @@ namespace My.UI.Bag
             }
 
             var bag = BindingInventory.GetBagById((int)CurrExpandBagId);
+            if (bag == null)
+            {
+                CloseSpeBag();
+                return;
+            }
             SpeBagPanel.gameObject.SetActive(true);
 
             SpeGridView.SetListItemCount(bag.NormalSlots.Count + bag.ExtraSlots.Count + 1);
             SpeGridView.RefreshAllShownItem();
 
-            List<EPlayerBagId> enableBags = new() { EPlayerBagId.Secret, EPlayerBagId.Pet };
-            var findIdx = enableBags.IndexOf(badId);
-            SpeBagItems[findIdx].SelectHint.gameObject.SetActive(true);
+            var findIdx = SpeBagItems.FindIndex(x => x.BagId == badId);
+            if (findIdx >= 0 && SpeBagItems[findIdx].SelectHint != null)
+            {
+                SpeBagItems[findIdx].SelectHint.gameObject.SetActive(true);
+            }
         }
 
         LoopGridViewItem OnSpeGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
@@ -498,6 +516,11 @@ namespace My.UI.Bag
 
             //int slotIndex = row * Columns + column;
             var specBag = BindingInventory.GetBagById((int)CurrExpandBagId);
+            if (specBag == null)
+            {
+                cell.ClearEmpty();
+                return item;
+            }
             var speCt = specBag.StackContainerType;
             if (itemIndex < specBag.BasicCapacity)
             {
@@ -583,5 +606,3 @@ namespace My.UI.Bag
     }
 
 }
-
-
