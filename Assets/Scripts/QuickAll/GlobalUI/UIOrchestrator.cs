@@ -323,6 +323,13 @@ namespace My.UI
             });
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = UIEventGrantToastPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/Common/EventGrantToastPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "UIGainRewardCoordinator",
                 resourcePath = "UI/Prefabs/Common/UIGainRewardCoordinator",
                 defaultLayer = UILayer.Popup,
@@ -389,8 +396,32 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = My.UI.KnowledgeClipboardPanel.Pid,
+                resourcePath = "UI/Prefabs/KnowledgeClipboardPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = My.UI.SecretBaseNpcHubPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/SecretBaseNpcHubPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.Talent.CharacterTalentTreePanel.Pid,
+                resourcePath = "UI/Prefabs/CharacterTalentTreePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.HumanTech.HumanTechTreePanel.Pid,
+                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/HumanTechTreePanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });
@@ -664,6 +695,7 @@ namespace My.UI
         {
             UIManager.Instance.ShowPanel("GainItemSideNtfPanel");
             UIManager.Instance.ShowPanel("UIGainRewardCoordinator");
+            UIManager.Instance.ShowPanel(UIEventGrantToastPanel.PanelIdConst);
         }
 
         static bool IsInSecretBaseWorld()

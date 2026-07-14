@@ -21,6 +21,7 @@ public sealed partial class ItemGift : Luban.BeanBase
         { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
         { var __json0 = _buf["gift_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } GiftTags = new System.Collections.Generic.List<demo.EGiftTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EGiftTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EGiftTag)__e0.AsInt; }  GiftTags.Add(__v0); }   }
         { if(!_buf["gift_level"].IsNumber) { throw new SerializationException(); }  GiftLevel = _buf["gift_level"]; }
+        { if(!_buf["base_favor_value"].IsNumber) { throw new SerializationException(); }  BaseFavorValue = _buf["base_favor_value"]; }
     }
 
     public static ItemGift DeserializeItemGift(JSONNode _buf)
@@ -40,6 +41,10 @@ public sealed partial class ItemGift : Luban.BeanBase
     /// gift_level
     /// </summary>
     public int GiftLevel;
+    /// <summary>
+    /// 基础好感点数
+    /// </summary>
+    public int BaseFavorValue;
    
     public const int __ID__ = 1942806190;
     public override int GetTypeId() => __ID__;
@@ -54,6 +59,7 @@ public sealed partial class ItemGift : Luban.BeanBase
         + "itemId:" + ItemId + ","
         + "giftTags:" + Luban.StringUtil.CollectionToString(GiftTags) + ","
         + "giftLevel:" + GiftLevel + ","
+        + "baseFavorValue:" + BaseFavorValue + ","
         + "}";
     }
 }

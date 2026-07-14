@@ -49,6 +49,18 @@ namespace Map.Logic.Events
 
         public long EntityId;
     }
+
+    // NPC 失神（非致命击倒等）；玩家侧由 PlayerSystemManager 桥接
+    public partial struct MLEUnitUnsensored : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.UnitUnsensored; } }
+
+        public long EntityId;
+        public string NpcCfgId;
+        public string RaceId;
+        public long SrcEntityId;
+    }
     
 
 

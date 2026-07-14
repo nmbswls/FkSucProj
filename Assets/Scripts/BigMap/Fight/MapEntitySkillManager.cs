@@ -563,6 +563,7 @@ namespace My.Map.Entity
                 RuntimeAbilityExtraVariables = SkillLibrary.CloneAbilityExtraMap(skillCfg),
                 PassiveBuffLayer = 1,
             };
+            newState.stackCount = skillCfg.StackCount > 0 ? skillCfg.StackCount : 0;
 
             SkillRuntimes[newState.SkillName] = newState;
             TryAttachPassiveBuffForRuntime(newState);
@@ -1224,9 +1225,30 @@ namespace My.Map.Entity
             {
                 skillRuntime.cooldown = skillRuntime.cacheConfig.CoolDown;
             }
+            if (skillRuntime.cacheConfig.StackCount > 0)
+            {
+                skillRuntime.stackCount = Mathf.Max(0, skillRuntime.stackCount - 1);
+            }
             skillRuntime.lastUseTime = LogicTime.time;
 
             return true;
+        }
+
+        public void ResetAllSkillCooldownsAndCharges()
+        {
+            foreach (var runtime in SkillRuntimes.Values)
+            {
+                if (runtime == null)
+                {
+                    continue;
+                }
+
+                runtime.cooldown = 0f;
+                if (runtime.cacheConfig != null && runtime.cacheConfig.StackCount > 0)
+                {
+                    runtime.stackCount = runtime.cacheConfig.StackCount;
+                }
+            }
         }
 
         static Dictionary<string, string> MergeCastOverrides(
@@ -1519,6 +1541,10 @@ namespace My.Map.Entity
             }
 
             if (skillRuntime.cooldown > 0)
+            {
+                return false;
+            }
+            if (skillRuntime.cacheConfig.StackCount > 0 && skillRuntime.stackCount <= 0)
             {
                 return false;
             }

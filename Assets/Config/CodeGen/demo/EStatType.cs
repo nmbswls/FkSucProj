@@ -21,6 +21,8 @@ namespace cfg.demo
         InteractUniq = 5,
         ExtractCodex = 6,
         PlayerDeath = 7,
+        BlurtAbsorb = 8,
+        UnsensoredRace = 9,
     }
 
 } 

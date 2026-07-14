@@ -82,6 +82,8 @@ namespace My.Player.Bag
                     RefreshSpecialBagsFromProgression();
                 };
             }
+
+            RefreshSpecialBagsFromProgression();
         }
 
         static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId, ItemInstanceInfo instanceInfo = null)

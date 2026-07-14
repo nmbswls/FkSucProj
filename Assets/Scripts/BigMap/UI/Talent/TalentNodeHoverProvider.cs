@@ -7,7 +7,7 @@ namespace My.UI.Talent
     public sealed class TalentNodeHoverProvider : BaseUIHoverProvider
     {
         int _nodeId;
-        PlayerProgressionSystem _progression;
+        ITalentProgressionContext _progression;
 
         protected override void Awake()
         {
@@ -19,7 +19,7 @@ namespace My.UI.Talent
             };
         }
 
-        public void Configure(int nodeId, PlayerProgressionSystem progression)
+        public void Configure(int nodeId, ITalentProgressionContext progression)
         {
             _nodeId = nodeId;
             _progression = progression;
@@ -30,7 +30,7 @@ namespace My.UI.Talent
             _nodeId = nodeId;
         }
 
-        public PlayerProgressionSystem Progression => _progression;
+        public ITalentProgressionContext Progression => _progression;
 
         public int NodeId => _nodeId;
 

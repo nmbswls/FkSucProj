@@ -124,6 +124,7 @@ namespace My.Map.Entity
 
         // OutOfCombatWatch: ParamFloat1=脱战计时间隔(秒)，到时触发 Tick（恢复等由 TriggerList 配置）
         OutOfCombatWatch,
+        ContactWatch,
     }
 
     // 伤害管道触发 OnDamageTaken 时的上下文
@@ -245,6 +246,8 @@ namespace My.Map.Entity
                     return new BuffDurationNearCasterWatchInstance(eff);
                 case EBuffDurationType.OutOfCombatWatch:
                     return new BuffDurationOutOfCombatWatchInstance(eff);
+                case EBuffDurationType.ContactWatch:
+                    return new BuffDurationContactWatchInstance(eff);
                 default:
                     return null;
             }
@@ -766,15 +769,36 @@ namespace My.Map.Entity
 
             if (entity is IEntityBuffOwner owner)
             {
-                ClearBuffsOnOwner(owner);
+                ClearBuffsOnOwner(owner, preservePassive: false);
+            }
+        }
+
+        public void ClearBuffsForCombatReset(ILogicEntity entity)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+
+            _addRequests.RemoveAll(req => req.target == entity.Id);
+
+            if (entity is IEntityBuffOwner owner)
+            {
+                ClearBuffsOnOwner(owner, preservePassive: true);
             }
         }
 
         public void RemoveAllBuffsCastBy(long casterId)
         {
+            RemoveAllBuffsCastBy(casterId, preservePassive: false);
+        }
+
+        void RemoveAllBuffsCastBy(long casterId, bool preservePassive)
+        {
             foreach (var buffInst in _buffs.Values.ToList())
             {
-                if (buffInst.CasterId != casterId)
+                if (buffInst.CasterId != casterId
+                    || preservePassive && IsPassiveBuff(buffInst))
                 {
                     continue;
                 }
@@ -783,12 +807,22 @@ namespace My.Map.Entity
             }
         }
 
-        void ClearBuffsOnOwner(IEntityBuffOwner owner)
+        void ClearBuffsOnOwner(IEntityBuffOwner owner, bool preservePassive)
         {
             foreach (var buffInst in owner.BuffContainer.Values.ToList())
             {
+                if (preservePassive && IsPassiveBuff(buffInst))
+                {
+                    continue;
+                }
+
                 RemoveBuffInstanceImmediate(buffInst);
             }
+        }
+
+        static bool IsPassiveBuff(BuffInstance buffInst)
+        {
+            return buffInst != null && !string.IsNullOrEmpty(buffInst.HostPassiveSkillId);
         }
 
         void RemoveBuffInstanceImmediate(BuffInstance buffInst)
@@ -1270,6 +1304,7 @@ namespace My.Map.Entity
         public class AuraRuntimeInfo
         {
             public float lastAuraTick;
+            public float lastBuffEnsureTime = -1f;
 
             public List<long> AffectedEntites = new();
         }
@@ -1937,6 +1972,41 @@ namespace My.Map.Entity
                     auraRuntimeInfo.AffectedEntites.Add(currAffectId);
                 }
             }
+
+            if (LogicTime.time - auraRuntimeInfo.lastBuffEnsureTime >= 3.0f)
+            {
+                auraRuntimeInfo.lastBuffEnsureTime = LogicTime.time;
+                foreach (var affectedId in auraRuntimeInfo.AffectedEntites)
+                {
+                    var target = BuffOwner.BuffManager.logicManager.AreaManager.GetLogicEntiy(affectedId, false);
+                    if (target == null || HasAuraBuff(target))
+                    {
+                        continue;
+                    }
+
+                    BuffOwner.BuffManager.RequestAddBuff(
+                        affectedId,
+                        Def.AuraBuffId,
+                        1,
+                        casterId: BuffOwner.Id,
+                        srcBuffId: InstanceId);
+                }
+            }
+        }
+
+        private bool HasAuraBuff(ILogicEntity target)
+        {
+            foreach (var buff in target.BuffContainer.Values)
+            {
+                if (buff.BuffId == Def.AuraBuffId
+                    && buff.CasterId == BuffOwner.Id
+                    && buff.SrcBuffId == InstanceId)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 

@@ -115,6 +115,22 @@ namespace My
 
                         return playerSystem.FuncOpenSystem.IsFuncOpen((EFuncOpenType)cond.Param1);
                     }
+                case cfg.demo.ECommonCheckType.CharacterFavorLevel:
+                    {
+                        if (string.IsNullOrEmpty(cond.Param5) || cond.Param1 < 0)
+                        {
+                            return false;
+                        }
+
+                        var registry = worldPersistState?.NpcCharacters;
+                        return registry != null
+                               && registry.GetFavorLevel(cond.Param5, this) >= cond.Param1;
+                    }
+                case cfg.demo.ECommonCheckType.HumanTechUnlockedCount:
+                    {
+                        return playerSystem?.ProgressionSystem?.HumanCivilization != null
+                               && playerSystem.ProgressionSystem.HumanCivilization.GetUnlockedTechCount() >= cond.Param1;
+                    }
             }
             return false;
         }

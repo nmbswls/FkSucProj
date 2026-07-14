@@ -137,6 +137,30 @@ namespace My.Quest
         public string OverlayId;
     }
 
+    // NPC 被非致命手段击倒失神（由 PlayerSystemManager 从 MLE 桥接）
+    public struct PlayerNpcUnsensoredEvent
+    {
+        public string NpcCfgId;
+        public string RaceId;
+        public bool ByPlayer;
+    }
+
+    // 全局开关变化（enable_conds 等门槛刷新用）
+    public struct PlayerGlobalSwitchChangedEvent
+    {
+        public string Name;
+        public int AfterVal;
+    }
+
+    // EventGrant 一次性授予已领取（用于成就/通识 toast）
+    public struct PlayerEventGrantClaimedEvent
+    {
+        public string GrantId;
+        public cfg.demo.EEventGrantCategory Category;
+        public string Name;
+        public string Desc;
+    }
+
     // Statistic 计数变化
     public struct PlayerStatisticChangedEvent
     {

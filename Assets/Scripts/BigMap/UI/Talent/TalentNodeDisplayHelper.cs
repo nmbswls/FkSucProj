@@ -28,7 +28,7 @@ namespace My.UI.Talent
 
         public static bool TryBuildSnapshot(
             int nodeId,
-            PlayerProgressionSystem progression,
+            ITalentProgressionContext progression,
             out NodeSnapshot snapshot)
         {
             snapshot = default;
@@ -104,7 +104,7 @@ namespace My.UI.Talent
             };
         }
 
-        public static string BuildHoverHint(in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        public static string BuildHoverHint(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             if (snapshot.IsMaxed)
             {
@@ -119,9 +119,15 @@ namespace My.UI.Talent
             return BuildPrimaryBlockerHint(snapshot, progression);
         }
 
-        public static string BuildDetailBody(in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        public static string BuildDetailBody(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             var lines = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(snapshot.NodeCfg?.Description))
+            {
+                lines.AppendLine(snapshot.NodeCfg.Description);
+                lines.AppendLine();
+            }
 
             if (snapshot.CurrentLevel > 0 && snapshot.CurrentLevelRow != null)
             {
@@ -144,7 +150,7 @@ namespace My.UI.Talent
             return lines.ToString().TrimEnd();
         }
 
-        public static string BuildDetailStatusHint(in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        public static string BuildDetailStatusHint(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             if (snapshot.IsMaxed)
             {
@@ -159,7 +165,7 @@ namespace My.UI.Talent
             };
         }
 
-        static string BuildPrimaryBlockerHint(in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        static string BuildPrimaryBlockerHint(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             if (snapshot.IsMaxed || snapshot.NextLevelRow == null)
             {
@@ -202,7 +208,7 @@ namespace My.UI.Talent
             return "暂不可解锁";
         }
 
-        static string BuildPrimaryCostHint(TalentNodeLevel levelRow, PlayerProgressionSystem progression, bool compact)
+        static string BuildPrimaryCostHint(TalentNodeLevel levelRow, ITalentProgressionContext progression, bool compact)
         {
             if (levelRow?.UnlockCosts == null || levelRow.UnlockCosts.Count == 0)
             {
@@ -238,7 +244,7 @@ namespace My.UI.Talent
             return compact ? $"消耗：{string.Join(" / ", parts)}" : string.Join("\n", parts);
         }
 
-        static void AppendPrerequisiteSection(StringBuilder lines, in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        static void AppendPrerequisiteSection(StringBuilder lines, in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             if (snapshot.IsMaxed || snapshot.NextLevelRow?.PrereqNodeIds == null || snapshot.NextLevelRow.PrereqNodeIds.Count == 0)
             {
@@ -285,7 +291,7 @@ namespace My.UI.Talent
             lines.AppendLine();
         }
 
-        static void AppendCostSection(StringBuilder lines, in NodeSnapshot snapshot, PlayerProgressionSystem progression)
+        static void AppendCostSection(StringBuilder lines, in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             if (snapshot.IsMaxed)
             {
@@ -369,6 +375,16 @@ namespace My.UI.Talent
                 return string.Empty;
             }
 
+            switch ((EYCAttribute)bonus.AttrId)
+            {
+                case EYCAttribute.MainBagSlots:
+                    return $"主背包槽位 +{bonus.Val}";
+                case EYCAttribute.PhysicalPower:
+                    return $"肉体强度 +{bonus.Val / 1000f:0.#}";
+                case EYCAttribute.PhysicalResist:
+                    return $"肉体耐受 +{bonus.Val / 1000f:0.#}";
+            }
+
             if (Mathf.Abs(bonus.Val) >= 1000)
             {
                 return $"属性{bonus.AttrId} +{bonus.Val / 100f:0.#}%";
@@ -423,6 +439,7 @@ namespace My.UI.Talent
                 ECommonCheckType.TaskStep => $"任务步骤 {cond.Param1}",
                 ECommonCheckType.CheckVariable => string.IsNullOrEmpty(cond.Param5) ? "满足剧情条件" : $"满足条件 {cond.Param5}",
                 ECommonCheckType.FuncOpen => $"解锁功能 {(EFuncOpenType)cond.Param1}",
+                ECommonCheckType.CharacterFavorLevel => $"{ResolveCharacterName(cond.Param5)}好感达到 Lv{cond.Param1}",
                 ECommonCheckType.AlwaysFail => "条件未满足",
                 _ => "解锁条件未满足",
             };
@@ -437,6 +454,12 @@ namespace My.UI.Talent
             }
 
             return $"节点 {nodeId}";
+        }
+
+        static string ResolveCharacterName(string characterKey)
+        {
+            var row = CfgMgr.Cfgs?.TbCharacterInfo?.GetOrDefault(characterKey);
+            return row != null && !string.IsNullOrEmpty(row.Name) ? row.Name : characterKey;
         }
 
         static string ResolveItemName(string itemId)

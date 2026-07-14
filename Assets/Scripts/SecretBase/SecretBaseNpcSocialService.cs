@@ -8,11 +8,13 @@ namespace My.SecretBase
     {
         Ok,
         InvalidArgs,
+        NotInSecretBase,
         NoRegistry,
         DailyLimit,
         NoGiftItem,
         CostItemFailed,
         NoGiftDef,
+        FavorUnsupported,
     }
 
     public static class SecretBaseNpcSocialService
@@ -42,13 +44,24 @@ namespace My.SecretBase
                 return ESecretBaseGiveGiftResult.InvalidArgs;
             }
 
+            if (!glm.IsInSecretBaseContext())
+            {
+                return ESecretBaseGiveGiftResult.NotInSecretBase;
+            }
+
             var registry = glm.worldPersistState?.NpcCharacters;
             if (registry == null)
             {
                 return ESecretBaseGiveGiftResult.NoRegistry;
             }
 
-            int giftsPerDay = row.GiftsPerDay > 0 ? row.GiftsPerDay : 1;
+            var characterInfo = CfgMgr.Cfgs?.TbCharacterInfo?.GetOrDefault(row.CharacterKey);
+            if (characterInfo == null || !characterInfo.SupportsFavor)
+            {
+                return ESecretBaseGiveGiftResult.FavorUnsupported;
+            }
+
+            int giftsPerDay = characterInfo.GiftsPerDay > 0 ? characterInfo.GiftsPerDay : 1;
             int settlementDay = glm.SettlementDayIndex;
             if (!registry.CanGiveGiftToday(row.CharacterKey, giftsPerDay, settlementDay))
             {
@@ -74,30 +87,69 @@ namespace My.SecretBase
                 return ESecretBaseGiveGiftResult.CostItemFailed;
             }
 
-            int perLevel = row.BaseFavorPerGiftLevel > 0 ? row.BaseFavorPerGiftLevel : 10;
-            int gain = Mathf.Max(1, giftDef.GiftLevel * perLevel);
-            if (HasPreferredTagOverlap(row, giftDef))
-            {
-                gain = Mathf.RoundToInt(gain * PreferredTagBonusMultiplier);
-            }
+            var overrideRule = FindOverride(row.CharacterKey, itemId);
+            int gain = overrideRule != null
+                ? overrideRule.FavorValue
+                : CalculateBaseGain(characterInfo, giftDef);
 
             registry.AddFavorValue(row.CharacterKey, gain);
             registry.RecordGiftGiven(row.CharacterKey, settlementDay);
             favorGained = gain;
+            if (overrideRule != null && !string.IsNullOrEmpty(overrideRule.ReceiveDialogId))
+            {
+                MainGameManager.Instance?.PlayDialog(overrideRule.ReceiveDialogId);
+            }
             return ESecretBaseGiveGiftResult.Ok;
         }
 
-        static bool HasPreferredTagOverlap(SecretBaseCharacter row, ItemGift giftDef)
+        static CharacterGiftRule FindOverride(string characterKey, string itemId)
         {
-            if (row?.PreferredGiftTags == null || row.PreferredGiftTags.Count == 0
-                || giftDef?.GiftTags == null || giftDef.GiftTags.Count == 0)
+            var rules = CfgMgr.Cfgs?.TbCharacterGiftRule?.DataList;
+            if (rules == null)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < rules.Count; i++)
+            {
+                var rule = rules[i];
+                if (rule != null && rule.CharacterKey == characterKey && rule.ItemId == itemId)
+                {
+                    return rule;
+                }
+            }
+
+            return null;
+        }
+
+        static int CalculateBaseGain(cfg.demo.CharacterInfo characterInfo, ItemGift giftDef)
+        {
+            int baseValue = giftDef.BaseFavorValue;
+            if (HasTagOverlap(giftDef.GiftTags, characterInfo.DislikedGiftTags))
+            {
+                return -Mathf.Abs(baseValue);
+            }
+
+            if (HasTagOverlap(giftDef.GiftTags, characterInfo.PreferredGiftTags))
+            {
+                return Mathf.RoundToInt(baseValue * PreferredTagBonusMultiplier);
+            }
+
+            return baseValue;
+        }
+
+        static bool HasTagOverlap(
+            System.Collections.Generic.List<EGiftTag> itemTags,
+            System.Collections.Generic.List<EGiftTag> characterTags)
+        {
+            if (itemTags == null || characterTags == null)
             {
                 return false;
             }
 
-            for (int i = 0; i < row.PreferredGiftTags.Count; i++)
+            for (int i = 0; i < characterTags.Count; i++)
             {
-                if (giftDef.GiftTags.Contains(row.PreferredGiftTags[i]))
+                if (itemTags.Contains(characterTags[i]))
                 {
                     return true;
                 }

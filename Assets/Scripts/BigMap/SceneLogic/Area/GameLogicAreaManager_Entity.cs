@@ -247,6 +247,50 @@ namespace My.Map.Logic
             TrySpawnRefreshInfo(refreshInfo, null, null, out _);
         }
 
+        public bool TryForceSpawnEntityByStaticName(string staticName, out long entityId)
+        {
+            entityId = 0;
+            if (string.IsNullOrEmpty(staticName))
+            {
+                return false;
+            }
+
+            int staticId = GetStaticIdByUniqName(staticName);
+            if (!TryGetRefreshInfoByStaticId(staticId, out var refreshInfo))
+            {
+                return false;
+            }
+
+            if (RefreshInfoRuntimes.TryGetValue(staticId, out var runtime)
+                && runtime.EntityInstId != 0
+                && Repo.Records.TryGetValue(runtime.EntityInstId, out var existingRecord)
+                && !existingRecord.MarkDestroyed)
+            {
+                var existingEntity = Repo.IsLoaded(runtime.EntityInstId)
+                    ? logicManager.GetLogicEntity(runtime.EntityInstId, false)
+                    : ImmediateSpawnAndWake(runtime.EntityInstId);
+                if (existingEntity != null)
+                {
+                    entityId = runtime.EntityInstId;
+                    return true;
+                }
+            }
+
+            if (!TrySpawnRefreshInfo(refreshInfo, null, null, out var record))
+            {
+                return false;
+            }
+
+            var entity = ImmediateSpawnAndWake(record.Id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            entityId = record.Id;
+            return true;
+        }
+
         private bool TrySpawnRefreshInfo(
             DynamicEntityRefreshInfo refreshInfo,
             Vector2? overridePosition,

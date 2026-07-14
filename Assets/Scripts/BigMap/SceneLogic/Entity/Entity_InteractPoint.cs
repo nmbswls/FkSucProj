@@ -182,6 +182,18 @@ namespace My.Map.Entity
                     _timedRefresh);
         }
 
+        void SyncStatusToPersistRegistryIfNeeded()
+        {
+            if (string.IsNullOrEmpty(SrcUniqName)
+                || !MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
+            {
+                return;
+            }
+
+            LogicManager?.worldPersistState?.MapInteractPoints?.SetStatus(
+                SrcUniqName, CurrStatusId);
+        }
+
         bool DormantRevealEnabled() =>
             cacheCfg != null && cacheCfg.DormantRevealSettings != null && cacheCfg.DormantRevealSettings.Enable;
 
@@ -461,6 +473,7 @@ namespace My.Map.Entity
         {
             int oldStat = CurrStatusId;
             CurrStatusId = newStatus;
+            SyncStatusToPersistRegistryIfNeeded();
 
             var curState = GetCurrentStatusInfo();
             if (curState != null)
@@ -584,7 +597,7 @@ namespace My.Map.Entity
             var realRecord = input as LogicEntityRecord4InteractPoint;
             if (MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
             {
-                realRecord.Status = 0;
+                realRecord.Status = CurrStatusId;
                 realRecord.LocalIntValues = null;
                 realRecord.TimedRefresh = null;
             }

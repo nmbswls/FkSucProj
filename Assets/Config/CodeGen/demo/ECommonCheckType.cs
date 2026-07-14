@@ -20,6 +20,8 @@ namespace cfg.demo
         TaskStep = 5,
         AlwaysFail = 6,
         FuncOpen = 7,
+        CharacterFavorLevel = 8,
+        HumanTechUnlockedCount = 9,
     }
 
 } 

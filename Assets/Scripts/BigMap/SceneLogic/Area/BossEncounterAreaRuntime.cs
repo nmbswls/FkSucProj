@@ -166,6 +166,8 @@ namespace My.Map.Logic
                     encounter.Def.ReengageDelay,
                     encounter.Def.InvulnerableWhileReturning)))
             {
+                boss.ablilityManager?.ResetAllSkillCooldownsAndCharges();
+                boss.LogicManager.globalBuffManager.ClearBuffsForCombatReset(boss);
                 _area.Summons.ClearForCombatReset(encounter.EntityId);
                 encounter.OutsideSince = -1f;
                 encounter.PhaseIndex = 0;

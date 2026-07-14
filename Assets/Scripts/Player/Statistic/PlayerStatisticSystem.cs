@@ -127,6 +127,8 @@ namespace My.Player
             PlayerEventBus.Subscribe<PlayerQuestCompleteEvent>(OnQuestComplete);
             PlayerEventBus.Subscribe<PlayerItemUsedEvent>(OnItemUsed);
             PlayerEventBus.Subscribe<PlayerEnterOverlayEvent>(OnEnterOverlay);
+            PlayerEventBus.Subscribe<PlayerJingYuanBlurtAbsorbedEvent>(OnBlurtAbsorbed);
+            PlayerEventBus.Subscribe<PlayerNpcUnsensoredEvent>(OnNpcUnsensored);
             _eventsBound = true;
         }
 
@@ -186,6 +188,27 @@ namespace My.Player
             }
 
             Add(EStatType.EnterOverlay, 1, e.OverlayId);
+        }
+
+        void OnBlurtAbsorbed(PlayerJingYuanBlurtAbsorbedEvent e)
+        {
+            if (e.SjAmount <= 0f)
+            {
+                return;
+            }
+
+            // 全局吸收次数（与 per-codex ExtractCodex 并存，供档位 EventGrant 回溯）
+            Add(EStatType.BlurtAbsorb, 1);
+        }
+
+        void OnNpcUnsensored(PlayerNpcUnsensoredEvent e)
+        {
+            if (!e.ByPlayer || string.IsNullOrEmpty(e.RaceId))
+            {
+                return;
+            }
+
+            Add(EStatType.UnsensoredRace, 1, e.RaceId);
         }
     }
 }

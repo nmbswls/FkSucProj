@@ -322,7 +322,18 @@ namespace My.Map
         /// </summary>
         /// <param name="output"></param>
         /// <returns></returns>
-        private long GetInteractTarget(LogicInteractOutput output)
+        string ResolveStaticName(string configuredStaticName)
+        {
+            if (string.IsNullOrEmpty(configuredStaticName))
+            {
+                return string.Empty;
+            }
+
+            var runtimeValue = Owner.GetRuntimeVariable(configuredStaticName);
+            return string.IsNullOrEmpty(runtimeValue) ? configuredStaticName : runtimeValue;
+        }
+
+        private long GetInteractTarget(LogicInteractOutput output, bool forceSpawnIfMissing = false)
         {
             switch(output.TargetType)
             {
@@ -336,13 +347,30 @@ namespace My.Map
                     break;
                 case LogicInteractOutput.ETargetType.StaticName:
                     {
-                        var staticName = output.StaticName;
+                        var staticName = ResolveStaticName(output.StaticName);
+                        if (forceSpawnIfMissing)
+                        {
+                            return Owner.LogicManager.AreaManager.TryForceSpawnEntityByStaticName(
+                                staticName,
+                                out var forcedEntityId)
+                                ? forcedEntityId
+                                : 0;
+                        }
+
                         var staticid = Owner.LogicManager.AreaManager.GetStaticIdByUniqName(staticName);
 
                         Owner.LogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticid, out var refreshRuntime);
-                        if(refreshRuntime == null)
+                        if (refreshRuntime == null || refreshRuntime.EntityInstId == 0)
                         {
-                            return 0;
+                            if (!forceSpawnIfMissing
+                                || !Owner.LogicManager.AreaManager.TryForceSpawnEntityByStaticName(
+                                    staticName,
+                                    out var forcedEntityId))
+                            {
+                                return 0;
+                            }
+
+                            return forcedEntityId;
                         }
 
                         return refreshRuntime.EntityInstId;
@@ -378,6 +406,7 @@ namespace My.Map
                 return false;
             }
 
+            staticName = ResolveStaticName(staticName);
             var staticId = Owner.LogicManager.AreaManager.GetStaticIdByUniqName(staticName);
             Owner.LogicManager.AreaManager.RefreshInfoRuntimes.TryGetValue(staticId, out var refreshRuntime);
             if (refreshRuntime == null || refreshRuntime.EntityInstId == 0)
@@ -511,7 +540,7 @@ namespace My.Map
                     case LogicInteractOutput.EOutputType.ChangeSelfStatus:
                         {
 
-                            var targetEntityId = GetInteractTarget(output);
+                            var targetEntityId = GetInteractTarget(output, forceSpawnIfMissing: true);
                             if(targetEntityId == 0)
                             {
                                 Debug.Log("TryTriggerInteract ChangeSelfStatus not valid target");
@@ -652,9 +681,8 @@ namespace My.Map
                         break;
                     case Config.LogicInteractOutput.EOutputType.CostItems:
                         {
-                            string itemId = output.Param3;
-                            long count = output.Param1;
-                            GetInteractingPlayerSystem()?.CostItem(itemId, count);
+                            // CostItems is currently a precondition marker only.
+                            // The interaction check validates ownership before execution.
                         }
                         break;
                     case Config.LogicInteractOutput.EOutputType.GiveItems:
@@ -992,7 +1020,7 @@ namespace My.Map
 
                             var writeMode = (LogicInteractOutput.ELocalIntWriteMode)output.Param2;
                             int operand = (int)output.Param1;
-                            long targetEntityId = GetInteractTarget(output);
+                            long targetEntityId = GetInteractTarget(output, forceSpawnIfMissing: true);
                             var target = targetEntityId == Owner.Id
                                 ? Owner
                                 : Owner.LogicManager.GetLogicEntity(targetEntityId, false) as IEntityInteractable;
@@ -1003,22 +1031,6 @@ namespace My.Map
                                 current = target.GetLocalIntValue(key);
                                 target.SetLocalIntValue(key, ResolveLocalIntWriteValue(writeMode, current, operand));
                             }
-                            else if (output.TargetType == LogicInteractOutput.ETargetType.StaticName
-                                     && !string.IsNullOrEmpty(output.StaticName))
-                            {
-                                var registry = Owner.LogicManager.worldPersistState?.MapInteractPoints;
-                                if (registry == null)
-                                {
-                                    errOccur = true;
-                                    break;
-                                }
-
-                                current = registry.GetLocalIntValue(output.StaticName, key);
-                                registry.SetLocalIntValue(
-                                    output.StaticName,
-                                    key,
-                                    ResolveLocalIntWriteValue(writeMode, current, operand));
-                            }
                             else
                             {
                                 errOccur = true;
@@ -1028,7 +1040,7 @@ namespace My.Map
 
                     case LogicInteractOutput.EOutputType.RecordRefreshSettlementDay:
                         {
-                            long targetEntityId = GetInteractTarget(output);
+                            long targetEntityId = GetInteractTarget(output, forceSpawnIfMissing: true);
                             var target = targetEntityId == Owner.Id
                                 ? Owner as IWithTimedRefreshState
                                 : Owner.LogicManager.GetLogicEntity(targetEntityId, false) as IWithTimedRefreshState;
@@ -1037,18 +1049,6 @@ namespace My.Map
                             if (target != null)
                             {
                                 target.RecordRefreshSettlementDay(settlementDayIndex);
-                            }
-                            else if (output.TargetType == LogicInteractOutput.ETargetType.StaticName
-                                     && !string.IsNullOrEmpty(output.StaticName))
-                            {
-                                var registry = Owner.LogicManager.worldPersistState?.MapInteractPoints;
-                                if (registry == null)
-                                {
-                                    errOccur = true;
-                                    break;
-                                }
-
-                                registry.RecordRefreshSettlementDay(output.StaticName, settlementDayIndex);
                             }
                             else
                             {

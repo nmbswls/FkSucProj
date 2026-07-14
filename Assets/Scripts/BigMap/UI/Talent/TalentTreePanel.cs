@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using My.Player;
 using My.UI;
 using TMPro;
@@ -13,14 +12,8 @@ namespace My.UI.Talent
 
         IPlayerProgressionHubHost _progressionHubHost;
 
-        public Transform NodeViewContainer;
-
-        public Dictionary<int, TalentTreeNodeView> NodeViewMap { get; private set; } = new();
         [SerializeField] Button closeButton;
-        [SerializeField] TextMeshProUGUI debugTipText;
-        [SerializeField] TalentDetailView detailView;
-
-        int _selectedNodeId;
+        [SerializeField] TalentTreeView treeView;
 
         public void SetProgressionHubHost(IPlayerProgressionHubHost host)
         {
@@ -35,27 +28,17 @@ namespace My.UI.Talent
                 panelId = Pid;
             }
 
-            EnsureNodeViewContainer();
+            EnsureTreeView();
             WireCloseButton();
         }
 
-        void EnsureNodeViewContainer()
+        void EnsureTreeView()
         {
-            if (NodeViewContainer != null)
+            if (treeView != null)
             {
                 return;
             }
-
-            var treeRoot = transform.Find("TreeRoot");
-            if (treeRoot == null)
-            {
-                return;
-            }
-
-            NodeViewContainer = treeRoot.Find("Scroll View/Viewport/Content")
-                               ?? treeRoot.Find("Scroll/Viewport/Content")
-                               ?? treeRoot.Find("Viewport/Content")
-                               ?? treeRoot;
+            treeView = GetComponent<TalentTreeView>();
         }
 
         void WireCloseButton()
@@ -73,85 +56,25 @@ namespace My.UI.Talent
         {
             base.Setup(data);
 
-            EnsureNodeViewContainer();
-            RefreshFromRuntime();
+            EnsureTreeView();
+            treeView?.Bind(TalentTreeView.PlayerMainTreeId, ResolveProgression());
         }
 
         public override void Show()
         {
             base.Show();
-            EnsureNodeViewContainer();
             RefreshFromRuntime();
         }
 
         public void OnNodeSelected(int nodeId)
         {
-            _selectedNodeId = nodeId;
-            RefreshNodeSelectionVisuals();
-            RefreshDetail();
+            treeView?.SelectNode(nodeId);
         }
 
         public void RefreshFromRuntime()
         {
-            var progression = ResolveProgression();
-
-            EnsureNodeViewContainer();
-            if (NodeViewContainer != null)
-            {
-                for (int i = 0; i < NodeViewContainer.childCount; i++)
-                {
-                    var one = NodeViewContainer.GetChild(i);
-                    var binder = one.GetComponent<TalentTreeNodeBinder>();
-                    if (binder == null)
-                    {
-                        continue;
-                    }
-
-                    var view = one.GetComponentInChildren<TalentTreeNodeView>(true);
-                    if (view == null)
-                    {
-                        Debug.LogWarning($"[TalentTreePanel] Missing view for node binder on {one.name}");
-                        continue;
-                    }
-
-                    view.Refresh(progression, binder.TalentNodeId, binder.TalentNodeId == _selectedNodeId);
-                    NodeViewMap[binder.TalentNodeId] = view;
-                }
-            }
-
-            RefreshDetail(progression);
-
-            if (debugTipText != null)
-            {
-                debugTipText.text = progression != null
-                    ? "黄色节点可解锁或升级；灰色按钮表示条件未满足或已满级。"
-                    : "未进入游戏上下文，无法读取养成数据。";
-            }
-        }
-
-        void RefreshDetail(PlayerProgressionSystem progression = null)
-        {
-            progression ??= ResolveProgression();
-            if (detailView == null)
-            {
-                return;
-            }
-
-            if (_selectedNodeId <= 0)
-            {
-                detailView.Clear();
-                return;
-            }
-
-            detailView.ShowNode(_selectedNodeId, progression);
-        }
-
-        void RefreshNodeSelectionVisuals()
-        {
-            foreach (var kv in NodeViewMap)
-            {
-                kv.Value.SetSelected(kv.Key == _selectedNodeId);
-            }
+            EnsureTreeView();
+            treeView?.Refresh();
         }
 
         static PlayerProgressionSystem ResolveProgression()

@@ -367,7 +367,7 @@ namespace My.Map
         }
 
 
-        public void ForceUnitUnsensored(int reason, long srcId)
+        public virtual void ForceUnitUnsensored(int reason, long srcId)
         {
             //foreach (var b in BuffContainer.Values)
             //{
@@ -840,6 +840,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneSteerInput, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.ImmuneEvilShock, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.ImmuneDamage, initialBase: 0);
         }
 
         protected void RegisterUnitCommonNumeris()
@@ -1447,6 +1448,11 @@ namespace My.Map
 
             if (delta < 0)
             {
+                if (CheckHasState(AttrIdConsts.ImmuneDamage))
+                {
+                    return 0;
+                }
+
                 var dmg = DamagePipeline.ResolveHpDeltaCore(
                     delta,
                     intent.DmgCategory,

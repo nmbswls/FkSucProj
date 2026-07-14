@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 
 namespace My.Player
 {
-    // EventGrant AssemblePassive 的属性加成源
-    public sealed class EventGrantProgressionProvider : IProgressionSource
+    // EventGrant AssemblePassive：属性 + 被动技能贡献
+    public sealed class EventGrantProgressionProvider : IProgressionSource, IProgressionSkillSource
     {
         public event Action<IProgressionSource> OnStatsChanged;
 
@@ -19,6 +20,11 @@ namespace My.Player
         public void EvaluateStats(StatMap targetMap)
         {
             _owner?.AccumulateProgressionStats(targetMap);
+        }
+
+        public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
+        {
+            _owner?.CollectQualifiedPassiveSkills(applied, output);
         }
 
         public void NotifyChanged()

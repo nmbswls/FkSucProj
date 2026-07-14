@@ -56,9 +56,9 @@ namespace My.Config
             }
 
             long attribute = 0;
-            if (def.YcAttributeId > 0)
+            if (def.YcAttributeId != EYCAttribute.None)
             {
-                attribute = player?.ProgressionSystem?.GetFinalAttribute(def.YcAttributeId) ?? 0;
+                attribute = player?.ProgressionSystem?.GetFinalAttribute((int)def.YcAttributeId) ?? 0;
             }
 
             return Math.Max(0, def.BaseCapacity + (int)attribute);

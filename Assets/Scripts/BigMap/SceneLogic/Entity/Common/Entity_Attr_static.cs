@@ -119,6 +119,7 @@ namespace My.Map.Entity
         public const string DesireMistAffected = "DesireMistAffected";
 
         public const string ImmuneEvilShock = "ImmuneEvilShock";
+        public const string ImmuneDamage = "ImmuneDamage";
         public const string NoKiller = "NoKiller";
 
         public const string PlayerZhaZhiMode = "PlayerZhaZhiMode";
@@ -285,4 +286,3 @@ namespace My.Map.Entity
         }
     }
 }
-

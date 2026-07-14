@@ -9,6 +9,7 @@ using UnityEngine;
 namespace My.Player
 {
     // 通用事件授予：GrantItemsOnce 领物品；AssemblePassive 构建时回溯装配
+    // 评估走 Tick 批处理 + 按 stat key 倒排，避免一次满足几百条时打爆主线程
     public sealed class PlayerEventGrantSystem : IPlayerSystem
     {
         const string LogTag = "[PlayerEventGrantSystem]";
@@ -17,12 +18,24 @@ namespace My.Player
         readonly EventGrantProgressionProvider _progressionProvider;
         readonly HashSet<string> _claimedOnceIds = new(StringComparer.Ordinal);
         readonly HashSet<string> _qualifiedPassiveIds = new(StringComparer.Ordinal);
+        readonly Dictionary<string, EventGrant> _qualifiedPassiveById = new(StringComparer.Ordinal);
         readonly List<EventGrant> _qualifiedPassiveGrants = new();
-        readonly Dictionary<EStatType, List<EventGrant>> _grantsByStatType = new();
+
+        // 精确 target key -> 依赖该 key 的 grant 列表
+        readonly Dictionary<string, List<EventGrant>> _grantsByTargetKey = new(StringComparer.Ordinal);
+        readonly List<EventGrant> _onceGrants = new();
+        readonly List<EventGrant> _passiveGrants = new();
+        readonly List<EventGrant> _grantsWithEnableConds = new();
+
+        readonly HashSet<string> _dirtyStatKeys = new(StringComparer.Ordinal);
+        readonly HashSet<EventGrant> _pendingEval = new();
+        readonly List<EventGrant> _evalScratch = new();
 
         GameLogicManager _logic;
         bool _eventsBound;
         bool _indexesBuilt;
+        bool _needFullRescan;
+        bool _passiveAssemblyDirty;
 
         public EventGrantProgressionProvider ProgressionProvider => _progressionProvider;
 
@@ -38,6 +51,13 @@ namespace My.Player
         {
             _logic = ctx;
             _claimedOnceIds.Clear();
+            _qualifiedPassiveIds.Clear();
+            _qualifiedPassiveById.Clear();
+            _qualifiedPassiveGrants.Clear();
+            _dirtyStatKeys.Clear();
+            _pendingEval.Clear();
+            _indexesBuilt = false;
+
             var claimed = savingData?.PlayerData?.ClaimedEventGrantIds;
             if (claimed != null)
             {
@@ -52,15 +72,20 @@ namespace My.Player
 
             EnsureIndexes();
             BindEvents();
+            _needFullRescan = true;
         }
 
         public void PostInit(PlayerSystemManager owner)
         {
-            EvaluateAll();
+            FlushPending(forceFull: true);
         }
 
         public void Tick(float dt)
         {
+            if (_needFullRescan || _dirtyStatKeys.Count > 0 || _pendingEval.Count > 0)
+            {
+                FlushPending(forceFull: _needFullRescan);
+            }
         }
 
         public void WriteToSave(PlayerData pd)
@@ -86,6 +111,44 @@ namespace My.Player
         public bool IsPassiveQualified(string grantId)
         {
             return !string.IsNullOrEmpty(grantId) && _qualifiedPassiveIds.Contains(grantId);
+        }
+
+        // 已兑现的通识类授予（剪贴板履历）：Once 已领取，或 Passive 已达成
+        public void CollectUnlockedKnowledgeGrants(List<EventGrant> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            output.Clear();
+            EnsureIndexes();
+
+            var table = CfgMgr.Cfgs?.TbEventGrant;
+            if (table == null)
+            {
+                return;
+            }
+
+            foreach (var grant in table.DataList)
+            {
+                if (grant == null || grant.Hidden || grant.Category != EEventGrantCategory.Knowledge)
+                {
+                    continue;
+                }
+
+                bool unlocked = grant.DeliverMode == EEventGrantDeliverMode.GrantItemsOnce
+                    ? _claimedOnceIds.Contains(grant.Id)
+                    : _qualifiedPassiveIds.Contains(grant.Id);
+                if (!unlocked)
+                {
+                    continue;
+                }
+
+                output.Add(grant);
+            }
+
+            output.Sort((a, b) => string.CompareOrdinal(a.Id, b.Id));
         }
 
         public void CollectQualifiedPassiveSkills(HashSet<string> applied, List<(string skillId, int level)> output)
@@ -140,10 +203,19 @@ namespace My.Player
             }
         }
 
-        // enable_conds 依赖的世界状态变化时调用（变量/任务完成等）
         public void OnWorldStateMaybeChanged()
         {
-            EvaluateAll();
+            // enable_conds 变化：只扫带门槛的 grant，不全表盲扫
+            EnsureIndexes();
+            for (int i = 0; i < _grantsWithEnableConds.Count; i++)
+            {
+                _pendingEval.Add(_grantsWithEnableConds[i]);
+            }
+
+            if (_grantsWithEnableConds.Count == 0)
+            {
+                return;
+            }
         }
 
         void BindEvents()
@@ -155,15 +227,32 @@ namespace My.Player
 
             PlayerEventBus.Subscribe<PlayerStatisticChangedEvent>(OnStatisticChanged);
             PlayerEventBus.Subscribe<PlayerFuncUnlockEvent>(OnFuncUnlock);
+            PlayerEventBus.Subscribe<PlayerQuestCompleteEvent>(OnQuestComplete);
+            PlayerEventBus.Subscribe<PlayerGlobalSwitchChangedEvent>(OnGlobalSwitchChanged);
             _eventsBound = true;
         }
 
         void OnStatisticChanged(PlayerStatisticChangedEvent e)
         {
-            EvaluateForStatType(e.StatType);
+            if (string.IsNullOrEmpty(e.Key))
+            {
+                return;
+            }
+
+            _dirtyStatKeys.Add(e.Key);
         }
 
         void OnFuncUnlock(PlayerFuncUnlockEvent _)
+        {
+            OnWorldStateMaybeChanged();
+        }
+
+        void OnQuestComplete(PlayerQuestCompleteEvent _)
+        {
+            OnWorldStateMaybeChanged();
+        }
+
+        void OnGlobalSwitchChanged(PlayerGlobalSwitchChangedEvent _)
         {
             OnWorldStateMaybeChanged();
         }
@@ -175,7 +264,11 @@ namespace My.Player
                 return;
             }
 
-            _grantsByStatType.Clear();
+            _grantsByTargetKey.Clear();
+            _onceGrants.Clear();
+            _passiveGrants.Clear();
+            _grantsWithEnableConds.Clear();
+
             var table = CfgMgr.Cfgs?.TbEventGrant;
             if (table?.DataList == null)
             {
@@ -185,24 +278,49 @@ namespace My.Player
 
             foreach (var grant in table.DataList)
             {
-                if (grant?.Targets == null || grant.Targets.Count == 0)
+                if (grant == null || string.IsNullOrEmpty(grant.Id))
                 {
-                    // 无 target 的 once 也可在全量评估时处理
                     continue;
                 }
 
-                var seen = new HashSet<EStatType>();
-                foreach (var t in grant.Targets)
+                if (grant.DeliverMode == EEventGrantDeliverMode.GrantItemsOnce)
                 {
-                    if (t == null || t.StatType == EStatType.None || !seen.Add(t.StatType))
+                    _onceGrants.Add(grant);
+                }
+                else if (grant.DeliverMode == EEventGrantDeliverMode.AssemblePassive)
+                {
+                    _passiveGrants.Add(grant);
+                }
+
+                if (grant.EnableConds != null && grant.EnableConds.Count > 0)
+                {
+                    _grantsWithEnableConds.Add(grant);
+                }
+
+                if (grant.Targets == null || grant.Targets.Count == 0)
+                {
+                    continue;
+                }
+
+                var seenKeys = new HashSet<string>(StringComparer.Ordinal);
+                for (int i = 0; i < grant.Targets.Count; i++)
+                {
+                    var t = grant.Targets[i];
+                    if (t == null || t.StatType == EStatType.None)
                     {
                         continue;
                     }
 
-                    if (!_grantsByStatType.TryGetValue(t.StatType, out var list))
+                    var key = PlayerStatisticKeys.MakeKey(t.StatType, t.Arg0, t.Arg1);
+                    if (!seenKeys.Add(key))
+                    {
+                        continue;
+                    }
+
+                    if (!_grantsByTargetKey.TryGetValue(key, out var list))
                     {
                         list = new List<EventGrant>();
-                        _grantsByStatType[t.StatType] = list;
+                        _grantsByTargetKey[key] = list;
                     }
 
                     list.Add(grant);
@@ -212,40 +330,71 @@ namespace My.Player
             _indexesBuilt = true;
         }
 
-        void EvaluateAll()
+        void FlushPending(bool forceFull)
         {
             EnsureIndexes();
-            TryClaimAllOnce();
-            RebuildQualifiedPassives();
-        }
+            _needFullRescan = false;
+            _passiveAssemblyDirty = false;
 
-        void EvaluateForStatType(EStatType statType)
-        {
-            EnsureIndexes();
-            if (_grantsByStatType.TryGetValue(statType, out var list))
+            if (forceFull)
             {
-                for (int i = 0; i < list.Count; i++)
+                // 读档全量重建：once 仍可补领并发 toast；被动只装配不刷屏
+                for (int i = 0; i < _onceGrants.Count; i++)
                 {
-                    TryClaimOnce(list[i]);
+                    TryClaimOnce(_onceGrants[i]);
                 }
-            }
 
-            // 被动需要幂等重建（可能从未合格变为合格）
-            RebuildQualifiedPassives();
-        }
+                for (int i = 0; i < _passiveGrants.Count; i++)
+                {
+                    TryUpdatePassiveMembership(_passiveGrants[i], announce: false);
+                }
 
-        void TryClaimAllOnce()
-        {
-            var table = CfgMgr.Cfgs?.TbEventGrant;
-            if (table?.DataList == null)
-            {
+                _dirtyStatKeys.Clear();
+                _pendingEval.Clear();
+                ApplyPassiveAssemblyIfDirty();
                 return;
             }
 
-            foreach (var grant in table.DataList)
+            _evalScratch.Clear();
+            foreach (var key in _dirtyStatKeys)
             {
-                TryClaimOnce(grant);
+                if (_grantsByTargetKey.TryGetValue(key, out var list))
+                {
+                    for (int i = 0; i < list.Count; i++)
+                    {
+                        _pendingEval.Add(list[i]);
+                    }
+                }
             }
+
+            _dirtyStatKeys.Clear();
+
+            foreach (var grant in _pendingEval)
+            {
+                _evalScratch.Add(grant);
+            }
+
+            _pendingEval.Clear();
+
+            for (int i = 0; i < _evalScratch.Count; i++)
+            {
+                var grant = _evalScratch[i];
+                if (grant == null)
+                {
+                    continue;
+                }
+
+                if (grant.DeliverMode == EEventGrantDeliverMode.GrantItemsOnce)
+                {
+                    TryClaimOnce(grant);
+                }
+                else if (grant.DeliverMode == EEventGrantDeliverMode.AssemblePassive)
+                {
+                    TryUpdatePassiveMembership(grant, announce: true);
+                }
+            }
+
+            ApplyPassiveAssemblyIfDirty();
         }
 
         void TryClaimOnce(EventGrant grant)
@@ -280,33 +429,72 @@ namespace My.Player
 
             _claimedOnceIds.Add(grant.Id);
             Debug.Log($"{LogTag} Claimed once grant '{grant.Id}'.");
+
+            PlayerEventBus.Publish(new PlayerEventGrantClaimedEvent
+            {
+                GrantId = grant.Id,
+                Category = grant.Category,
+                Name = grant.Name ?? string.Empty,
+                Desc = grant.Desc ?? string.Empty,
+            });
         }
 
-        void RebuildQualifiedPassives()
+        void TryUpdatePassiveMembership(EventGrant grant, bool announce)
         {
-            _qualifiedPassiveIds.Clear();
-            _qualifiedPassiveGrants.Clear();
-
-            var table = CfgMgr.Cfgs?.TbEventGrant;
-            if (table?.DataList != null)
+            if (grant == null || grant.DeliverMode != EEventGrantDeliverMode.AssemblePassive)
             {
-                foreach (var grant in table.DataList)
+                return;
+            }
+
+            bool now = IsQualified(grant);
+            bool was = _qualifiedPassiveIds.Contains(grant.Id);
+
+            if (now == was)
+            {
+                return;
+            }
+
+            if (now)
+            {
+                _qualifiedPassiveIds.Add(grant.Id);
+                _qualifiedPassiveById[grant.Id] = grant;
+                _qualifiedPassiveGrants.Add(grant);
+                if (announce)
                 {
-                    if (grant == null || grant.DeliverMode != EEventGrantDeliverMode.AssemblePassive)
+                    PlayerEventBus.Publish(new PlayerEventGrantClaimedEvent
                     {
-                        continue;
-                    }
-
-                    if (!IsQualified(grant))
+                        GrantId = grant.Id,
+                        Category = grant.Category,
+                        Name = grant.Name ?? string.Empty,
+                        Desc = grant.Desc ?? string.Empty,
+                    });
+                }
+            }
+            else
+            {
+                _qualifiedPassiveIds.Remove(grant.Id);
+                _qualifiedPassiveById.Remove(grant.Id);
+                for (int i = _qualifiedPassiveGrants.Count - 1; i >= 0; i--)
+                {
+                    if (_qualifiedPassiveGrants[i] != null && _qualifiedPassiveGrants[i].Id == grant.Id)
                     {
-                        continue;
+                        _qualifiedPassiveGrants.RemoveAt(i);
+                        break;
                     }
-
-                    _qualifiedPassiveIds.Add(grant.Id);
-                    _qualifiedPassiveGrants.Add(grant);
                 }
             }
 
+            _passiveAssemblyDirty = true;
+        }
+
+        void ApplyPassiveAssemblyIfDirty()
+        {
+            if (!_passiveAssemblyDirty)
+            {
+                return;
+            }
+
+            _passiveAssemblyDirty = false;
             _progressionProvider.NotifyChanged();
             _owner?.ProgressionSystem?.ProgressionRoot?.ForceDirty();
             _owner?.SyncLearnedSkillsToPlayerEntity();
@@ -343,7 +531,10 @@ namespace My.Player
                     continue;
                 }
 
-                long cur = stats.Get(t.StatType, t.Arg0, t.Arg1);
+                long cur = stats.Get(
+                    t.StatType,
+                    PlayerStatisticKeys.NormalizeArg(t.Arg0),
+                    PlayerStatisticKeys.NormalizeArg(t.Arg1));
                 if (!Compare(cur, t.Op, t.Value))
                 {
                     return false;

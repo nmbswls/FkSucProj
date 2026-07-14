@@ -307,5 +307,150 @@
     "unlock_costs": [],
     "stat_bonuses": [],
     "passive_skill_id": "ex_zhazhi_03"
+  },
+  {
+    "node_id": 101,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [
+      {
+        "type": 8,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "carlisle",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [],
+    "stat_bonuses": [
+      {
+        "attr_id": 12,
+        "val": 100
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 102,
+    "level": 1,
+    "prereq_node_ids": [
+      101
+    ],
+    "unlock_conds": [
+      {
+        "type": 8,
+        "param1": 3,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "carlisle",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [],
+    "stat_bonuses": [
+      {
+        "attr_id": 11,
+        "val": 100
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 103,
+    "level": 1,
+    "prereq_node_ids": [
+      102
+    ],
+    "unlock_conds": [
+      {
+        "type": 8,
+        "param1": 5,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "carlisle",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [],
+    "stat_bonuses": [
+      {
+        "attr_id": 13,
+        "val": 2
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 104,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "loot_cloth_scrap",
+        "count": 4
+      },
+      {
+        "item_id": "loot_rope_end",
+        "count": 2
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 13,
+        "val": 1
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 105,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "loot_bent_hinge",
+        "count": 2
+      },
+      {
+        "item_id": "loot_rusty_nail",
+        "count": 4
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 21,
+        "val": 500
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 106,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "mat_iron_ingot",
+        "count": 1
+      },
+      {
+        "item_id": "mat_linen_cloth",
+        "count": 2
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 20,
+        "val": 500
+      }
+    ],
+    "passive_skill_id": ""
   }
 ]

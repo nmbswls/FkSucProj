@@ -51,6 +51,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
         { if(!_buf["lock_initial_face"].IsBoolean) { throw new SerializationException(); }  LockInitialFace = _buf["lock_initial_face"]; }
         { if(!_buf["race_id"].IsString) { throw new SerializationException(); }  RaceId = _buf["race_id"]; }
         { var __json0 = _buf["npc_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } NpcTags = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  NpcTags.Add(__v0); }   }
+        { if(!_buf["direct_drop_id"].IsNumber) { throw new SerializationException(); }  DirectDropId = _buf["direct_drop_id"]; }
+        { if(!_buf["direct_rune_id"].IsString) { throw new SerializationException(); }  DirectRuneId = _buf["direct_rune_id"]; }
+        { if(!_buf["direct_reward_require_player_kill"].IsBoolean) { throw new SerializationException(); }  DirectRewardRequirePlayerKill = _buf["direct_reward_require_player_kill"]; }
+        { var __json0 = _buf["initial_buff_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } InitialBuffIds = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  InitialBuffIds.Add(__v0); }   }
     }
 
     public static UnitNpc DeserializeUnitNpc(JSONNode _buf)
@@ -184,6 +188,22 @@ public sealed partial class UnitNpc : Luban.BeanBase
     /// Common NPC content tags for drop pools, recipe pools, and other content matching.
     /// </summary>
     public System.Collections.Generic.List<string> NpcTags;
+    /// <summary>
+    /// 死亡时直接结算到玩家背包的掉落包；0表示无
+    /// </summary>
+    public int DirectDropId;
+    /// <summary>
+    /// 死亡时直接授予的Rune；空表示无
+    /// </summary>
+    public string DirectRuneId;
+    /// <summary>
+    /// 直接死亡奖励是否要求玩家造成致命击杀
+    /// </summary>
+    public bool DirectRewardRequirePlayerKill;
+    /// <summary>
+    /// ????????? Buff ??
+    /// </summary>
+    public System.Collections.Generic.List<string> InitialBuffIds;
    
     public const int __ID__ = 153800082;
     public override int GetTypeId() => __ID__;
@@ -228,6 +248,10 @@ public sealed partial class UnitNpc : Luban.BeanBase
         + "lockInitialFace:" + LockInitialFace + ","
         + "raceId:" + RaceId + ","
         + "npcTags:" + Luban.StringUtil.CollectionToString(NpcTags) + ","
+        + "directDropId:" + DirectDropId + ","
+        + "directRuneId:" + DirectRuneId + ","
+        + "directRewardRequirePlayerKill:" + DirectRewardRequirePlayerKill + ","
+        + "initialBuffIds:" + Luban.StringUtil.CollectionToString(InitialBuffIds) + ","
         + "}";
     }
 }

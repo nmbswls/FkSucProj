@@ -3,30 +3,80 @@
     "id": 1,
     "key": "smith_wang",
     "favor_level": 1,
-    "need_value": 20
+    "need_value": 20,
+    "breakthrough_conds": []
   },
   {
     "id": 2,
     "key": "smith_wang",
     "favor_level": 2,
-    "need_value": 40
+    "need_value": 40,
+    "breakthrough_conds": []
   },
   {
     "id": 3,
     "key": "smith_wang",
     "favor_level": 3,
-    "need_value": 60
+    "need_value": 60,
+    "breakthrough_conds": []
   },
   {
     "id": 4,
     "key": "smith_wang",
     "favor_level": 4,
-    "need_value": 80
+    "need_value": 80,
+    "breakthrough_conds": []
   },
   {
     "id": 5,
     "key": "smith_wang",
     "favor_level": 5,
-    "need_value": 100
+    "need_value": 100,
+    "breakthrough_conds": []
+  },
+  {
+    "id": 6,
+    "key": "carlisle",
+    "favor_level": 1,
+    "need_value": 20,
+    "breakthrough_conds": [
+      {
+        "type": 4,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "small_stone",
+        "param6": ""
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "key": "carlisle",
+    "favor_level": 2,
+    "need_value": 40,
+    "breakthrough_conds": []
+  },
+  {
+    "id": 8,
+    "key": "carlisle",
+    "favor_level": 3,
+    "need_value": 60,
+    "breakthrough_conds": []
+  },
+  {
+    "id": 9,
+    "key": "carlisle",
+    "favor_level": 4,
+    "need_value": 80,
+    "breakthrough_conds": []
+  },
+  {
+    "id": 10,
+    "key": "carlisle",
+    "favor_level": 5,
+    "need_value": 100,
+    "breakthrough_conds": []
   }
 ]

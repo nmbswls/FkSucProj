@@ -28,6 +28,7 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         { if(!_buf["func_open_type"].IsNumber) { throw new SerializationException(); }  FuncOpenType = (demo.EFuncOpenType)_buf["func_open_type"].AsInt; }
         { if(!_buf["icon"].IsString) { throw new SerializationException(); }  Icon = _buf["icon"]; }
         { if(!_buf["layout_slot"].IsNumber) { throw new SerializationException(); }  LayoutSlot = _buf["layout_slot"]; }
+        { var __json0 = _buf["stat_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } StatBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  StatBonuses.Add(__v0); }   }
     }
 
     public static RuneUpgradeInfo DeserializeRuneUpgradeInfo(JSONNode _buf)
@@ -45,12 +46,14 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
     public demo.EFuncOpenType FuncOpenType;
     public string Icon;
     public int LayoutSlot;
+    public System.Collections.Generic.List<demo.TalentStatBonus> StatBonuses;
    
     public const int __ID__ = 1357224741;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
+        foreach (var _e in StatBonuses) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -66,6 +69,7 @@ public sealed partial class RuneUpgradeInfo : Luban.BeanBase
         + "funcOpenType:" + FuncOpenType + ","
         + "icon:" + Icon + ","
         + "layoutSlot:" + LayoutSlot + ","
+        + "statBonuses:" + Luban.StringUtil.CollectionToString(StatBonuses) + ","
         + "}";
     }
 }

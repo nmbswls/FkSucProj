@@ -1,50 +1,114 @@
 [
   {
+    "talent_tree_id": "player_main",
     "node_id": 1,
     "display_name": "魅力四射",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 2,
     "display_name": "天分-护甲理解",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 3,
     "display_name": "天分-意志魅力",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 4,
     "display_name": "天分-双防雏形",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 5,
     "display_name": "天分-统合",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 11,
     "display_name": "榨汁扩展1",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 12,
     "display_name": "榨汁扩展2",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
   },
   {
+    "talent_tree_id": "player_main",
     "node_id": 13,
     "display_name": "榨汁扩展3",
     "max_level": 1,
-    "icon_path": "default"
+    "icon_path": "default",
+    "description": ""
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 101,
+    "display_name": "拾荒诀窍",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": ""
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 102,
+    "display_name": "稳固架势",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": ""
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 103,
+    "display_name": "远行收纳",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": ""
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 104,
+    "display_name": "旧囊加层",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "真正耐用的行囊不靠外表。卡莱尔教你用捡来的布片和绳头，在旧背包里再缝出一层藏物夹袋。"
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 105,
+    "display_name": "负肩成习",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "旅途中没有人替你分担重量。卡莱尔用旧合页和铁钉改出一套负重带，教你让肩背逐渐习惯长路。"
+  },
+  {
+    "talent_tree_id": "carlisle_tree",
+    "node_id": 106,
+    "display_name": "硬地筋骨",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "没有训练场的流浪者，就拿路边和废墟当老师。用铁锭与亚麻布做成简陋负具，反复锤炼肉体。"
   }
 ]

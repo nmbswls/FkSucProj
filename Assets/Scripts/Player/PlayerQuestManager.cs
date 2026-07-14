@@ -441,7 +441,6 @@ namespace My.Player
             {
                 QuestId = cacheCfg.QuestId,
             });
-            ctx.Ctx.playerDataManager?.EventGrantSystem?.OnWorldStateMaybeChanged();
         }
         
 

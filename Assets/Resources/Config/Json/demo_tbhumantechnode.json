@@ -1,0 +1,62 @@
+[
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1001,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 120,
+    "pos_y": -100
+  },
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1002,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 300,
+    "pos_y": -100
+  },
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1003,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 120,
+    "pos_y": -260
+  },
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1004,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 300,
+    "pos_y": -260
+  },
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1005,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 120,
+    "pos_y": -420
+  },
+  {
+    "tech_tree_id": "human_main",
+    "node_id": 1006,
+    "display_name": "????",
+    "max_level": 1,
+    "required_civilization_level": 1,
+    "icon_path": "default",
+    "pos_x": 300,
+    "pos_y": -420
+  }
+]

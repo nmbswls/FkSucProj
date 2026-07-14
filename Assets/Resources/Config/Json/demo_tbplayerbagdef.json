@@ -5,7 +5,7 @@
     "base_capacity": 60,
     "extra_capacity": 0,
     "layout": "Grid",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 13,
     "accepted_tags": [],
     "auto_create": true,
     "gain_priority": 0
@@ -16,7 +16,7 @@
     "base_capacity": 5,
     "extra_capacity": 3,
     "layout": "Compact",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 14,
     "accepted_tags": [],
     "auto_create": true,
     "gain_priority": 0
@@ -27,7 +27,7 @@
     "base_capacity": 30,
     "extra_capacity": 0,
     "layout": "Compact",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 16,
     "accepted_tags": [],
     "auto_create": true,
     "gain_priority": 0
@@ -38,7 +38,7 @@
     "base_capacity": 8,
     "extra_capacity": 0,
     "layout": "Compact",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 17,
     "accepted_tags": [],
     "auto_create": true,
     "gain_priority": 0
@@ -88,7 +88,7 @@
     "base_capacity": 100,
     "extra_capacity": 0,
     "layout": "Compact",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 18,
     "accepted_tags": [],
     "auto_create": true,
     "gain_priority": 0
@@ -99,7 +99,7 @@
     "base_capacity": 100,
     "extra_capacity": 0,
     "layout": "Compact",
-    "yc_attribute_id": 0,
+    "yc_attribute_id": 19,
     "accepted_tags": [
       11
     ],

@@ -69812,8 +69812,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
 --- !u!1001 &1115212832
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -75826,8 +75828,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
 --- !u!1001 &1826345994
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -76751,8 +76755,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
 --- !u!1 &1930615575
 GameObject:
   m_ObjectHideFlags: 0
@@ -78048,16 +78054,19 @@ MonoBehaviour:
     SelectableSkills:
     - default_normal_attack
     - treant_corrosive_barrage
+    - treant_summon_thorn_vines
   - EnterHpRatio: 0.65
     SelectableSkills:
     - default_normal_attack
     - treant_corrosive_barrage
     - treant_summon_root_nodes
+    - treant_summon_thorn_vines
   - EnterHpRatio: 0.3
     SelectableSkills:
     - default_normal_attack
     - treant_corrosive_barrage
     - treant_summon_root_nodes
+    - treant_summon_thorn_vines
 --- !u!61 &2049559186
 BoxCollider2D:
   m_ObjectHideFlags: 0

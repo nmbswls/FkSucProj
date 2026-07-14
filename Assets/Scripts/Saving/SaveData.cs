@@ -90,6 +90,9 @@ namespace My.Saving
         // 天赋节点等级（Level==0 可省略；对应 TbTalentNode + TbTalentNodeLevel）
         public List<TalentNodeLevelPersist> TalentNodeLevels = new();
 
+        // 人类文明科技节点等级（当前首期节点均为单级，但保留等级字段）
+        public List<HumanTechNodeLevelPersist> HumanTechNodeLevels = new();
+
         // 存档点正式解锁（全局；键 save_point_id，局外传送列表用）
         public List<SavePointUnlockPersist> SavePointUnlocks = new();
 
@@ -178,6 +181,13 @@ namespace My.Saving
 
     [Serializable]
     public class TalentNodeLevelPersist
+    {
+        public int NodeId;
+        public int Level;
+    }
+
+    [Serializable]
+    public class HumanTechNodeLevelPersist
     {
         public int NodeId;
         public int Level;
@@ -361,6 +371,8 @@ namespace My.Saving
     [Serializable]
     public class MapInteractPointPersistData
     {
+        public bool HasStatus;
+        public int Status;
         public List<string> LocalSwitches;
         public Dictionary<string, int> LocalIntValues;
         public TimedRefreshState TimedRefresh;
@@ -494,6 +506,7 @@ namespace My.Saving
             data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
+            data.PlayerData.HumanTechNodeLevels ??= new List<HumanTechNodeLevelPersist>();
             data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
             data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
             if (data.PlayerData.SecretBaseBuildLevel < 1)

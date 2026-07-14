@@ -23,7 +23,7 @@ public sealed partial class PlayerBagDef : Luban.BeanBase
         { if(!_buf["base_capacity"].IsNumber) { throw new SerializationException(); }  BaseCapacity = _buf["base_capacity"]; }
         { if(!_buf["extra_capacity"].IsNumber) { throw new SerializationException(); }  ExtraCapacity = _buf["extra_capacity"]; }
         { if(!_buf["layout"].IsString) { throw new SerializationException(); }  Layout = _buf["layout"]; }
-        { if(!_buf["yc_attribute_id"].IsNumber) { throw new SerializationException(); }  YcAttributeId = _buf["yc_attribute_id"]; }
+        { if(!_buf["yc_attribute_id"].IsNumber) { throw new SerializationException(); }  YcAttributeId = (demo.EYCAttribute)_buf["yc_attribute_id"].AsInt; }
         { var __json0 = _buf["accepted_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } AcceptedTags = new System.Collections.Generic.List<demo.EItemTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EItemTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EItemTag)__e0.AsInt; }  AcceptedTags.Add(__v0); }   }
         { if(!_buf["auto_create"].IsBoolean) { throw new SerializationException(); }  AutoCreate = _buf["auto_create"]; }
         { if(!_buf["gain_priority"].IsNumber) { throw new SerializationException(); }  GainPriority = _buf["gain_priority"]; }
@@ -55,9 +55,9 @@ public sealed partial class PlayerBagDef : Luban.BeanBase
     /// </summary>
     public string Layout;
     /// <summary>
-    /// EYCAttribute 数值；0 表示无
+    /// 增加该背包容量的 EYCAttribute；属性值会加到基础容量上
     /// </summary>
-    public int YcAttributeId;
+    public demo.EYCAttribute YcAttributeId;
     /// <summary>
     /// 可接收任一 tag；空表示不限
     /// </summary>

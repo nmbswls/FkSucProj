@@ -20,6 +20,10 @@ public sealed partial class CharacterInfo : Luban.BeanBase
     {
         { if(!_buf["key"].IsString) { throw new SerializationException(); }  Key = _buf["key"]; }
         { if(!_buf["name"].IsString) { throw new SerializationException(); }  Name = _buf["name"]; }
+        { if(!_buf["supports_favor"].IsBoolean) { throw new SerializationException(); }  SupportsFavor = _buf["supports_favor"]; }
+        { var __json0 = _buf["preferred_gift_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } PreferredGiftTags = new System.Collections.Generic.List<demo.EGiftTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EGiftTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EGiftTag)__e0.AsInt; }  PreferredGiftTags.Add(__v0); }   }
+        { var __json0 = _buf["disliked_gift_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } DislikedGiftTags = new System.Collections.Generic.List<demo.EGiftTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EGiftTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EGiftTag)__e0.AsInt; }  DislikedGiftTags.Add(__v0); }   }
+        { if(!_buf["gifts_per_day"].IsNumber) { throw new SerializationException(); }  GiftsPerDay = _buf["gifts_per_day"]; }
     }
 
     public static CharacterInfo DeserializeCharacterInfo(JSONNode _buf)
@@ -35,6 +39,22 @@ public sealed partial class CharacterInfo : Luban.BeanBase
     /// 名字
     /// </summary>
     public string Name;
+    /// <summary>
+    /// 是否支持好感度
+    /// </summary>
+    public bool SupportsFavor;
+    /// <summary>
+    /// 喜欢的礼物类型
+    /// </summary>
+    public System.Collections.Generic.List<demo.EGiftTag> PreferredGiftTags;
+    /// <summary>
+    /// 讨厌的礼物类型
+    /// </summary>
+    public System.Collections.Generic.List<demo.EGiftTag> DislikedGiftTags;
+    /// <summary>
+    /// 每日送礼上限
+    /// </summary>
+    public int GiftsPerDay;
    
     public const int __ID__ = -133974388;
     public override int GetTypeId() => __ID__;
@@ -48,6 +68,10 @@ public sealed partial class CharacterInfo : Luban.BeanBase
         return "{ "
         + "key:" + Key + ","
         + "name:" + Name + ","
+        + "supportsFavor:" + SupportsFavor + ","
+        + "preferredGiftTags:" + Luban.StringUtil.CollectionToString(PreferredGiftTags) + ","
+        + "dislikedGiftTags:" + Luban.StringUtil.CollectionToString(DislikedGiftTags) + ","
+        + "giftsPerDay:" + GiftsPerDay + ","
         + "}";
     }
 }

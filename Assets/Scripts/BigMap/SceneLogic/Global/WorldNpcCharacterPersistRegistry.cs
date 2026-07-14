@@ -123,7 +123,18 @@ namespace My
             st.FavorValue = Math.Max(0, st.FavorValue + delta);
         }
 
+        public bool SupportsFavor(string characterKey)
+        {
+            var info = CfgMgr.Cfgs?.TbCharacterInfo?.GetOrDefault(characterKey);
+            return info != null && info.SupportsFavor;
+        }
+
         public int GetFavorLevel(string characterKey)
+        {
+            return GetFavorLevel(characterKey, null);
+        }
+
+        public int GetFavorLevel(string characterKey, GameLogicManager logicManager)
         {
             int favor = GetFavorValue(characterKey);
             if (string.IsNullOrEmpty(characterKey) || CfgMgr.Cfgs?.TbCharacterFavorInfo?.DataList == null)
@@ -131,18 +142,32 @@ namespace My
                 return 0;
             }
 
-            int level = 0;
+            var rows = new List<CharacterFavorInfo>();
             foreach (var row in CfgMgr.Cfgs.TbCharacterFavorInfo.DataList)
             {
-                if (row == null || row.Key != characterKey)
+                if (row != null && row.Key == characterKey)
                 {
-                    continue;
+                    rows.Add(row);
+                }
+            }
+
+            rows.Sort((a, b) => a.FavorLevel.CompareTo(b.FavorLevel));
+            int level = 0;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                var row = rows[i];
+                if (row.FavorLevel != level + 1 || favor < row.NeedValue)
+                {
+                    break;
                 }
 
-                if (favor >= row.NeedValue && row.FavorLevel > level)
+                if (row.BreakthroughConds != null && row.BreakthroughConds.Count > 0
+                    && (logicManager == null || !logicManager.CheckCommonCondsAll(row.BreakthroughConds)))
                 {
-                    level = row.FavorLevel;
+                    break;
                 }
+
+                level = row.FavorLevel;
             }
 
             return level;

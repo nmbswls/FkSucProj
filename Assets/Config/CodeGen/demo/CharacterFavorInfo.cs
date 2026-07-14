@@ -22,6 +22,7 @@ public sealed partial class CharacterFavorInfo : Luban.BeanBase
         { if(!_buf["key"].IsString) { throw new SerializationException(); }  Key = _buf["key"]; }
         { if(!_buf["favor_level"].IsNumber) { throw new SerializationException(); }  FavorLevel = _buf["favor_level"]; }
         { if(!_buf["need_value"].IsNumber) { throw new SerializationException(); }  NeedValue = _buf["need_value"]; }
+        { var __json0 = _buf["breakthrough_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } BreakthroughConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  BreakthroughConds.Add(__v0); }   }
     }
 
     public static CharacterFavorInfo DeserializeCharacterFavorInfo(JSONNode _buf)
@@ -45,12 +46,17 @@ public sealed partial class CharacterFavorInfo : Luban.BeanBase
     /// 需求好感度
     /// </summary>
     public int NeedValue;
+    /// <summary>
+    /// 突破条件
+    /// </summary>
+    public System.Collections.Generic.List<demo.CommonCheckCond> BreakthroughConds;
    
     public const int __ID__ = 1683288302;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
+        foreach (var _e in BreakthroughConds) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -60,6 +66,7 @@ public sealed partial class CharacterFavorInfo : Luban.BeanBase
         + "key:" + Key + ","
         + "favorLevel:" + FavorLevel + ","
         + "needValue:" + NeedValue + ","
+        + "breakthroughConds:" + Luban.StringUtil.CollectionToString(BreakthroughConds) + ","
         + "}";
     }
 }

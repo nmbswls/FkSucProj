@@ -18,10 +18,12 @@ public sealed partial class TalentNode : Luban.BeanBase
 {
     public TalentNode(JSONNode _buf) 
     {
+        { if(!_buf["talent_tree_id"].IsString) { throw new SerializationException(); }  TalentTreeId = _buf["talent_tree_id"]; }
         { if(!_buf["node_id"].IsNumber) { throw new SerializationException(); }  NodeId = _buf["node_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["max_level"].IsNumber) { throw new SerializationException(); }  MaxLevel = _buf["max_level"]; }
         { if(!_buf["icon_path"].IsString) { throw new SerializationException(); }  IconPath = _buf["icon_path"]; }
+        { if(!_buf["description"].IsString) { throw new SerializationException(); }  Description = _buf["description"]; }
     }
 
     public static TalentNode DeserializeTalentNode(JSONNode _buf)
@@ -29,6 +31,10 @@ public sealed partial class TalentNode : Luban.BeanBase
         return new demo.TalentNode(_buf);
     }
 
+    /// <summary>
+    /// 所属天赋树
+    /// </summary>
+    public string TalentTreeId;
     /// <summary>
     /// node_id
     /// </summary>
@@ -45,6 +51,10 @@ public sealed partial class TalentNode : Luban.BeanBase
     /// 路径
     /// </summary>
     public string IconPath;
+    /// <summary>
+    /// 节点描述
+    /// </summary>
+    public string Description;
    
     public const int __ID__ = -1523122663;
     public override int GetTypeId() => __ID__;
@@ -56,10 +66,12 @@ public sealed partial class TalentNode : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
+        + "talentTreeId:" + TalentTreeId + ","
         + "nodeId:" + NodeId + ","
         + "displayName:" + DisplayName + ","
         + "maxLevel:" + MaxLevel + ","
         + "iconPath:" + IconPath + ","
+        + "description:" + Description + ","
         + "}";
     }
 }

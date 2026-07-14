@@ -40,7 +40,11 @@
     "race_id": "orc",
     "npc_tags": [
       "orc_common"
-    ]
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "initial_orc_02",
@@ -81,7 +85,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "orc",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "initial_orc_big",
@@ -122,7 +130,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "orc",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "game_init_luca_injured",
@@ -161,7 +173,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "qigai_default",
@@ -200,7 +216,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "hunhun",
@@ -241,7 +261,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "slime_red",
@@ -282,7 +306,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "civil",
@@ -321,7 +349,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "civil_sleeping",
@@ -360,7 +392,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "default_guard_01",
@@ -399,7 +435,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_small_01",
@@ -441,7 +481,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_small_02",
@@ -483,7 +527,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_small_03",
@@ -525,7 +573,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_middle_01",
@@ -567,7 +619,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_middle_02",
@@ -609,7 +665,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_middle_03",
@@ -651,7 +711,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_big_01",
@@ -693,7 +757,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_big_02",
@@ -735,7 +803,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "h_spirit_big_03",
@@ -777,7 +849,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "city_watcher_01",
@@ -814,7 +890,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "summon_ally_turret_01",
@@ -851,7 +931,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "area_cannon_01",
@@ -888,7 +972,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": true,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "homestead_elder",
@@ -923,7 +1011,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "homestead_merchant",
@@ -958,7 +1050,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "human",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "forest_fly_swarm",
@@ -995,7 +1091,11 @@
     "fallback_drop_id": 0,
     "lock_initial_face": false,
     "race_id": "",
-    "npc_tags": []
+    "npc_tags": [],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "game_init_carlisle_unconscious",
@@ -1032,7 +1132,11 @@
     "race_id": "human",
     "npc_tags": [
       "human"
-    ]
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "game_init_carlisle_awake",
@@ -1069,7 +1173,11 @@
     "race_id": "human",
     "npc_tags": [
       "human"
-    ]
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
   },
   {
     "id": "home_robber_n",
@@ -1113,6 +1221,147 @@
     "npc_tags": [
       "bandit",
       "human"
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
+  },
+  {
+    "id": "forest_treant_boss",
+    "name": "深林树妖",
+    "desc": "盘踞在森林深处的古老树妖。",
+    "prefab_name": "forest_treant_boss",
+    "attr_template_id": 10001,
+    "emnity_cfg_id": "default_monster",
+    "faction_id": 4,
+    "move_style": 1,
+    "idle_move_behave": 3,
+    "ai_brain_id": "default",
+    "skill_list": [
+      "default_normal_attack",
+      "treant_corrosive_barrage",
+      "treant_summon_root_nodes",
+      "treant_summon_thorn_vines"
+    ],
+    "h_behave_list": [],
+    "is_peace": false,
+    "no_aggro": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 1,
+    "desire_density_type": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.8,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": 12,
+    "vision_fov_deg": 180,
+    "mind_tag": "forest_treant",
+    "jingyuan_pool_id": "orc",
+    "fallback_drop_id": 0,
+    "lock_initial_face": false,
+    "race_id": "monster",
+    "npc_tags": [
+      "boss",
+      "forest"
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "rune_harvest",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
+  },
+  {
+    "id": "forest_treant_root_node",
+    "name": "树妖根瘤",
+    "desc": "由树妖召出的固定根瘤。",
+    "prefab_name": "forest_treant_root_node",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_monster",
+    "faction_id": 4,
+    "move_style": 0,
+    "idle_move_behave": 0,
+    "ai_brain_id": "fixed_turret",
+    "skill_list": [
+      "cannon_shoot_01"
+    ],
+    "h_behave_list": [],
+    "is_peace": false,
+    "no_aggro": false,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "desire_density_type": 1,
+    "not_target": false,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.5,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": 10,
+    "vision_fov_deg": 360,
+    "mind_tag": "forest_treant_summon",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": true,
+    "race_id": "monster",
+    "npc_tags": [
+      "summon",
+      "forest"
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": []
+  },
+  {
+    "id": "forest_treant_thorn_vine",
+    "name": "深林荆棘藤蔓",
+    "desc": "树妖召唤的不可伤害阻挡藤蔓。",
+    "prefab_name": "forest_treant_thorn_vine",
+    "attr_template_id": 10000,
+    "emnity_cfg_id": "default_monster",
+    "faction_id": 4,
+    "move_style": 0,
+    "idle_move_behave": 0,
+    "ai_brain_id": "basic_unit_peace",
+    "skill_list": [],
+    "h_behave_list": [],
+    "is_peace": true,
+    "no_aggro": true,
+    "peace_dialog_id": "",
+    "defeat_drop_id": 0,
+    "desire_density_type": 1,
+    "not_target": true,
+    "always_h_mode": false,
+    "ignore_attract_level": 0,
+    "unit_bottom_size": 0.8,
+    "no_unsensored": false,
+    "desire_crystal_random_attachable": false,
+    "no_real_jing": false,
+    "vision_cone_kind": 0,
+    "vision_range": 8,
+    "vision_fov_deg": 180,
+    "mind_tag": "forest_treant_vine",
+    "jingyuan_pool_id": "",
+    "fallback_drop_id": 0,
+    "lock_initial_face": true,
+    "race_id": "monster",
+    "npc_tags": [
+      "summon",
+      "forest",
+      "thorn_vine"
+    ],
+    "direct_drop_id": 0,
+    "direct_rune_id": "",
+    "direct_reward_require_player_kill": false,
+    "initial_buff_ids": [
+      "vine_immortal",
+      "vine_thorn_contact"
     ]
   }
 ]

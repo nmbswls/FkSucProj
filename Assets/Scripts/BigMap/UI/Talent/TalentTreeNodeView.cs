@@ -22,14 +22,15 @@ namespace My.UI.Talent
         [SerializeField] TextMeshProUGUI unlockButtonText;
         [SerializeField] TextMeshProUGUI descText;
 
-        TalentTreePanel _host;
+        TalentTreeView _host;
         TalentNodeHoverProvider _hoverProvider;
+        ITalentProgressionContext _progression;
 
         public int TalentNodeId => talentNodeId;
 
         void Awake()
         {
-            _host = GetComponentInParent<TalentTreePanel>();
+            _host = GetComponentInParent<TalentTreeView>();
             _hoverProvider = GetComponent<TalentNodeHoverProvider>();
             if (_hoverProvider == null)
             {
@@ -49,8 +50,14 @@ namespace My.UI.Talent
             }
         }
 
-        public void Refresh(PlayerProgressionSystem progression, int nodeId, bool isSelected = false)
+        public void BindHost(TalentTreeView host)
         {
+            _host = host;
+        }
+
+        public void Refresh(ITalentProgressionContext progression, int nodeId, bool isSelected = false)
+        {
+            _progression = progression;
             talentNodeId = nodeId;
             _hoverProvider?.Configure(nodeId, progression);
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
@@ -124,26 +131,24 @@ namespace My.UI.Talent
         {
             if (_host != null && talentNodeId > 0)
             {
-                _host.OnNodeSelected(talentNodeId);
+                _host.SelectNode(talentNodeId);
             }
         }
 
         void OnUnlockClicked()
         {
-            var glm = MainGameManager.Instance != null ? MainGameManager.Instance.gameLogicManager : null;
-            var progression = glm?.playerDataManager?.ProgressionSystem;
-            if (progression == null)
+            if (_progression == null)
             {
                 Debug.LogWarning("TalentTree: progression unavailable.");
                 return;
             }
 
-            if (!progression.TryUpgradeTalentNode(talentNodeId, out var reason))
+            string reason = null;
+            if (_host == null || !_host.TryUpgradeNode(talentNodeId, out reason))
             {
                 Debug.LogWarning("Talent upgrade failed: " + reason);
             }
 
-            _host?.RefreshFromRuntime();
         }
     }
 }

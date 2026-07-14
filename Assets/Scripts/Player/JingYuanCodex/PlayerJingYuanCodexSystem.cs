@@ -238,7 +238,6 @@ namespace My.Player
             if (extractDelta > 0)
             {
                 state.ExtractCount += extractDelta;
-                _owner.StatisticSystem?.Add(EStatType.ExtractCodex, extractDelta, codexId);
             }
 
             if (amountDelta > 0)

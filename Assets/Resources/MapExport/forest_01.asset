@@ -1541,16 +1541,19 @@ MonoBehaviour:
       SelectableSkills:
       - default_normal_attack
       - treant_corrosive_barrage
+      - treant_summon_thorn_vines
     - EnterHpRatio: 0.65
       SelectableSkills:
       - default_normal_attack
       - treant_corrosive_barrage
       - treant_summon_root_nodes
+      - treant_summon_thorn_vines
     - EnterHpRatio: 0.3
       SelectableSkills:
       - default_normal_attack
       - treant_corrosive_barrage
       - treant_summon_root_nodes
+      - treant_summon_thorn_vines
   references:
     version: 2
     RefIds:
@@ -1579,8 +1582,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
     - rid: 4481876883649331248
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -1590,8 +1595,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
     - rid: 4481876883649331249
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
@@ -1601,8 +1608,10 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         Variables:
-          keys: []
-          values: []
+          keys:
+          - bud_target
+          values:
+          - forest_fairy_bud_house_01
     - rid: 4481876883649331250
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:

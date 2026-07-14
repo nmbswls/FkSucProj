@@ -200,6 +200,17 @@ namespace My.Map
                     allSkills.AddRange(NpcConfig.HBehaveList);
                 }
                 ablilityManager.ReconcileRegisteredSkills(allSkills);
+
+                if (NpcConfig.InitialBuffIds != null)
+                {
+                    foreach (var buffId in NpcConfig.InitialBuffIds)
+                    {
+                        if (!string.IsNullOrEmpty(buffId))
+                        {
+                            LogicManager.globalBuffManager.RequestAddBuff(Id, buffId);
+                        }
+                    }
+                }
             }
 
             // 通用H普攻：固定注册，不依赖配表
@@ -445,6 +456,38 @@ namespace My.Map
             {
                 LogicManager.TryCreateDesireCrystalFromNpc(this);
             }
+
+            if (MarkUnsensored)
+            {
+                PublishUnsensoredEvent(lastIntent?.srcEntityId);
+            }
+        }
+
+        public override void ForceUnitUnsensored(int reason, long srcId)
+        {
+            bool already = MarkUnsensored;
+            base.ForceUnitUnsensored(reason, srcId);
+            if (!already && MarkUnsensored)
+            {
+                PublishUnsensoredEvent(srcId);
+            }
+        }
+
+        void PublishUnsensoredEvent(long? srcEntityId)
+        {
+            var raceId = NpcConfig?.RaceId;
+            LogicManager.LogicEventBus.Publish(new MLEUnitUnsensored
+            {
+                Ctx = new()
+                {
+                    HappenPos = Pos,
+                    SourceEntity = LogicManager.playerLogicEntity,
+                },
+                EntityId = Id,
+                NpcCfgId = CfgId,
+                RaceId = raceId ?? string.Empty,
+                SrcEntityId = srcEntityId ?? 0,
+            });
         }
 
         private float _checkAlertTimer;

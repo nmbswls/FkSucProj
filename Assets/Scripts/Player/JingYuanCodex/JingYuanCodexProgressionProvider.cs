@@ -1,10 +1,10 @@
 using System;
-using cfg.demo;
+using System.Collections.Generic;
 
 namespace My.Player
 {
-    // 图鉴等级累计永久属性
-    public sealed class JingYuanCodexProgressionProvider : IProgressionSource
+    // 图鉴：等级属性 + 调精装备被动技能
+    public sealed class JingYuanCodexProgressionProvider : IProgressionSource, IProgressionSkillSource
     {
         public event Action<IProgressionSource> OnStatsChanged;
 
@@ -20,6 +20,11 @@ namespace My.Player
         public void EvaluateStats(StatMap targetMap)
         {
             _owner?.AccumulateProgressionStats(targetMap);
+        }
+
+        public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
+        {
+            _owner?.CollectEquippedTunePassiveSkills(applied, output);
         }
 
         public void NotifyChanged()

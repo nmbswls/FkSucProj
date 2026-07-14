@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using System;
+using cfg.demo;
 
 namespace My.Player
 {

@@ -66,6 +66,8 @@ namespace My.Player
 
         public PlayerEventGrantSystem EventGrantSystem { get; private set; }
 
+        public PlayerDirectDeathRewardSystem DirectDeathRewardSystem { get; private set; }
+
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public RumorIntelSystem RumorIntel { get; } = new();
@@ -73,6 +75,7 @@ namespace My.Player
         public IReadOnlyList<string> PlayerSkillList => SkillSystem.LearnedSkillIdsView;
 
         readonly Dictionary<string, int> _registeredSkillScratch = new(StringComparer.Ordinal);
+        readonly List<(string skillId, int level)> _progressionSkillScratch = new();
 
         // RPG Maker 式全局开关（存 PlayerData.GlobalSwitchMap），与地图点位状态语义分离
         public Dictionary<string, bool> GlobalSwitchMap = new();
@@ -142,6 +145,7 @@ namespace My.Player
             JingYuanCodexSystem = new PlayerJingYuanCodexSystem(this);
             StatisticSystem = new PlayerStatisticSystem(this);
             EventGrantSystem = new PlayerEventGrantSystem(this);
+            DirectDeathRewardSystem = new PlayerDirectDeathRewardSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
@@ -173,6 +177,7 @@ namespace My.Player
             innerListener = new(this);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, innerListener);
+            logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitUnsensored, innerListener);
         }
 
         public void InitPlayerData(SaveData savingData)
@@ -217,6 +222,7 @@ namespace My.Player
             JingYuanCodexSystem.InitSystem(logicManager, savingData);
             StatisticSystem.InitSystem(logicManager, savingData);
             EventGrantSystem.InitSystem(logicManager, savingData);
+            DirectDeathRewardSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
@@ -249,6 +255,7 @@ namespace My.Player
             yield return JingYuanCodexSystem;
             yield return StatisticSystem;
             yield return EventGrantSystem;
+            yield return DirectDeathRewardSystem;
             yield return RumorIntel;
         }
 
@@ -271,6 +278,7 @@ namespace My.Player
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
+            ProgressionSystem?.HumanCivilization?.SaveTo(data.PlayerData);
             EquipmentManager?.SaveTo(data.PlayerData);
             BodyPartSystem?.WriteToSave(data.PlayerData);
             RumorIntel.SaveTo(data.PlayerData);
@@ -310,7 +318,12 @@ namespace My.Player
                 AfterVal = 1,
             });
 
-            EventGrantSystem?.OnWorldStateMaybeChanged();
+            PlayerEventBus.Publish(new PlayerGlobalSwitchChangedEvent
+            {
+                Name = id,
+                AfterVal = 1,
+            });
+
             SceneAOIManager.Instance?.RequestVisibleChunkRefresh();
         }
 
@@ -391,6 +404,7 @@ namespace My.Player
             FuncOpenSystem.Tick(dt);
             RumorIntel.Tick(dt);
             SkillSystem.Tick(dt);
+            EventGrantSystem?.Tick(dt);
         }
 
         public bool CheckHaveItem(string itemId, long count)
@@ -525,6 +539,16 @@ namespace My.Player
                 }
                 
             }
+            else if (evt is MLEUnitUnsensored unsensoredEvent)
+            {
+                long playerId = logicManager.playerLogicEntity?.Id ?? 0;
+                PlayerEventBus.Publish(new PlayerNpcUnsensoredEvent
+                {
+                    NpcCfgId = unsensoredEvent.NpcCfgId ?? string.Empty,
+                    RaceId = unsensoredEvent.RaceId ?? string.Empty,
+                    ByPlayer = playerId != 0 && unsensoredEvent.SrcEntityId == playerId,
+                });
+            }
         }
 
         public void CollectRegisteredSkillsForEntity(Dictionary<string, int> outSkills)
@@ -611,13 +635,14 @@ namespace My.Player
                 TryAdd(id, 1);
             }
 
-            if (EventGrantSystem != null)
+            // 养成模块贡献（符文 / 调精 / EventGrant），不再点名各 System
+            if (ProgressionSystem != null)
             {
-                var grantPassiveScratch = new List<(string skillId, int level)>();
-                EventGrantSystem.CollectQualifiedPassiveSkills(null, grantPassiveScratch);
-                for (int i = 0; i < grantPassiveScratch.Count; i++)
+                _progressionSkillScratch.Clear();
+                ProgressionSystem.CollectContributedSkills(null, _progressionSkillScratch);
+                for (int i = 0; i < _progressionSkillScratch.Count; i++)
                 {
-                    TryAdd(grantPassiveScratch[i].skillId, grantPassiveScratch[i].level);
+                    TryAdd(_progressionSkillScratch[i].skillId, _progressionSkillScratch[i].level);
                 }
             }
         }
@@ -699,61 +724,16 @@ namespace My.Player
                 applied.Add(skillId);
             }
 
-            if (RuneSystem != null)
+            // 养成贡献被动 buff（符文 > 调精 > EventGrant）
+            if (ProgressionSystem != null)
             {
-                var runePassiveScratch = new List<string>();
-                RuneSystem.CollectEquippedPassiveSkillIds(applied, runePassiveScratch);
-                foreach (var skillId in runePassiveScratch)
+                _progressionSkillScratch.Clear();
+                ProgressionSystem.CollectContributedSkills(applied, _progressionSkillScratch);
+                for (int i = 0; i < _progressionSkillScratch.Count; i++)
                 {
-                    if (applied.Contains(skillId))
+                    var entry = _progressionSkillScratch[i];
+                    if (string.IsNullOrEmpty(entry.skillId) || applied.Contains(entry.skillId))
                     {
-                        continue;
-                    }
-
-                    var cfg = SkillLibrary.GetSkillConfig(skillId);
-                    if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
-                    {
-                        continue;
-                    }
-
-                    player.TrySetPassiveSkillBuffLayer(skillId, 1);
-                    applied.Add(skillId);
-                }
-            }
-
-            if (JingYuanCodexSystem != null)
-            {
-                var tunePassiveScratch = new List<(string skillId, int level)>();
-                JingYuanCodexSystem.CollectEquippedTunePassiveSkills(applied, tunePassiveScratch);
-                foreach (var entry in tunePassiveScratch)
-                {
-                    if (applied.Contains(entry.skillId))
-                    {
-                        Debug.LogWarning("Passive skill in higher priority and tune: " + entry.skillId + ", tune skipped.");
-                        continue;
-                    }
-
-                    var cfg = SkillLibrary.GetSkillConfig(entry.skillId);
-                    if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
-                    {
-                        continue;
-                    }
-
-                    int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(entry.skillId, entry.level);
-                    player.TrySetPassiveSkillBuffLayer(entry.skillId, lvl);
-                    applied.Add(entry.skillId);
-                }
-            }
-
-            if (EventGrantSystem != null)
-            {
-                var grantPassiveScratch = new List<(string skillId, int level)>();
-                EventGrantSystem.CollectQualifiedPassiveSkills(applied, grantPassiveScratch);
-                foreach (var entry in grantPassiveScratch)
-                {
-                    if (applied.Contains(entry.skillId))
-                    {
-                        Debug.LogWarning("Passive skill in higher priority and event grant: " + entry.skillId + ", grant skipped.");
                         continue;
                     }
 

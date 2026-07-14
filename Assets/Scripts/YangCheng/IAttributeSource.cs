@@ -8,39 +8,6 @@ using static Unity.VisualScripting.Metadata;
 
 namespace My.Player
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public enum EYCAttribute
-    {
-        None,
-        SecretSlot,
-        InnerCharm,
-        StaticCharm,
-
-        InnerArm,
-        StaticArm,
-
-        ExtraJingYuanSlot,
-
-        TiaoJingSlotCap,
-
-        PlantBagSlots,
-        KeyBagSlots,
-        PotionBagSlots,
-
-        FixDmgReduceFinal,
-
-        FixFallenAdd,
-
-        PartGearPoint_Mouth = 10,
-        PartGearPoint_Breast = 11,
-        PartGearPoint_Womb = 12,
-        PartGearPoint_Tail = 13,
-        PartGearPoint_Wing = 14,
-        PartGearPoint_Skin = 15,
-    }
-
     // 2. 极简存储结构（用于叶子节点存储数据，省内存）
     [System.Serializable]
     public struct StatPair
@@ -125,6 +92,13 @@ namespace My.Player
         void EvaluateStats(StatMap targetMap);
     }
 
+    // 养成模块可选贡献的被动/技能（与属性 EvaluateStats 并列；未实现则不贡献技能）
+    public interface IProgressionSkillSource
+    {
+        // applied 非空时跳过已占用 skillId；output 追加 (skillId, level)
+        void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output);
+    }
+
     public enum EProgressionModule
     {
         None,
@@ -135,6 +109,7 @@ namespace My.Player
         BodyPart,
         JingYuanCodex,
         EventGrant,
+        Rune,
 
         Aggregator
     }
@@ -194,6 +169,28 @@ namespace My.Player
             // 外部请求数据时，确保缓存是最新的
             RebuildCache();
             targetMap.MergeFrom(_cache);
+        }
+
+        // 递归收集子树中 IProgressionSkillSource 贡献的技能
+        public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _children.Count; i++)
+            {
+                var child = _children[i];
+                if (child is IProgressionSkillSource skillSrc)
+                {
+                    skillSrc.CollectContributedSkills(applied, output);
+                }
+                else if (child is ProgressionAggregator agg)
+                {
+                    agg.CollectContributedSkills(applied, output);
+                }
+            }
         }
 
         //// 仅用于调试或根节点查询

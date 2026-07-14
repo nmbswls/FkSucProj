@@ -136,6 +136,16 @@
 		<var name="TaskStep" value="5"/>
 		<var name="AlwaysFail" value="6"/>
 		<var name="FuncOpen" value="7"/>
+		<var name="CharacterFavorLevel" value="8"/>
+		<var name="HumanTechUnlockedCount" value="9"/>
+    </enum>
+
+    <enum name="ESecretBaseCharacterOptionAction">
+		<var name="Talk" value="0"/>
+		<var name="Gift" value="1"/>
+		<var name="OpenTalentTree" value="2"/>
+		<var name="OpenPanel" value="3"/>
+		<var name="OpenOptionGroup" value="4"/>
     </enum>
 
     <!-- Statistic / EventGrant：共性计数与通用授予 -->
@@ -148,6 +158,8 @@
         <var name="InteractUniq" value="5"/>
         <var name="ExtractCodex" value="6"/>
         <var name="PlayerDeath" value="7"/>
+        <var name="BlurtAbsorb" value="8"/>
+        <var name="UnsensoredRace" value="9"/>
     </enum>
 
     <enum name="EStatCompareOp">
@@ -184,6 +196,12 @@
 		<var name="param4" type="long" comment="p4"/>
         <var name="param5" type="string" comment="p5"/>
         <var name="param6" type="string" comment="p6"/>
+    </bean>
+
+    <bean name="HumanCivilizationCustomCond" tags="sep=,">
+        <var name="type" type="string" comment="custom condition type"/>
+        <var name="param1" type="string" comment="custom parameter"/>
+        <var name="param2" type="long" comment="custom value"/>
     </bean>
 
 	<enum name="EWantedBehaveType">

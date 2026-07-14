@@ -558,6 +558,10 @@ namespace My.Map.Entity
                     _abilityDict[ab.Id] = ab;
                 }
                 {
+                    var ab = CreateTreantSummonThornVinesAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
                     var ab = CreateTreantCorrosiveBarrageAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -6169,6 +6173,52 @@ namespace My.Map.Entity
                 },
             });
             spec.Phases.Add(prePhase);
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateTreantSummonThornVinesAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "treant_summon_thorn_vines";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 8f;
+            spec.DesiredUseDistance = 6f;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            spec.Phases.Add(new MapAbilityPhase
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.8" },
+            });
+
+            var mainPhase = new MapAbilityPhase
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.25" },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapAbilityEffectSpawnEntityCfg
+                {
+                    EntityType = EEntityType.Npc,
+                    CfgId = "forest_treant_thorn_vine",
+                    LifeTime = 60f,
+                    SpawnCenter = MapAbilityEffectSpawnEntityCfg.ESpawnCenter.CastPoint,
+                    SpawnCount = 4,
+                    SpawnRadius = 1.8f,
+                    SummonGroup = "treant_thorn_vines",
+                    MaxAlivePerSource = 4,
+                    SummonLifetimeRule = ESummonLifetimeRule.WhileOwnerInCombat,
+                },
+            });
             spec.Phases.Add(mainPhase);
             return spec;
         }

@@ -10,6 +10,50 @@ using UnityEngine;
 
 namespace My.Player
 {
+    public sealed class RuneProgressionProvider : IProgressionSource, IProgressionSkillSource
+    {
+        readonly PlayerRuneSystem _system;
+
+        public RuneProgressionProvider(PlayerRuneSystem system)
+        {
+            _system = system;
+        }
+
+        public EProgressionModule ModuleName => EProgressionModule.Rune;
+        public event Action<IProgressionSource> OnStatsChanged;
+
+        public void EvaluateStats(StatMap targetMap)
+        {
+            _system?.AccumulateProgressionStats(targetMap);
+        }
+
+        public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
+        {
+            if (output == null || _system == null)
+            {
+                return;
+            }
+
+            var ids = new List<string>();
+            _system.CollectEquippedPassiveSkillIds(applied, ids);
+            for (int i = 0; i < ids.Count; i++)
+            {
+                var skillId = ids[i];
+                if (string.IsNullOrEmpty(skillId))
+                {
+                    continue;
+                }
+
+                output.Add((skillId, 1));
+            }
+        }
+
+        public void NotifyChanged()
+        {
+            OnStatsChanged?.Invoke(this);
+        }
+    }
+
     public class PlayerRuneSystem : IPlayerSystem
     {
         const string LogTag = "[PlayerRuneSystem]";
@@ -19,10 +63,14 @@ namespace My.Player
         readonly HashSet<string> _owned = new(StringComparer.Ordinal);
         readonly HashSet<string> _unlockedUpgrades = new(StringComparer.Ordinal);
         readonly Dictionary<ERuneEquipSlot, string> _equipped = new();
+        readonly RuneProgressionProvider _progressionProvider;
+
+        public RuneProgressionProvider ProgressionProvider => _progressionProvider;
 
         public PlayerRuneSystem(PlayerSystemManager owner)
         {
             _owner = owner;
+            _progressionProvider = new RuneProgressionProvider(this);
         }
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
@@ -141,6 +189,8 @@ namespace My.Player
                 ApplyUpgradeEffects(RuneUpgradeCatalog.GetOrDefault(def.InitialUpgradeId));
             }
 
+            _progressionProvider.NotifyChanged();
+
             PlayerEventBus.Publish(new PlayerRuneGrantedEvent { RuneId = runeId });
             return true;
         }
@@ -160,6 +210,7 @@ namespace My.Player
             var def = RuneUpgradeCatalog.GetOrDefault(upgradeId);
             _unlockedUpgrades.Add(upgradeId);
             ApplyUpgradeEffects(def);
+            _progressionProvider.NotifyChanged();
 
             PlayerEventBus.Publish(new PlayerRuneUpgradeUnlockedEvent
             {
@@ -306,6 +357,34 @@ namespace My.Player
         public void CollectEquippedPassiveSkillIds(HashSet<string> applied, List<string> output)
         {
             CollectPassiveSkillIds(applied, output);
+        }
+
+        public void AccumulateProgressionStats(StatMap targetMap)
+        {
+            if (targetMap == null)
+            {
+                return;
+            }
+
+            foreach (string upgradeId in _unlockedUpgrades)
+            {
+                var upgrade = RuneUpgradeCatalog.GetOrDefault(upgradeId);
+                if (upgrade?.StatBonuses == null)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < upgrade.StatBonuses.Count; i++)
+                {
+                    var bonus = upgrade.StatBonuses[i];
+                    if (bonus == null || bonus.AttrId == 0 || bonus.Val == 0)
+                    {
+                        continue;
+                    }
+
+                    targetMap.Add(bonus.AttrId, bonus.Val);
+                }
+            }
         }
 
         bool ValidateUnlockUpgrade(string upgradeId, bool logOnFail)

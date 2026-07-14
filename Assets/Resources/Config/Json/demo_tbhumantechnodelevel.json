@@ -1,0 +1,156 @@
+[
+  {
+    "node_id": 1001,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 1
+      }
+    ],
+    "effect_key": "open_town_management",
+    "effect_value": 1
+  },
+  {
+    "node_id": 1002,
+    "level": 1,
+    "prereq_node_ids": [
+      1001
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 2
+      }
+    ],
+    "effect_key": "open_scavenge_exchange",
+    "effect_value": 1
+  },
+  {
+    "node_id": 1003,
+    "level": 1,
+    "prereq_node_ids": [
+      1001
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 2
+      }
+    ],
+    "effect_key": "tavern_human_knowledge",
+    "effect_value": 1
+  },
+  {
+    "node_id": 1004,
+    "level": 1,
+    "prereq_node_ids": [
+      1001
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 3
+      }
+    ],
+    "effect_key": "basic_woodworking",
+    "effect_value": 1
+  },
+  {
+    "node_id": 1005,
+    "level": 1,
+    "prereq_node_ids": [
+      1001
+    ],
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 4
+      }
+    ],
+    "effect_key": "town_stability",
+    "effect_value": 1
+  },
+  {
+    "node_id": 1006,
+    "level": 1,
+    "prereq_node_ids": [
+      1004
+    ],
+    "unlock_conds": [
+      {
+        "type": 9,
+        "param1": 3,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "human_knowledge",
+        "count": 5
+      }
+    ],
+    "effect_key": "workshop_operation",
+    "effect_value": 1
+  }
+]

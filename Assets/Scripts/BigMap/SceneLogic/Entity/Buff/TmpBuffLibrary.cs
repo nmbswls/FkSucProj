@@ -536,6 +536,64 @@ namespace My.Map.Entity
                     DefaultDuration = -1,
                 };
 
+                _library["vine_immortal"] = new BuffDefinition()
+                {
+                    BuffId = "vine_immortal",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.ImmuneDamage,
+                            ModifierValue = 1,
+                        },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
+                _library["vine_thorn_contact"] = new BuffDefinition()
+                {
+                    BuffId = "vine_thorn_contact",
+                    LayerOverrideType = EBuffLayerOverrideType.Duplicate,
+                    DurationEffect = new BuffDurationEffet()
+                    {
+                        DurationType = EBuffDurationType.ContactWatch,
+                        ParamFloat1 = 0.75f,
+                        ParamFloat2 = 0.5f,
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerInterval = 0.5f,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectHitBoxCfg()
+                                {
+                                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                                    Radius = 0.75f,
+                                    CampFilterType = ECampFilterType.NotSelf,
+                                    HitResult = new()
+                                    {
+                                        OnHitEffects = new()
+                                        {
+                                            new MapFightEffectApplyDamageCfg()
+                                            {
+                                                BaseDamage = 3500,
+                                                DamageCategory = EDmgCategory.Physics,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                };
+
                 _library["immune_kaiyou"] = new BuffDefinition()
                 {
                     BuffId = "immune_kaiyou",

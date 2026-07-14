@@ -144,6 +144,22 @@ public partial class Tables
     /// 仓库筛选定义
     /// </summary>
     public demo.TbWarehouseFilter TbWarehouseFilter {get; }
+    /// <summary>
+    /// 角色礼物固定覆盖规则
+    /// </summary>
+    public demo.TbCharacterGiftRule TbCharacterGiftRule {get; }
+    /// <summary>
+    /// 天赋树定义
+    /// </summary>
+    public demo.TbTalentTree TbTalentTree {get; }
+    /// <summary>
+    /// 秘密据点角色自定义选项
+    /// </summary>
+    public demo.TbSecretBaseCharacterOption TbSecretBaseCharacterOption {get; }
+    public demo.TbHumanCivilizationLevel TbHumanCivilizationLevel {get; }
+    public demo.TbHumanTechTree TbHumanTechTree {get; }
+    public demo.TbHumanTechNode TbHumanTechNode {get; }
+    public demo.TbHumanTechNodeLevel TbHumanTechNodeLevel {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -241,6 +257,13 @@ public partial class Tables
         TbItemTagInfo = new demo.TbItemTagInfo(loader("demo_tbitemtaginfo"));
         TbPlayerBagDef = new demo.TbPlayerBagDef(loader("demo_tbplayerbagdef"));
         TbWarehouseFilter = new demo.TbWarehouseFilter(loader("demo_tbwarehousefilter"));
+        TbCharacterGiftRule = new demo.TbCharacterGiftRule(loader("demo_tbcharactergiftrule"));
+        TbTalentTree = new demo.TbTalentTree(loader("demo_tbtalenttree"));
+        TbSecretBaseCharacterOption = new demo.TbSecretBaseCharacterOption(loader("demo_tbsecretbasecharacteroption"));
+        TbHumanCivilizationLevel = new demo.TbHumanCivilizationLevel(loader("demo_tbhumancivilizationlevel"));
+        TbHumanTechTree = new demo.TbHumanTechTree(loader("demo_tbhumantechtree"));
+        TbHumanTechNode = new demo.TbHumanTechNode(loader("demo_tbhumantechnode"));
+        TbHumanTechNodeLevel = new demo.TbHumanTechNodeLevel(loader("demo_tbhumantechnodelevel"));
         ResolveRef();
     }
     
@@ -340,6 +363,13 @@ public partial class Tables
         TbItemTagInfo.ResolveRef(this);
         TbPlayerBagDef.ResolveRef(this);
         TbWarehouseFilter.ResolveRef(this);
+        TbCharacterGiftRule.ResolveRef(this);
+        TbTalentTree.ResolveRef(this);
+        TbSecretBaseCharacterOption.ResolveRef(this);
+        TbHumanCivilizationLevel.ResolveRef(this);
+        TbHumanTechTree.ResolveRef(this);
+        TbHumanTechNode.ResolveRef(this);
+        TbHumanTechNodeLevel.ResolveRef(this);
     }
 }
 

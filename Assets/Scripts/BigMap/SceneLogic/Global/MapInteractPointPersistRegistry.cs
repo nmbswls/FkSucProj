@@ -99,6 +99,23 @@ namespace My
             }
         }
 
+        public void SetStatus(string uniqName, int status)
+        {
+            if (string.IsNullOrEmpty(uniqName))
+            {
+                return;
+            }
+
+            if (!_byUniqName.TryGetValue(uniqName, out var st) || st == null)
+            {
+                st = new MapInteractPointPersistData();
+                _byUniqName[uniqName] = st;
+            }
+
+            st.HasStatus = true;
+            st.Status = status;
+        }
+
         public int GetLocalIntValue(string uniqName, string key)
         {
             if (string.IsNullOrEmpty(uniqName) || string.IsNullOrEmpty(key))
@@ -303,6 +320,10 @@ namespace My
             rec.LocalIntValues = CloneIntValues(st.LocalIntValues);
             if (rec is LogicEntityRecord4InteractPoint interactPointRecord)
             {
+                if (st.HasStatus)
+                {
+                    interactPointRecord.Status = st.Status;
+                }
                 interactPointRecord.TimedRefresh = Clone(st.TimedRefresh);
             }
         }
@@ -316,6 +337,8 @@ namespace My
 
             return new MapInteractPointPersistData
             {
+                HasStatus = s.HasStatus,
+                Status = s.Status,
                 LocalSwitches = CloneList(s.LocalSwitches),
                 LocalIntValues = CloneIntValues(s.LocalIntValues),
                 TimedRefresh = Clone(s.TimedRefresh),
@@ -324,7 +347,8 @@ namespace My
 
         void PruneIfEmpty(string uniqName, MapInteractPointPersistData st)
         {
-            if ((st?.LocalSwitches == null || st.LocalSwitches.Count == 0)
+            if (st?.HasStatus != true
+                && (st?.LocalSwitches == null || st.LocalSwitches.Count == 0)
                 && (st?.LocalIntValues == null || st.LocalIntValues.Count == 0)
                 && st?.TimedRefresh?.HasLastRefreshSettlementDay != true)
             {

@@ -19,6 +19,8 @@ namespace My.Map
         public HashSet<long> newEntities = new();
         public int TotalTriggerCnt = 0;
 
+        private float _lastBuffEnsureTime = -1f;
+
         public override EEntityType Type => EEntityType.AreaEffect;
 
         public override void Initialize()
@@ -52,6 +54,12 @@ namespace My.Map
             }
 
             bool refreshDuration = CfgRow.RefreshBuffDuration;
+            bool ensureMissingBuff = !refreshDuration
+                && (LogicTime.time - _lastBuffEnsureTime >= 3f);
+            if (ensureMissingBuff)
+            {
+                _lastBuffEnsureTime = LogicTime.time;
+            }
 
             newEntities.Clear();
             foreach (var inEntity in inEnties)
@@ -59,9 +67,16 @@ namespace My.Map
                 if (refreshDuration)
                 {
                     // linger：每 tick 刷新 Buff 自带 DefaultDuration（需 TurnOverrideType.Replace）
-                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId);
+                    LogicManager.globalBuffManager.RequestAddBuff(
+                        inEntity.Id,
+                        CfgRow.AreaBuffId,
+                        casterId: Id);
                 }
                 else if (!currAffectedEntites.Contains(inEntity.Id))
+                {
+                    LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId, casterId: Id);
+                }
+                else if (ensureMissingBuff && !HasAreaBuff(inEntity))
                 {
                     LogicManager.globalBuffManager.RequestAddBuff(inEntity.Id, CfgRow.AreaBuffId, casterId: Id);
                 }
@@ -85,21 +100,31 @@ namespace My.Map
             newEntities = t;
         }
 
+        private bool HasAreaBuff(ILogicEntity target)
+        {
+            foreach (var buff in target.BuffContainer.Values)
+            {
+                if (buff.BuffId == CfgRow.AreaBuffId && buff.CasterId == Id)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override void DoEntityDestroyed(string reason)
         {
             base.DoEntityDestroyed(reason);
 
-            if (CfgRow == null || string.IsNullOrEmpty(CfgRow.AreaBuffId) || CfgRow.RefreshBuffDuration)
+            if (CfgRow == null || string.IsNullOrEmpty(CfgRow.AreaBuffId))
             {
                 currAffectedEntites.Clear();
                 return;
             }
 
-            foreach (var curEntity in currAffectedEntites)
-            {
-                LogicManager.globalBuffManager.RemoveAllBuffById(curEntity, CfgRow.AreaBuffId, casterId: Id);
-            }
-
+            // Remove all buffs cast by this AreaEffect, including lingered targets.
+            LogicManager.globalBuffManager.RemoveAllBuffsCastBy(Id);
             currAffectedEntites.Clear();
         }
     }

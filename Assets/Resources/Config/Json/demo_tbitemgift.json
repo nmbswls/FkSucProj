@@ -5,6 +5,23 @@
       2,
       3
     ],
-    "gift_level": 2
+    "gift_level": 2,
+    "base_favor_value": 20
+  },
+  {
+    "item_id": "banana",
+    "gift_tags": [
+      1
+    ],
+    "gift_level": 1,
+    "base_favor_value": 15
+  },
+  {
+    "item_id": "small_stone",
+    "gift_tags": [
+      4
+    ],
+    "gift_level": 1,
+    "base_favor_value": 8
   }
 ]

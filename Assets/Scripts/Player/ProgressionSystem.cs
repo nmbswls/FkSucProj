@@ -4,29 +4,34 @@ using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
 using My.Saving;
+using My.UI.Talent;
 using UnityEngine;
 
 namespace My.Player
 {
-    public class PlayerProgressionSystem : IPlayerSystem
+    public class PlayerProgressionSystem : IPlayerSystem, ITalentProgressionContext
     {
         protected GameLogicManager LogicManager { get; private set; }
 
         public PlayerMain BaseStats { get; private set; }
         public PlayerGearManager GearManager { get; private set; }
         public PlayerTalentManager TalentManager { get; private set; }
+        public HumanCivilizationSystem HumanCivilization { get; private set; }
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
         public ProgressionAggregator BodyPartAggregator { get; private set; }
         public ProgressionAggregator JingYuanCodexAggregator { get; private set; }
         public ProgressionAggregator EventGrantAggregator { get; private set; }
+        public ProgressionAggregator RuneAggregator { get; private set; }
         public bool IsBodyPartBound { get; private set; }
         public bool IsJingYuanCodexBound { get; private set; }
         public bool IsEventGrantBound { get; private set; }
+        public bool IsRuneBound { get; private set; }
 
         BodyPartProgressionProvider _boundBodyPartProvider;
         JingYuanCodexProgressionProvider _boundJingYuanCodexProvider;
         EventGrantProgressionProvider _boundEventGrantProvider;
+        RuneProgressionProvider _boundRuneProvider;
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
@@ -34,12 +39,17 @@ namespace My.Player
             IsBodyPartBound = false;
             IsJingYuanCodexBound = false;
             IsEventGrantBound = false;
+            IsRuneBound = false;
             _boundBodyPartProvider = null;
             _boundJingYuanCodexProvider = null;
             _boundEventGrantProvider = null;
+            _boundRuneProvider = null;
 
             TalentManager = new PlayerTalentManager();
             TalentManager.Initialize(ctx, savingData);
+
+            HumanCivilization = new HumanCivilizationSystem();
+            HumanCivilization.Initialize(ctx, savingData);
 
             GearManager = new PlayerGearManager();
             GearManager.InitializeAggregatorOnly();
@@ -50,6 +60,7 @@ namespace My.Player
             BodyPartAggregator = new ProgressionAggregator("BodyPart");
             JingYuanCodexAggregator = new ProgressionAggregator("JingYuanCodex");
             EventGrantAggregator = new ProgressionAggregator("EventGrant");
+            RuneAggregator = new ProgressionAggregator("Rune");
 
             ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
@@ -58,6 +69,7 @@ namespace My.Player
             ProgressionRoot.AddChild(BodyPartAggregator);
             ProgressionRoot.AddChild(JingYuanCodexAggregator);
             ProgressionRoot.AddChild(EventGrantAggregator);
+            ProgressionRoot.AddChild(RuneAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) =>
             {
@@ -72,6 +84,37 @@ namespace My.Player
             BindBodyPartSystem(owner?.BodyPartSystem);
             BindJingYuanCodexSystem(owner?.JingYuanCodexSystem);
             BindEventGrantSystem(owner?.EventGrantSystem);
+            BindRuneSystem(owner?.RuneSystem);
+        }
+
+        // 养成侧技能贡献；优先级与历史被动装配一致：符文 > 调精 > EventGrant
+        public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            RuneAggregator?.CollectContributedSkills(applied, output);
+            JingYuanCodexAggregator?.CollectContributedSkills(applied, output);
+            EventGrantAggregator?.CollectContributedSkills(applied, output);
+        }
+
+        void BindRuneSystem(PlayerRuneSystem runeSystem)
+        {
+            if (RuneAggregator == null || runeSystem == null)
+            {
+                return;
+            }
+
+            if (_boundRuneProvider != null)
+            {
+                RuneAggregator.RemoveChild(_boundRuneProvider);
+            }
+
+            _boundRuneProvider = runeSystem.ProgressionProvider;
+            RuneAggregator.AddChild(_boundRuneProvider);
+            IsRuneBound = true;
         }
 
         void BindJingYuanCodexSystem(PlayerJingYuanCodexSystem codexSystem)
@@ -448,6 +491,13 @@ namespace My.Player
             {
                 foreach (var pre in levelRow.PrereqNodeIds)
                 {
+                    var prerequisiteCfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(pre);
+                    if (prerequisiteCfg == null || prerequisiteCfg.TalentTreeId != nodeCfg.TalentTreeId)
+                    {
+                        failReason = "cross_tree_prereq";
+                        return false;
+                    }
+
                     if (GetNodeLevel(pre) < 1)
                     {
                         failReason = "prereq";

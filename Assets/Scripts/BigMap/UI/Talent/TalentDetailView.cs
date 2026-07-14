@@ -19,7 +19,7 @@ namespace My.UI.Talent
             SetText(detailStatusHint, string.Empty);
         }
 
-        public void ShowNode(int nodeId, PlayerProgressionSystem progression)
+        public void ShowNode(int nodeId, ITalentProgressionContext progression)
         {
             if (nodeId <= 0 || !TalentNodeDisplayHelper.TryBuildSnapshot(nodeId, progression, out var snapshot))
             {

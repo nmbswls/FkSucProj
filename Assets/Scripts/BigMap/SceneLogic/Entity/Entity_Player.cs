@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using cfg.demo;
 using Config;
 using My.Config;
 using My.Map;
@@ -30,6 +31,7 @@ namespace My.Map
 
     public class PlayerLogicEntity : BaseUnitLogicEntity, IAttractSource
     {
+        const long BasePhysicalPower = 20_000;
 
         /// <summary>
         /// 带得到
@@ -308,7 +310,7 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.HP_MAX, 250_000);
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 250_000);
 
-            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, 20_000);
+            attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, BasePhysicalPower);
 
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
@@ -1943,6 +1945,12 @@ namespace My.Map
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm_Static, progression.GetFinalAttribute((int)EYCAttribute.StaticCharm));
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Inner, progression.GetFinalAttribute((int)EYCAttribute.InnerArm));
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Base, progression.GetFinalAttribute((int)EYCAttribute.StaticArm));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.PhysicalPower,
+                BasePhysicalPower + progression.GetFinalAttribute((int)EYCAttribute.PhysicalPower));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.PhysicalResist,
+                progression.GetFinalAttribute((int)EYCAttribute.PhysicalResist));
             attributeStore.Commit();
         }
 

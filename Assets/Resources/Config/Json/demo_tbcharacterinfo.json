@@ -1,18 +1,42 @@
 [
   {
     "key": "smith_wang",
-    "name": "老铁匠"
+    "name": "老铁匠",
+    "supports_favor": true,
+    "preferred_gift_tags": [
+      2
+    ],
+    "disliked_gift_tags": [
+      1
+    ],
+    "gifts_per_day": 1
   },
   {
     "key": "home_elder",
-    "name": "埃蒙"
+    "name": "埃蒙",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   },
   {
     "key": "home_merchant",
-    "name": "灰露棚看管人"
+    "name": "灰露棚看管人",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   },
   {
     "key": "carlisle",
-    "name": "卡莱尔"
+    "name": "卡莱尔",
+    "supports_favor": true,
+    "preferred_gift_tags": [
+      1
+    ],
+    "disliked_gift_tags": [
+      2
+    ],
+    "gifts_per_day": 1
   }
 ]

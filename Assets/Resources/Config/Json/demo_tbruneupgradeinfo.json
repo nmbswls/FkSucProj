@@ -9,7 +9,8 @@
     "func_unlock_key": "",
     "func_open_type": 11,
     "icon": "",
-    "layout_slot": 1
+    "layout_slot": 1,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lamp_a_sense",
@@ -23,7 +24,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 2
+    "layout_slot": 2,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lamp_b_travel",
@@ -35,7 +37,8 @@
     "func_unlock_key": "",
     "func_open_type": 12,
     "icon": "",
-    "layout_slot": 3
+    "layout_slot": 3,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lamp_b_fast",
@@ -49,25 +52,32 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 4
+    "layout_slot": 4,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "harvest_basic",
     "name": "丰饶·基础",
-    "desc": "强化植物亲和",
-    "base_rune_id": "harvest_green",
+    "desc": "解锁植物背包，并强化植物亲和。",
+    "base_rune_id": "rune_harvest",
     "prerequisite_upgrade_ids": [],
     "passive_skill_id": "player_harvest_green",
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 1
+    "layout_slot": 1,
+    "stat_bonuses": [
+      {
+        "attr_id": 8,
+        "val": 8
+      }
+    ]
   },
   {
     "upgrade_id": "harvest_green_plus",
     "name": "丰饶·进阶",
     "desc": "需先解锁基础",
-    "base_rune_id": "harvest_green",
+    "base_rune_id": "rune_harvest",
     "prerequisite_upgrade_ids": [
       "harvest_basic"
     ],
@@ -75,7 +85,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 2
+    "layout_slot": 2,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lady_initial",
@@ -87,7 +98,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 1
+    "layout_slot": 1,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lady_up_1",
@@ -99,7 +111,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 2
+    "layout_slot": 2,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "lady_up_2",
@@ -111,7 +124,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 3
+    "layout_slot": 3,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "rune_evil_hand_initial",
@@ -123,7 +137,8 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 1
+    "layout_slot": 1,
+    "stat_bonuses": []
   },
   {
     "upgrade_id": "rune_foot_spirit_initial",
@@ -135,6 +150,7 @@
     "func_unlock_key": "",
     "func_open_type": 0,
     "icon": "",
-    "layout_slot": 1
+    "layout_slot": 1,
+    "stat_bonuses": []
   }
 ]

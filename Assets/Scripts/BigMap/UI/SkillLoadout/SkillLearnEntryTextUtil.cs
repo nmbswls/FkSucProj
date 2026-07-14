@@ -131,6 +131,7 @@ namespace My.UI.SkillLoadout
                     ? "满足剧情条件"
                     : $"满足条件 {cond.Param5}",
                 ECommonCheckType.FuncOpen => $"解锁功能 {(EFuncOpenType)cond.Param1}",
+                ECommonCheckType.CharacterFavorLevel => $"{cond.Param5}好感达到 Lv{cond.Param1}",
                 ECommonCheckType.AlwaysFail => "条件未满足",
                 _ => "解锁条件未满足",
             };
