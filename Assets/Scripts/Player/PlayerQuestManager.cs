@@ -436,6 +436,12 @@ namespace My.Player
                     ctx.Ctx.playerDataManager.GiveItemToPlayer(pair.Key, pair.Value);
                 }
             }
+
+            PlayerEventBus.Publish(new PlayerQuestCompleteEvent
+            {
+                QuestId = cacheCfg.QuestId,
+            });
+            ctx.Ctx.playerDataManager?.EventGrantSystem?.OnWorldStateMaybeChanged();
         }
         
 

@@ -62,6 +62,10 @@ namespace My.Player
 
         public PlayerJingYuanCodexSystem JingYuanCodexSystem { get; private set; }
 
+        public PlayerStatisticSystem StatisticSystem { get; private set; }
+
+        public PlayerEventGrantSystem EventGrantSystem { get; private set; }
+
         public PlayerEquipmentManager EquipmentManager { get; private set; }
 
         public RumorIntelSystem RumorIntel { get; } = new();
@@ -136,6 +140,8 @@ namespace My.Player
             RuneSystem = new PlayerRuneSystem(this);
             BodyPartSystem = new PlayerBodyPartSystem(this);
             JingYuanCodexSystem = new PlayerJingYuanCodexSystem(this);
+            StatisticSystem = new PlayerStatisticSystem(this);
+            EventGrantSystem = new PlayerEventGrantSystem(this);
 
             MagicClothes = new PlayerMagicClothesManager(this);
 
@@ -209,6 +215,8 @@ namespace My.Player
             ItemEnchant.InitSystem(logicManager, savingData);
             RuneSystem.InitSystem(logicManager, savingData);
             JingYuanCodexSystem.InitSystem(logicManager, savingData);
+            StatisticSystem.InitSystem(logicManager, savingData);
+            EventGrantSystem.InitSystem(logicManager, savingData);
             MagicClothes.LoadFromSave(savingData?.PlayerData);
 
             EquipmentManager = new PlayerEquipmentManager(this);
@@ -239,6 +247,8 @@ namespace My.Player
             yield return ItemEnchant;
             yield return RuneSystem;
             yield return JingYuanCodexSystem;
+            yield return StatisticSystem;
+            yield return EventGrantSystem;
             yield return RumorIntel;
         }
 
@@ -269,6 +279,8 @@ namespace My.Player
             HumanQuickBar.WriteToSave(data.PlayerData);
             RuneSystem?.WriteToSave(data.PlayerData);
             JingYuanCodexSystem?.WriteToSave(data.PlayerData);
+            StatisticSystem?.WriteToSave(data.PlayerData);
+            EventGrantSystem?.WriteToSave(data.PlayerData);
             DialogTriggerSystem?.SaveTo(data.PlayerData);
 
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
@@ -298,6 +310,7 @@ namespace My.Player
                 AfterVal = 1,
             });
 
+            EventGrantSystem?.OnWorldStateMaybeChanged();
             SceneAOIManager.Instance?.RequestVisibleChunkRefresh();
         }
 
@@ -597,6 +610,16 @@ namespace My.Player
             {
                 TryAdd(id, 1);
             }
+
+            if (EventGrantSystem != null)
+            {
+                var grantPassiveScratch = new List<(string skillId, int level)>();
+                EventGrantSystem.CollectQualifiedPassiveSkills(null, grantPassiveScratch);
+                for (int i = 0; i < grantPassiveScratch.Count; i++)
+                {
+                    TryAdd(grantPassiveScratch[i].skillId, grantPassiveScratch[i].level);
+                }
+            }
         }
 
         public void CollectRegisteredSkillIdsForEntity(List<string> outIds)
@@ -707,6 +730,30 @@ namespace My.Player
                     if (applied.Contains(entry.skillId))
                     {
                         Debug.LogWarning("Passive skill in higher priority and tune: " + entry.skillId + ", tune skipped.");
+                        continue;
+                    }
+
+                    var cfg = SkillLibrary.GetSkillConfig(entry.skillId);
+                    if (cfg == null || !SkillPassiveBuffUtil.HasPassiveBuffs(cfg))
+                    {
+                        continue;
+                    }
+
+                    int lvl = PlayerSkillSystem.ClampPassiveBuffLayer(entry.skillId, entry.level);
+                    player.TrySetPassiveSkillBuffLayer(entry.skillId, lvl);
+                    applied.Add(entry.skillId);
+                }
+            }
+
+            if (EventGrantSystem != null)
+            {
+                var grantPassiveScratch = new List<(string skillId, int level)>();
+                EventGrantSystem.CollectQualifiedPassiveSkills(applied, grantPassiveScratch);
+                foreach (var entry in grantPassiveScratch)
+                {
+                    if (applied.Contains(entry.skillId))
+                    {
+                        Debug.LogWarning("Passive skill in higher priority and event grant: " + entry.skillId + ", grant skipped.");
                         continue;
                     }
 

@@ -72,10 +72,11 @@ namespace My.Config
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
 
-            // Param1=progress; StaticName=renewable node uniq name
-            AddRenewableNodeUnlockProgress = 110,
-            // Target defaults to owner; grants configured stored reward when ready
-            HarvestRenewableNode = 111,
+            // Param3=key; Param1=operand; Param2=(int)ELocalIntWriteMode.
+            // StaticName targets a named entity; Default targets the owner.
+            ModifyLocalIntValue = 110,
+            // Records the current settlement day in the target's timed refresh state.
+            RecordRefreshSettlementDay = 111,
         }
 
         public EOutputType OutputType;
@@ -99,6 +100,12 @@ namespace My.Config
         public int MemberId;
         public string StaticName;
         public string DynamicEntityVariable;
+
+        public enum ELocalIntWriteMode
+        {
+            Add = 0,
+            Set = 1,
+        }
     }
 
     [Serializable]
@@ -123,8 +130,6 @@ namespace My.Config
 
             PlayerNoBuff,
 
-            RenewableNodeUnlocked,
-            RenewableNodeReady,
         }
 
         public ECheckType CheckType;

@@ -181,7 +181,6 @@ namespace My
 
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
-            worldPersistState?.ApplyRenewableNodeRestockForSettlement(SettlementDayIndex);
             playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
 
             EventOnOneDayBalance?.Invoke(balanceInfo);

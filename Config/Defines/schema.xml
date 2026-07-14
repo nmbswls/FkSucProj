@@ -138,6 +138,42 @@
 		<var name="FuncOpen" value="7"/>
     </enum>
 
+    <!-- Statistic / EventGrant：共性计数与通用授予 -->
+    <enum name="EStatType">
+        <var name="None" value="0"/>
+        <var name="KillNpcCfg" value="1"/>
+        <var name="EnterOverlay" value="2"/>
+        <var name="QuestComplete" value="3"/>
+        <var name="UseItem" value="4"/>
+        <var name="InteractUniq" value="5"/>
+        <var name="ExtractCodex" value="6"/>
+        <var name="PlayerDeath" value="7"/>
+    </enum>
+
+    <enum name="EStatCompareOp">
+        <var name="Gte" value="0"/>
+        <var name="Eq" value="1"/>
+    </enum>
+
+    <enum name="EEventGrantDeliverMode">
+        <var name="GrantItemsOnce" value="0"/>
+        <var name="AssemblePassive" value="1"/>
+    </enum>
+
+    <enum name="EEventGrantCategory">
+        <var name="None" value="0"/>
+        <var name="Knowledge" value="1"/>
+        <var name="Achievement" value="2"/>
+    </enum>
+
+    <bean name="EventGrantTarget" tags="sep=,">
+        <var name="stat_type" type="EStatType" comment="统计类型"/>
+        <var name="arg0" type="string" comment="参数0"/>
+        <var name="arg1" type="string" comment="参数1"/>
+        <var name="op" type="EStatCompareOp" comment="比较"/>
+        <var name="value" type="long" comment="阈值"/>
+    </bean>
+
     <!-- 2. 定义复杂结构 Bean (列表中的元素结构) -->
     <!-- 这个结构体代表"一个奖励" -->
     <bean name="CommonCheckCond" tags="sep=,">

@@ -553,6 +553,14 @@ namespace My.Map.Entity
                     var ab = CreateSlimeMagicBoltAbility();
                     _abilityDict[ab.Id] = ab;
                 }
+                {
+                    var ab = CreateTreantSummonRootNodesAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+                {
+                    var ab = CreateTreantCorrosiveBarrageAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
                 
             }
 
@@ -6117,6 +6125,132 @@ namespace My.Map.Entity
                 Kind = PhaseEventKind.OnExit
             });
 
+            spec.Phases.Add(prePhase);
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateTreantSummonRootNodesAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "treant_summon_root_nodes";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            var prePhase = new MapAbilityPhase
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.8" },
+            };
+            var mainPhase = new MapAbilityPhase
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.3" },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapAbilityEffectSpawnEntityCfg
+                {
+                    EntityType = EEntityType.Npc,
+                    CfgId = "forest_treant_root_node",
+                    LifeTime = 35f,
+                    SpawnCenter = MapAbilityEffectSpawnEntityCfg.ESpawnCenter.Source,
+                    SpawnCount = 2,
+                    SpawnRadius = 2.8f,
+                    SummonGroup = "treant_root_nodes",
+                    MaxAlivePerSource = 4,
+                    SummonLifetimeRule = ESummonLifetimeRule.WhileOwnerInCombat,
+                },
+            });
+            spec.Phases.Add(prePhase);
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateTreantCorrosiveBarrageAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "treant_corrosive_barrage";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 10f;
+            spec.DesiredUseDistance = 7f;
+            spec.DesiredUseAngle = 55f;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.PrimaryTarget;
+
+            var prePhase = new MapAbilityPhase
+            {
+                PhaseName = "Pre",
+                LockMovement = true,
+                LockRotation = true,
+                WithProgress = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.7" },
+            };
+            var mainPhase = new MapAbilityPhase
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new OneVariaty { ValType = EOneVariatyType.Float, RawVal = "0.25" },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapAbilityEffectSpawnBulletCfg
+                {
+                    BulletId = "forest_treant_corrosive_blob",
+                    MotionData = new ParabolaMotionData
+                    {
+                        horizontalSpeed = 8f,
+                        arcHeight = 3.2f,
+                        gravity = 22f,
+                        hitRadius = 0.32f,
+                        minFlightTime = 0.55f,
+                    },
+                    SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                    SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                    SpawnCountMin = 3,
+                    SpawnCountMax = 5,
+                    TargetPointScatterRadius = 2.2f,
+                    isHoming = true,
+                    homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                    lifeTime = 7f,
+                    TriggerOnCollide = true,
+                    TriggerOnLifeEnd = true,
+                    ExplodeEffects = new List<MapFightEffectCfg>
+                    {
+                        new MapAbilityEffectHitBoxCfg
+                        {
+                            Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                            Radius = 0.9f,
+                            CampFilterType = ECampFilterType.NotSelf,
+                            HitResult = new HitResult
+                            {
+                                OnHitEffects = new List<MapFightEffectCfg>
+                                {
+                                    new MapFightEffectApplyDamageCfg
+                                    {
+                                        BaseDamage = 4200,
+                                        DamageCategory = EDmgCategory.Magic,
+                                        KnockBackForce = 0.15f,
+                                    },
+                                },
+                            },
+                        },
+                        new MapFightEffectCreateAreaEffectCfg
+                        {
+                            CfgId = "treant_corrosive_pool",
+                            LifeTime = 8f,
+                        },
+                    },
+                },
+            });
             spec.Phases.Add(prePhase);
             spec.Phases.Add(mainPhase);
             return spec;

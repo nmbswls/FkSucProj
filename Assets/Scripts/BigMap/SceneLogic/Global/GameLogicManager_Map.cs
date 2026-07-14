@@ -229,6 +229,15 @@ namespace My
             {
                 RumorIntelSpawn?.ApplyPurchasedRumorsOnMapLoaded();
             }
+
+            var overlayId = AreaManager?.AreaOverlayId;
+            if (!string.IsNullOrEmpty(overlayId))
+            {
+                PlayerEventBus.Publish(new PlayerEnterOverlayEvent
+                {
+                    OverlayId = overlayId,
+                });
+            }
         }
 
         // 按当前 PlayerHumanMode 与地图类型同步魔力衣装运行时与人类形态屏蔽（暴露/衣装上限等）

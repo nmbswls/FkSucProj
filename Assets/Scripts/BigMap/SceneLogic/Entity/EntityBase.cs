@@ -220,6 +220,7 @@ namespace My.Map
         #region �?�????��???
 
         protected HashSet<string> EntityLocalSwitches = new();
+        protected Dictionary<string, int> EntityLocalIntValues = new();
         public virtual bool CheckLocalSwitch(string switchName)
         {
             return EntityLocalSwitches.Contains(switchName);
@@ -241,6 +242,39 @@ namespace My.Map
 
         // 具名 NPC 等在 LocalSwitch 变更时同步到 WorldNpcCharacterPersistRegistry，勿挂到 Record 存盘周期
         protected virtual void OnLocalSwitchesMutated()
+        {
+        }
+
+        public virtual int GetLocalIntValue(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return 0;
+            }
+
+            return EntityLocalIntValues.TryGetValue(key, out int value) ? value : 0;
+        }
+
+        public virtual void SetLocalIntValue(string key, int value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            if (value == 0)
+            {
+                EntityLocalIntValues.Remove(key);
+            }
+            else
+            {
+                EntityLocalIntValues[key] = value;
+            }
+
+            OnLocalIntValuesMutated();
+        }
+
+        protected virtual void OnLocalIntValuesMutated()
         {
         }
 
@@ -274,6 +308,18 @@ namespace My.Map
                     EntityLocalSwitches.Add(oneSwitch);
                 }
             }
+
+            if (bindingRecord.LocalIntValues != null)
+            {
+                foreach (var pair in bindingRecord.LocalIntValues)
+                {
+                    if (!string.IsNullOrEmpty(pair.Key) && pair.Value != 0)
+                    {
+                        EntityLocalIntValues[pair.Key] = pair.Value;
+                    }
+                }
+            }
+
         }
 
         protected AttributeStore attributeStore;
@@ -592,6 +638,10 @@ namespace My.Map
             {
                 input.MarkDestroyed = true;
             }
+
+            input.LocalIntValues = EntityLocalIntValues.Count == 0
+                ? null
+                : new Dictionary<string, int>(EntityLocalIntValues);
         }
 
         // ?��?档�?��?? Area �??��?�???�??��?��???? Record�?不�?�?�? OnDespawn ??�??��??�???

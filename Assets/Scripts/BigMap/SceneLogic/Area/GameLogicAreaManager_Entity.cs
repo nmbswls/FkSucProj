@@ -835,6 +835,7 @@ namespace My.Map.Logic
 
             // 交由仓库管理
             Repo.RegisterRecord(rec);
+            Summons.Register(rec, rec.SummonMaxAlivePerOwner);
             // 注册到 AOI 网格
             UnitGridIndex.AddOrMove(rec.Id, rec.Position);
 
@@ -866,6 +867,7 @@ namespace My.Map.Logic
 
         private void UnregisterEntityRecord(long recId)
         {
+            Summons.Unregister(recId);
             Repo.Records.TryGetValue(recId, out var rec);
             if (rec != null && IsRecordAlwaysActive(rec))
             {

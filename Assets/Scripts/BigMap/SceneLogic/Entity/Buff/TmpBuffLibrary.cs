@@ -1514,6 +1514,41 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["b_treant_corrosion"] = new BuffDefinition()
+                {
+                    BuffId = "b_treant_corrosion",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    LayerStackMode = EBuffLayerStackMode.Classic,
+                    TurnOverrideType = EBuffTurnOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = 0.75f,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair()
+                        {
+                            ModifierAttrId = AttrIdConsts.Basic_MoveSpeed,
+                            ModifierValue = -1500,
+                        },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig()
+                        {
+                            TriggerType = ETriggerType.Tick,
+                            TriggerParam1 = 500,
+                            OutputFightEffects = new()
+                            {
+                                new MapFightEffectApplyDamageCfg()
+                                {
+                                    BaseDamage = 900,
+                                    DamageCategory = EDmgCategory.Magic,
+                                    IsEnmity = true,
+                                },
+                            },
+                        },
+                    },
+                };
+
                 // 烟雾弹区效 smoke_grenade_area（RefreshDuration 每 tick 刷新时长）
                 _library["smoke_vision_debuff"] = new BuffDefinition()
                 {

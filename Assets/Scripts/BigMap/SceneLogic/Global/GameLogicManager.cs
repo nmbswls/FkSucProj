@@ -8,6 +8,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
 using My.Player;
+using My.Quest;
 using My.Saving;
 using My.UI;
 using SimpleJSON;
@@ -668,7 +669,7 @@ namespace My
                 destination.TargetPos);
         }
 
-        public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow)
+        public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow, string itemId = null)
         {
             var srcActor = GetLogicEntity(userUnit) as BaseUnitLogicEntity;
             if (srcActor == null)
@@ -788,6 +789,15 @@ namespace My
                             Player.EJingYuanProgressSource.ItemGrant);
                     }
                     break;
+            }
+
+            if (!string.IsNullOrEmpty(itemId) && cnt > 0)
+            {
+                PlayerEventBus.Publish(new PlayerItemUsedEvent
+                {
+                    ItemId = itemId,
+                    Count = cnt,
+                });
             }
 
             return false;

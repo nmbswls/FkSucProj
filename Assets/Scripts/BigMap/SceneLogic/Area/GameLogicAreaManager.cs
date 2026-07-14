@@ -63,6 +63,7 @@ namespace My.Map.Logic
 
         public LogicEntityRepository Repo;
         public LongLivedRegistry LongLived { get; } = new();
+        public SummonedEntityRegistry Summons { get; }
 
         public string AreaOverlayId = string.Empty;
         public AreaOverlayStateInfo cacheMapOverlayCfg { get; private set; }
@@ -106,6 +107,7 @@ namespace My.Map.Logic
             RoomGridIndex = new UniformGridIndex<string>(GridCellSize);
 
             innerListener = new(this);
+            Summons = new SummonedEntityRegistry(this);
         }
 
         public class InnerListener : IMapLogicEventHandler
@@ -254,6 +256,7 @@ namespace My.Map.Logic
 
         public void CleanArea()
         {
+            Summons.ClearAll();
             BossEncounters?.Dispose();
             BossEncounters = null;
             logicManager?.MapMicroPlot?.AbortForMapChange();
@@ -387,6 +390,8 @@ namespace My.Map.Logic
         {
             foreach (var kv in Repo.Records)
                 UnitGridIndex.AddOrMove(kv.Key, kv.Value.Position);
+
+            Summons.RebuildFromRecords();
         }
 
         // 兴趣点：注册 / 移除
@@ -447,6 +452,8 @@ namespace My.Map.Logic
             _dungeonRuntime?.Tick(dt);
 
             TickEntityLifeCycle(dt);
+
+            Summons.Tick();
 
             BossEncounters?.Tick(dt);
 

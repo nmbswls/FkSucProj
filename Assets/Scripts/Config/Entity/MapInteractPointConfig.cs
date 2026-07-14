@@ -68,6 +68,8 @@ namespace Config.Map
             public int FromStatus;
             public List<CommonCheckCond> CommonConds = new();
             public List<string> NeedSelfFlag = new();
+            public List<LocalIntValueCondition> LocalIntConditions = new();
+            public List<TimedRefreshCondition> TimedRefreshConditions = new();
             public int ToStatus;
 
             public StateChangeView ChangeView;
@@ -83,6 +85,46 @@ namespace Config.Map
 
         [Header("Dormant / GcLiquid reveal (optional)")]
         public InteractPointDormantRevealSettings DormantRevealSettings = new();
+
+    }
+
+    [Serializable]
+    public class LocalIntValueCondition
+    {
+        public string Key = "";
+        public ELocalIntCompare Compare = ELocalIntCompare.Equal;
+        public ELocalIntValueSource RightValueSource = ELocalIntValueSource.Constant;
+        public int RightValue;
+    }
+
+    public enum ELocalIntCompare
+    {
+        Equal = 0,
+        NotEqual = 1,
+        Greater = 2,
+        GreaterOrEqual = 3,
+        Less = 4,
+        LessOrEqual = 5,
+    }
+
+    public enum ELocalIntValueSource
+    {
+        Constant = 0,
+        SettlementDayIndex = 1,
+    }
+
+    [Serializable]
+    public class TimedRefreshCondition
+    {
+        public ERefreshTimeExistence Existence = ERefreshTimeExistence.Exists;
+        public ELocalIntCompare Compare = ELocalIntCompare.GreaterOrEqual;
+        public int ElapsedDays;
+    }
+
+    public enum ERefreshTimeExistence
+    {
+        Exists = 0,
+        Missing = 1,
     }
 
     [Serializable]

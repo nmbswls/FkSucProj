@@ -118,6 +118,36 @@ namespace My.Quest
     {
     }
 
+    // 任务最终完成
+    public struct PlayerQuestCompleteEvent
+    {
+        public int QuestId;
+    }
+
+    // 道具使用成功（含 auto-use）
+    public struct PlayerItemUsedEvent
+    {
+        public string ItemId;
+        public long Count;
+    }
+
+    // 进入地图 overlay（切图完成）
+    public struct PlayerEnterOverlayEvent
+    {
+        public string OverlayId;
+    }
+
+    // Statistic 计数变化
+    public struct PlayerStatisticChangedEvent
+    {
+        public cfg.demo.EStatType StatType;
+        public string Key;
+        public long NewValue;
+        public long Delta;
+        public string Arg0;
+        public string Arg1;
+    }
+
     public static class PlayerEventBus
     {
         /// <summary>

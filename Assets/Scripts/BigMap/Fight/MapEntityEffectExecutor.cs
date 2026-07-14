@@ -234,14 +234,26 @@ namespace My.Map.Entity
 
             float parabolaLaunchZ = 0f;
 
-            ctx.Env.projectileHolder.CreateLogicProjectile(
-                pData,
-                caster,
-                bornPos.Value,
-                dir.Value,
-                homingTarget: homingTarget,
-                homingTargetPos: homingTargetPos,
-                parabolaLaunchZ: parabolaLaunchZ);
+            int spawnMin = Mathf.Max(1, realCfg.SpawnCountMin);
+            int spawnMax = Mathf.Max(spawnMin, realCfg.SpawnCountMax);
+            int spawnCount = UnityEngine.Random.Range(spawnMin, spawnMax + 1);
+            for (int i = 0; i < spawnCount; i++)
+            {
+                Vector2? projectileTargetPos = homingTargetPos;
+                if (projectileTargetPos.HasValue && realCfg.TargetPointScatterRadius > 0f)
+                {
+                    projectileTargetPos += UnityEngine.Random.insideUnitCircle * realCfg.TargetPointScatterRadius;
+                }
+
+                ctx.Env.projectileHolder.CreateLogicProjectile(
+                    pData,
+                    caster,
+                    bornPos.Value,
+                    dir.Value,
+                    homingTarget: homingTarget,
+                    homingTargetPos: projectileTargetPos,
+                    parabolaLaunchZ: parabolaLaunchZ);
+            }
         }
     }
     
@@ -274,7 +286,7 @@ namespace My.Map.Entity
             var srcIdxStr = ctx.GetVariatyRawVal(realCfg.UseItemSrcIdx);
             int.TryParse(srcIdxStr, out var srcIdx);
 
-            ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, useRow);
+            ctx.Env.HandleUseItem(ctx.SourceInfo.SrcEntityId, 1, useRow, useItemId);
             if(ItemCatalog.ShouldConsumeOnUse(useRow))
             {
                 var inv = ctx.Env.playerDataManager.InventorySystem;
@@ -1713,47 +1725,48 @@ namespace My.Map.Entity
                 return;
             }
 
-            LogicEntityRecord record = null;
-            switch (realCfg.EntityType)
+            var source = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) as BaseUnitLogicEntity;
+            Vector2? center = realCfg.SpawnCenter == MapAbilityEffectSpawnEntityCfg.ESpawnCenter.Source
+                ? source?.Pos
+                : ctx.CastVec1;
+            if (!center.HasValue)
             {
-                case EEntityType.Npc:
-                    {
-                        record = new LogicEntityRecord4Npc();
-                    }
-                    break;
-                case EEntityType.Trap:
-                    {
-                        record = new LogicEntityRecord4Trap();
-                    }
-                    break;
-                default:
-                    {
-                        record = new LogicEntityRecord();
-                    }
-                    break;
-            }
-
-            if(record == null)
-            {
-                Debug.LogError("AbilityEffectExecutor4SpawnEntity record miss");
+                Debug.LogError("AbilityEffectExecutor4SpawnEntity spawn center invalid");
                 return;
             }
 
-            if(ctx.CastVec1 == null)
+            int count = Mathf.Max(1, realCfg.SpawnCount);
+            for (int i = 0; i < count; i++)
             {
-                Debug.LogError("AbilityEffectExecutor4SpawnEntity CastVec1 dir invalid");
-                return;
-            }
+                LogicEntityRecord record = realCfg.EntityType switch
+                {
+                    EEntityType.Npc => new LogicEntityRecord4Npc(),
+                    EEntityType.Trap => new LogicEntityRecord4Trap(),
+                    _ => new LogicEntityRecord(),
+                };
 
             record.Id = GameLogicManager.LogicEntityIdInst++;
             record.CfgId = realCfg.CfgId;
             record.EntityType = realCfg.EntityType;
             record.LifeTime = realCfg.LifeTime;
-            record.Position = ctx.CastVec1.Value;
-
-            if (ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) is BaseUnitLogicEntity srcUnit)
+            record.Position = center.Value;
+            if (realCfg.SpawnRadius > 0f)
             {
-                record.FactionId = srcUnit.FactionId;
+                record.Position += UnityEngine.Random.insideUnitCircle * realCfg.SpawnRadius;
+            }
+
+            if (source != null)
+            {
+                record.FactionId = source.FactionId;
+                record.OwnerEntityId = source.Id;
+                record.SummonLifetimeRule = realCfg.SummonLifetimeRule;
+                record.SummonGroup = realCfg.SummonGroup ?? string.Empty;
+                record.SummonMaxAlivePerOwner = realCfg.MaxAlivePerSource;
+                record.HasObservedOwnerCombat = source.IsInCombat;
+                if (realCfg.SummonLifetimeRule != ESummonLifetimeRule.Independent)
+                {
+                    record.LifeBindEntityId = source.Id;
+                }
             }
 
             if (record is LogicEntityRecord4Npc npcRec)
@@ -1780,6 +1793,7 @@ namespace My.Map.Entity
             }
 
             ctx.Env.AddNewEntityRecord(record);
+            }
         }
     }
 
@@ -2121,6 +2135,7 @@ namespace My.Map.Entity
             EntityInitInfo initInfo = new EntityInitInfo4AreaEffect();
             initInfo.CfgId = realCfg.CfgId;
             initInfo.Position = ctx.TriggerPos.Value;
+            initInfo.OrgFactionId = ctx.SourceInfo.SrcFactionId;
 
             var gcLiquidEntity = ctx.Env.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
             gcLiquidEntity.LifeTime = realCfg.LifeTime;

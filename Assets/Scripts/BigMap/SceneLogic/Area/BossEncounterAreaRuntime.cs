@@ -84,6 +84,7 @@ namespace My.Map.Logic
 
                 if (boss.IsDead || boss.GetAttr(AttrIdConsts.HP) <= 0)
                 {
+                    _area.Summons.ClearForSourceDestroyed(encounter.EntityId);
                     SetState(encounter, EBossEncounterState.Defeated);
                     continue;
                 }
@@ -165,6 +166,7 @@ namespace My.Map.Logic
                     encounter.Def.ReengageDelay,
                     encounter.Def.InvulnerableWhileReturning)))
             {
+                _area.Summons.ClearForCombatReset(encounter.EntityId);
                 encounter.OutsideSince = -1f;
                 encounter.PhaseIndex = 0;
                 SetState(encounter, EBossEncounterState.Returning);

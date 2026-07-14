@@ -17,7 +17,7 @@ namespace My.Map.Entity
 {
 
 
-    public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable
+    public class LogicEntityInteractPoint : LogicEntityBase, IWithInteract, IEntityInteractable, IWithTimedRefreshState
     {
         // ??
         //public bool Appear = false;
@@ -27,6 +27,7 @@ namespace My.Map.Entity
 
         float _poisonBaitEndTime;
         float _poisonCdEndTime;
+        readonly TimedRefreshState _timedRefresh = new();
 
         float _revealUntilTime;
 
@@ -57,6 +58,11 @@ namespace My.Map.Entity
             DynamicVariables.AddRange(realRecord.DynamicVariables);
             _poisonBaitEndTime = realRecord.PoisonBaitEndTime;
             _poisonCdEndTime = realRecord.PoisonCdEndTime;
+            if (realRecord.TimedRefresh?.HasLastRefreshSettlementDay == true)
+            {
+                _timedRefresh.HasLastRefreshSettlementDay = true;
+                _timedRefresh.LastRefreshSettlementDay = realRecord.TimedRefresh.LastRefreshSettlementDay;
+            }
         }
 
         protected virtual void LoadCfg()
@@ -105,13 +111,33 @@ namespace My.Map.Entity
 
             CheckStatusCondition();
             ApplyInitialDormantState();
-            SyncRenewableNodeStatus();
         }
 
         protected override void OnLocalSwitchesMutated()
         {
             base.OnLocalSwitchesMutated();
             SyncLocalSwitchesToPersistRegistryIfNeeded();
+        }
+
+        protected override void OnLocalIntValuesMutated()
+        {
+            base.OnLocalIntValuesMutated();
+            SyncLocalIntValuesToPersistRegistryIfNeeded();
+            CheckStatusCondition();
+        }
+
+        public bool TryGetLastRefreshSettlementDay(out int settlementDayIndex)
+        {
+            settlementDayIndex = _timedRefresh.LastRefreshSettlementDay;
+            return _timedRefresh.HasLastRefreshSettlementDay;
+        }
+
+        public void RecordRefreshSettlementDay(int settlementDayIndex)
+        {
+            _timedRefresh.HasLastRefreshSettlementDay = true;
+            _timedRefresh.LastRefreshSettlementDay = settlementDayIndex;
+            SyncTimedRefreshToPersistRegistryIfNeeded();
+            CheckStatusCondition();
         }
 
         void SyncLocalSwitchesToPersistRegistryIfNeeded()
@@ -128,6 +154,32 @@ namespace My.Map.Entity
 
             LogicManager?.worldPersistState?.MapInteractPoints?.ReplaceRuntimeLocalSwitches(
                 SrcUniqName, EntityLocalSwitches);
+        }
+
+        void SyncLocalIntValuesToPersistRegistryIfNeeded()
+        {
+            if (string.IsNullOrEmpty(SrcUniqName)
+                || !MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
+            {
+                return;
+            }
+
+            LogicManager?.worldPersistState?.MapInteractPoints?.ReplaceRuntimeLocalIntValues(
+                SrcUniqName, EntityLocalIntValues);
+        }
+
+        void SyncTimedRefreshToPersistRegistryIfNeeded()
+        {
+            if (string.IsNullOrEmpty(SrcUniqName)
+                || !MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
+            {
+                return;
+            }
+
+            LogicManager?.worldPersistState?.MapInteractPoints
+                ?.ReplaceRuntimeTimedRefreshState(
+                    SrcUniqName,
+                    _timedRefresh);
         }
 
         bool DormantRevealEnabled() =>
@@ -234,6 +286,30 @@ namespace My.Map.Entity
                     }
                 }
 
+                if (rule.LocalIntConditions != null)
+                {
+                    foreach (var condition in rule.LocalIntConditions)
+                    {
+                        if (!CheckLocalIntCondition(condition))
+                        {
+                            poassed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (rule.TimedRefreshConditions != null)
+                {
+                    foreach (var condition in rule.TimedRefreshConditions)
+                    {
+                        if (!CheckTimedRefreshCondition(condition))
+                        {
+                            poassed = false;
+                            break;
+                        }
+                    }
+                }
+
                 if (poassed)
                 {
                     ChangeSelfStatus(rule.ToStatus, rule.ChangeView);
@@ -281,33 +357,54 @@ namespace My.Map.Entity
 
             TickPoisonBait(dt);
             TickDormantReveal();
-            SyncRenewableNodeStatus();
         }
 
-        void SyncRenewableNodeStatus()
+        bool CheckLocalIntCondition(LocalIntValueCondition condition)
         {
-            if (string.IsNullOrEmpty(SrcUniqName) || CfgMgr.Cfgs?.TbRenewableResourceNode == null)
+            if (condition == null || string.IsNullOrEmpty(condition.Key))
             {
-                return;
+                return false;
             }
 
-            var cfg = CfgMgr.Cfgs.TbRenewableResourceNode.GetOrDefault(CfgId);
-            if (cfg == null)
+            int left = GetLocalIntValue(condition.Key);
+            int right = condition.RightValueSource == ELocalIntValueSource.SettlementDayIndex
+                ? LogicManager.SettlementDayIndex + condition.RightValue
+                : condition.RightValue;
+
+            return CompareInts(left, right, condition.Compare);
+        }
+
+        bool CheckTimedRefreshCondition(TimedRefreshCondition condition)
+        {
+            if (condition == null)
             {
-                return;
+                return false;
             }
 
-            var state = LogicManager.worldPersistState.GetOrCreateRenewableNodeState(
-                SrcUniqName,
-                CfgId,
-                LogicManager.SettlementDayIndex);
-            int desired = !state.PermanentlyUnlocked
-                ? cfg.LockedStatusId
-                : state.StoredResources > 0 ? cfg.ReadyStatusId : cfg.WaitingStatusId;
-            if (CurrStatusId != desired)
+            bool exists = TryGetLastRefreshSettlementDay(out int recordedDay);
+            if (condition.Existence == ERefreshTimeExistence.Missing)
             {
-                ChangeSelfStatus(desired);
+                return !exists;
             }
+
+            return exists && CompareInts(
+                LogicManager.SettlementDayIndex - recordedDay,
+                condition.ElapsedDays,
+                condition.Compare);
+        }
+
+        static bool CompareInts(int left, int right, ELocalIntCompare compare)
+        {
+            return compare switch
+            {
+                ELocalIntCompare.Equal => left == right,
+                ELocalIntCompare.NotEqual => left != right,
+                ELocalIntCompare.Greater => left > right,
+                ELocalIntCompare.GreaterOrEqual => left >= right,
+                ELocalIntCompare.Less => left < right,
+                ELocalIntCompare.LessOrEqual => left <= right,
+                _ => false,
+            };
         }
 
         protected override bool CanTickGroundOverlay()
@@ -488,16 +585,33 @@ namespace My.Map.Entity
             if (MapInteractPointPersistUtil.ShouldPersistEntity(Type, CfgId))
             {
                 realRecord.Status = 0;
+                realRecord.LocalIntValues = null;
+                realRecord.TimedRefresh = null;
             }
             else
             {
                 realRecord.Status = CurrStatusId;
+                realRecord.TimedRefresh = CloneTimedRefreshState();
             }
 
             realRecord.DynamicVariables.Clear();
             realRecord.DynamicVariables.AddRange(DynamicVariables);
             realRecord.PoisonBaitEndTime = _poisonBaitEndTime;
             realRecord.PoisonCdEndTime = _poisonCdEndTime;
+        }
+
+        TimedRefreshState CloneTimedRefreshState()
+        {
+            if (!_timedRefresh.HasLastRefreshSettlementDay)
+            {
+                return null;
+            }
+
+            return new TimedRefreshState
+            {
+                HasLastRefreshSettlementDay = true,
+                LastRefreshSettlementDay = _timedRefresh.LastRefreshSettlementDay,
+            };
         }
 
 

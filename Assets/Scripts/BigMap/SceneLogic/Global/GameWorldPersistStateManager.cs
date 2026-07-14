@@ -14,7 +14,6 @@ namespace My
     public class GameWorldPersistStateManager
     {
         private readonly Dictionary<string, FishingSpotRuntimeSave> _fishingRuntime = new();
-        private readonly Dictionary<string, RenewableResourceNodeRuntimeSave> _renewableResourceRuntime = new(StringComparer.Ordinal);
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
         private readonly Dictionary<string, SavePointUnlockPersist> _savePointUnlockById = new(StringComparer.Ordinal);
         private readonly HashSet<string> _secretBaseUnlockedFacilities = new(StringComparer.Ordinal);
@@ -64,7 +63,6 @@ namespace My
         public void InitFromSave(SaveData savingData)
         {
             _fishingRuntime.Clear();
-            _renewableResourceRuntime.Clear();
             _microPlotConsumed.Clear();
             if (savingData?.PlayerData?.FishingSpotByUniqName != null)
             {
@@ -75,26 +73,6 @@ namespace My
                         CfgId = kv.Value.CfgId,
                         Remaining = kv.Value.Remaining,
                         LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
-                    };
-                }
-            }
-
-            if (savingData?.PlayerData?.RenewableResourceNodeByUniqName != null)
-            {
-                foreach (var kv in savingData.PlayerData.RenewableResourceNodeByUniqName)
-                {
-                    if (string.IsNullOrEmpty(kv.Key) || kv.Value == null)
-                    {
-                        continue;
-                    }
-
-                    _renewableResourceRuntime[kv.Key] = new RenewableResourceNodeRuntimeSave
-                    {
-                        CfgId = kv.Value.CfgId,
-                        PermanentlyUnlocked = kv.Value.PermanentlyUnlocked,
-                        UnlockProgress = kv.Value.UnlockProgress,
-                        StoredResources = kv.Value.StoredResources,
-                        NextReadySettlementDay = kv.Value.NextReadySettlementDay,
                     };
                 }
             }
@@ -218,20 +196,6 @@ namespace My
                     CfgId = kv.Value.CfgId,
                     Remaining = kv.Value.Remaining,
                     LastRestockSettlementDayIndex = kv.Value.LastRestockSettlementDayIndex,
-                };
-            }
-
-            data.PlayerData.RenewableResourceNodeByUniqName ??= new Dictionary<string, RenewableResourceNodeRuntimeSave>(StringComparer.Ordinal);
-            data.PlayerData.RenewableResourceNodeByUniqName.Clear();
-            foreach (var kv in _renewableResourceRuntime)
-            {
-                data.PlayerData.RenewableResourceNodeByUniqName[kv.Key] = new RenewableResourceNodeRuntimeSave
-                {
-                    CfgId = kv.Value.CfgId,
-                    PermanentlyUnlocked = kv.Value.PermanentlyUnlocked,
-                    UnlockProgress = kv.Value.UnlockProgress,
-                    StoredResources = kv.Value.StoredResources,
-                    NextReadySettlementDay = kv.Value.NextReadySettlementDay,
                 };
             }
 
@@ -467,118 +431,6 @@ namespace My
                     kv.Value.LastRestockSettlementDayIndex = newSettlementDayIndex;
                 }
             }
-        }
-
-        public RenewableResourceNodeRuntimeSave GetOrCreateRenewableNodeState(string uniqName, string cfgId, int settlementDayIndex)
-        {
-            if (string.IsNullOrEmpty(uniqName) || string.IsNullOrEmpty(cfgId))
-            {
-                return null;
-            }
-
-            if (!_renewableResourceRuntime.TryGetValue(uniqName, out var state))
-            {
-                state = new RenewableResourceNodeRuntimeSave
-                {
-                    CfgId = cfgId,
-                    NextReadySettlementDay = -1,
-                };
-                _renewableResourceRuntime[uniqName] = state;
-            }
-
-            RefreshRenewableNode(state, settlementDayIndex);
-            return state;
-        }
-
-        public bool IsRenewableNodeUnlocked(string uniqName, string cfgId, int settlementDayIndex)
-        {
-            return GetOrCreateRenewableNodeState(uniqName, cfgId, settlementDayIndex)?.PermanentlyUnlocked == true;
-        }
-
-        public bool IsRenewableNodeReady(string uniqName, string cfgId, int settlementDayIndex)
-        {
-            return GetOrCreateRenewableNodeState(uniqName, cfgId, settlementDayIndex)?.StoredResources > 0;
-        }
-
-        public void AddRenewableNodeUnlockProgress(string uniqName, string cfgId, int amount, int settlementDayIndex)
-        {
-            if (amount <= 0 || string.IsNullOrEmpty(uniqName))
-            {
-                return;
-            }
-
-            var state = GetOrCreateRenewableNodeState(uniqName, cfgId, settlementDayIndex);
-            var cfg = CfgMgr.Cfgs?.TbRenewableResourceNode?.GetOrDefault(state?.CfgId);
-            if (state == null || cfg == null || state.PermanentlyUnlocked)
-            {
-                return;
-            }
-
-            state.UnlockProgress = Mathf.Min(cfg.UnlockRequiredProgress, state.UnlockProgress + amount);
-            if (state.UnlockProgress < cfg.UnlockRequiredProgress)
-            {
-                return;
-            }
-
-            state.PermanentlyUnlocked = true;
-            if (cfg.ImmediateReadyOnUnlock)
-            {
-                state.StoredResources = Mathf.Min(cfg.Capacity, state.StoredResources + 1);
-                state.NextReadySettlementDay = -1;
-            }
-            else
-            {
-                state.NextReadySettlementDay = settlementDayIndex + Mathf.Max(1, cfg.RestockEveryNDays);
-            }
-        }
-
-        public bool TryHarvestRenewableNode(string uniqName, string cfgId, int settlementDayIndex, out string itemId, out int count)
-        {
-            itemId = string.Empty;
-            count = 0;
-            var state = GetOrCreateRenewableNodeState(uniqName, cfgId, settlementDayIndex);
-            var cfg = CfgMgr.Cfgs?.TbRenewableResourceNode?.GetOrDefault(state?.CfgId);
-            if (state == null || cfg == null || !state.PermanentlyUnlocked || state.StoredResources <= 0)
-            {
-                return false;
-            }
-
-            state.StoredResources--;
-            itemId = cfg.RewardItemId;
-            count = cfg.RewardCount;
-            if (state.StoredResources < cfg.Capacity)
-            {
-                state.NextReadySettlementDay = settlementDayIndex + Mathf.Max(1, cfg.RestockEveryNDays);
-            }
-            return !string.IsNullOrEmpty(itemId) && count > 0;
-        }
-
-        public void ApplyRenewableNodeRestockForSettlement(int settlementDayIndex)
-        {
-            foreach (var state in _renewableResourceRuntime.Values)
-            {
-                RefreshRenewableNode(state, settlementDayIndex);
-            }
-        }
-
-        void RefreshRenewableNode(RenewableResourceNodeRuntimeSave state, int settlementDayIndex)
-        {
-            if (state == null || !state.PermanentlyUnlocked || state.NextReadySettlementDay < 0
-                || settlementDayIndex < state.NextReadySettlementDay)
-            {
-                return;
-            }
-
-            var cfg = CfgMgr.Cfgs?.TbRenewableResourceNode?.GetOrDefault(state.CfgId);
-            if (cfg == null)
-            {
-                return;
-            }
-
-            state.StoredResources = Mathf.Min(cfg.Capacity, state.StoredResources + 1);
-            state.NextReadySettlementDay = state.StoredResources >= cfg.Capacity
-                ? -1
-                : settlementDayIndex + Mathf.Max(1, cfg.RestockEveryNDays);
         }
 
         public LogicAreaHomesteadPersist GetLogicAreaHomesteadState(string logicAreaId)

@@ -37,6 +37,13 @@ namespace My.Map.Entity
         }
         public ESpawnDir SpawnDir = ESpawnDir.NoDir;
 
+        [Min(1)]
+        public int SpawnCountMin = 1;
+        [Min(1)]
+        public int SpawnCountMax = 1;
+        [Min(0f)]
+        public float TargetPointScatterRadius;
+
         /// <summary>
         /// 追踪相关
         /// </summary>

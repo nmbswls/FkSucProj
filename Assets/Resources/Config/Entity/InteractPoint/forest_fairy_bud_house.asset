@@ -48,15 +48,34 @@ MonoBehaviour:
       NeedDist: 0.55
       Passive: 0
       CheckCommonCond: []
-      CheckInteractCond:
-      - CheckType: 10
-        Param1: 0
-        Param2: 0
-        Param3: 
-        Param4: 
+      CheckInteractCond: []
       Outputs:
+      - OutputType: 3
+        Param1: 1
+        Param2: 0
+        Param3: mat_fairy_honeydew
+        Param4: 
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName:
+        DynamicEntityVariable:
       - OutputType: 111
         Param1: 0
+        Param2: 0
+        Param3:
+        Param4:
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName:
+        DynamicEntityVariable:
+      - OutputType: 1
+        Param1: 1
         Param2: 0
         Param3: 
         Param4: 
@@ -73,7 +92,71 @@ MonoBehaviour:
     AutoTriggerInteractId: 1
     AutoTriggerCheckInterval: 0.25
   InitState: 0
-  StateChangeRules: []
+  StateChangeRules:
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag: []
+    LocalIntConditions:
+    - Key: unlock_progress
+      Compare: 3
+      RightValueSource: 0
+      RightValue: 3
+    TimedRefreshConditions:
+    - Existence: 0
+      Compare: 4
+      ElapsedDays: 3
+    ToStatus: 1
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName:
+      ChangingEffect:
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag: []
+    LocalIntConditions:
+    - Key: unlock_progress
+      Compare: 3
+      RightValueSource: 0
+      RightValue: 3
+    TimedRefreshConditions:
+    - Existence: 1
+      Compare: 3
+      ElapsedDays: 3
+    ToStatus: 2
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName:
+      ChangingEffect:
+  - FromStatus: 0
+    CommonConds: []
+    NeedSelfFlag: []
+    LocalIntConditions:
+    - Key: unlock_progress
+      Compare: 3
+      RightValueSource: 0
+      RightValue: 3
+    TimedRefreshConditions:
+    - Existence: 0
+      Compare: 3
+      ElapsedDays: 3
+    ToStatus: 2
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName:
+      ChangingEffect:
+  - FromStatus: 1
+    CommonConds: []
+    NeedSelfFlag: []
+    LocalIntConditions: []
+    TimedRefreshConditions:
+    - Existence: 0
+      Compare: 3
+      ElapsedDays: 3
+    ToStatus: 2
+    ChangeView:
+      ChangingDuration: 0
+      ChangingAnimName:
+      ChangingEffect:
   PoisonSettings:
     Enable: 0
     ApplyPoisonConds: []

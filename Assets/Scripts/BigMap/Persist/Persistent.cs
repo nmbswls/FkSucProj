@@ -26,6 +26,13 @@ namespace My.Map.Logic
 
         public float LifeTime;
 
+        // Spawn relationship belongs to this entity instance, not to its unit cfg.
+        public long OwnerEntityId;
+        public ESummonLifetimeRule SummonLifetimeRule;
+        public string SummonGroup = string.Empty;
+        public int SummonMaxAlivePerOwner;
+        public bool HasObservedOwnerCombat;
+
         public string BelongRoomId;
         public bool Activated = true;
         public long LifeBindEntityId;
@@ -34,13 +41,13 @@ namespace My.Map.Logic
         public bool IsFixed;
 
         public List<string> LocalSwitches = null;
+        public Dictionary<string, int> LocalIntValues = null;
         public bool MarkDestroyed = false; // 逻辑死亡/销毁标记，由 RefreshEntityRecordInfo 等与运行时对齐
     }
 
     [Serializable]
     public class LogicEntityRecord4SkillProxy : LogicEntityRecord
     {
-        public long OwnerEntityId;
     }
 
     [Serializable]
@@ -49,10 +56,18 @@ namespace My.Map.Logic
         public int Status;
 
         public Dictionary<string, string> DynamicVariables = new();
+        public TimedRefreshState TimedRefresh;
 
         // 交互点下毒诱饵：BaitEndTime > LogicTime.time 表示诱饵仍有效；为 0 表示无诱饵
         public float PoisonBaitEndTime;
         public float PoisonCdEndTime;
+    }
+
+    [Serializable]
+    public class TimedRefreshState
+    {
+        public bool HasLastRefreshSettlementDay;
+        public int LastRefreshSettlementDay;
     }
 
 
@@ -234,4 +249,3 @@ namespace My.Map.Logic
         public float SleepWakeAtLogicTime;
     }
 }
-

@@ -134,6 +134,7 @@ namespace My.Player
         Talent,
         BodyPart,
         JingYuanCodex,
+        EventGrant,
 
         Aggregator
     }

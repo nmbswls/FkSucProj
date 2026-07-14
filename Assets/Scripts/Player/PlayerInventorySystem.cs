@@ -1073,7 +1073,7 @@ namespace My.Player.Bag
                 var useRow = ItemCatalog.GetPrimaryUse(itemId);
                 if (useRow != null)
                 {
-                    LogicManager.HandleUseItem(LogicManager.playerLogicEntity.Id, amount, useRow);
+                    LogicManager.HandleUseItem(LogicManager.playerLogicEntity.Id, amount, useRow, itemId);
                 }
 
                 return amount;

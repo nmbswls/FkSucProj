@@ -39,7 +39,17 @@ namespace My.Map
 
         void SetLocalSwitch(string switchName, bool isOn);
 
+        int GetLocalIntValue(string key);
+
+        void SetLocalIntValue(string key, int value);
+
         //void DoAnimation(string animName);
+    }
+
+    public interface IWithTimedRefreshState
+    {
+        bool TryGetLastRefreshSettlementDay(out int settlementDayIndex);
+        void RecordRefreshSettlementDay(int settlementDayIndex);
     }
 
 
@@ -299,25 +309,6 @@ namespace My.Map
                             }
                         }
                         break;
-                    case InteractCheckCond.ECheckType.RenewableNodeUnlocked:
-                        {
-                            string uniqName = string.IsNullOrEmpty(oneCond.Param3) ? OwnerEntity?.SrcUniqName : oneCond.Param3;
-                            if (!logicManager.worldPersistState.IsRenewableNodeUnlocked(uniqName, OwnerEntity?.CfgId, logicManager.SettlementDayIndex))
-                            {
-                                passed = false;
-                            }
-                        }
-                        break;
-                    case InteractCheckCond.ECheckType.RenewableNodeReady:
-                        {
-                            string uniqName = string.IsNullOrEmpty(oneCond.Param3) ? OwnerEntity?.SrcUniqName : oneCond.Param3;
-                            if (!logicManager.worldPersistState.IsRenewableNodeReady(uniqName, OwnerEntity?.CfgId, logicManager.SettlementDayIndex))
-                            {
-                                passed = false;
-                            }
-                        }
-                        break;
-                        
                 }
             }
 
@@ -990,38 +981,79 @@ namespace My.Map
                         }
                         break;
 
-                    case LogicInteractOutput.EOutputType.AddRenewableNodeUnlockProgress:
+                    case LogicInteractOutput.EOutputType.ModifyLocalIntValue:
                         {
-                            string uniqName = output.StaticName;
-                            if (string.IsNullOrEmpty(uniqName))
+                            string key = output.Param3;
+                            if (string.IsNullOrEmpty(key))
                             {
                                 errOccur = true;
                                 break;
                             }
 
-                            Owner.LogicManager.worldPersistState.AddRenewableNodeUnlockProgress(
-                                uniqName,
-                                output.Param3,
-                                output.Param1 > 0 ? (int)output.Param1 : 1,
-                                Owner.LogicManager.SettlementDayIndex);
+                            var writeMode = (LogicInteractOutput.ELocalIntWriteMode)output.Param2;
+                            int operand = (int)output.Param1;
+                            long targetEntityId = GetInteractTarget(output);
+                            var target = targetEntityId == Owner.Id
+                                ? Owner
+                                : Owner.LogicManager.GetLogicEntity(targetEntityId, false) as IEntityInteractable;
+
+                            int current;
+                            if (target != null)
+                            {
+                                current = target.GetLocalIntValue(key);
+                                target.SetLocalIntValue(key, ResolveLocalIntWriteValue(writeMode, current, operand));
+                            }
+                            else if (output.TargetType == LogicInteractOutput.ETargetType.StaticName
+                                     && !string.IsNullOrEmpty(output.StaticName))
+                            {
+                                var registry = Owner.LogicManager.worldPersistState?.MapInteractPoints;
+                                if (registry == null)
+                                {
+                                    errOccur = true;
+                                    break;
+                                }
+
+                                current = registry.GetLocalIntValue(output.StaticName, key);
+                                registry.SetLocalIntValue(
+                                    output.StaticName,
+                                    key,
+                                    ResolveLocalIntWriteValue(writeMode, current, operand));
+                            }
+                            else
+                            {
+                                errOccur = true;
+                            }
                         }
                         break;
 
-                    case LogicInteractOutput.EOutputType.HarvestRenewableNode:
+                    case LogicInteractOutput.EOutputType.RecordRefreshSettlementDay:
                         {
-                            string uniqName = string.IsNullOrEmpty(output.StaticName) ? OwnerEntity?.SrcUniqName : output.StaticName;
-                            if (!Owner.LogicManager.worldPersistState.TryHarvestRenewableNode(
-                                    uniqName,
-                                    OwnerEntity?.CfgId,
-                                    Owner.LogicManager.SettlementDayIndex,
-                                    out var itemId,
-                                    out var count))
+                            long targetEntityId = GetInteractTarget(output);
+                            var target = targetEntityId == Owner.Id
+                                ? Owner as IWithTimedRefreshState
+                                : Owner.LogicManager.GetLogicEntity(targetEntityId, false) as IWithTimedRefreshState;
+                            int settlementDayIndex = Owner.LogicManager.SettlementDayIndex;
+
+                            if (target != null)
+                            {
+                                target.RecordRefreshSettlementDay(settlementDayIndex);
+                            }
+                            else if (output.TargetType == LogicInteractOutput.ETargetType.StaticName
+                                     && !string.IsNullOrEmpty(output.StaticName))
+                            {
+                                var registry = Owner.LogicManager.worldPersistState?.MapInteractPoints;
+                                if (registry == null)
+                                {
+                                    errOccur = true;
+                                    break;
+                                }
+
+                                registry.RecordRefreshSettlementDay(output.StaticName, settlementDayIndex);
+                            }
+                            else
                             {
                                 errOccur = true;
-                                break;
                             }
-
-                            GetInteractingPlayerSystem()?.GiveItemToPlayer(itemId, count);
                         }
                         break;
 
@@ -1047,6 +1079,19 @@ namespace My.Map
         public void HandleOneDirectOutput()
         {
 
+        }
+
+        int ResolveLocalIntWriteValue(
+            LogicInteractOutput.ELocalIntWriteMode mode,
+            int current,
+            int operand)
+        {
+            return mode switch
+            {
+                LogicInteractOutput.ELocalIntWriteMode.Add => current + operand,
+                LogicInteractOutput.ELocalIntWriteMode.Set => operand,
+                _ => current,
+            };
         }
 
         private void DoInteractEnd()

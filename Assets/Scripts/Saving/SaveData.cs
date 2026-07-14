@@ -61,10 +61,9 @@ namespace My.Saving
         public Dictionary<string, bool> GlobalSwitchMap = new();
 
         public Dictionary<string, FishingSpotRuntimeSave> FishingSpotByUniqName = new();
-        public Dictionary<string, RenewableResourceNodeRuntimeSave> RenewableResourceNodeByUniqName = new();
         public Dictionary<string, RepairPointRuntimeSave> HomeRuinByUniqName = new();
 
-        // 具名交互点 / 可移除障碍：键为地图刷新项 UniqName，仅存 LocalSwitches
+        // 具名交互点 / 可移除障碍：按 UniqName 存本地开关、整数值与独立定时刷新状态。
         public Dictionary<string, MapInteractPointPersistData> InteractPointByUniqName = new();
 
         // 师门/技能学习系统获得的技能（不含自带、授予）
@@ -124,6 +123,12 @@ namespace My.Saving
         public List<JingYuanCodexProgressPersist> JingYuanCodexProgress = new();
         public List<JingYuanTuneEquipPersist> EquippedJingYuanTunes = new();
         public long TiaoJingConcentration;
+
+        // 共性统计计数（Statistic key -> value）
+        public Dictionary<string, long> StatCounters = new();
+
+        // EventGrant GrantItemsOnce 已领取 id
+        public List<string> ClaimedEventGrantIds = new();
 
         // 本地玩家功能解锁（原 SaveData 根级 FuncOpenList 已迁入）
         public List<EFuncOpenType> FuncOpenList = new();
@@ -341,17 +346,6 @@ namespace My.Saving
         public int LastRestockSettlementDayIndex;
     }
 
-    [Serializable]
-    public class RenewableResourceNodeRuntimeSave
-    {
-        public string CfgId;
-        public bool PermanentlyUnlocked;
-        public int UnlockProgress;
-        public int StoredResources;
-        public int NextReadySettlementDay = -1;
-    }
-
-
     /// <summary>
     /// 废墟垂钓存档（键为地图刷新项 UniqName）
     /// </summary>
@@ -368,6 +362,8 @@ namespace My.Saving
     public class MapInteractPointPersistData
     {
         public List<string> LocalSwitches;
+        public Dictionary<string, int> LocalIntValues;
+        public TimedRefreshState TimedRefresh;
     }
 
     [Serializable]
@@ -487,7 +483,6 @@ namespace My.Saving
             data.PlayerData ??= new PlayerData();
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
-            data.PlayerData.RenewableResourceNodeByUniqName ??= new Dictionary<string, RenewableResourceNodeRuntimeSave>();
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
             data.PlayerData.InteractPointByUniqName ??= new Dictionary<string, MapInteractPointPersistData>();
             data.PlayerData.HomeProsperity = Math.Max(0, data.PlayerData.HomeProsperity);
@@ -509,6 +504,8 @@ namespace My.Saving
             data.PlayerData.LogicAreaHomesteadByMapId ??= new Dictionary<string, LogicAreaHomesteadPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.TriggeredDialogIds ??= new List<string>();
+            data.PlayerData.StatCounters ??= new Dictionary<string, long>();
+            data.PlayerData.ClaimedEventGrantIds ??= new List<string>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();

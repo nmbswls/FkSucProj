@@ -20,6 +20,8 @@ namespace My.Config
                 return JSON.Parse(configAsset.text);
             });
 
+            TreantRuntimeConfigInstaller.Install(_gameConfigs);
+
             InitializeCfgs();
         }
 

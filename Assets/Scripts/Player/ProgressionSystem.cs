@@ -19,19 +19,24 @@ namespace My.Player
         public ProgressionAggregator ProgressionRoot { get; private set; }
         public ProgressionAggregator BodyPartAggregator { get; private set; }
         public ProgressionAggregator JingYuanCodexAggregator { get; private set; }
+        public ProgressionAggregator EventGrantAggregator { get; private set; }
         public bool IsBodyPartBound { get; private set; }
         public bool IsJingYuanCodexBound { get; private set; }
+        public bool IsEventGrantBound { get; private set; }
 
         BodyPartProgressionProvider _boundBodyPartProvider;
         JingYuanCodexProgressionProvider _boundJingYuanCodexProvider;
+        EventGrantProgressionProvider _boundEventGrantProvider;
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             LogicManager = ctx;
             IsBodyPartBound = false;
             IsJingYuanCodexBound = false;
+            IsEventGrantBound = false;
             _boundBodyPartProvider = null;
             _boundJingYuanCodexProvider = null;
+            _boundEventGrantProvider = null;
 
             TalentManager = new PlayerTalentManager();
             TalentManager.Initialize(ctx, savingData);
@@ -44,6 +49,7 @@ namespace My.Player
 
             BodyPartAggregator = new ProgressionAggregator("BodyPart");
             JingYuanCodexAggregator = new ProgressionAggregator("JingYuanCodex");
+            EventGrantAggregator = new ProgressionAggregator("EventGrant");
 
             ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
@@ -51,6 +57,7 @@ namespace My.Player
             ProgressionRoot.AddChild(TalentManager.TalentAggregator);
             ProgressionRoot.AddChild(BodyPartAggregator);
             ProgressionRoot.AddChild(JingYuanCodexAggregator);
+            ProgressionRoot.AddChild(EventGrantAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) =>
             {
@@ -64,6 +71,7 @@ namespace My.Player
         {
             BindBodyPartSystem(owner?.BodyPartSystem);
             BindJingYuanCodexSystem(owner?.JingYuanCodexSystem);
+            BindEventGrantSystem(owner?.EventGrantSystem);
         }
 
         void BindJingYuanCodexSystem(PlayerJingYuanCodexSystem codexSystem)
@@ -81,6 +89,23 @@ namespace My.Player
             _boundJingYuanCodexProvider = codexSystem.ProgressionProvider;
             JingYuanCodexAggregator.AddChild(_boundJingYuanCodexProvider);
             IsJingYuanCodexBound = true;
+        }
+
+        void BindEventGrantSystem(PlayerEventGrantSystem eventGrantSystem)
+        {
+            if (EventGrantAggregator == null || eventGrantSystem == null)
+            {
+                return;
+            }
+
+            if (_boundEventGrantProvider != null)
+            {
+                EventGrantAggregator.RemoveChild(_boundEventGrantProvider);
+            }
+
+            _boundEventGrantProvider = eventGrantSystem.ProgressionProvider;
+            EventGrantAggregator.AddChild(_boundEventGrantProvider);
+            IsEventGrantBound = true;
         }
 
         void BindBodyPartSystem(PlayerBodyPartSystem bodyPartSystem)

@@ -19,6 +19,10 @@ public partial class Tables
     public demo.TbLogicAreaHomesteadReq TbLogicAreaHomesteadReq {get; }
     public demo.TbAreaVariantInfo TbAreaVariantInfo {get; }
     public demo.TbAreaOverlayStateInfo TbAreaOverlayStateInfo {get; }
+    /// <summary>
+    /// 通用事件授予（通识/被动成就）
+    /// </summary>
+    public demo.TbEventGrant TbEventGrant {get; }
     public demo.TbDropBundle TbDropBundle {get; }
     public demo.TbDropItem TbDropItem {get; }
     public demo.TbFixedFacility TbFixedFacility {get; }
@@ -129,10 +133,6 @@ public partial class Tables
     /// </summary>
     public demo.TbItemDismantle TbItemDismantle {get; }
     /// <summary>
-    /// 周期恢复资源节点
-    /// </summary>
-    public demo.TbRenewableResourceNode TbRenewableResourceNode {get; }
-    /// <summary>
     /// 物品标签元数据：显示字、隐藏控制、实例需求
     /// </summary>
     public demo.TbItemTagInfo TbItemTagInfo {get; }
@@ -152,6 +152,7 @@ public partial class Tables
         TbLogicAreaHomesteadReq = new demo.TbLogicAreaHomesteadReq(loader("demo_tblogicareahomesteadreq"));
         TbAreaVariantInfo = new demo.TbAreaVariantInfo(loader("demo_tbareavariantinfo"));
         TbAreaOverlayStateInfo = new demo.TbAreaOverlayStateInfo(loader("demo_tbareaoverlaystateinfo"));
+        TbEventGrant = new demo.TbEventGrant(loader("demo_tbeventgrant"));
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
         TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
         TbFixedFacility = new demo.TbFixedFacility(loader("demo_tbfixedfacility"));
@@ -237,7 +238,6 @@ public partial class Tables
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
         TbItemDismantle = new demo.TbItemDismantle(loader("demo_tbitemdismantle"));
-        TbRenewableResourceNode = new demo.TbRenewableResourceNode(loader("demo_tbrenewableresourcenode"));
         TbItemTagInfo = new demo.TbItemTagInfo(loader("demo_tbitemtaginfo"));
         TbPlayerBagDef = new demo.TbPlayerBagDef(loader("demo_tbplayerbagdef"));
         TbWarehouseFilter = new demo.TbWarehouseFilter(loader("demo_tbwarehousefilter"));
@@ -251,6 +251,7 @@ public partial class Tables
         TbLogicAreaHomesteadReq.ResolveRef(this);
         TbAreaVariantInfo.ResolveRef(this);
         TbAreaOverlayStateInfo.ResolveRef(this);
+        TbEventGrant.ResolveRef(this);
         TbDropBundle.ResolveRef(this);
         TbDropItem.ResolveRef(this);
         TbFixedFacility.ResolveRef(this);
@@ -336,7 +337,6 @@ public partial class Tables
         TbProgressionHubTab.ResolveRef(this);
         TbPlayerAttachInfo.ResolveRef(this);
         TbItemDismantle.ResolveRef(this);
-        TbRenewableResourceNode.ResolveRef(this);
         TbItemTagInfo.ResolveRef(this);
         TbPlayerBagDef.ResolveRef(this);
         TbWarehouseFilter.ResolveRef(this);
