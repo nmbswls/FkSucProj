@@ -136,7 +136,6 @@ namespace My.Map.Entity
         public const string PlayerOriginPower = "PlayerOriginPower";
         public const string PlayerJingYu = "PlayerJingYu"; // 精浴用属性做 buff只负责显示
         public const string PlayerJingYuRate = "PlayerJingYuRate"; // 额外精浴比例
-        public const string PlayerTiaoJingConcentration = "PlayerTiaoJingConcentration"; // 调精浓度
 
         public const string Clothes_ExposeRate = "Clothes_ExposeRate"; // 衣装暴露绿
 

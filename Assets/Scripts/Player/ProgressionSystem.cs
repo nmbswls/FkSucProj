@@ -21,16 +21,13 @@ namespace My.Player
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
         public ProgressionAggregator BodyPartAggregator { get; private set; }
-        public ProgressionAggregator JingYuanCodexAggregator { get; private set; }
         public ProgressionAggregator EventGrantAggregator { get; private set; }
         public ProgressionAggregator RuneAggregator { get; private set; }
         public bool IsBodyPartBound { get; private set; }
-        public bool IsJingYuanCodexBound { get; private set; }
         public bool IsEventGrantBound { get; private set; }
         public bool IsRuneBound { get; private set; }
 
         BodyPartProgressionProvider _boundBodyPartProvider;
-        JingYuanCodexProgressionProvider _boundJingYuanCodexProvider;
         EventGrantProgressionProvider _boundEventGrantProvider;
         RuneProgressionProvider _boundRuneProvider;
 
@@ -38,11 +35,9 @@ namespace My.Player
         {
             LogicManager = ctx;
             IsBodyPartBound = false;
-            IsJingYuanCodexBound = false;
             IsEventGrantBound = false;
             IsRuneBound = false;
             _boundBodyPartProvider = null;
-            _boundJingYuanCodexProvider = null;
             _boundEventGrantProvider = null;
             _boundRuneProvider = null;
 
@@ -62,7 +57,6 @@ namespace My.Player
             BaseStats.Initialize(savingData);
 
             BodyPartAggregator = new ProgressionAggregator("BodyPart");
-            JingYuanCodexAggregator = new ProgressionAggregator("JingYuanCodex");
             EventGrantAggregator = new ProgressionAggregator("EventGrant");
             RuneAggregator = new ProgressionAggregator("Rune");
 
@@ -71,7 +65,6 @@ namespace My.Player
             ProgressionRoot.AddChild(GearManager.GearAggregator);
             ProgressionRoot.AddChild(TalentManager.TalentAggregator);
             ProgressionRoot.AddChild(BodyPartAggregator);
-            ProgressionRoot.AddChild(JingYuanCodexAggregator);
             ProgressionRoot.AddChild(EventGrantAggregator);
             ProgressionRoot.AddChild(RuneAggregator);
 
@@ -86,7 +79,6 @@ namespace My.Player
         public void PostInit(PlayerSystemManager owner)
         {
             BindBodyPartSystem(owner?.BodyPartSystem);
-            BindJingYuanCodexSystem(owner?.JingYuanCodexSystem);
             BindEventGrantSystem(owner?.EventGrantSystem);
             BindRuneSystem(owner?.RuneSystem);
         }
@@ -100,7 +92,6 @@ namespace My.Player
             }
 
             RuneAggregator?.CollectContributedSkills(applied, output);
-            JingYuanCodexAggregator?.CollectContributedSkills(applied, output);
             EventGrantAggregator?.CollectContributedSkills(applied, output);
         }
 
@@ -121,22 +112,6 @@ namespace My.Player
             IsRuneBound = true;
         }
 
-        void BindJingYuanCodexSystem(PlayerJingYuanCodexSystem codexSystem)
-        {
-            if (JingYuanCodexAggregator == null || codexSystem == null)
-            {
-                return;
-            }
-
-            if (_boundJingYuanCodexProvider != null)
-            {
-                JingYuanCodexAggregator.RemoveChild(_boundJingYuanCodexProvider);
-            }
-
-            _boundJingYuanCodexProvider = codexSystem.ProgressionProvider;
-            JingYuanCodexAggregator.AddChild(_boundJingYuanCodexProvider);
-            IsJingYuanCodexBound = true;
-        }
 
         void BindEventGrantSystem(PlayerEventGrantSystem eventGrantSystem)
         {

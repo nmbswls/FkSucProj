@@ -1,0 +1,114 @@
+[
+  {
+    "essence_id": "premium_orccommon",
+    "type_id": 1,
+    "display_name": "优质兽人精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_orccommon",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_orcelite",
+    "type_id": 2,
+    "display_name": "优质兽人精英精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_orcelite",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signaries",
+    "type_id": 3,
+    "display_name": "优质白羊座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signaries",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signtaurus",
+    "type_id": 4,
+    "display_name": "优质金牛座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signtaurus",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signgemini",
+    "type_id": 5,
+    "display_name": "优质双子座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signgemini",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signcancer",
+    "type_id": 6,
+    "display_name": "优质巨蟹座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signcancer",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signleo",
+    "type_id": 7,
+    "display_name": "优质狮子座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signleo",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signvirgo",
+    "type_id": 8,
+    "display_name": "优质处女座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signvirgo",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signlibra",
+    "type_id": 9,
+    "display_name": "优质天秤座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signlibra",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signscorpio",
+    "type_id": 10,
+    "display_name": "优质天蝎座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signscorpio",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signsagittarius",
+    "type_id": 11,
+    "display_name": "优质射手座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signsagittarius",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signcapricorn",
+    "type_id": 12,
+    "display_name": "优质摩羯座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signcapricorn",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signaquarius",
+    "type_id": 13,
+    "display_name": "优质水瓶座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signaquarius",
+    "source_tag": "extract_or_event"
+  },
+  {
+    "essence_id": "premium_signpisces",
+    "type_id": 14,
+    "display_name": "优质双鱼座精元",
+    "base_shelf_life_days": 3,
+    "extra_affix_pool_id": "affix_signpisces",
+    "source_tag": "extract_or_event"
+  }
+]

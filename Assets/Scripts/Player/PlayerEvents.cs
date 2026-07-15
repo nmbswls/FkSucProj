@@ -95,12 +95,6 @@ namespace My.Quest
         public int NewLevel;
     }
 
-    public struct PlayerJingYuanTuneEquipChangedEvent
-    {
-        public int Slot;
-        public string CodexId;
-    }
-
     // 玩家吸收 NPC 射精（内射/近距离吸收）
     public struct PlayerJingYuanBlurtAbsorbedEvent
     {

@@ -96,6 +96,35 @@ namespace My.Map
         public string PatrolPortalNetworkId = string.Empty;
 
         public List<string> PatrolCycleNodeIds = new();
+
+        public UnitMoveBehaveInfo Clone()
+        {
+            var copy = new UnitMoveBehaveInfo
+            {
+                MoveBehaveMode = MoveBehaveMode,
+                FollowPatrolId = FollowPatrolId,
+                PatrolGroupRelativePos = PatrolGroupRelativePos,
+                DisappearOnArrive = DisappearOnArrive,
+                MovePath = MovePath,
+                MoveToDespawnTarget = MoveToDespawnTarget,
+                MoveToTarget = MoveToTarget,
+                WanderRadius = WanderRadius,
+                HasFaceDir = HasFaceDir,
+                FaceDir = FaceDir,
+                PatrolPortalNetworkId = PatrolPortalNetworkId ?? string.Empty,
+            };
+            if (PathLoopPoints != null && PathLoopPoints.Count > 0)
+            {
+                copy.PathLoopPoints.AddRange(PathLoopPoints);
+            }
+
+            if (PatrolCycleNodeIds != null && PatrolCycleNodeIds.Count > 0)
+            {
+                copy.PatrolCycleNodeIds.AddRange(PatrolCycleNodeIds);
+            }
+
+            return copy;
+        }
     }
 
     public abstract partial class BaseUnitLogicEntity : LogicEntityBase, IThrowLauncher, IThrowTarget, IWithEnmity,
@@ -137,7 +166,79 @@ namespace My.Map
             return true;
         }
 
-        public UnitMoveBehaveInfo MoveBehaveInfo;
+        public enum EMoveBehaveOverrideSource
+        {
+            None = 0,
+            Routine = 1,
+            Wanted = 2,
+            Other = 3,
+        }
+
+        // Record/导出基底意图；日程与临时策略写 Override，不回写 Record
+        public UnitMoveBehaveInfo BaseMoveBehaveInfo { get; protected set; }
+
+        UnitMoveBehaveInfo _overrideMoveBehave;
+        EMoveBehaveOverrideSource _overrideSource = EMoveBehaveOverrideSource.None;
+
+        public bool HasMoveBehaveOverride => _overrideMoveBehave != null;
+        public EMoveBehaveOverrideSource MoveBehaveOverrideSource => _overrideSource;
+
+        // 生效意图：Override 优先，否则 Base
+        public UnitMoveBehaveInfo MoveBehaveInfo => _overrideMoveBehave ?? BaseMoveBehaveInfo;
+
+        // 高优先级占有时，低优先级不得抢写（Wanted > Routine > Other）
+        public static int GetMoveBehaveOverridePriority(EMoveBehaveOverrideSource source)
+        {
+            return source switch
+            {
+                EMoveBehaveOverrideSource.Wanted => 30,
+                EMoveBehaveOverrideSource.Routine => 20,
+                EMoveBehaveOverrideSource.Other => 10,
+                _ => 0,
+            };
+        }
+
+        public bool CanWriteMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        {
+            if (_overrideMoveBehave == null || _overrideSource == EMoveBehaveOverrideSource.None)
+            {
+                return true;
+            }
+
+            return GetMoveBehaveOverridePriority(source)
+                >= GetMoveBehaveOverridePriority(_overrideSource);
+        }
+
+        // 占有检查通过后分配新的 Override 实例；调用方负责填字段，不从 Base 克隆
+        public UnitMoveBehaveInfo TryAllocateMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        {
+            if (!CanWriteMoveBehaveOverride(source))
+            {
+                return null;
+            }
+
+            _overrideMoveBehave = new UnitMoveBehaveInfo();
+            _overrideSource = source;
+            return _overrideMoveBehave;
+        }
+
+        // 仅同 source 可清除，避免误清更高层占有
+        public bool ClearMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        {
+            if (_overrideMoveBehave == null)
+            {
+                return true;
+            }
+
+            if (_overrideSource != source)
+            {
+                return false;
+            }
+
+            _overrideMoveBehave = null;
+            _overrideSource = EMoveBehaveOverrideSource.None;
+            return true;
+        }
 
         public CompFightMeleeSlot MeleeSlotManager;
 
@@ -167,7 +268,7 @@ namespace My.Map
         public BaseUnitLogicEntity(GameLogicManager logicManager, long instId, string cfgId, Vector2 orgPos, LogicEntityRecord bindingRecord) : base(logicManager, instId, cfgId, orgPos, bindingRecord)
         {
             var unitRecord = (LogicEntityRecord4UnitBase)bindingRecord;
-            this.MoveBehaveInfo = new();
+            BaseMoveBehaveInfo = new UnitMoveBehaveInfo();
 
             MarkUnsensored = unitRecord.Unsensored;
             MarkNoLogic = unitRecord.MarkNoLogic;

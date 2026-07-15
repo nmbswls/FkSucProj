@@ -352,7 +352,6 @@ namespace My.Map
 
             attributeStore.RegisterResource(AttrIdConsts.PlayerOriginPower, null, 1000_000, 0);
             attributeStore.RegisterResource(AttrIdConsts.PlayerJingYu, null, 1000_000, 0);
-            attributeStore.RegisterResource(AttrIdConsts.PlayerTiaoJingConcentration, null, 1000_000, 0);
 
         }
 
@@ -419,9 +418,6 @@ namespace My.Map
                     }
                     break;
 
-                case AttrIdConsts.PlayerTiaoJingConcentration:
-                    LogicManager.playerDataManager?.JingYuanCodexSystem?.ResyncTunePassives();
-                    break;
             }
         }
 
@@ -759,23 +755,6 @@ namespace My.Map
             {
                 ApplyResourceChange(AttrIdConsts.HP, 100, false, EDmgFlag.None, null);
             }
-
-            var codexSystem = LogicManager.playerDataManager?.JingYuanCodexSystem;
-            if (codexSystem != null)
-            {
-                var concentration = GetAttr(AttrIdConsts.PlayerTiaoJingConcentration);
-                var concentrationCostPerSec = codexSystem.GetConcentrationDrainCostPerSec(concentration);
-                if (concentrationCostPerSec > 0f)
-                {
-                    ApplyResourceChange(
-                        AttrIdConsts.PlayerTiaoJingConcentration,
-                        -(long)(concentrationCostPerSec * interval * 1000f),
-                        false,
-                        EDmgFlag.None,
-                        null);
-                }
-            }
-
 
             var jingyuVal = GetAttr(AttrIdConsts.PlayerJingYu);
             int jingyuLevel = PlayerGamePlayRule.GetJingYuLevel(jingyuVal);

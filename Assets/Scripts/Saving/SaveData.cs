@@ -123,8 +123,6 @@ namespace My.Saving
 
         // 魅魔精元图鉴进度与调精装备
         public List<JingYuanCodexProgressPersist> JingYuanCodexProgress = new();
-        public List<JingYuanTuneEquipPersist> EquippedJingYuanTunes = new();
-        public long TiaoJingConcentration;
 
         // 共性统计计数（Statistic key -> value）
         public Dictionary<string, long> StatCounters = new();
@@ -181,13 +179,6 @@ namespace My.Saving
         public string CodexId;
         public int ExtractCount;
         public long TotalAmount;
-    }
-
-    [Serializable]
-    public class JingYuanTuneEquipPersist
-    {
-        public int Slot;
-        public string CodexId;
     }
 
     [Serializable]

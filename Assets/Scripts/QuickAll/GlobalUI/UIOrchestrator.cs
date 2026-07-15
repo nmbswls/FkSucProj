@@ -442,13 +442,7 @@ namespace My.UI
                 pooled = false,
             });
 
-            UIManager.Instance.RegisterPanel(new PanelResource()
-            {
-                panelId = My.UI.CultTech.AncientSeatTreePanel.Pid,
-                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/AncientSeatTreePanel",
-                defaultLayer = UILayer.Popup,
-                pooled = false,
-            });
+
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {

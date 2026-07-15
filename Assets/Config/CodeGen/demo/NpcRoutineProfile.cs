@@ -21,7 +21,6 @@ public sealed partial class NpcRoutineProfile : Luban.BeanBase
         { if(!_buf["id"].IsString) { throw new SerializationException(); }  Id = _buf["id"]; }
         { if(!_buf["fallback_rule_id"].IsString) { throw new SerializationException(); }  FallbackRuleId = _buf["fallback_rule_id"]; }
         { if(!_buf["reevaluate_interval_sec"].IsNumber) { throw new SerializationException(); }  ReevaluateIntervalSec = _buf["reevaluate_interval_sec"]; }
-        { if(!_buf["relocate_policy"].IsNumber) { throw new SerializationException(); }  RelocatePolicy = (demo.ENpcRoutineRelocatePolicy)_buf["relocate_policy"].AsInt; }
     }
 
     public static NpcRoutineProfile DeserializeNpcRoutineProfile(JSONNode _buf)
@@ -41,10 +40,6 @@ public sealed partial class NpcRoutineProfile : Luban.BeanBase
     /// rule reevaluation interval
     /// </summary>
     public float ReevaluateIntervalSec;
-    /// <summary>
-    /// Move or Snap for runtime changes
-    /// </summary>
-    public demo.ENpcRoutineRelocatePolicy RelocatePolicy;
    
     public const int __ID__ = -1697463781;
     public override int GetTypeId() => __ID__;
@@ -59,7 +54,6 @@ public sealed partial class NpcRoutineProfile : Luban.BeanBase
         + "id:" + Id + ","
         + "fallbackRuleId:" + FallbackRuleId + ","
         + "reevaluateIntervalSec:" + ReevaluateIntervalSec + ","
-        + "relocatePolicy:" + RelocatePolicy + ","
         + "}";
     }
 }

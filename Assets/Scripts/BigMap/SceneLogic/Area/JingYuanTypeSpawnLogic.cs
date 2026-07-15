@@ -1,6 +1,7 @@
 using My;
 using My.Config;
 using My.Map;
+using cfg.demo;
 
 namespace My.Map.Logic
 {
@@ -14,8 +15,34 @@ namespace My.Map.Logic
                 return;
             }
 
+            if (rec.BoundJingYuanType != EJingYuanType.None)
+            {
+                return;
+            }
+
+            // 旧存档/旧实体已有字符串精型时保持原值，避免刷新迁移时重新掷型。
             if (!string.IsNullOrEmpty(rec.RolledJingyuanTypeId))
             {
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(rec.CharacterKey))
+            {
+                var fixedType = JingYuanEssenceCatalog.GetNamedNpcType(rec.CharacterKey);
+                if (fixedType != EJingYuanType.None)
+                {
+                    rec.BoundJingYuanType = fixedType;
+                    rec.RolledJingyuanTypeId = JingYuanEssenceCatalog.ToLegacyTypeId(fixedType);
+                    return;
+                }
+            }
+
+            var enumPool = CfgMgr.Cfgs?.TbUnitNpc.GetOrDefault(rec.CfgId)?.JingyuanPoolId;
+            var enumType = JingYuanEssenceCatalog.RollTypeFromPool(enumPool);
+            if (enumType != EJingYuanType.None)
+            {
+                rec.BoundJingYuanType = enumType;
+                rec.RolledJingyuanTypeId = JingYuanEssenceCatalog.ToLegacyTypeId(enumType);
                 return;
             }
 

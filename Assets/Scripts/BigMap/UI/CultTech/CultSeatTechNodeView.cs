@@ -16,6 +16,25 @@ namespace My.UI.CultTech
         TextMeshProUGUI _level;
         Image _background;
 
+        public static CultSeatTechNodeView Create(Transform parent, int seatId, int nodeId, AncientSeatTreeView host)
+        {
+            var go = new GameObject($"CultSeatTechNode_{nodeId}", typeof(RectTransform), typeof(Image), typeof(Button));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform; rect.sizeDelta = new Vector2(170f, 96f);
+            go.GetComponent<Image>().color = new Color(0.08f, 0.16f, 0.2f, 0.96f);
+            AddText(go.transform, "Title", new Vector2(4f, 52f), new Vector2(-4f, -6f), 15f);
+            AddText(go.transform, "Level", new Vector2(4f, 28f), new Vector2(-4f, -34f), 13f);
+            var hint = AddText(go.transform, "SeatHint", new Vector2(4f, 4f), new Vector2(-4f, -58f), 11f); hint.text = "????";
+            var view = go.AddComponent<CultSeatTechNodeView>(); view.Bind(seatId, nodeId, host); return view;
+        }
+
+        static TextMeshProUGUI AddText(Transform parent, string name, Vector2 min, Vector2 max, float size)
+        {
+            var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform; rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = min; rect.offsetMax = max;
+            var text = go.AddComponent<TextMeshProUGUI>(); text.fontSize = size; text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false; return text;
+        }
+
         public void Bind(int seatId, int nodeId, AncientSeatTreeView host)
         {
             _seatId = seatId; _nodeId = nodeId; _host = host;

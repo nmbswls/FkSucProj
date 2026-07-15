@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace My.Player
 {
-    // 图鉴：等级属性 + 调精装备被动技能
+    // 图鉴兼容适配器：旧系统不再向玩家属性或技能贡献调精效果。
     public sealed class JingYuanCodexProgressionProvider : IProgressionSource, IProgressionSkillSource
     {
         public event Action<IProgressionSource> OnStatsChanged;
@@ -19,12 +19,10 @@ namespace My.Player
 
         public void EvaluateStats(StatMap targetMap)
         {
-            _owner?.AccumulateProgressionStats(targetMap);
         }
 
         public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
         {
-            _owner?.CollectEquippedTunePassiveSkills(applied, output);
         }
 
         public void NotifyChanged()

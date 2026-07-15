@@ -24,6 +24,16 @@ namespace My.UI.CultTech
         DemonCultSystem _cult;
         int _selectedNodeId;
 
+        public void SetVisible(bool visible)
+        {
+            if (nodeViewContainer != null) nodeViewContainer.gameObject.SetActive(visible);
+            if (faithText != null) faithText.gameObject.SetActive(visible);
+            if (detailTitle != null) detailTitle.gameObject.SetActive(visible);
+            if (detailBody != null) detailBody.gameObject.SetActive(visible);
+            if (detailStatusHint != null) detailStatusHint.gameObject.SetActive(visible);
+            if (unlockButton != null) unlockButton.gameObject.SetActive(visible);
+        }
+
         public void Bind(DemonCultSystem cult)
         {
             _cult = cult;
@@ -103,11 +113,10 @@ namespace My.UI.CultTech
                 return;
             }
 
-            var prefab = Resources.Load<GameObject>("UI/Prefabs/PlayerProgressionHubPanelSub/TalentNode_View");
             var table = CfgMgr.Cfgs?.TbCultTechNode?.DataList;
-            if (prefab == null || table == null)
+            if (table == null)
             {
-                Debug.LogWarning("[CultTechTreeView] Node prefab or config is missing");
+                Debug.LogWarning("[CultTechTreeView] Cult node config is missing");
                 ClearDetail();
                 return;
             }
@@ -115,40 +124,23 @@ namespace My.UI.CultTech
             var positions = new Dictionary<int, Vector2>();
             foreach (var row in table)
             {
-                if (row == null || row.NodeId <= 0)
-                {
-                    continue;
-                }
-
-                var go = Instantiate(prefab, nodeViewContainer);
-                go.name = $"CultTechNode_{row.NodeId}";
+                if (row == null || row.NodeId <= 0) continue;
                 var pos = ResolveRadialPosition(row);
-                if (go.transform is RectTransform rt)
+                var nodeView = CultTechNodeView.Create(nodeViewContainer, row.NodeId, this);
+                if (nodeView.transform is RectTransform rect)
                 {
-                    rt.anchorMin = new Vector2(0.5f, 0.5f);
-                    rt.anchorMax = new Vector2(0.5f, 0.5f);
-                    rt.pivot = new Vector2(0.5f, 0.5f);
-                    rt.anchoredPosition = pos;
+                    rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    rect.pivot = new Vector2(0.5f, 0.5f);
+                    rect.anchoredPosition = pos;
                 }
-
-                var oldTalentView = go.GetComponent<My.UI.Talent.TalentTreeNodeView>();
-                if (oldTalentView != null)
-                {
-                    oldTalentView.enabled = false;
-                }
-
-                var nodeView = go.AddComponent<CultTechNodeView>();
-                nodeView.Bind(row.NodeId, this);
                 _generatedNodes.Add(nodeView);
                 positions[row.NodeId] = pos;
             }
 
             BuildConnections(table, positions);
             if (_selectedNodeId <= 0 || CfgMgr.Cfgs?.TbCultTechNode?.GetOrDefault(_selectedNodeId) == null)
-            {
                 _selectedNodeId = FindInitialSelection(table);
-            }
-
             Refresh();
         }
 

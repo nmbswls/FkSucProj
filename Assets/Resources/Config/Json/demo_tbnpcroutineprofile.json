@@ -2,7 +2,6 @@
   {
     "id": "home01_vera",
     "fallback_rule_id": "home01_vera_default",
-    "reevaluate_interval_sec": 1,
-    "relocate_policy": 0
+    "reevaluate_interval_sec": 1
   }
 ]

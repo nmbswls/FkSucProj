@@ -87,10 +87,12 @@ namespace My.Map.Logic
 
         public void ApplyInitialPlacement(LogicEntityRecord4Npc record)
         {
+            if (IsWantedPressureNpc(record)) return;
+
             var resolved = Resolve(record);
             if (resolved == null) return;
 
-            WriteRecordMoveBehave(record, resolved);
+            // 只调整出生点/朝向；不改 Record.MoveBehave（日程写运行时 Override）
             if (resolved.HasAnchor && resolved.Activity != ENpcRoutineActivityType.StayCurrent)
             {
                 record.Position = resolved.Anchor;
@@ -128,6 +130,12 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (IsWantedPressureNpc(entity))
+                {
+                    _cooldowns[npc.Id] = DefaultReevaluateInterval;
+                    continue;
+                }
+
                 var resolved = Resolve(npc);
                 if (resolved == null)
                 {
@@ -151,20 +159,23 @@ namespace My.Map.Logic
                     continue;
                 }
 
-                if (_appliedRules.TryGetValue(npc.Id, out var appliedId) && appliedId == resolved.Id)
+                if (IsRoutineOverrideApplied(entity, resolved.Id))
                 {
                     continue;
                 }
 
-                ApplyRuntimeRule(entity, resolved, refreshIdlePolicy: true);
-                _appliedRules[npc.Id] = resolved.Id;
+                if (ApplyRuntimeRule(entity, resolved, refreshIdlePolicy: true))
+                {
+                    _appliedRules[npc.Id] = resolved.Id;
+                }
             }
         }
 
-        // Idle 进入时立刻按当前条件写好 MoveBehave；IdlePolicy 由 OnEnter 随后构建
+        // Idle 进入时立刻按当前条件写好 MoveBehave Override；IdlePolicy 由 OnEnter 随后构建
         public void SyncOnEnteredIdle(NpcUnitLogicEntity npc)
         {
             if (npc?.AIBrain == null) return;
+            if (IsWantedPressureNpc(npc)) return;
             if (npc.BindingRecord is not LogicEntityRecord4Npc record || !HasBinding(record)) return;
 
             var resolved = Resolve(record);
@@ -181,14 +192,35 @@ namespace My.Map.Logic
             }
 
             _activeRules[npc.Id] = resolved.Id;
-            if (_appliedRules.TryGetValue(npc.Id, out var appliedId) && appliedId == resolved.Id)
+            if (IsRoutineOverrideApplied(npc, resolved.Id))
             {
                 return;
             }
 
-            ApplyRuntimeRule(npc, resolved, refreshIdlePolicy: false);
-            _appliedRules[npc.Id] = resolved.Id;
+            if (ApplyRuntimeRule(npc, resolved, refreshIdlePolicy: false))
+            {
+                _appliedRules[npc.Id] = resolved.Id;
+            }
+
             _cooldowns[npc.Id] = resolved.ReevaluateIntervalSec;
+        }
+
+        // 压迫行为 NPC（TbWantedGuardSpawnTier.pressure_behavior → PostInvestigationResolveKind）全程由 Wanted 管线驱动，不参与 Routine
+        static bool IsWantedPressureNpc(LogicEntityRecord4Npc record)
+        {
+            return record != null && record.PostInvestigationResolveKind > 0;
+        }
+
+        static bool IsWantedPressureNpc(NpcUnitLogicEntity npc)
+        {
+            return IsWantedPressureNpc(npc?.NpcRecord);
+        }
+
+        bool IsRoutineOverrideApplied(NpcUnitLogicEntity npc, string ruleId)
+        {
+            return _appliedRules.TryGetValue(npc.Id, out var appliedId)
+                && appliedId == ruleId
+                && npc.MoveBehaveOverrideSource == BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine;
         }
 
         static bool IsInIdle(NpcUnitLogicEntity npc)
@@ -197,10 +229,14 @@ namespace My.Map.Logic
             return brain?.CurrentState != null && brain.CurrentState == brain.StateIdle;
         }
 
-        void ApplyRuntimeRule(NpcUnitLogicEntity npc, ResolvedRule rule, bool refreshIdlePolicy)
+        bool ApplyRuntimeRule(NpcUnitLogicEntity npc, ResolvedRule rule, bool refreshIdlePolicy)
         {
-            var move = npc.MoveBehaveInfo ?? new UnitMoveBehaveInfo();
-            npc.MoveBehaveInfo = move;
+            var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine);
+            if (move == null)
+            {
+                return false;
+            }
+
             WriteMoveBehave(move, rule, npc.Pos);
 
             if (rule.Relocate == ENpcRoutineRelocatePolicy.Snap && rule.HasAnchor
@@ -224,6 +260,8 @@ namespace My.Map.Logic
             {
                 npc.AIBrain.RefreshIdlePolicy();
             }
+
+            return true;
         }
 
         void ClearRuntimeRoutineState(NpcUnitLogicEntity npc, bool refreshIdlePolicy)
@@ -231,12 +269,7 @@ namespace My.Map.Logic
             if (npc == null) return;
             npc.ClearLocomotionPreference(LocomotionSource);
             npc.RoutinePresentationTag = string.Empty;
-            if (npc.MoveBehaveInfo != null)
-            {
-                npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                npc.MoveBehaveInfo.HasFaceDir = false;
-                npc.MoveBehaveInfo.PathLoopPoints?.Clear();
-            }
+            npc.ClearMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine);
 
             if (refreshIdlePolicy && npc.AIBrain != null)
             {
@@ -253,34 +286,6 @@ namespace My.Map.Logic
                 npc.ClearLocomotionPreference(LocomotionSource);
             else
                 npc.SetLocomotionPreference(LocomotionSource, locomotion.Priority, locomotion.IdleAnim, locomotion.MoveAnim);
-        }
-
-        static void WriteRecordMoveBehave(LogicEntityRecord4Npc record, ResolvedRule rule)
-        {
-            switch (rule.Activity)
-            {
-                case ENpcRoutineActivityType.StayCurrent:
-                    record.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                    break;
-                case ENpcRoutineActivityType.WanderAroundPoint:
-                    record.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.WanderAroundPoint;
-                    break;
-                case ENpcRoutineActivityType.PatrolPath:
-                    record.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.PathLoop;
-                    break;
-                default:
-                    record.MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.MoveToPoint;
-                    break;
-            }
-
-            if (rule.HasAnchor)
-            {
-                record.MoveToTarget = rule.Anchor;
-            }
-
-            record.WanderRadius = rule.Activity == ENpcRoutineActivityType.WanderAroundPoint
-                ? (rule.WanderRadius > 0.01f ? rule.WanderRadius : 1f)
-                : 0f;
         }
 
         static void WriteMoveBehave(UnitMoveBehaveInfo move, ResolvedRule rule, Vector2 currentPos)

@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
-using My.Map.Entity;
-using My.Map.Fight;
 using My.Quest;
 using My.Saving;
 using UnityEngine;
-using static My.Map.Fight.FightStruct;
 
 namespace My.Player
 {
@@ -28,37 +25,17 @@ namespace My.Player
     public sealed class PlayerJingYuanCodexSystem : IPlayerSystem
     {
         const string LogTag = "[PlayerJingYuanCodexSystem]";
-        const int BaseTuneSlotCount = 1;
-
-        // 吸收射精时转化为调精浓度的比例（其余逻辑仍走精元/精浴）
-        const float BlurtToConcentrationRate = 0.2f;
-
-        readonly PlayerSystemManager _owner;
         readonly Dictionary<string, JingYuanCodexRuntimeState> _progress = new(StringComparer.Ordinal);
-        readonly Dictionary<int, string> _equippedTunes = new();
-        readonly JingYuanCodexProgressionProvider _progressionProvider;
 
         GameLogicManager _logic;
-        // 仅 entity 不存在时的持久化缓冲（读档 / despawn→spawn / 存档快照）
-        long _concentrationPersistBuffer;
-        bool _eventsBound;
-
-        public JingYuanCodexProgressionProvider ProgressionProvider => _progressionProvider;
-
         public PlayerJingYuanCodexSystem(PlayerSystemManager owner)
         {
-            _owner = owner;
-            _progressionProvider = new JingYuanCodexProgressionProvider(this);
         }
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             _logic = ctx;
             _progress.Clear();
-            _equippedTunes.Clear();
-            _concentrationPersistBuffer = savingData?.PlayerData?.TiaoJingConcentration ?? 0;
-
-            BindEvents();
 
             if (savingData?.PlayerData?.JingYuanCodexProgress != null)
             {
@@ -76,18 +53,6 @@ namespace My.Player
                 }
             }
 
-            if (savingData?.PlayerData?.EquippedJingYuanTunes != null)
-            {
-                foreach (var entry in savingData.PlayerData.EquippedJingYuanTunes)
-                {
-                    if (entry == null || string.IsNullOrEmpty(entry.CodexId))
-                    {
-                        continue;
-                    }
-
-                    _equippedTunes[entry.Slot] = entry.CodexId;
-                }
-            }
         }
 
         public void PostInit(PlayerSystemManager owner)
@@ -98,44 +63,12 @@ namespace My.Player
         {
         }
 
-        void BindEvents()
-        {
-            if (_eventsBound)
-            {
-                return;
-            }
-
-            PlayerEventBus.Subscribe<PlayerJingYuanBlurtAbsorbedEvent>(OnBlurtAbsorbedEvent);
-            PlayerEventBus.Subscribe<PlayerEntityReadyEvent>(OnPlayerEntityReadyEvent);
-            PlayerEventBus.Subscribe<PlayerEntityDespawnEvent>(OnPlayerEntityDespawnEvent);
-            _eventsBound = true;
-        }
-
-        void OnPlayerEntityReadyEvent(PlayerEntityReadyEvent _)
-        {
-            HydrateConcentrationToEntity();
-            ResyncTunePassives();
-        }
-
-        void OnPlayerEntityDespawnEvent(PlayerEntityDespawnEvent _)
-        {
-            SnapshotConcentrationFromEntity();
-        }
-
-        void OnBlurtAbsorbedEvent(PlayerJingYuanBlurtAbsorbedEvent ev)
-        {
-            HandleBlurtAbsorbed(ev.JingyuanTag, ev.SjAmount);
-        }
-
         public void WriteToSave(PlayerData pd)
         {
             if (pd == null)
             {
                 return;
             }
-
-            SnapshotConcentrationFromEntity();
-            pd.TiaoJingConcentration = _concentrationPersistBuffer;
 
             pd.JingYuanCodexProgress ??= new List<JingYuanCodexProgressPersist>();
             pd.JingYuanCodexProgress.Clear();
@@ -160,22 +93,6 @@ namespace My.Player
                 });
             }
 
-            pd.EquippedJingYuanTunes ??= new List<JingYuanTuneEquipPersist>();
-            pd.EquippedJingYuanTunes.Clear();
-            foreach (var kv in _equippedTunes)
-            {
-                pd.EquippedJingYuanTunes.Add(new JingYuanTuneEquipPersist
-                {
-                    Slot = kv.Key,
-                    CodexId = kv.Value,
-                });
-            }
-        }
-
-        public int GetSlotCap()
-        {
-            var extra = _owner?.ProgressionSystem?.GetFinalAttribute((int)EYCAttribute.TiaoJingSlotCap) ?? 0;
-            return BaseTuneSlotCount + (int)extra;
         }
 
         public bool TryGetProgress(string codexId, out JingYuanCodexRuntimeState state)
@@ -213,11 +130,6 @@ namespace My.Player
                 AddProgress(def.CodexId, 1, amountDelta, EJingYuanProgressSource.Blurt);
             }
 
-            var concentrationDelta = (long)(sjAmount * BlurtToConcentrationRate * 1000f);
-            if (concentrationDelta > 0)
-            {
-                ApplyConcentrationDelta(concentrationDelta);
-            }
         }
 
         public bool AddProgress(string codexId, int extractDelta, long amountDelta, EJingYuanProgressSource source)
@@ -264,148 +176,11 @@ namespace My.Player
                     OldLevel = oldLevel,
                     NewLevel = state.Level,
                 });
-                _progressionProvider.NotifyChanged();
-                _owner?.ProgressionSystem?.ProgressionRoot?.ForceDirty();
             }
 
             return true;
         }
 
-        public bool CanEquipTune(int slot, string codexId, out string failReason)
-        {
-            failReason = null;
-            if (slot < 0 || slot >= GetSlotCap())
-            {
-                failReason = "invalid_slot";
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(codexId))
-            {
-                failReason = "invalid_codex";
-                return false;
-            }
-
-            if (JingYuanCodexCatalog.GetDef(codexId) == null)
-            {
-                failReason = "invalid_codex";
-                return false;
-            }
-
-            if (!_progress.TryGetValue(codexId, out var state) || state.Level <= 0)
-            {
-                failReason = "codex_not_unlocked";
-                return false;
-            }
-
-            foreach (var kv in _equippedTunes)
-            {
-                if (kv.Key != slot && kv.Value == codexId)
-                {
-                    failReason = "already_equipped";
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool TryEquipTune(int slot, string codexId)
-        {
-            if (!CanEquipTune(slot, codexId, out var failReason))
-            {
-                Debug.LogWarning($"{LogTag} TryEquipTune failed: {failReason}, slot={slot}, codex={codexId}");
-                return false;
-            }
-
-            _equippedTunes[slot] = codexId;
-            PlayerEventBus.Publish(new PlayerJingYuanTuneEquipChangedEvent { Slot = slot, CodexId = codexId });
-            ResyncTunePassives();
-            return true;
-        }
-
-        public bool TryUnequipTune(int slot)
-        {
-            if (!_equippedTunes.Remove(slot))
-            {
-                return false;
-            }
-
-            PlayerEventBus.Publish(new PlayerJingYuanTuneEquipChangedEvent { Slot = slot, CodexId = null });
-            ResyncTunePassives();
-            return true;
-        }
-
-        // 调精孔已装备且浓度>0 时，返回每秒消耗（逻辑单位，与精浴 cost 一致，×1000 后 ApplyResourceChange）
-        public float GetConcentrationDrainCostPerSec(long concentration)
-        {
-            if (_equippedTunes.Count <= 0 || concentration <= 0)
-            {
-                return 0f;
-            }
-
-            int level = JingYuanCodexCatalog.GetConcentrationLevel(concentration);
-            return JingYuanCodexCatalog.GetConcentrationCostPerSec(level);
-        }
-
-        public void CollectEquippedTunePassiveSkills(HashSet<string> applied, List<(string skillId, int level)> output)
-        {
-            if (output == null || _equippedTunes.Count == 0)
-            {
-                return;
-            }
-
-            var concentration = GetConcentration();
-            foreach (var codexId in _equippedTunes.Values)
-            {
-                if (string.IsNullOrEmpty(codexId))
-                {
-                    continue;
-                }
-
-                if (!_progress.TryGetValue(codexId, out var state))
-                {
-                    continue;
-                }
-
-                var tier = JingYuanCodexCatalog.ResolveTuneTier(codexId, concentration, state.Level);
-                if (tier == null || string.IsNullOrEmpty(tier.PassiveSkillId) || tier.PassiveLevel <= 0)
-                {
-                    continue;
-                }
-
-                if (applied != null && applied.Contains(tier.PassiveSkillId))
-                {
-                    continue;
-                }
-
-                output.Add((tier.PassiveSkillId, tier.PassiveLevel));
-            }
-        }
-
-        public void AccumulateProgressionStats(StatMap targetMap)
-        {
-            if (targetMap == null)
-            {
-                return;
-            }
-
-            foreach (var kv in _progress)
-            {
-                var state = kv.Value;
-                if (state == null || state.Level <= 0)
-                {
-                    continue;
-                }
-
-                JingYuanCodexCatalog.SumStatBonusesUpToLevel(state.CodexId, state.Level, targetMap);
-            }
-        }
-
-        public void ResyncTunePassives()
-        {
-            _owner?.SyncLearnedSkillsToPlayerEntity();
-        }
 
         JingYuanCodexRuntimeState GetOrCreateState(string codexId)
         {
@@ -418,59 +193,5 @@ namespace My.Player
             return state;
         }
 
-        long GetConcentration()
-        {
-            var player = _logic?.playerLogicEntity;
-            if (player != null)
-            {
-                return player.GetAttr(AttrIdConsts.PlayerTiaoJingConcentration);
-            }
-
-            return _concentrationPersistBuffer;
-        }
-
-        void SnapshotConcentrationFromEntity()
-        {
-            var player = _logic?.playerLogicEntity;
-            if (player == null)
-            {
-                return;
-            }
-
-            _concentrationPersistBuffer = player.GetAttr(AttrIdConsts.PlayerTiaoJingConcentration);
-        }
-
-        void HydrateConcentrationToEntity()
-        {
-            var player = _logic?.playerLogicEntity;
-            if (player == null)
-            {
-                return;
-            }
-
-            player.ForceSetResource(AttrIdConsts.PlayerTiaoJingConcentration, _concentrationPersistBuffer);
-        }
-
-        void ApplyConcentrationDelta(long delta)
-        {
-            if (delta == 0)
-            {
-                return;
-            }
-
-            var player = _logic?.playerLogicEntity;
-            if (player != null)
-            {
-                player.ApplyResourceChange(
-                    AttrIdConsts.PlayerTiaoJingConcentration,
-                    delta,
-                    false,
-                    EDmgFlag.None,
-                    null);
-                return;
-            }
-
-            _concentrationPersistBuffer = Math.Max(0, _concentrationPersistBuffer + delta);
-        }
     }
 }

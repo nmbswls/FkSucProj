@@ -174,30 +174,46 @@ namespace My
                 case 1:
                     if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
                     {
-                        npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
-                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
-                        applied = true;
+                        var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
+                        if (move != null)
+                        {
+                            move.MoveToDespawnTarget = exitPos;
+                            move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                            applied = true;
+                        }
                     }
 
                     break;
                 case 2:
-                    npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                    applied = true;
+                {
+                    var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
+                    if (move != null)
+                    {
+                        move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
+                        applied = true;
+                    }
+
                     break;
+                }
                 case 3:
                 {
-                    var ids = npc.MoveBehaveInfo.PatrolCycleNodeIds;
-                    ids.Clear();
-                    if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
-                            db,
-                            npc.MoveBehaveInfo.PatrolPortalNetworkId,
-                            nPick,
-                            ids,
-                            out var resolvedNet))
+                    var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
+                    if (move != null)
                     {
-                        npc.MoveBehaveInfo.PatrolPortalNetworkId = resolvedNet;
-                        npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
-                        applied = true;
+                        var ids = move.PatrolCycleNodeIds;
+                        ids.Clear();
+                        var portalNetId = npc.BaseMoveBehaveInfo?.PatrolPortalNetworkId ?? string.Empty;
+                        if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
+                                db,
+                                portalNetId,
+                                nPick,
+                                ids,
+                                out var resolvedNet))
+                        {
+                            move.PatrolPortalNetworkId = resolvedNet;
+                            move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
+                            applied = true;
+                        }
                     }
 
                     break;
@@ -302,15 +318,19 @@ namespace My
             var db = _logic.AreaManager.cacheDatabase;
             if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
             {
-                npc.MoveBehaveInfo.MoveToDespawnTarget = exitPos;
-                npc.MoveBehaveInfo.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
-                if (npc.AIBrain != null)
+                var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
+                if (move != null)
                 {
-                    npc.AIBrain.PostSearchPolicyPending = false;
-                    npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
-                }
+                    move.MoveToDespawnTarget = exitPos;
+                    move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
+                    if (npc.AIBrain != null)
+                    {
+                        npc.AIBrain.PostSearchPolicyPending = false;
+                        npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
+                    }
 
-                return;
+                    return;
+                }
             }
 
             _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);

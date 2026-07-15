@@ -1,0 +1,11 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs><radialGradient id="bg"><stop stop-color="#29465a"/><stop offset="1" stop-color="#111820"/></radialGradient><linearGradient id="robe" x2="0" y2="1"><stop stop-color="#85c5c0"/><stop offset="1" stop-color="#264c61"/></linearGradient></defs>
+<circle cx="128" cy="128" r="124" fill="url(#bg)" stroke="#91d3cb" stroke-width="6"/>
+<path d="M48 224c12-57 40-83 80-83s68 26 80 83" fill="url(#robe)"/>
+<path d="M70 104c0-48 23-72 58-72s58 24 58 72c-12 29-32 45-58 45s-46-16-58-45z" fill="#b97d67"/>
+<path d="M65 105c6-58 28-82 67-82 34 0 56 20 62 66-17-18-39-29-62-29-25 0-47 15-67 45z" fill="#b6d2d0"/>
+<path d="M80 91c-4 27-3 50 8 66" fill="none" stroke="#789697" stroke-width="8"/><path d="M176 91c4 27 3 50-8 66" fill="none" stroke="#789697" stroke-width="8"/>
+<circle cx="106" cy="104" r="5" fill="#17242c"/><circle cx="150" cy="104" r="5" fill="#17242c"/>
+<path d="M108 127c13 7 27 7 40 0" fill="none" stroke="#663a48" stroke-width="5" stroke-linecap="round"/>
+<path d="M89 174l39 33 39-33" fill="none" stroke="#b4ece3" stroke-width="6"/>
+</svg>

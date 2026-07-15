@@ -111,42 +111,35 @@ namespace My.Map
             var npcRecord = (LogicEntityRecord4Npc)bindingRecord;
 
             Debug.Log($"NpcUnitLogicEntity init {instId} {npcRecord.MoveBehaveType}");
-            this.MoveBehaveInfo = new();
-            this.MoveBehaveInfo.MoveBehaveMode = npcRecord.MoveBehaveType;
-            this.MoveBehaveInfo.FollowPatrolId = npcRecord.PatrolFollowId;
-            this.MoveBehaveInfo.PatrolGroupRelativePos = npcRecord.PatrolGroupRelativePos;
-            this.MoveBehaveInfo.DisappearOnArrive = npcRecord.DisappearOnArrive;
-            this.MoveBehaveInfo.MovePath = npcRecord.MovePath;
-            this.MoveBehaveInfo.PatrolPortalNetworkId = npcRecord.PatrolPortalNetworkId ?? string.Empty;
-            this.MoveBehaveInfo.PatrolCycleNodeIds.Clear();
+            // Record 只填充 Base；Routine/Wanted 等写 Override，避免污染落库
+            BaseMoveBehaveInfo = new UnitMoveBehaveInfo
+            {
+                MoveBehaveMode = npcRecord.MoveBehaveType,
+                FollowPatrolId = npcRecord.PatrolFollowId,
+                PatrolGroupRelativePos = npcRecord.PatrolGroupRelativePos,
+                DisappearOnArrive = npcRecord.DisappearOnArrive,
+                MovePath = npcRecord.MovePath,
+                PatrolPortalNetworkId = npcRecord.PatrolPortalNetworkId ?? string.Empty,
+                MoveToDespawnTarget = npcRecord.MoveToDespawnTarget,
+                MoveToTarget = npcRecord.MoveToTarget,
+                WanderRadius = npcRecord.WanderRadius,
+            };
             if (npcRecord.PatrolCycleNodeIds != null && npcRecord.PatrolCycleNodeIds.Count > 0)
             {
-                this.MoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
+                BaseMoveBehaveInfo.PatrolCycleNodeIds.AddRange(npcRecord.PatrolCycleNodeIds);
             }
 
-            this.MoveBehaveInfo.MoveToDespawnTarget = npcRecord.MoveToDespawnTarget;
-            this.MoveBehaveInfo.MoveToTarget = npcRecord.MoveToTarget;
-            this.MoveBehaveInfo.WanderRadius = npcRecord.WanderRadius;
             if (npcRecord.FaceDir.sqrMagnitude > 1e-8f)
             {
-                this.MoveBehaveInfo.HasFaceDir = true;
-                this.MoveBehaveInfo.FaceDir = npcRecord.FaceDir.normalized;
+                BaseMoveBehaveInfo.HasFaceDir = true;
+                BaseMoveBehaveInfo.FaceDir = npcRecord.FaceDir.normalized;
             }
         }
 
         protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
         {
             base.RefreshEntityRecordInfo(input);
-            if (input is LogicEntityRecord4Npc nr && MoveBehaveInfo != null
-                && MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn)
-            {
-                nr.MoveToDespawnTarget = MoveBehaveInfo.MoveToDespawnTarget;
-            }
-            if (input is LogicEntityRecord4Npc moveTargetRecord && MoveBehaveInfo != null
-                && MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToPoint)
-            {
-                moveTargetRecord.MoveToTarget = MoveBehaveInfo.MoveToTarget;
-            }
+            // 生效层（含 Override）不回写 Record，避免日程/临时策略污染 Persist
         }
 
         public override bool CheckLocalSwitch(string switchName)

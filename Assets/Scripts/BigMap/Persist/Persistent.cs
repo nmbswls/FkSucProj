@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using My.Player.Bag;
+using cfg.demo;
 
 namespace My.Map.Logic
 {
@@ -147,6 +148,9 @@ namespace My.Map.Logic
 
         // 生成时掷出的精型 type_id（TbJingYuanTypeDef）；空表示无精型
         public string RolledJingyuanTypeId = string.Empty;
+
+        // 新优质精华系统使用枚举精型；在 NPC 刷新时确定并随实体记录保存。
+        public EJingYuanType BoundJingYuanType = EJingYuanType.None;
 
         // 路网巡逻：对应导出的 PortalNetworkProvider.networkId；空且仅一张网时自动用该网
         public string PatrolPortalNetworkId = string.Empty;

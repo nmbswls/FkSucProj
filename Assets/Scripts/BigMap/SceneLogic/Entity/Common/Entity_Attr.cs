@@ -137,8 +137,6 @@ namespace My.Map
                 case AttrIdConsts.PlayerNaiLi:
                 case AttrIdConsts.PlayerOriginPower:
                 case AttrIdConsts.PlayerJingYu:
-                case AttrIdConsts.PlayerTiaoJingConcentration:
-
                 case AttrIdConsts.NPCHVal:
                 case AttrIdConsts.NPCSJProgress:
                 case AttrIdConsts.UnitHShield:

@@ -815,28 +815,6 @@ namespace My.Player
             return true;
         }
 
-        public bool TryEquipJingYuanTune(int slot, string codexId)
-        {
-            if (JingYuanCodexSystem == null || !JingYuanCodexSystem.TryEquipTune(slot, codexId))
-            {
-                return false;
-            }
-
-            SyncLearnedSkillsToPlayerEntity();
-            return true;
-        }
-
-        public bool TryUnequipJingYuanTune(int slot)
-        {
-            if (JingYuanCodexSystem == null || !JingYuanCodexSystem.TryUnequipTune(slot))
-            {
-                return false;
-            }
-
-            SyncLearnedSkillsToPlayerEntity();
-            return true;
-        }
-
         public bool TryAddSkillLearnedSkill(string skillId, int level = 1)
         {
             if (string.IsNullOrEmpty(skillId) || SkillSystem.IsSkillLearned(skillId))

@@ -122,6 +122,12 @@ public partial class Tables
     public demo.TbTiaoJingConcentrationLevel TbTiaoJingConcentrationLevel {get; }
     public demo.TbJingYuanTypeDef TbJingYuanTypeDef {get; }
     public demo.TbJingYuanTypePoolEntry TbJingYuanTypePoolEntry {get; }
+    public demo.TbJingYuanTypeInfo TbJingYuanTypeInfo {get; }
+    public demo.TbJingYuanPremiumEssence TbJingYuanPremiumEssence {get; }
+    public demo.TbJingYuanPremiumEffect TbJingYuanPremiumEffect {get; }
+    public demo.TbJingYuanEssenceLevelMap TbJingYuanEssenceLevelMap {get; }
+    public demo.TbJingYuanTypePoolEnum TbJingYuanTypePoolEnum {get; }
+    public demo.TbNamedNpcJingYuanType TbNamedNpcJingYuanType {get; }
     /// <summary>
     /// 养成总面板选项卡
     /// </summary>
@@ -261,6 +267,12 @@ public partial class Tables
         TbTiaoJingConcentrationLevel = new demo.TbTiaoJingConcentrationLevel(loader("demo_tbtiaojingconcentrationlevel"));
         TbJingYuanTypeDef = new demo.TbJingYuanTypeDef(loader("demo_tbjingyuantypedef"));
         TbJingYuanTypePoolEntry = new demo.TbJingYuanTypePoolEntry(loader("demo_tbjingyuantypepoolentry"));
+        TbJingYuanTypeInfo = new demo.TbJingYuanTypeInfo(loader("demo_tbjingyuantypeinfo"));
+        TbJingYuanPremiumEssence = new demo.TbJingYuanPremiumEssence(loader("demo_tbjingyuanpremiumessence"));
+        TbJingYuanPremiumEffect = new demo.TbJingYuanPremiumEffect(loader("demo_tbjingyuanpremiumeffect"));
+        TbJingYuanEssenceLevelMap = new demo.TbJingYuanEssenceLevelMap(loader("demo_tbjingyuanessencelevelmap"));
+        TbJingYuanTypePoolEnum = new demo.TbJingYuanTypePoolEnum(loader("demo_tbjingyuantypepoolenum"));
+        TbNamedNpcJingYuanType = new demo.TbNamedNpcJingYuanType(loader("demo_tbnamednpcjingyuantype"));
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
         TbItemDismantle = new demo.TbItemDismantle(loader("demo_tbitemdismantle"));
@@ -378,6 +390,12 @@ public partial class Tables
         TbTiaoJingConcentrationLevel.ResolveRef(this);
         TbJingYuanTypeDef.ResolveRef(this);
         TbJingYuanTypePoolEntry.ResolveRef(this);
+        TbJingYuanTypeInfo.ResolveRef(this);
+        TbJingYuanPremiumEssence.ResolveRef(this);
+        TbJingYuanPremiumEffect.ResolveRef(this);
+        TbJingYuanEssenceLevelMap.ResolveRef(this);
+        TbJingYuanTypePoolEnum.ResolveRef(this);
+        TbNamedNpcJingYuanType.ResolveRef(this);
         TbProgressionHubTab.ResolveRef(this);
         TbPlayerAttachInfo.ResolveRef(this);
         TbItemDismantle.ResolveRef(this);
