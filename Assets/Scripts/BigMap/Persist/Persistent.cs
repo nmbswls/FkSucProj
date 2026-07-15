@@ -157,15 +157,6 @@ namespace My.Map.Logic
 
         // 有序闭环节点 id（与路网节点 GameObject 名一致）；相邻及首尾段分别最短路拼接
         public List<string> PatrolCycleNodeIds = new();
-
-        // 与 TbWantedGuardSpawnTier.pressure_behavior 一致；Search 张望结束后由 WantedDynamicGuardController 读取并下发移动策略（不写 AIBrain）。
-        public int PostInvestigationResolveKind;
-
-        // behavior=3 时路网随机巡逻采样规模（至少 2）
-        public int PostInvestigationPatrolPickN = 3;
-
-        // 生成后是否立刻以疑点进入 Search（与 pressure_behavior 独立）
-        public bool SpawnWithImmediateInvestigation;
     }
 
 

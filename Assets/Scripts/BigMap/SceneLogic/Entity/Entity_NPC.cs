@@ -39,9 +39,6 @@ namespace My.Map
 
         public AIBrainV2? AIBrain;
 
-        // Routine 写入的表现标签，供表现层按需读取；逻辑侧不解释语义
-        public string RoutinePresentationTag { get; set; } = string.Empty;
-
         public List<SkillRuntime> GetAiReadySkills()
         {
             var skills = ablilityManager.GetAllReadySkills();
@@ -308,12 +305,6 @@ namespace My.Map
 
             InitAiBrain();
 
-            if (NpcRecord.SpawnWithImmediateInvestigation && AIBrain != null && LogicManager.playerLogicEntity != null)
-            {
-                AIBrain.SuspiciousPos = LogicManager.playerLogicEntity.Pos;
-                AIBrain.ChangeState(AIBrain.StateSearch);
-            }
-
             if (NpcRecord.Unsensored)
             {
                 LogicManager.globalBuffManager.RequestAddBuff(Id, "unsensored");
@@ -340,7 +331,6 @@ namespace My.Map
 
             //InteractComp.RefreshInteractInfo();
             //InteractComp.RefreshInteractInfo(NpcConfig.InteractList);
-
         }
 
         void ApplySpawnFaceDir()

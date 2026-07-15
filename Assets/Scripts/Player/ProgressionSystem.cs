@@ -23,6 +23,7 @@ namespace My.Player
         public ProgressionAggregator BodyPartAggregator { get; private set; }
         public ProgressionAggregator EventGrantAggregator { get; private set; }
         public ProgressionAggregator RuneAggregator { get; private set; }
+        public ProgressionAggregator JingYuanEssenceAggregator { get; private set; }
         public bool IsBodyPartBound { get; private set; }
         public bool IsEventGrantBound { get; private set; }
         public bool IsRuneBound { get; private set; }
@@ -30,6 +31,7 @@ namespace My.Player
         BodyPartProgressionProvider _boundBodyPartProvider;
         EventGrantProgressionProvider _boundEventGrantProvider;
         RuneProgressionProvider _boundRuneProvider;
+        PlayerJingYuanEssenceSystem _boundJingYuanEssenceProvider;
 
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
@@ -40,6 +42,7 @@ namespace My.Player
             _boundBodyPartProvider = null;
             _boundEventGrantProvider = null;
             _boundRuneProvider = null;
+            _boundJingYuanEssenceProvider = null;
 
             TalentManager = new PlayerTalentManager();
             TalentManager.Initialize(ctx, savingData);
@@ -59,6 +62,7 @@ namespace My.Player
             BodyPartAggregator = new ProgressionAggregator("BodyPart");
             EventGrantAggregator = new ProgressionAggregator("EventGrant");
             RuneAggregator = new ProgressionAggregator("Rune");
+            JingYuanEssenceAggregator = new ProgressionAggregator("JingYuanEssence");
 
             ProgressionRoot = new ProgressionAggregator("Root");
             ProgressionRoot.AddChild(BaseStats.MainAggregator);
@@ -67,6 +71,7 @@ namespace My.Player
             ProgressionRoot.AddChild(BodyPartAggregator);
             ProgressionRoot.AddChild(EventGrantAggregator);
             ProgressionRoot.AddChild(RuneAggregator);
+            ProgressionRoot.AddChild(JingYuanEssenceAggregator);
 
             ProgressionRoot.OnStatsChanged += (src) =>
             {
@@ -81,9 +86,10 @@ namespace My.Player
             BindBodyPartSystem(owner?.BodyPartSystem);
             BindEventGrantSystem(owner?.EventGrantSystem);
             BindRuneSystem(owner?.RuneSystem);
+            BindJingYuanEssenceSystem(owner?.JingYuanEssenceSystem);
         }
 
-        // 养成侧技能贡献；优先级与历史被动装配一致：符文 > 调精 > EventGrant
+        // 养成侧技能贡献；优先级与历史被动装配一致：符文 > EventGrant
         public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
         {
             if (output == null)
@@ -93,6 +99,24 @@ namespace My.Player
 
             RuneAggregator?.CollectContributedSkills(applied, output);
             EventGrantAggregator?.CollectContributedSkills(applied, output);
+            _boundJingYuanEssenceProvider?.CollectContributedSkills(applied, output);
+        }
+
+        void BindJingYuanEssenceSystem(PlayerJingYuanEssenceSystem essenceSystem)
+        {
+            if (JingYuanEssenceAggregator == null || essenceSystem == null)
+            {
+                return;
+            }
+
+            if (_boundJingYuanEssenceProvider != null)
+            {
+                JingYuanEssenceAggregator.RemoveChild(_boundJingYuanEssenceProvider);
+            }
+
+            _boundJingYuanEssenceProvider = essenceSystem;
+            JingYuanEssenceAggregator.AddChild(_boundJingYuanEssenceProvider);
+            ProgressionRoot.ForceDirty();
         }
 
         void BindRuneSystem(PlayerRuneSystem runeSystem)

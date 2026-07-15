@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using My;
 using My.Map;
 using My.Saving;
@@ -116,6 +117,9 @@ namespace My.Map.Logic
                 return d;
             }
 
+            d.WantedPressureSessions = LogicManager?.WantedGuardSpawner?.ExportPressureSessions()
+                ?? new List<WantedPressureSessionPersist>();
+
             foreach (var kv in Repo.Records)
             {
                 var rec = kv.Value;
@@ -226,6 +230,8 @@ namespace My.Map.Logic
             }
 
             BuildIndexFromRecords();
+
+            LogicManager?.WantedGuardSpawner?.RestorePressureSessions(data.WantedPressureSessions);
         }
     }
 }

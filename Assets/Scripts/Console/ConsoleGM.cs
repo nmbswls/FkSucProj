@@ -285,7 +285,7 @@ public class ConsoleGM : MonoBehaviour
             null,
             _ =>
             {
-                My.UI.CultTech.CultTechTreePanel.Open();
+                My.UI.CultTech.CultPanel.Open();
             });
 
         Register("add_faith", "Add cult faith add_faith <amount>",
@@ -712,8 +712,8 @@ public class ConsoleGM : MonoBehaviour
                 Log($"goto_map switching to {overlayId} namedPoint={namedPoint}");
             });
 
-        Register("spawn_investigation_npc", "Spawn default_guard_01; kind=pressure_behavior 0-3 on NpcRecord (post-Search policy applied by WantedGuardSpawner); optional immediate 0|1 (default: 1 if kind>0 else 0)",
-            new[] { new CmdParam("kind", "0-3 pressure_behavior / NpcRecord.PostInvestigationResolveKind"), new CmdParam("immediate", "optional 0|1") },
+        Register("spawn_investigation_npc", "Spawn default_guard_01; kind=pressure_behavior 0-3 (WantedPressureSession); optional immediate 0|1 (default: 1 if kind>0 else 0)",
+            new[] { new CmdParam("kind", "0-3 pressure_behavior / WantedPressureSession.ResolveKind"), new CmdParam("immediate", "optional 0|1") },
             args =>
             {
                 if (args.Count < 1 || !int.TryParse(args[0], out var kind) || kind < 0 || kind > 3)
@@ -731,9 +731,10 @@ public class ConsoleGM : MonoBehaviour
 
                 var glm = MainGameManager.Instance.gameLogicManager;
                 var pos = MainGameManager.Instance.playerScenePresenter.transform.position + new Vector3(2, 2, 0);
+                var id = GameLogicManager.LogicEntityIdInst++;
                 glm.AddNewEntityRecord(new LogicEntityRecord4Npc
                 {
-                    Id = GameLogicManager.LogicEntityIdInst++,
+                    Id = id,
                     EntityType = EEntityType.Npc,
                     CfgId = "default_guard_01",
                     Position = pos,
@@ -741,10 +742,8 @@ public class ConsoleGM : MonoBehaviour
                     IsPeace = false,
                     MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                     EnmityConfId = "default_guard",
-                    PostInvestigationResolveKind = kind,
-                    PostInvestigationPatrolPickN = 3,
-                    SpawnWithImmediateInvestigation = immediate == 1,
                 });
+                glm.WantedGuardSpawner?.RegisterPressureGuard(id, kind, 3, immediate == 1);
                 Log($"spawn_investigation_npc pressure_behavior={kind} immediate={immediate} at player+2,2");
             });
 

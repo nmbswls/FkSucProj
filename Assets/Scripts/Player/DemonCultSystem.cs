@@ -25,6 +25,20 @@ namespace My.Player
         public event Action OnCultChanged;
 
         public long Faith => _faith;
+        public int UnlockedSeatCount => _unlockedSeats.Count;
+
+        public int UnlockedSeatTechNodeCount
+        {
+            get
+            {
+                var count = 0;
+                foreach (var pair in _seatTechLevels)
+                {
+                    if (pair.Value > 0) count++;
+                }
+                return count;
+            }
+        }
 
         public void Initialize(GameLogicManager logic, SaveData savingData)
         {

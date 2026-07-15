@@ -43,29 +43,8 @@ namespace My.UI.HumanTech
 
             if (closeButton == null)
             {
-                var go = new GameObject("CloseButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                go.transform.SetParent(transform, false);
-                var rect = (RectTransform)go.transform;
-                rect.anchorMin = new Vector2(1f, 1f);
-                rect.anchorMax = new Vector2(1f, 1f);
-                rect.pivot = new Vector2(1f, 1f);
-                rect.anchoredPosition = new Vector2(-18f, -18f);
-                rect.sizeDelta = new Vector2(42f, 42f);
-                go.GetComponent<Image>().color = new Color(0.18f, 0.22f, 0.27f, 1f);
-                closeButton = go.GetComponent<Button>();
-
-                var labelGo = new GameObject("Label", typeof(RectTransform));
-                labelGo.transform.SetParent(go.transform, false);
-                var labelRect = (RectTransform)labelGo.transform;
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
-                var label = labelGo.AddComponent<TextMeshProUGUI>();
-                label.text = "X";
-                label.fontSize = 20f;
-                label.alignment = TextAlignmentOptions.Center;
-                label.raycastTarget = false;
+                Debug.LogError("HumanTechTreePanel requires CloseButton in its prefab.");
+                return;
             }
 
             closeButton.onClick.RemoveAllListeners();

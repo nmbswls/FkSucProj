@@ -6,6 +6,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.Map.Scene;
 using My.MapExport;
+using My.Saving;
 using UnityEngine;
 
 namespace My
@@ -17,9 +18,7 @@ namespace My
         public const float TickPeriodSeconds = 0.75f;
 
         readonly GameLogicManager _logic;
-        readonly List<long> _guardIds = new();
-        readonly List<long> _postSearchPolicyPendingIds = new();
-        readonly HashSet<long> _postSearchPolicyPendingSet = new();
+        readonly Dictionary<long, WantedPressureSession> _sessions = new();
         float _cooldown;
 
         public WantedDynamicGuardController(GameLogicManager logic)
@@ -27,22 +26,31 @@ namespace My
             _logic = logic;
         }
 
+        int ActiveSpawnSlotCount()
+        {
+            int count = 0;
+            foreach (var session in _sessions.Values)
+            {
+                if (session != null && session.Phase != EWantedPressurePhase.WalkingAway)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
         public void ClearAll()
         {
-            _postSearchPolicyPendingIds.Clear();
-            _postSearchPolicyPendingSet.Clear();
-            if (_logic?.AreaManager == null)
+            if (_logic?.AreaManager != null)
             {
-                _guardIds.Clear();
-                return;
+                foreach (var entityId in _sessions.Keys)
+                {
+                    _logic.AreaManager.RequestEntityDestroy(entityId, "wanted_guard_area_clear");
+                }
             }
 
-            for (int i = 0; i < _guardIds.Count; i++)
-            {
-                _logic.AreaManager.RequestEntityDestroy(_guardIds[i], "wanted_guard_area_clear");
-            }
-
-            _guardIds.Clear();
+            _sessions.Clear();
         }
 
         public void Tick(float dt)
@@ -52,7 +60,8 @@ namespace My
                 return;
             }
 
-            ProcessPendingPostSearchPolicies();
+            PruneStaleSessions();
+            ProcessPressureNpcBrain();
 
             _cooldown -= dt;
             if (_cooldown > 0f)
@@ -76,15 +85,14 @@ namespace My
             int pressureBehavior = tier?.PressureBehavior ?? 0;
             int patrolPickN = tier?.PatrolPickN > 0 ? tier.PatrolPickN : 3;
 
-            PruneDead();
             CullFar(cull);
-            if (target < _guardIds.Count)
+            if (target < ActiveSpawnSlotCount())
             {
                 TrimExcess(target);
                 return;
             }
 
-            while (_guardIds.Count < target)
+            while (ActiveSpawnSlotCount() < target)
             {
                 if (!TrySpawnOne(npcId, rMin, rMax, pressureBehavior, patrolPickN))
                 {
@@ -93,142 +101,241 @@ namespace My
             }
         }
 
-        public void EnqueuePostSearchPolicyPending(long npcEntityId)
+        public bool HasPressureSession(long entityId)
         {
-            if (!_postSearchPolicyPendingSet.Add(npcEntityId))
-            {
-                return;
-            }
-
-            _postSearchPolicyPendingIds.Add(npcEntityId);
+            return _sessions.ContainsKey(entityId);
         }
 
-        public void CancelPostSearchPolicyPending(long npcEntityId)
+        public bool TryGetPressureSession(long entityId, out WantedPressureSession session)
         {
-            if (!_postSearchPolicyPendingSet.Remove(npcEntityId))
-            {
-                return;
-            }
-
-            _postSearchPolicyPendingIds.Remove(npcEntityId);
+            return _sessions.TryGetValue(entityId, out session);
         }
 
-        void ProcessPendingPostSearchPolicies()
+        void ProcessPressureNpcBrain()
         {
-            if (_postSearchPolicyPendingIds.Count == 0)
+            if (_sessions.Count == 0 || _logic?.AreaManager == null)
             {
                 return;
             }
 
-            var batch = new long[_postSearchPolicyPendingIds.Count];
-            _postSearchPolicyPendingIds.CopyTo(batch);
-            _postSearchPolicyPendingIds.Clear();
-            _postSearchPolicyPendingSet.Clear();
-
-            foreach (var id in batch)
+            foreach (var pair in _sessions)
             {
-                TryApplyPostSearchPolicyForEntity(id);
-            }
-        }
+                var session = pair.Value;
+                if (session == null)
+                {
+                    continue;
+                }
 
-        void TryApplyPostSearchPolicyForEntity(long id)
-        {
-            var e = _logic.AreaManager.GetLogicEntiy(id, false);
-            if (e is not NpcUnitLogicEntity npc)
-            {
-                return;
-            }
+                var e = _logic.AreaManager.GetLogicEntiy(pair.Key, false);
+                if (e is not NpcUnitLogicEntity npc)
+                {
+                    continue;
+                }
 
-            if (npc.MarkDestroyed || npc.IsDead || npc.AIBrain == null)
-            {
-                return;
-            }
+                if (!WantedPressureNpcBrain.IsAvailable(npc))
+                {
+                    continue;
+                }
 
-            if (!npc.AIBrain.PostSearchPolicyPending || npc.AIBrain.CurrentState != npc.AIBrain.StateSearch)
-            {
-                return;
-            }
+                WantedPressureNpcBrain.SyncHomeToFeet(npc);
 
-            var rec = npc.NpcRecord;
-            if (rec == null)
-            {
-                npc.AIBrain.PostSearchPolicyPending = false;
-                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
-                return;
-            }
-
-            int kind = rec.PostInvestigationResolveKind;
-            if (kind <= 0)
-            {
-                npc.AIBrain.PostSearchPolicyPending = false;
-                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
-                return;
-            }
-
-            var db = _logic.AreaManager.cacheDatabase;
-            int nPick = Mathf.Max(2, rec.PostInvestigationPatrolPickN > 0 ? rec.PostInvestigationPatrolPickN : 3);
-
-            bool applied = false;
-            switch (kind)
-            {
-                case 1:
-                    if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
+                if (session.ShouldReplayMacroBehave() && !WantedPressureNpcBrain.HasWantedMacro(npc))
+                {
+                    if (!TryReplaySessionMacroBehave(npc, session, out var replayed) || !replayed)
                     {
-                        var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
-                        if (move != null)
+                        if (ShouldDestroyOnMacroReplayFailure(session))
                         {
-                            move.MoveToDespawnTarget = exitPos;
-                            move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
-                            applied = true;
+                            DestroyPressureGuard(npc, "wanted_macro_replay_failed");
                         }
                     }
-
-                    break;
-                case 2:
-                {
-                    var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
-                    if (move != null)
+                    else
                     {
-                        move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove;
-                        applied = true;
+                        WantedPressureNpcBrain.RefreshIdleMacro(npc);
                     }
 
-                    break;
+                    continue;
                 }
-                case 3:
+
+                if (session.ShouldBeginInvestigation() && !WantedPressureNpcBrain.IsInSearch(npc))
                 {
-                    var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
-                    if (move != null)
-                    {
-                        var ids = move.PatrolCycleNodeIds;
-                        ids.Clear();
-                        var portalNetId = npc.BaseMoveBehaveInfo?.PatrolPortalNetworkId ?? string.Empty;
-                        if (DynamicPressureGuardUtil.TrySamplePatrolCycleIds(
-                                db,
-                                portalNetId,
-                                nPick,
-                                ids,
-                                out var resolvedNet))
-                        {
-                            move.PatrolPortalNetworkId = resolvedNet;
-                            move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.Patrol;
-                            applied = true;
-                        }
-                    }
+                    WantedPressureNpcBrain.TryBeginInvestigation(_logic, npc);
+                    continue;
+                }
 
-                    break;
+                if (session.Phase == EWantedPressurePhase.AwaitingInvestigation && session.ResolveKind > 0)
+                {
+                    TryCompleteInvestigation(npc);
+                }
+            }
+        }
+
+        // Wanted Tick：实体已在 Idle 时下发 post-search macro
+        bool TryCompleteInvestigation(NpcUnitLogicEntity npc)
+        {
+            if (!WantedPressureNpcBrain.IsAvailable(npc))
+            {
+                return false;
+            }
+
+            if (!TryGetPressureSession(npc.Id, out var session)
+                || session.Phase != EWantedPressurePhase.AwaitingInvestigation
+                || session.ResolveKind <= 0)
+            {
+                return false;
+            }
+
+            if (!WantedPressureNpcBrain.IsIdle(npc))
+            {
+                return false;
+            }
+
+            var db = _logic?.AreaManager?.cacheDatabase;
+            if (!WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, out var applied) || !applied)
+            {
+                if (ShouldDestroyOnMacroApplyFailure(session))
+                {
+                    DestroyPressureGuard(npc, "wanted_investigation_macro_failed");
+                }
+
+                return false;
+            }
+
+            SetSessionPhase(npc.Id, WantedPressureSession.ResolvePhaseAfterInvestigation(session.ResolveKind));
+            WantedPressureNpcBrain.RefreshIdleMacro(npc);
+            return true;
+        }
+
+        static bool ShouldDestroyOnMacroApplyFailure(WantedPressureSession session)
+        {
+            return session != null && (session.ResolveKind == 1 || session.ResolveKind == 3);
+        }
+
+        static bool ShouldDestroyOnMacroReplayFailure(WantedPressureSession session)
+        {
+            if (session == null)
+            {
+                return false;
+            }
+
+            if (session.Phase == EWantedPressurePhase.WalkingAway)
+            {
+                return true;
+            }
+
+            return session.ResolveKind == 1 || session.ResolveKind == 3;
+        }
+
+        void DestroyPressureGuard(NpcUnitLogicEntity npc, string reason)
+        {
+            if (npc == null || _logic?.AreaManager == null)
+            {
+                return;
+            }
+
+            DestroyPressureGuard(npc.Id, reason);
+        }
+
+        void DestroyPressureGuard(long entityId, string reason)
+        {
+            RemovePressureSession(entityId);
+            _logic?.AreaManager?.RequestEntityDestroy(entityId, reason);
+        }
+
+        public List<WantedPressureSessionPersist> ExportPressureSessions()
+        {
+            var list = new List<WantedPressureSessionPersist>(_sessions.Count);
+            foreach (var session in _sessions.Values)
+            {
+                if (session == null) continue;
+                list.Add(session.ToPersist());
+            }
+
+            return list;
+        }
+
+        public void RestorePressureSessions(IReadOnlyList<WantedPressureSessionPersist> persists)
+        {
+            _sessions.Clear();
+            if (persists == null || persists.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var persist in persists)
+            {
+                var session = WantedPressureSession.FromPersist(persist);
+                if (session == null || session.EntityId <= 0)
+                {
+                    continue;
+                }
+
+                _sessions[session.EntityId] = session;
+            }
+        }
+
+        void SetSessionPhase(long entityId, EWantedPressurePhase phase)
+        {
+            if (_sessions.TryGetValue(entityId, out var session))
+            {
+                session.Phase = phase;
+            }
+        }
+
+        public void RegisterPressureGuard(long entityId, int resolveKind, int patrolPickN, bool beginInvestigationImmediately)
+        {
+            _sessions[entityId] = new WantedPressureSession
+            {
+                EntityId = entityId,
+                ResolveKind = resolveKind,
+                PatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
+                Phase = WantedPressureSession.ResolveInitialPhase(resolveKind, beginInvestigationImmediately),
+            };
+        }
+
+        void PruneStaleSessions()
+        {
+            if (_sessions.Count == 0 || _logic?.AreaManager == null)
+            {
+                return;
+            }
+
+            var stale = new List<long>();
+            foreach (var entityId in _sessions.Keys)
+            {
+                var e = _logic.AreaManager.GetLogicEntiy(entityId, false);
+                if (e == null || e.MarkDestroyed)
+                {
+                    stale.Add(entityId);
+                }
+                else if (e is BaseUnitLogicEntity unit && unit.IsDead)
+                {
+                    stale.Add(entityId);
                 }
             }
 
-            npc.AIBrain.PostSearchPolicyPending = false;
-            if (applied)
+            for (int i = 0; i < stale.Count; i++)
             {
-                npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
+                RemovePressureSession(stale[i]);
             }
-            else
+        }
+
+        void RemovePressureSession(long entityId)
+        {
+            _sessions.Remove(entityId);
+
+            var e = _logic?.AreaManager?.GetLogicEntiy(entityId, false) as BaseUnitLogicEntity;
+            e?.ClearMacroBehave(BaseUnitLogicEntity.EMacroBehaveAuthority.Wanted);
+        }
+
+        bool TryReplaySessionMacroBehave(NpcUnitLogicEntity npc, WantedPressureSession session, out bool applied)
+        {
+            var db = _logic?.AreaManager?.cacheDatabase;
+            if (session.Phase == EWantedPressurePhase.WalkingAway)
             {
-                npc.AIBrain.ChangeState(npc.AIBrain.StateReturn);
+                return WantedPressureMacroBehave.TryApplyWalkingAway(npc, session, db, out applied);
             }
+
+            return WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, out applied);
         }
 
         WantedGuardSpawnTier SelectPressureTier(out int alertTier)
@@ -265,7 +372,7 @@ namespace My
             return best;
         }
 
-        // GM / HUD：只读，与 Tick 内选档逻辑一致。pressure_behavior 写入 NpcRecord，Search 结束后由本控制器下发移动策略。
+        // GM / HUD：只读，与 Tick 内选档逻辑一致。pressure_behavior 写入 WantedPressureSession，Search 结束后下发 MacroMoveBehave。
         public string DebugFormatSelectedTier(out int alertPressureTier, out int wantedStarLevel)
         {
             alertPressureTier = 0;
@@ -284,7 +391,7 @@ namespace My
 
             return
                 $"tier_id={tier.TierId} min_wanted_star={tier.MinWantedStarLevel} min_alert_tier={tier.MinAlertTier} "
-                + $"guard_count={tier.GuardCount} npc_cfg_id={tier.NpcCfgId} pressure_behavior={tier.PressureBehavior}(NpcRecord.PostInvestigationResolveKind) "
+                + $"guard_count={tier.GuardCount} npc_cfg_id={tier.NpcCfgId} pressure_behavior={tier.PressureBehavior}(WantedPressureSession.ResolveKind) "
                 + $"patrol_pick_n={tier.PatrolPickN} spawn_radius=[{tier.SpawnRadiusMin},{tier.SpawnRadiusMax}] cull_distance={tier.CullDistance}";
         }
 
@@ -316,92 +423,90 @@ namespace My
             }
 
             var db = _logic.AreaManager.cacheDatabase;
-            if (DynamicPressureGuardUtil.TryPickRandomNamedPointPosition(db, ENamedPointType.GuardSpawner, out var exitPos))
+            if (!TryGetPressureSession(id, out var session))
             {
-                var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Wanted);
-                if (move != null)
-                {
-                    move.MoveToDespawnTarget = exitPos;
-                    move.MoveBehaveMode = UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn;
-                    if (npc.AIBrain != null)
-                    {
-                        npc.AIBrain.PostSearchPolicyPending = false;
-                        npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
-                    }
-
-                    return;
-                }
+                _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
+                return;
             }
 
-            _logic.AreaManager.RequestEntityDestroy(id, destroyReasonFallback);
-        }
-
-        void PruneDead()
-        {
-            for (int i = _guardIds.Count - 1; i >= 0; i--)
+            if (WantedPressureMacroBehave.TryApplyWalkingAway(npc, session, db, out var applied) && applied)
             {
-                ILogicEntity e = _logic.AreaManager.GetLogicEntiy(_guardIds[i], false);
-                if (e == null || e.MarkDestroyed)
-                {
-                    _guardIds.RemoveAt(i);
-                }
-                else if(e is BaseUnitLogicEntity unit && unit.IsDead)
-                {
-                    _guardIds.RemoveAt(i);
-                }
+                SetSessionPhase(id, EWantedPressurePhase.WalkingAway);
+                WantedPressureNpcBrain.EnterIdle(npc);
+                return;
             }
+
+            DestroyPressureGuard(id, destroyReasonFallback + "_walkaway_failed");
         }
 
         void CullFar(float cullDistance)
         {
             var p = _logic.playerLogicEntity.Pos;
             float d2 = cullDistance * cullDistance;
-            for (int i = _guardIds.Count - 1; i >= 0; i--)
+            var farIds = new List<long>();
+
+            foreach (var pair in _sessions)
             {
-                ILogicEntity e = _logic.AreaManager.GetLogicEntiy(_guardIds[i], false);
+                if (pair.Value.Phase == EWantedPressurePhase.WalkingAway)
+                {
+                    continue;
+                }
+
+                ILogicEntity e = _logic.AreaManager.GetLogicEntiy(pair.Key, false);
                 if (e == null)
                 {
-                    _guardIds.RemoveAt(i);
+                    farIds.Add(pair.Key);
                     continue;
                 }
 
                 if ((e.Pos - p).sqrMagnitude > d2)
                 {
-                    long id = _guardIds[i];
-                    _guardIds.RemoveAt(i);
-                    TrySendGuardWalkAwayOrDestroy(id, "wanted_guard_cull_distance");
+                    farIds.Add(pair.Key);
                 }
+            }
+
+            for (int i = 0; i < farIds.Count; i++)
+            {
+                TrySendGuardWalkAwayOrDestroy(farIds[i], "wanted_guard_cull_distance");
             }
         }
 
         void TrimExcess(int target)
         {
             var p = _logic.playerLogicEntity.Pos;
-            while (_guardIds.Count > target)
+            while (ActiveSpawnSlotCount() > target)
             {
-                int farIdx = FindFarthestIndex(p);
-                long id = _guardIds[farIdx];
-                _guardIds.RemoveAt(farIdx);
+                long id = FindFarthestSpawnSlotEntityId(p);
+                if (id <= 0)
+                {
+                    break;
+                }
+
                 TrySendGuardWalkAwayOrDestroy(id, "wanted_guard_trim");
             }
         }
 
-        int FindFarthestIndex(Vector2 p)
+        long FindFarthestSpawnSlotEntityId(Vector2 p)
         {
-            int best = 0;
+            long bestId = 0;
             float bestD = -1f;
-            for (int i = 0; i < _guardIds.Count; i++)
+            foreach (var pair in _sessions)
             {
-                ILogicEntity e = _logic.AreaManager.GetLogicEntiy(_guardIds[i], false);
+                if (pair.Value.Phase == EWantedPressurePhase.WalkingAway)
+                {
+                    continue;
+                }
+
+                ILogicEntity e = _logic.AreaManager.GetLogicEntiy(pair.Key, false);
                 float d = e != null ? (e.Pos - p).sqrMagnitude : float.MaxValue;
                 if (d > bestD)
                 {
                     bestD = d;
-                    best = i;
+                    bestId = pair.Key;
                 }
             }
 
-            return best;
+            return bestId;
         }
 
         bool IsSpotOutsidePlayerFov(Vector2 spot)
@@ -445,12 +550,13 @@ namespace My
                     IsPeace = false,
                     MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                     EnmityConfId = "default_guard",
-                    PostInvestigationResolveKind = pressureBehavior,
-                    PostInvestigationPatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
-                    SpawnWithImmediateInvestigation = pressureBehavior > 0,
                 };
                 _logic.AddNewEntityRecord(rec);
-                _guardIds.Add(rec.Id);
+                RegisterPressureGuard(
+                    rec.Id,
+                    pressureBehavior,
+                    patrolPickN,
+                    pressureBehavior > 0);
                 return true;
             }
 

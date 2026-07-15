@@ -176,7 +176,6 @@ public partial class Tables
     public demo.TbCultAncientSeat TbCultAncientSeat {get; }
     public demo.TbCultSeatTechNode TbCultSeatTechNode {get; }
     public demo.TbCultSeatTechNodeLevel TbCultSeatTechNodeLevel {get; }
-    public demo.TbNpcLocomotionProfile TbNpcLocomotionProfile {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -297,7 +296,6 @@ public partial class Tables
         TbCultAncientSeat = new demo.TbCultAncientSeat(loader("demo_tbcultancientseat"));
         TbCultSeatTechNode = new demo.TbCultSeatTechNode(loader("demo_tbcultseattechnode"));
         TbCultSeatTechNodeLevel = new demo.TbCultSeatTechNodeLevel(loader("demo_tbcultseattechnodelevel"));
-        TbNpcLocomotionProfile = new demo.TbNpcLocomotionProfile(loader("demo_tbnpclocomotionprofile"));
         ResolveRef();
     }
     
@@ -420,7 +418,6 @@ public partial class Tables
         TbCultAncientSeat.ResolveRef(this);
         TbCultSeatTechNode.ResolveRef(this);
         TbCultSeatTechNodeLevel.ResolveRef(this);
-        TbNpcLocomotionProfile.ResolveRef(this);
     }
 }
 

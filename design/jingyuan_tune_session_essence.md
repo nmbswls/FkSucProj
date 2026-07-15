@@ -253,4 +253,30 @@
 - `JingYuanTypePoolEnum` / `NamedNpcJingYuanType`：随机精型池和 Character 固定精型配置；
 - `JingYuanTunePanel`：拆为仓库/调和/出发装备三个工作流页面。
 
+## 当前代码落地状态
+
+- `PremiumEssenceInstance` 是独立运行时实体，不继承 `ItemInstance`。
+- `PlayerJingYuanEssenceSystem` 独立维护 SecretBase 仓库、随身临时槽和装备槽，并负责实例转移、存档和容量限制。
+- 日期推进会统一扣除三类容器内实例的保质期，剩余天数归零的实例会被移除。
+- 当前默认容量为仓库 50、临时槽 10、装备槽 1；后续可由 SecretBase 等级配置覆盖。
+- 普通物品系统暂未承载优质精华；抽象精华物品的自动使用、调和界面、SecretBase 面板 prefab 和实际属性应用仍属于后续接入项。
+
+## 属性与被动接入
+
+装备槽中的实例通过 `PlayerJingYuanEssenceSystem` 作为 `IProgressionSource` 接入玩家的 `ProgressionAggregator`。
+主词条由“精型 + 掉落等级 + 浓度档”解析 `JingYuanPremiumEffect`，其中 `AttrId` 使用 `EYCAttribute` 枚举值，`AttrValue` 直接加入玩家养成属性。
+实例的 `ExtraAffixIds` 作为被动技能 ID，通过 `IProgressionSkillSource` 接入已有的贡献技能链；未装备的实例、仓库实例和已过期实例不会产生任何属性或被动。
+
+装备、卸载、替换最终都应调用独立实例系统的转移接口，并由属性系统的变更事件刷新缓存。当前主属性和被动贡献已接入，具体额外词条池和被动技能配置仍需补充配置数据。
+
+## UI 规划
+
+`JingYuanTunePanel` 后续拆为三个工作流，仍挂在现有玩家成长 Hub 的调精页中：
+
+1. SecretBase 仓库：左侧按精型筛选和排序，中心显示 50 格优质精华实例，右侧显示详情、浓度、等级、保质期、主词条和额外词条，并提供存入/取出操作。
+2. 调和页：显示当前临时槽和可消耗材料，预览浓度变化及保质期风险；调和规则未定前只保留预览和不可用状态。
+3. 出发装备页：显示 1-5 个装备槽和 10-20 个临时存储槽，支持拖拽或点击装备、卸载、替换；顶部汇总当前有效属性和被动。
+
+UI 不直接修改列表，而是调用 `PlayerJingYuanEssenceSystem.TryEquip`、`TryUnequip`、`TryMove` 等接口，并订阅实例变化事件刷新列表和详情。当前 `JingYuanTunePanel` prefab 的 `BuiltRoot` 作为页面宿主，由面板脚本创建装备槽和候选 Grid；后续可将这些运行时模板固化为 panel-private prefab 结构。优质精华格子不复用普通物品格子，避免把独立实体伪装成 ItemInstance。
+
 系统应通过通用属性贡献接口提供当前装备精华的临时效果，避免把优质精华字段添加到通用玩家属性或普通 ItemStack 语义中。

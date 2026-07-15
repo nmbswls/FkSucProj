@@ -1763,7 +1763,6 @@ namespace My.Map.Unit
         {
             MovingToPos,
             LookingAround,
-            AwaitingPostSearchPolicy,
         }
 
         private SearchPhase _phase;
@@ -1780,8 +1779,6 @@ namespace My.Map.Unit
         public override void OnEnter()
         {
             base.OnEnter();
-
-            _brain.PostSearchPolicyPending = false;
 
             // 1. 开始阶段：前往可疑点
             _phase = SearchPhase.MovingToPos;
@@ -1800,8 +1797,6 @@ namespace My.Map.Unit
 
         public override void OnExit()
         {
-            _brain.PostSearchPolicyPending = false;
-            _brain.NpcEntity.LogicManager?.WantedGuardSpawner?.CancelPostSearchPolicyPending(_brain.NpcEntity.Id);
             base.OnExit();
         }
 
@@ -1832,21 +1827,9 @@ namespace My.Map.Unit
                     if (LogicTime.time > _lookAroundTimer)
                     {
                         _brain.SuspiciousPos = null;
-                        var rec = _brain.NpcEntity.NpcRecord;
-                        if (rec != null && rec.PostInvestigationResolveKind > 0)
-                        {
-                            _phase = SearchPhase.AwaitingPostSearchPolicy;
-                            _brain.PostSearchPolicyPending = true;
-                            _brain.NpcEntity.LogicManager?.NotifyPostSearchInvestigationComplete(_brain.NpcEntity.Id);
-                            break;
-                        }
-
                         _brain.ChangeState(_brain.StateReturn);
                     }
 
-                    break;
-
-                case SearchPhase.AwaitingPostSearchPolicy:
                     break;
             }
         }

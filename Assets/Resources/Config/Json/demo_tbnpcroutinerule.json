@@ -21,8 +21,7 @@
     "wander_radius": 0,
     "face_dir": { "x": 0, "y": 0 },
     "relocate_policy": 1,
-    "presentation_tag": "wait",
-    "locomotion_profile_id": "vera_wait"
+    "presentation_tag": "wait"
   },
   {
     "id": "home01_vera_night",
@@ -36,8 +35,7 @@
     "wander_radius": 0,
     "face_dir": { "x": 0, "y": 0 },
     "relocate_policy": 0,
-    "presentation_tag": "sleep",
-    "locomotion_profile_id": "vera_sleep"
+    "presentation_tag": "sleep"
   },
   {
     "id": "home01_vera_day",
@@ -51,8 +49,7 @@
     "wander_radius": 1.5,
     "face_dir": { "x": 0, "y": 0 },
     "relocate_policy": 0,
-    "presentation_tag": "work",
-    "locomotion_profile_id": "vera_work"
+    "presentation_tag": "work"
   },
   {
     "id": "home01_vera_default",
@@ -66,7 +63,6 @@
     "wander_radius": 0,
     "face_dir": { "x": 0, "y": 0 },
     "relocate_policy": 0,
-    "presentation_tag": "idle",
-    "locomotion_profile_id": "vera_default"
+    "presentation_tag": "idle"
   }
 ]

@@ -124,6 +124,11 @@ namespace My.Saving
         // 魅魔精元图鉴进度与调精装备
         public List<JingYuanCodexProgressPersist> JingYuanCodexProgress = new();
 
+        // 独立于普通 ItemInstance 的优质精华运行时实例。
+        public List<PremiumEssencePersist> PremiumEssenceWarehouse = new();
+        public List<PremiumEssencePersist> PremiumEssenceTemporary = new();
+        public List<PremiumEssencePersist> PremiumEssenceEquipped = new();
+
         // 共性统计计数（Statistic key -> value）
         public Dictionary<string, long> StatCounters = new();
 
@@ -430,6 +435,21 @@ namespace My.Saving
         public List<string> RandomOfferRumorIds = new();
     }
 
+    [Serializable]
+    public class WantedPressureSessionPersist
+    {
+        public long EntityId;
+        // 策略配置（pressure_behavior），落盘后不随进度变化
+        public int ResolveKind;
+        public int PatrolPickN = 3;
+        // 运行时进度（搜查/macro/离场），读档后用于重建 Wanted 状态机
+        public EWantedPressurePhase Phase;
+        public bool HasMoveToDespawnTarget;
+        public Vector2 MoveToDespawnTarget;
+        public string PatrolPortalNetworkId = string.Empty;
+        public List<string> PatrolCycleNodeIds = new List<string>();
+    }
+
     // 单张地图上的逻辑状态：区域邪恶警戒、动态刷新 CD、实体 Record 快照
     [Serializable]
     public class MapRuntimePersistData
@@ -442,6 +462,8 @@ namespace My.Saving
 
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
         public List<LogicEntityRecord> EntityRecords = new();
+
+        public List<WantedPressureSessionPersist> WantedPressureSessions = new();
     }
 
     [Serializable]
@@ -456,6 +478,18 @@ namespace My.Saving
         public int NodeId;
         [JsonProperty("Level")]
         public int Level;
+    }
+
+    [Serializable]
+    public class PremiumEssencePersist
+    {
+        public long InstanceId;
+        public EJingYuanType TypeId;
+        public int Concentration;
+        public int DropLevel;
+        public List<string> ExtraAffixIds = new();
+        public int RemainingShelfLifeDays;
+        public string SourceType;
     }
 
     [Serializable]
@@ -630,6 +664,9 @@ namespace My.Saving
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();
+            data.PlayerData.PremiumEssenceWarehouse ??= new List<PremiumEssencePersist>();
+            data.PlayerData.PremiumEssenceTemporary ??= new List<PremiumEssencePersist>();
+            data.PlayerData.PremiumEssenceEquipped ??= new List<PremiumEssencePersist>();
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
             if (data.PlayerData.FuncOpenList.Count == 0 && data.FuncOpenList != null && data.FuncOpenList.Count > 0)
             {
@@ -646,6 +683,17 @@ namespace My.Saving
             data.PlayerBuffs ??= new List<BuffPersistData>();
             data.GlobalRuntime ??= new GlobalRuntimePersistData();
             data.MapRuntimeByMapId ??= new Dictionary<string, MapRuntimePersistData>();
+            foreach (var mapRuntime in data.MapRuntimeByMapId.Values)
+            {
+                if (mapRuntime == null) continue;
+                mapRuntime.WantedPressureSessions ??= new List<WantedPressureSessionPersist>();
+                foreach (var session in mapRuntime.WantedPressureSessions)
+                {
+                    if (session == null) continue;
+                    session.PatrolCycleNodeIds ??= new List<string>();
+                    session.PatrolPortalNetworkId ??= string.Empty;
+                }
+            }
         }
 
         public static void SyncLogicEntityIdCounterFromSave(SaveData data)

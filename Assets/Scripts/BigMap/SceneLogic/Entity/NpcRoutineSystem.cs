@@ -6,11 +6,10 @@ using UnityEngine;
 
 namespace My.Map.Logic
 {
-    // 城镇 NPC 日程：按 Binding→Profile→Rule 派生 MoveBehave / Locomotion
+    // 城镇 NPC 日程：按 Binding→Profile→Rule 派生 MacroMoveBehave
     public sealed class NpcRoutineSystem
     {
         const float DefaultReevaluateInterval = 0.5f;
-        const string LocomotionSource = "routine";
 
         sealed class ResolvedRule
         {
@@ -21,8 +20,6 @@ namespace My.Map.Logic
             public ENpcRoutineRelocatePolicy Relocate;
             public float WanderRadius;
             public float ReevaluateIntervalSec;
-            public string LocomotionProfileId;
-            public string PresentationTag;
             public bool HasFaceDir;
             public Vector2 FaceDir;
             public List<Vector2> PathPoints;
@@ -87,8 +84,6 @@ namespace My.Map.Logic
 
         public void ApplyInitialPlacement(LogicEntityRecord4Npc record)
         {
-            if (IsWantedPressureNpc(record)) return;
-
             var resolved = Resolve(record);
             if (resolved == null) return;
 
@@ -125,12 +120,6 @@ namespace My.Map.Logic
 
                 var entity = _area.GetLogicEntiy(npc.Id, false) as NpcUnitLogicEntity;
                 if (entity?.AIBrain == null)
-                {
-                    _cooldowns[npc.Id] = DefaultReevaluateInterval;
-                    continue;
-                }
-
-                if (IsWantedPressureNpc(entity))
                 {
                     _cooldowns[npc.Id] = DefaultReevaluateInterval;
                     continue;
@@ -175,7 +164,6 @@ namespace My.Map.Logic
         public void SyncOnEnteredIdle(NpcUnitLogicEntity npc)
         {
             if (npc?.AIBrain == null) return;
-            if (IsWantedPressureNpc(npc)) return;
             if (npc.BindingRecord is not LogicEntityRecord4Npc record || !HasBinding(record)) return;
 
             var resolved = Resolve(record);
@@ -205,22 +193,11 @@ namespace My.Map.Logic
             _cooldowns[npc.Id] = resolved.ReevaluateIntervalSec;
         }
 
-        // 压迫行为 NPC（TbWantedGuardSpawnTier.pressure_behavior → PostInvestigationResolveKind）全程由 Wanted 管线驱动，不参与 Routine
-        static bool IsWantedPressureNpc(LogicEntityRecord4Npc record)
-        {
-            return record != null && record.PostInvestigationResolveKind > 0;
-        }
-
-        static bool IsWantedPressureNpc(NpcUnitLogicEntity npc)
-        {
-            return IsWantedPressureNpc(npc?.NpcRecord);
-        }
-
         bool IsRoutineOverrideApplied(NpcUnitLogicEntity npc, string ruleId)
         {
             return _appliedRules.TryGetValue(npc.Id, out var appliedId)
                 && appliedId == ruleId
-                && npc.MoveBehaveOverrideSource == BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine;
+                && npc.MacroMoveBehaveAuthority == BaseUnitLogicEntity.EMacroBehaveAuthority.Routine;
         }
 
         static bool IsInIdle(NpcUnitLogicEntity npc)
@@ -231,7 +208,7 @@ namespace My.Map.Logic
 
         bool ApplyRuntimeRule(NpcUnitLogicEntity npc, ResolvedRule rule, bool refreshIdlePolicy)
         {
-            var move = npc.TryAllocateMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine);
+            var move = npc.TryAllocateMacroMoveBehave(BaseUnitLogicEntity.EMacroBehaveAuthority.Routine);
             if (move == null)
             {
                 return false;
@@ -253,9 +230,6 @@ namespace My.Map.Logic
                 npc.ForceSetFaceTarget(rule.FaceDir, true);
             }
 
-            ApplyLocomotion(npc, rule.LocomotionProfileId);
-            npc.RoutinePresentationTag = rule.PresentationTag ?? string.Empty;
-
             if (refreshIdlePolicy)
             {
                 npc.AIBrain.RefreshIdlePolicy();
@@ -267,25 +241,12 @@ namespace My.Map.Logic
         void ClearRuntimeRoutineState(NpcUnitLogicEntity npc, bool refreshIdlePolicy)
         {
             if (npc == null) return;
-            npc.ClearLocomotionPreference(LocomotionSource);
-            npc.RoutinePresentationTag = string.Empty;
-            npc.ClearMoveBehaveOverride(BaseUnitLogicEntity.EMoveBehaveOverrideSource.Routine);
+            npc.ClearMacroMoveBehave(BaseUnitLogicEntity.EMacroBehaveAuthority.Routine);
 
             if (refreshIdlePolicy && npc.AIBrain != null)
             {
                 npc.AIBrain.RefreshIdlePolicy();
             }
-        }
-
-        static void ApplyLocomotion(NpcUnitLogicEntity npc, string locomotionProfileId)
-        {
-            var locomotion = string.IsNullOrEmpty(locomotionProfileId)
-                ? null
-                : CfgMgr.Cfgs.TbNpcLocomotionProfile.GetOrDefault(locomotionProfileId);
-            if (locomotion == null)
-                npc.ClearLocomotionPreference(LocomotionSource);
-            else
-                npc.SetLocomotionPreference(LocomotionSource, locomotion.Priority, locomotion.IdleAnim, locomotion.MoveAnim);
         }
 
         static void WriteMoveBehave(UnitMoveBehaveInfo move, ResolvedRule rule, Vector2 currentPos)
@@ -416,8 +377,6 @@ namespace My.Map.Logic
                 Relocate = relocate,
                 WanderRadius = selected.WanderRadius,
                 ReevaluateIntervalSec = interval,
-                LocomotionProfileId = selected.LocomotionProfileId,
-                PresentationTag = selected.PresentationTag ?? string.Empty,
                 HasFaceDir = hasFace,
                 FaceDir = faceDir,
                 PathPoints = pathPoints,

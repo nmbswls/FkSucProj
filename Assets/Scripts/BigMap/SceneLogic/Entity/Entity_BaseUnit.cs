@@ -166,7 +166,7 @@ namespace My.Map
             return true;
         }
 
-        public enum EMoveBehaveOverrideSource
+        public enum EMacroBehaveAuthority
         {
             None = 0,
             Routine = 1,
@@ -174,70 +174,188 @@ namespace My.Map
             Other = 3,
         }
 
-        // Record/导出基底意图；日程与临时策略写 Override，不回写 Record
+        // Record/导出基底意图；宏观机制写微观 Override，不回写 Record
         public UnitMoveBehaveInfo BaseMoveBehaveInfo { get; protected set; }
 
-        UnitMoveBehaveInfo _overrideMoveBehave;
-        EMoveBehaveOverrideSource _overrideSource = EMoveBehaveOverrideSource.None;
+        UnitMoveBehaveInfo _macroMoveBehave;
+        EMacroBehaveAuthority _macroBehaveAuthority = EMacroBehaveAuthority.None;
+        string _macroIdleAnim = string.Empty;
+        string _macroMoveAnim = string.Empty;
 
-        public bool HasMoveBehaveOverride => _overrideMoveBehave != null;
-        public EMoveBehaveOverrideSource MoveBehaveOverrideSource => _overrideSource;
+        public bool HasMacroMoveBehave => _macroMoveBehave != null;
+        public EMacroBehaveAuthority MacroMoveBehaveAuthority =>
+            _macroMoveBehave != null ? _macroBehaveAuthority : EMacroBehaveAuthority.None;
+        public EMacroBehaveAuthority MacroLocomotionAuthority =>
+            HasMacroLocomotionAnims() ? _macroBehaveAuthority : EMacroBehaveAuthority.None;
 
-        // 生效意图：Override 优先，否则 Base
-        public UnitMoveBehaveInfo MoveBehaveInfo => _overrideMoveBehave ?? BaseMoveBehaveInfo;
-
-        // 高优先级占有时，低优先级不得抢写（Wanted > Routine > Other）
-        public static int GetMoveBehaveOverridePriority(EMoveBehaveOverrideSource source)
+        bool HasMacroLocomotionAnims()
         {
-            return source switch
+            return !string.IsNullOrEmpty(_macroIdleAnim) || !string.IsNullOrEmpty(_macroMoveAnim);
+        }
+
+        void SyncMacroBehaveAuthority()
+        {
+            if (_macroMoveBehave == null && !HasMacroLocomotionAnims())
             {
-                EMoveBehaveOverrideSource.Wanted => 30,
-                EMoveBehaveOverrideSource.Routine => 20,
-                EMoveBehaveOverrideSource.Other => 10,
+                _macroBehaveAuthority = EMacroBehaveAuthority.None;
+            }
+        }
+
+        // 生效意图：宏观 Override 优先，否则 Base
+        public UnitMoveBehaveInfo MoveBehaveInfo => _macroMoveBehave ?? BaseMoveBehaveInfo;
+
+        // 宏观机制仲裁优先级（与 Rule.Priority 无关）
+        public static int GetMacroPriority(EMacroBehaveAuthority authority)
+        {
+            return authority switch
+            {
+                EMacroBehaveAuthority.Wanted => 30,
+                EMacroBehaveAuthority.Routine => 20,
+                EMacroBehaveAuthority.Other => 10,
                 _ => 0,
             };
         }
 
-        public bool CanWriteMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        EMacroBehaveAuthority GetActiveMacroBehaveAuthority()
         {
-            if (_overrideMoveBehave == null || _overrideSource == EMoveBehaveOverrideSource.None)
+            if (_macroMoveBehave != null || HasMacroLocomotionAnims())
+            {
+                return _macroBehaveAuthority;
+            }
+
+            return EMacroBehaveAuthority.None;
+        }
+
+        public bool CanApplyMacroBehaveAuthority(EMacroBehaveAuthority authority)
+        {
+            var active = GetActiveMacroBehaveAuthority();
+            if (active == EMacroBehaveAuthority.None)
             {
                 return true;
             }
 
-            return GetMoveBehaveOverridePriority(source)
-                >= GetMoveBehaveOverridePriority(_overrideSource);
+            return GetMacroPriority(authority) >= GetMacroPriority(active);
         }
 
-        // 占有检查通过后分配新的 Override 实例；调用方负责填字段，不从 Base 克隆
-        public UnitMoveBehaveInfo TryAllocateMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        void PreemptLowerMacroBehave(EMacroBehaveAuthority incoming)
         {
-            if (!CanWriteMoveBehaveOverride(source))
+            var active = GetActiveMacroBehaveAuthority();
+            if (active == EMacroBehaveAuthority.None)
+            {
+                return;
+            }
+
+            if (GetMacroPriority(incoming) <= GetMacroPriority(active))
+            {
+                return;
+            }
+
+            if (_macroMoveBehave != null && _macroBehaveAuthority == active)
+            {
+                _macroMoveBehave = null;
+            }
+
+            if (_macroBehaveAuthority == active)
+            {
+                _macroIdleAnim = string.Empty;
+                _macroMoveAnim = string.Empty;
+            }
+
+            SyncMacroBehaveAuthority();
+        }
+
+        public UnitMoveBehaveInfo TryAllocateMacroMoveBehave(EMacroBehaveAuthority authority)
+        {
+            if (!CanApplyMacroBehaveAuthority(authority))
             {
                 return null;
             }
 
-            _overrideMoveBehave = new UnitMoveBehaveInfo();
-            _overrideSource = source;
-            return _overrideMoveBehave;
+            PreemptLowerMacroBehave(authority);
+
+            _macroBehaveAuthority = authority;
+            _macroMoveBehave = new UnitMoveBehaveInfo();
+            return _macroMoveBehave;
         }
 
-        // 仅同 source 可清除，避免误清更高层占有
-        public bool ClearMoveBehaveOverride(EMoveBehaveOverrideSource source)
+        public bool SetMacroLocomotion(EMacroBehaveAuthority authority, string idleAnim, string moveAnim)
         {
-            if (_overrideMoveBehave == null)
-            {
-                return true;
-            }
-
-            if (_overrideSource != source)
+            if (authority == EMacroBehaveAuthority.None || !CanApplyMacroBehaveAuthority(authority))
             {
                 return false;
             }
 
-            _overrideMoveBehave = null;
-            _overrideSource = EMoveBehaveOverrideSource.None;
+            PreemptLowerMacroBehave(authority);
+
+            _macroBehaveAuthority = authority;
+            _macroIdleAnim = idleAnim ?? string.Empty;
+            _macroMoveAnim = moveAnim ?? string.Empty;
+            RequestAnimLayerRefresh(0);
             return true;
+        }
+
+        public bool ClearMacroLocomotion(EMacroBehaveAuthority authority)
+        {
+            if (_macroBehaveAuthority != authority || !HasMacroLocomotionAnims())
+            {
+                return false;
+            }
+
+            _macroIdleAnim = string.Empty;
+            _macroMoveAnim = string.Empty;
+            SyncMacroBehaveAuthority();
+            RequestAnimLayerRefresh(0);
+            return true;
+        }
+
+        public bool ClearMacroMoveBehave(EMacroBehaveAuthority authority)
+        {
+            if (_macroMoveBehave == null)
+            {
+                return true;
+            }
+
+            if (_macroBehaveAuthority != authority)
+            {
+                return false;
+            }
+
+            _macroMoveBehave = null;
+            SyncMacroBehaveAuthority();
+            return true;
+        }
+
+        public bool ClearMacroBehave(EMacroBehaveAuthority authority)
+        {
+            if (_macroBehaveAuthority != authority)
+            {
+                return false;
+            }
+
+            _macroMoveBehave = null;
+            _macroIdleAnim = string.Empty;
+            _macroMoveAnim = string.Empty;
+            _macroBehaveAuthority = EMacroBehaveAuthority.None;
+            RequestAnimLayerRefresh(0);
+            return true;
+        }
+
+        public override string GetAnimOverride(string rawAnimName)
+        {
+            if (HasMacroLocomotionAnims())
+            {
+                var idle = _macroIdleAnim;
+                var move = _macroMoveAnim;
+                var candidate = rawAnimName == "idle" ? idle :
+                    rawAnimName == "move" || rawAnimName == "walk" ? move : string.Empty;
+                if (!string.IsNullOrEmpty(candidate))
+                {
+                    return rawAnimName == "walk" && string.IsNullOrEmpty(move) ? rawAnimName :
+                        rawAnimName == "idle" ? idle : move;
+                }
+            }
+
+            return base.GetAnimOverride(rawAnimName);
         }
 
         public CompFightMeleeSlot MeleeSlotManager;

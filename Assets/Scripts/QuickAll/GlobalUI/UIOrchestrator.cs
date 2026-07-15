@@ -436,8 +436,8 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
-                panelId = My.UI.CultTech.CultTechTreePanel.Pid,
-                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/CultTechTreePanel",
+                panelId = My.UI.CultTech.CultPanel.Pid,
+                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/CultPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

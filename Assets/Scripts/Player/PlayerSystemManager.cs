@@ -62,6 +62,8 @@ namespace My.Player
 
         public PlayerJingYuanCodexSystem JingYuanCodexSystem { get; private set; }
 
+        public PlayerJingYuanEssenceSystem JingYuanEssenceSystem { get; private set; }
+
         public PlayerStatisticSystem StatisticSystem { get; private set; }
 
         public PlayerEventGrantSystem EventGrantSystem { get; private set; }
@@ -143,6 +145,7 @@ namespace My.Player
             RuneSystem = new PlayerRuneSystem(this);
             BodyPartSystem = new PlayerBodyPartSystem(this);
             JingYuanCodexSystem = new PlayerJingYuanCodexSystem(this);
+            JingYuanEssenceSystem = new PlayerJingYuanEssenceSystem(this);
             StatisticSystem = new PlayerStatisticSystem(this);
             EventGrantSystem = new PlayerEventGrantSystem(this);
             DirectDeathRewardSystem = new PlayerDirectDeathRewardSystem(this);
@@ -220,6 +223,7 @@ namespace My.Player
             ItemEnchant.InitSystem(logicManager, savingData);
             RuneSystem.InitSystem(logicManager, savingData);
             JingYuanCodexSystem.InitSystem(logicManager, savingData);
+            JingYuanEssenceSystem.InitSystem(logicManager, savingData);
             StatisticSystem.InitSystem(logicManager, savingData);
             EventGrantSystem.InitSystem(logicManager, savingData);
             DirectDeathRewardSystem.InitSystem(logicManager, savingData);
@@ -253,6 +257,7 @@ namespace My.Player
             yield return ItemEnchant;
             yield return RuneSystem;
             yield return JingYuanCodexSystem;
+            yield return JingYuanEssenceSystem;
             yield return StatisticSystem;
             yield return EventGrantSystem;
             yield return DirectDeathRewardSystem;
@@ -288,6 +293,7 @@ namespace My.Player
             HumanQuickBar.WriteToSave(data.PlayerData);
             RuneSystem?.WriteToSave(data.PlayerData);
             JingYuanCodexSystem?.WriteToSave(data.PlayerData);
+            JingYuanEssenceSystem?.WriteToSave(data.PlayerData);
             StatisticSystem?.WriteToSave(data.PlayerData);
             EventGrantSystem?.WriteToSave(data.PlayerData);
             QuestSystem?.WriteToSave(data.PlayerData);
@@ -656,7 +662,7 @@ namespace My.Player
                 TryAdd(id, 1);
             }
 
-            // 养成模块贡献（符文 / 调精 / EventGrant），不再点名各 System
+            // 养成模块贡献（符文 / EventGrant），不再点名各 System
             if (ProgressionSystem != null)
             {
                 _progressionSkillScratch.Clear();
@@ -745,7 +751,7 @@ namespace My.Player
                 applied.Add(skillId);
             }
 
-            // 养成贡献被动 buff（符文 > 调精 > EventGrant）
+            // 养成贡献被动 buff（符文 > EventGrant）
             if (ProgressionSystem != null)
             {
                 _progressionSkillScratch.Clear();
