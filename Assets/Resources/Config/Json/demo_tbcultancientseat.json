@@ -6,7 +6,8 @@
     "desc": "掌管“往去”的古老者。她已在文明记忆中死去，只余石碑与残存的供奉火种。",
     "state_desc": "已逝",
     "unlock_faith_cost": 0,
-    "default_unlocked": true
+    "default_unlocked": true,
+    "unlock_conds": []
   },
   {
     "seat_id": 2,
@@ -15,6 +16,17 @@
     "desc": "一块尚未被辨认的古老者石碑，等待未来与莉莉丝的旧日交集被揭开。",
     "state_desc": "沉睡",
     "unlock_faith_cost": 120,
-    "default_unlocked": false
+    "default_unlocked": false,
+    "unlock_conds": [
+      {
+        "type": 10,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ]
   }
 ]

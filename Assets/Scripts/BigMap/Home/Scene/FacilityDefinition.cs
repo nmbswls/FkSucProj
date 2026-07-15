@@ -22,6 +22,7 @@ namespace My
         public string DisplayName;
         public FacilityCapability Capabilities;
         public int MaxWorkforce;
+        public int MaxSupervisorSlots;
         public string PresentationPrefab;
         public string InteractionHandlerId;
     }
@@ -39,6 +40,7 @@ namespace My
                 DisplayName = row.DisplayName,
                 Capabilities = (FacilityCapability)row.Capabilities,
                 MaxWorkforce = row.MaxWorkforce,
+                MaxSupervisorSlots = row.MaxSupervisorSlots,
                 PresentationPrefab = row.PresentationPrefab,
                 InteractionHandlerId = row.InteractionHandlerId,
             };

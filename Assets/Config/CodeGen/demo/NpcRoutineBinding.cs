@@ -22,6 +22,7 @@ public sealed partial class NpcRoutineBinding : Luban.BeanBase
         { if(!_buf["overlay_id"].IsString) { throw new SerializationException(); }  OverlayId = _buf["overlay_id"]; }
         { if(!_buf["character_key"].IsString) { throw new SerializationException(); }  CharacterKey = _buf["character_key"]; }
         { if(!_buf["routine_profile_id"].IsString) { throw new SerializationException(); }  RoutineProfileId = _buf["routine_profile_id"]; }
+        { if(!_buf["npc_cfg_id"].IsString) { throw new SerializationException(); }  NpcCfgId = _buf["npc_cfg_id"]; }
     }
 
     public static NpcRoutineBinding DeserializeNpcRoutineBinding(JSONNode _buf)
@@ -45,6 +46,10 @@ public sealed partial class NpcRoutineBinding : Luban.BeanBase
     /// routine profile id
     /// </summary>
     public string RoutineProfileId;
+    /// <summary>
+    /// unit_npc cfg id used when routine creates the NPC record
+    /// </summary>
+    public string NpcCfgId;
    
     public const int __ID__ = -1496258825;
     public override int GetTypeId() => __ID__;
@@ -60,6 +65,7 @@ public sealed partial class NpcRoutineBinding : Luban.BeanBase
         + "overlayId:" + OverlayId + ","
         + "characterKey:" + CharacterKey + ","
         + "routineProfileId:" + RoutineProfileId + ","
+        + "npcCfgId:" + NpcCfgId + ","
         + "}";
     }
 }

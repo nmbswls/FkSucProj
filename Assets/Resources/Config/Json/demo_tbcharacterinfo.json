@@ -46,5 +46,21 @@
     "preferred_gift_tags": [],
     "disliked_gift_tags": [],
     "gifts_per_day": 1
+  },
+  {
+    "key": "home_evan",
+    "name": "艾文",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
+  },
+  {
+    "key": "home_hearn",
+    "name": "赫恩",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   }
 ]

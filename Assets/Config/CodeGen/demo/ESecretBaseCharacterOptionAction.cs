@@ -18,6 +18,7 @@ namespace cfg.demo
         OpenTalentTree = 2,
         OpenPanel = 3,
         OpenOptionGroup = 4,
+        GivePremiumEssence = 5,
     }
 
 } 

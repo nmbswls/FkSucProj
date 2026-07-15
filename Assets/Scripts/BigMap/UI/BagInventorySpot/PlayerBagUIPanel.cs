@@ -52,6 +52,7 @@ namespace My.UI.Bag
         public Transform SpecBagSelectionsTr;
 
         public Button CloseButton;
+        public Button JingYuanButton;
 
         public class InnerMainBagTabItem
         {
@@ -117,6 +118,8 @@ namespace My.UI.Bag
                     UIManager.Instance.HidePanel("PlayerBag");
                 });
             }
+
+            JingYuanButton?.onClick.AddListener(() => UIManager.Instance.ShowPanel(JingYuanCarriedPanel.PanelIdConst));
             
 
             for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)

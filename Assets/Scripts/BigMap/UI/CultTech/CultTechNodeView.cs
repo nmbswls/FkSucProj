@@ -8,97 +8,87 @@ namespace My.UI.CultTech
 {
     public sealed class CultTechNodeView : MonoBehaviour
     {
-        int _nodeId;
+        [SerializeField] Button selectButton;
+        [SerializeField] Button actionButton;
+        [SerializeField] Image nodeBackground;
+        [SerializeField] Image selectionFrame;
+        [SerializeField] Image nodeIcon;
+        [SerializeField] TextMeshProUGUI titleText;
+        [SerializeField] TextMeshProUGUI levelText;
+        [SerializeField] TextMeshProUGUI actionText;
+        [SerializeField] CultTechNodeHoverView hoverView;
+
         CultTechTreeView _host;
-        Button _actionButton;
-        TextMeshProUGUI _titleText;
-        TextMeshProUGUI _levelText;
-        TextMeshProUGUI _actionText;
-        Image _bgImage;
+        CultTechNodeBinder _binder;
 
-        public static CultTechNodeView Create(Transform parent, int nodeId, CultTechTreeView host)
+        public int CultNodeId => _binder != null ? _binder.CultNodeId : 0;
+
+        void Awake()
         {
-            var go = new GameObject($"CultTechNode_{nodeId}", typeof(RectTransform), typeof(Image), typeof(Button));
-            go.transform.SetParent(parent, false);
-            var rect = (RectTransform)go.transform; rect.sizeDelta = new Vector2(150f, 86f);
-            go.GetComponent<Image>().color = new Color(0.18f, 0.08f, 0.2f, 0.95f);
-            AddText(go.transform, "Title", new Vector2(4f, 48f), new Vector2(-4f, -6f), 16f);
-            AddText(go.transform, "Level", new Vector2(4f, 24f), new Vector2(-4f, -30f), 13f);
-            var action = AddText(go.transform, "Action", new Vector2(4f, 3f), new Vector2(-4f, -54f), 12f);
-            action.alignment = TextAlignmentOptions.Center;
-            var view = go.AddComponent<CultTechNodeView>(); view.Bind(nodeId, host); return view;
+            _binder = GetComponent<CultTechNodeBinder>();
+            selectButton ??= GetComponent<Button>();
+            actionButton ??= transform.Find("ActionButton")?.GetComponent<Button>();
+            nodeBackground ??= GetComponent<Image>();
+            selectionFrame ??= transform.Find("SelectionFrame")?.GetComponent<Image>();
+            nodeIcon ??= transform.Find("NodeIcon")?.GetComponent<Image>();
+            titleText ??= transform.Find("Title")?.GetComponent<TextMeshProUGUI>();
+            levelText ??= transform.Find("Level")?.GetComponent<TextMeshProUGUI>();
+            actionText ??= transform.Find("ActionButton/Label")?.GetComponent<TextMeshProUGUI>();
+            hoverView ??= GetComponent<CultTechNodeHoverView>();
         }
 
-        static TextMeshProUGUI AddText(Transform parent, string name, Vector2 min, Vector2 max, float size)
+        public void BindHost(CultTechTreeView host)
         {
-            var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
-            var rect = (RectTransform)go.transform; rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = min; rect.offsetMax = max;
-            var text = go.AddComponent<TextMeshProUGUI>(); text.fontSize = size; text.alignment = TextAlignmentOptions.Center; text.raycastTarget = false; return text;
-        }
-
-        public void Bind(int nodeId, CultTechTreeView host)
-        {
-            _nodeId = nodeId;
             _host = host;
-            var buttons = GetComponentsInChildren<Button>(true);
-            _actionButton = buttons.Length > 0 ? buttons[0] : null;
-            var texts = GetComponentsInChildren<TextMeshProUGUI>(true);
-            _titleText = texts.Length > 0 ? texts[0] : null;
-            _levelText = texts.Length > 1 ? texts[1] : null;
-            _actionText = texts.Length > 2 ? texts[2] : null;
-            _bgImage = GetComponent<Image>() ?? transform.Find("Image")?.GetComponent<Image>();
-
-            if (_actionButton != null)
+            if (selectButton != null)
             {
-                _actionButton.onClick.RemoveAllListeners();
-                _actionButton.onClick.AddListener(OnActionClicked);
+                selectButton.onClick.RemoveAllListeners();
+                selectButton.onClick.AddListener(OnSelectClicked);
+            }
+
+            if (actionButton != null && actionButton != selectButton)
+            {
+                actionButton.onClick.RemoveAllListeners();
+                actionButton.onClick.AddListener(OnActionClicked);
             }
         }
 
-        public void Refresh(DemonCultSystem cult)
+        public void Refresh(DemonCultSystem cult, bool selected)
         {
-            var node = CfgMgr.Cfgs?.TbCultTechNode?.GetOrDefault(_nodeId);
-            int current = cult?.GetTechNodeLevel(_nodeId) ?? 0;
+            var node = CfgMgr.Cfgs?.TbCultTechNode?.GetOrDefault(CultNodeId);
+            int current = cult?.GetTechNodeLevel(CultNodeId) ?? 0;
             int max = node?.MaxLevel ?? 1;
-            var state = cult?.GetTechNodeVisualState(_nodeId) ?? CultTechNodeVisualState.Locked;
+            var state = cult?.GetTechNodeVisualState(CultNodeId) ?? CultTechNodeVisualState.Locked;
+            hoverView?.Configure(CultNodeId, cult);
 
-            if (_titleText != null)
-            {
-                _titleText.text = node?.DisplayName ?? $"Cult {_nodeId}";
-            }
+            if (titleText != null) titleText.text = node?.DisplayName ?? $"Cult {CultNodeId}";
+            if (levelText != null) levelText.text = $"Lv{current}/{max}";
+            if (actionText != null) actionText.text = current >= max ? "已铭刻" : "铭刻";
+            if (actionButton != null) actionButton.interactable = state == CultTechNodeVisualState.Unlockable;
 
-            if (_levelText != null)
+            if (nodeBackground != null)
             {
-                _levelText.text = $"Lv{current}/{max}";
-            }
-
-            if (_actionText != null)
-            {
-                _actionText.text = current >= max ? "Max" : "Unlock";
-            }
-
-            if (_actionButton != null)
-            {
-                _actionButton.interactable = state == CultTechNodeVisualState.Unlockable
-                    || state == CultTechNodeVisualState.InsufficientFaith
-                    || state == CultTechNodeVisualState.Unlocked;
-            }
-
-            if (_bgImage != null)
-            {
-                _bgImage.color = state switch
+                nodeBackground.color = state switch
                 {
-                    CultTechNodeVisualState.Unlocked => new Color(0.55f, 0.22f, 0.32f, 0.95f),
-                    CultTechNodeVisualState.Unlockable => new Color(0.42f, 0.28f, 0.55f, 0.95f),
-                    CultTechNodeVisualState.InsufficientFaith => new Color(0.28f, 0.16f, 0.22f, 0.9f),
-                    _ => new Color(0.12f, 0.1f, 0.14f, 0.85f),
+                    CultTechNodeVisualState.Unlocked => new Color(.58f, .25f, .7f, .98f),
+                    CultTechNodeVisualState.Unlockable => new Color(.28f, .2f, .42f, .98f),
+                    CultTechNodeVisualState.InsufficientFaith => new Color(.2f, .14f, .25f, .95f),
+                    _ => new Color(.09f, .07f, .14f, .92f),
                 };
             }
+
+            if (nodeIcon != null)
+            {
+                nodeIcon.color = state == CultTechNodeVisualState.Unlocked
+                    ? new Color(1f, .65f, .95f, 1f)
+                    : new Color(.7f, .55f, .9f, .9f);
+            }
+
+            if (selectionFrame != null) selectionFrame.enabled = selected;
         }
 
-        void OnActionClicked()
-        {
-            _host?.OnNodeClicked(_nodeId);
-        }
+        void OnSelectClicked() => _host?.OnNodeClicked(CultNodeId);
+
+        void OnActionClicked() => _host?.TryUnlock(CultNodeId);
     }
 }

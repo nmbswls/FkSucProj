@@ -310,6 +310,9 @@ namespace My.UI
                         : option.ActionParam;
                     RefreshHub();
                     break;
+                case ESecretBaseCharacterOptionAction.GivePremiumEssence:
+                    SecretBaseNpcSocialService.TryTalkAndGivePremiumEssence(_row, option.ActionParam);
+                    break;
                 case ESecretBaseCharacterOptionAction.OpenPanel:
                     if (!string.IsNullOrEmpty(option.ActionParam))
                     {

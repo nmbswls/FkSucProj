@@ -51,6 +51,9 @@ namespace My.Config
         }
 
         public static PremiumEssenceInstance CreateInstance(EJingYuanType typeId, int npcLevel, string sourceType)
+            => CreateInstanceAtLevel(typeId, ResolveDropLevel(npcLevel), 1, sourceType, null);
+
+        public static PremiumEssenceInstance CreateInstanceAtLevel(EJingYuanType typeId, int dropLevel, int qualityTier, string sourceType, string sourceItemId)
         {
             var def = GetTypeInfo(typeId);
             var essence = CfgMgr.Cfgs?.TbJingYuanPremiumEssence?.DataList;
@@ -61,7 +64,9 @@ namespace My.Config
                 InstanceId = System.Threading.Interlocked.Increment(ref _nextInstanceId),
                 TypeId = typeId,
                 Concentration = UnityEngine.Random.Range(0, 101),
-                DropLevel = ResolveDropLevel(npcLevel),
+                DropLevel = Math.Max(1, dropLevel),
+                QualityTier = Math.Max(1, qualityTier),
+                SourceItemId = sourceItemId,
                 RemainingShelfLifeDays = essenceDef?.BaseShelfLifeDays ?? 3,
                 SourceType = sourceType,
                 StorageState = PremiumEssenceStorageState.Temporary,
@@ -70,20 +75,18 @@ namespace My.Config
 
         public static string ToLegacyTypeId(EJingYuanType typeId) => typeId switch
         {
-            EJingYuanType.OrcCommon => "orc_common",
-            EJingYuanType.OrcElite => "orc_elite",
-            EJingYuanType.SignAries => "sign_aries",
-            EJingYuanType.SignTaurus => "sign_taurus",
-            EJingYuanType.SignGemini => "sign_gemini",
-            EJingYuanType.SignCancer => "sign_cancer",
-            EJingYuanType.SignLeo => "sign_leo",
-            EJingYuanType.SignVirgo => "sign_virgo",
-            EJingYuanType.SignLibra => "sign_libra",
-            EJingYuanType.SignScorpio => "sign_scorpio",
-            EJingYuanType.SignSagittarius => "sign_sagittarius",
-            EJingYuanType.SignCapricorn => "sign_capricorn",
-            EJingYuanType.SignAquarius => "sign_aquarius",
-            EJingYuanType.SignPisces => "sign_pisces",
+            EJingYuanType.OrcI => "orc_i",
+            EJingYuanType.OrcII => "orc_ii",
+            EJingYuanType.HumanI => "human_i",
+            EJingYuanType.HumanII => "human_ii",
+            EJingYuanType.HumanIII => "human_iii",
+            EJingYuanType.HumanIV => "human_iv",
+            EJingYuanType.HumanV => "human_v",
+            EJingYuanType.HumanVI => "human_vi",
+            EJingYuanType.HumanVII => "human_vii",
+            EJingYuanType.MonsterI => "monster_i",
+            EJingYuanType.MonsterII => "monster_ii",
+            EJingYuanType.MonsterIII => "monster_iii",
             _ => string.Empty,
         };
     }

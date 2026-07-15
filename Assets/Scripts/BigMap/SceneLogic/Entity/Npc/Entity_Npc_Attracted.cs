@@ -70,6 +70,28 @@ namespace My.Map
             HasBeenChecked = false;
         }
 
+        StimulusMemoryRecord()
+        {
+        }
+
+        public static StimulusMemoryRecord FromPersist(
+            Vector3 position,
+            float basePriority,
+            float timestamp,
+            EStimulusType type,
+            long sourceId)
+        {
+            return new StimulusMemoryRecord
+            {
+                Position = position,
+                BasePriority = basePriority,
+                Timestamp = timestamp,
+                Type = type,
+                SourceID = sourceId,
+                HasBeenChecked = false,
+            };
+        }
+
         // 随时间衰减后的实际优先级
         public float GetCurrentPriority(float currentTime, float decayRate)
         {
@@ -117,6 +139,11 @@ namespace My.Map
         private List<StimulusMemoryRecord> _activeMemories = new List<StimulusMemoryRecord>();
 
         public StimulusMemoryRecord CurrentFocus { get; private set; }
+
+        public void RestorePersistedFocus(Vector3 position, float basePriority, float timestamp, EStimulusType type, long sourceId)
+        {
+            CurrentFocus = StimulusMemoryRecord.FromPersist(position, basePriority, timestamp, type, sourceId);
+        }
 
         private void TickStimulusAttract()
         {

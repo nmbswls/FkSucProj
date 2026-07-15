@@ -22,30 +22,12 @@ namespace My.UI.CultTech
         void Awake()
         {
             if (string.IsNullOrEmpty(panelId)) panelId = Pid;
-            overviewView ??= GetComponentInChildren<CultOverviewView>(true);
-            doctrineView ??= GetComponentInChildren<CultTechTreeView>(true);
-            seatView ??= GetComponentInChildren<AncientSeatTreeView>(true);
-            EnsureOverviewView();
+            overviewView ??= transform.Find("OverviewRoot")?.GetComponent<CultOverviewView>();
+            doctrineView ??= GetComponent<CultTechTreeView>();
+            seatView ??= GetComponent<AncientSeatTreeView>();
             EnsureTabs();
             EnsureCloseButton();
             SelectTab(_activeTab);
-        }
-
-        void EnsureOverviewView()
-        {
-            if (overviewView != null) return;
-            var root = transform.Find("OverviewRoot");
-            if (root == null)
-            {
-                var objectRoot = new GameObject("OverviewRoot", typeof(RectTransform));
-                objectRoot.transform.SetParent(transform, false);
-                var rect = (RectTransform)objectRoot.transform;
-                rect.anchorMin = Vector2.zero;
-                rect.anchorMax = Vector2.one;
-                rect.offsetMin = rect.offsetMax = Vector2.zero;
-                root = objectRoot.transform;
-            }
-            overviewView = root.GetComponent<CultOverviewView>() ?? root.gameObject.AddComponent<CultOverviewView>();
         }
 
         void EnsureTabs()
@@ -53,46 +35,17 @@ namespace My.UI.CultTech
             var root = transform.Find("CultTabs");
             if (root == null)
             {
-                var objectRoot = new GameObject("CultTabs", typeof(RectTransform));
-                objectRoot.transform.SetParent(transform, false);
-                var rect = (RectTransform)objectRoot.transform;
-                rect.anchorMin = new Vector2(0.04f, 0.92f);
-                rect.anchorMax = new Vector2(0.78f, 0.985f);
-                rect.offsetMin = rect.offsetMax = Vector2.zero;
-                root = objectRoot.transform;
+                Debug.LogError("CultPanel requires CultTabs in its prefab.");
+                return;
             }
-            _overviewTab = EnsureTab(root, "OverviewTab", "教团概览", 0);
-            _doctrineTab = EnsureTab(root, "DoctrineTab", "教义科技", 1);
-            _seatTab = EnsureTab(root, "AncientSeatTab", "古老者之座", 2);
+            _overviewTab = root.Find("OverviewTab")?.GetComponent<Button>();
+            _doctrineTab = root.Find("DoctrineTab")?.GetComponent<Button>();
+            _seatTab = root.Find("AncientSeatTab")?.GetComponent<Button>();
+            if (_overviewTab == null || _doctrineTab == null || _seatTab == null)
+                Debug.LogError("CultPanel requires OverviewTab, DoctrineTab and AncientSeatTab in its prefab.");
             BindTab(_overviewTab, 0);
             BindTab(_doctrineTab, 1);
             BindTab(_seatTab, 2);
-        }
-
-        Button EnsureTab(Transform root, string name, string text, int index)
-        {
-            var button = root.Find(name)?.GetComponent<Button>();
-            if (button == null)
-            {
-                var objectRoot = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
-                objectRoot.transform.SetParent(root, false);
-                var rect = (RectTransform)objectRoot.transform;
-                rect.anchorMin = new Vector2(index / 3f, 0f);
-                rect.anchorMax = new Vector2((index + 1) / 3f - 0.01f, 1f);
-                rect.offsetMin = rect.offsetMax = Vector2.zero;
-                button = objectRoot.GetComponent<Button>();
-                var labelObject = new GameObject("Label", typeof(RectTransform));
-                labelObject.transform.SetParent(objectRoot.transform, false);
-                var label = labelObject.AddComponent<TextMeshProUGUI>();
-                label.text = text;
-                label.fontSize = 16f;
-                label.alignment = TextAlignmentOptions.Center;
-                label.raycastTarget = false;
-                label.rectTransform.anchorMin = Vector2.zero;
-                label.rectTransform.anchorMax = Vector2.one;
-                label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
-            }
-            return button;
         }
 
         void BindTab(Button tab, int index)

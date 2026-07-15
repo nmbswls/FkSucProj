@@ -1,16 +1,24 @@
 
 using System.Collections.Generic;
+using My.Home;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Scene;
+using My.UI.Home;
 using UnityEngine;
 
 namespace My
 {
-    public class HomeFacilityPresenter : ScenePresentationBase<HomeFacilityLogicEntity>, ISubInteractHolder
+    public class HomeFacilityPresenter : ScenePresentationBase<HomeFacilityLogicEntity>, ISubInteractHolder, ISceneInteractable
     {
 
         public HomeFacilityLogicEntity FacilityEntity { get { return (HomeFacilityLogicEntity)_logic; } }
+
+        public string ShowName => FacilityEntity?.FacilityId ?? "设施";
+        public Vector2 Pos => transform.position;
+        public bool WithInteractDetail => true;
+        public bool InteractFocused { get; set; }
+        public bool IsInteractDetail { get; set; }
 
         public Transform ViewRoot;
         [SerializeField]
@@ -171,9 +179,44 @@ namespace My
 
         public bool SubTriggerInteract(int subIdx, int selectionId, int playerId)
         {
-            MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"我是{FacilityEntity.FacilityId}。", 1f);
+            if (FacilityEntity == null)
+            {
+                return false;
+            }
+
+            TownFacilityInteractUtil.OpenDetail(FacilityEntity.FacilityId, FacilityEntity.FacilityInstanceId);
             _interactCdTimer[subIdx] = LogicTime.time;
             return true;
+        }
+
+        public bool CanInteractEnable()
+        {
+            return FacilityEntity != null && CanSubInteractEnable(0);
+        }
+
+        public bool TriggerInteract(int selectionId, int playerId)
+        {
+            return SubTriggerInteract(0, selectionId, playerId);
+        }
+
+        public Vector3 GetHintAnchorPosition()
+        {
+            return transform.position;
+        }
+
+        public float GetHintOffsetInfos()
+        {
+            return 0;
+        }
+
+        public List<SceneInteractSelection> GetInteractSelections()
+        {
+            return GetSubInteractSelections(0);
+        }
+
+        public bool IsAutoInteract()
+        {
+            return false;
         }
     }
 }

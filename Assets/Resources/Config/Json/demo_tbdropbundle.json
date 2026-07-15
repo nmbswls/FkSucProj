@@ -168,5 +168,6 @@
     "drop_group_weights": [
       10000
     ]
-  }
+  },
+{"id":3000,"name":"Premium Essence Drop Bundle","drop_group_ids":[30000],"drop_group_weights":[10000]}
 ]

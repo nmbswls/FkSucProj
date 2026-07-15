@@ -1,6 +1,7 @@
 
 using System;
 using cfg.demo;
+using My.Home;
 using My.Player;
 using UnityEngine;
 
@@ -44,6 +45,22 @@ namespace My
                     }
                 case cfg.demo.ECommonCheckType.CheckVariable:
                     {
+                        if (TownFacilityCondKeys.TryParseSiteLevelCond(cond.Param5, out var siteId))
+                        {
+                            int minLevel = (int)cond.Param1;
+                            var site = TownFacilitySiteCatalog.Get(siteId);
+                            return site != null
+                                   && worldPersistState != null
+                                   && worldPersistState.GetSiteDevelopmentLevel(site.MapId, siteId) >= minLevel;
+                        }
+
+                        if (TownFacilityCondKeys.TryParseLevelCond(cond.Param5, out var logicAreaId, out var facilityId))
+                        {
+                            int minLevel = (int)cond.Param1;
+                            return worldPersistState != null
+                                   && worldPersistState.GetFacilityDevelopmentLevel(logicAreaId, facilityId) >= minLevel;
+                        }
+
                         bool checkHas = false;
                         if(cond.Param1 == 0)
                         {
@@ -130,6 +147,11 @@ namespace My
                     {
                         return playerSystem?.ProgressionSystem?.HumanCivilization != null
                                && playerSystem.ProgressionSystem.HumanCivilization.GetUnlockedTechCount() >= cond.Param1;
+                    }
+                case cfg.demo.ECommonCheckType.ControlledTownCount:
+                    {
+                        return worldPersistState != null
+                               && worldPersistState.GetControlledTownCount() >= cond.Param1;
                     }
             }
             return false;

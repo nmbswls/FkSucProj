@@ -269,8 +269,7 @@ public class MapChunkManager : MonoBehaviour
         {
             var existObjInfo = currentInstances.Find(a => a.Item2 == item.ItemId);
 
-            if (item.AppearCond != null &&
-                !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
+            if (!ShouldShowStaticPrefabItem(item))
             {
                 if (existObjInfo.Item1 != null)
                 {
@@ -388,6 +387,29 @@ public class MapChunkManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    static bool ShouldShowStaticPrefabItem(StaticPrefabItem item)
+    {
+        var glm = MainGameManager.Instance?.gameLogicManager;
+        if (glm == null)
+        {
+            return true;
+        }
+
+        if (item.AppearCond != null && item.AppearCond.Type != ECommonCheckType.None
+            && !glm.CheckCommonCond(item.AppearCond))
+        {
+            return false;
+        }
+
+        if (item.DisappearCond != null && item.DisappearCond.Type != ECommonCheckType.None
+            && glm.CheckCommonCond(item.DisappearCond))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     static string ResolveStaticPrefabResourceKey(string key)
@@ -587,8 +609,7 @@ public class MapChunkManager : MonoBehaviour
 
         foreach (var item in GetChunkStaticPrefabs(rec.coord))
         {
-            if (item.AppearCond != null && item.AppearCond.Type != ECommonCheckType.None &&
-                !MainGameManager.Instance.gameLogicManager.CheckCommonCond(item.AppearCond))
+            if (!ShouldShowStaticPrefabItem(item))
             {
                 continue;
             }

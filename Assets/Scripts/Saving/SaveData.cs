@@ -128,6 +128,8 @@ namespace My.Saving
         public List<PremiumEssencePersist> PremiumEssenceWarehouse = new();
         public List<PremiumEssencePersist> PremiumEssenceTemporary = new();
         public List<PremiumEssencePersist> PremiumEssenceEquipped = new();
+        public long JingYuanResidue;
+        public float PremiumEssenceOverflowRemainingSeconds;
 
         // 共性统计计数（Statistic key -> value）
         public Dictionary<string, long> StatCounters = new();
@@ -441,13 +443,8 @@ namespace My.Saving
         public long EntityId;
         // 策略配置（pressure_behavior），落盘后不随进度变化
         public int ResolveKind;
-        public int PatrolPickN = 3;
-        // 运行时进度（搜查/macro/离场），读档后用于重建 Wanted 状态机
+        // 运行时进度（搜查/macro/离场）；macro 执行参数见 EntityRecord
         public EWantedPressurePhase Phase;
-        public bool HasMoveToDespawnTarget;
-        public Vector2 MoveToDespawnTarget;
-        public string PatrolPortalNetworkId = string.Empty;
-        public List<string> PatrolCycleNodeIds = new List<string>();
     }
 
     // 单张地图上的逻辑状态：区域邪恶警戒、动态刷新 CD、实体 Record 快照
@@ -487,8 +484,11 @@ namespace My.Saving
         public EJingYuanType TypeId;
         public int Concentration;
         public int DropLevel;
+        public int QualityTier;
+        public string SourceItemId;
         public List<string> ExtraAffixIds = new();
         public int RemainingShelfLifeDays;
+        public int RenewalCount;
         public string SourceType;
     }
 
@@ -529,14 +529,36 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class FacilitySupervisorSlotPersist
+    {
+        public int SlotIndex;
+        public string CharacterKey;
+    }
+
+    [Serializable]
     public class TownFacilityPersist
     {
+        public int SiteId;
         public long InstanceId;
         public string FacilityId;
         public bool IsConstructed;
         public int DevelopmentLevel;
-        public string OperationPlanId;
+        public string RenovationId;
         public int AssignedWorkforce;
+        public List<FacilitySupervisorSlotPersist> SupervisorSlots = new();
+
+        // 旧档 beacon_id 兼容
+        [JsonProperty("BeaconId")]
+        int LegacyBeaconId
+        {
+            set
+            {
+                if (SiteId <= 0 && value > 0)
+                {
+                    SiteId = value;
+                }
+            }
+        }
     }
 
     public class SaveData
@@ -667,6 +689,7 @@ namespace My.Saving
             data.PlayerData.PremiumEssenceWarehouse ??= new List<PremiumEssencePersist>();
             data.PlayerData.PremiumEssenceTemporary ??= new List<PremiumEssencePersist>();
             data.PlayerData.PremiumEssenceEquipped ??= new List<PremiumEssencePersist>();
+            data.PlayerData.JingYuanResidue = Math.Max(0, data.PlayerData.JingYuanResidue);
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
             if (data.PlayerData.FuncOpenList.Count == 0 && data.FuncOpenList != null && data.FuncOpenList.Count > 0)
             {
@@ -687,12 +710,6 @@ namespace My.Saving
             {
                 if (mapRuntime == null) continue;
                 mapRuntime.WantedPressureSessions ??= new List<WantedPressureSessionPersist>();
-                foreach (var session in mapRuntime.WantedPressureSessions)
-                {
-                    if (session == null) continue;
-                    session.PatrolCycleNodeIds ??= new List<string>();
-                    session.PatrolPortalNetworkId ??= string.Empty;
-                }
             }
         }
 

@@ -1,0 +1,135 @@
+[
+  {
+    "facility_id": "elder_hall",
+    "renovation_id": "council_basic",
+    "display_name": "基础议事",
+    "desc": "维持聚落秩序",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "influence",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "facility_id": "merchant_stall",
+    "renovation_id": "general_trade",
+    "display_name": "通识贸易",
+    "desc": "偏重人类通识与稳定收入",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "facility_id": "merchant_stall",
+    "renovation_id": "scrap_focus",
+    "display_name": "搜刮周转",
+    "desc": "快速消化搜刮物换钱",
+    "min_level": 2,
+    "sort_order": 2,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 15
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "renovation_id": "border_ears",
+    "display_name": "边境耳目",
+    "desc": "偏重秘闻与野外情报",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "renovation_id": "steady_ledger",
+    "display_name": "稳态账册",
+    "desc": "偏重稳定通识收入",
+    "min_level": 2,
+    "sort_order": 2,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "renovation_id": "brew_cellar",
+    "display_name": "醇酿窖藏",
+    "desc": "以烈酿引流，偏重物资周转",
+    "min_level": 2,
+    "sort_order": 3,
+    "unlock_conds": [],
+    "learn_costs": [
+      {
+        "item_id": "gold",
+        "count": 50
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 14
+      }
+    ]
+  },
+  {
+    "facility_id": "transport_camp",
+    "renovation_id": "local_haul",
+    "display_name": "短途驮运",
+    "desc": "服务聚落周边运输",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "facility_id": "village_hall",
+    "renovation_id": "patrol_support",
+    "display_name": "巡防支援",
+    "desc": "为周边探索提供安定",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "stability",
+        "count": 1
+      }
+    ]
+  }
+]

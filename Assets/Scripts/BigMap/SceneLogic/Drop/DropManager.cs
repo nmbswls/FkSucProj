@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using My.Map;
+using My.Player;
 using System.Linq;
 
 namespace My.Map.Drop
@@ -57,6 +58,16 @@ namespace My.Map.Drop
             EvOnDropAdd?.Invoke(dropData, sourcePos);
         }
 
+        public void CreateDrop(DropUtils.DropReward reward, Vector2 position, bool autoPick, Vector2? sourcePos)
+        {
+            if (reward == null) return;
+            var dropData = new DropData(
+                GameLogicManager.LogicEntityIdInst++, reward.ItemId, reward.Amount, position,
+                LogicTime.time, autoPick, reward.PremiumEssence);
+            _drops.Add(dropData.Id, dropData);
+            EvOnDropAdd?.Invoke(dropData, sourcePos);
+        }
+
         public void PickDrop(long id)
         {
             _drops.TryGetValue(id, out var dropData);
@@ -67,7 +78,24 @@ namespace My.Map.Drop
 
             RemoveDrop(id, isRecycle: false);
             Debug.Log("PickDrop " + id);
-            logicManager.playerDataManager.GiveItemToPlayer(dropData.ItemId, dropData.Amount);
+            if (dropData.PremiumEssence != null)
+            {
+                var stack = new ItemStack(dropData.ItemId, dropData.Amount)
+                {
+                    InstanceInfo = new ItemInstanceInfo()
+                };
+                var component = stack.InstanceInfo.GetOrAdd<ItemInstance4PremiumEssence>();
+                component.InstanceId = dropData.PremiumEssence.InstanceId;
+                component.TypeId = dropData.PremiumEssence.TypeId;
+                component.Concentration = dropData.PremiumEssence.Concentration;
+                component.DropLevel = dropData.PremiumEssence.DropLevel;
+                component.QualityTier = dropData.PremiumEssence.QualityTier;
+                logicManager.playerDataManager.JingYuanEssenceSystem.TryAddFromItemStack(stack);
+            }
+            else
+            {
+                logicManager.playerDataManager.GiveItemToPlayer(dropData.ItemId, dropData.Amount);
+            }
         }
 
         public void RemoveDrop(long id, bool isRecycle)
@@ -96,8 +124,9 @@ namespace My.Map.Drop
         public Vector2 Position;
         public float CreateTime;
         public bool AutoPick;
+        public ItemInstance4PremiumEssence PremiumEssence;
 
-        public DropData(long id, string itemId, int amount, Vector2 position, float createTime, bool autoPick = true)
+        public DropData(long id, string itemId, int amount, Vector2 position, float createTime, bool autoPick = true, ItemInstance4PremiumEssence premiumEssence = null)
         {
             Id = id;
             ItemId = itemId;
@@ -105,6 +134,7 @@ namespace My.Map.Drop
             Position = position;
             CreateTime = createTime;
             AutoPick = autoPick;
+            PremiumEssence = premiumEssence;
         }
     }
 }

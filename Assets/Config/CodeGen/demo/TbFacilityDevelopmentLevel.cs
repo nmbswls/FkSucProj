@@ -20,7 +20,7 @@ public partial class TbFacilityDevelopmentLevel
 {
     private readonly System.Collections.Generic.List<demo.FacilityDevelopmentLevelConfig> _dataList;
 
-    private System.Collections.Generic.Dictionary<(string, string, int), demo.FacilityDevelopmentLevelConfig> _dataMapUnion;
+    private System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevelConfig> _dataMapUnion;
 
     public TbFacilityDevelopmentLevel(JSONNode _buf)
     {
@@ -33,16 +33,16 @@ public partial class TbFacilityDevelopmentLevel
             { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentLevelConfig.DeserializeFacilityDevelopmentLevelConfig(_ele);  }
             _dataList.Add(_v);
         }
-        _dataMapUnion = new System.Collections.Generic.Dictionary<(string, string, int), demo.FacilityDevelopmentLevelConfig>();
+        _dataMapUnion = new System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevelConfig>();
         foreach(var _v in _dataList)
         {
-            _dataMapUnion.Add((_v.LogicAreaId, _v.FacilityId, _v.Level), _v);
+            _dataMapUnion.Add((_v.FacilityId, _v.Level), _v);
         }
     }
 
     public System.Collections.Generic.List<demo.FacilityDevelopmentLevelConfig> DataList => _dataList;
 
-    public demo.FacilityDevelopmentLevelConfig Get(string logic_area_id, string facility_id, int level) => _dataMapUnion.TryGetValue((logic_area_id, facility_id, level), out demo.FacilityDevelopmentLevelConfig __v) ? __v : default;
+    public demo.FacilityDevelopmentLevelConfig Get(string facility_id, int level) => _dataMapUnion.TryGetValue((facility_id, level), out demo.FacilityDevelopmentLevelConfig __v) ? __v : default;
     
     public void ResolveRef(Tables tables)
     {

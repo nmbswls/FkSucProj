@@ -92,7 +92,8 @@ namespace My.UI
             long afterFallen = info.FromFallenAmount + info.AddFallenAmount;
             summaryText.text =
                 $"沉沦人数：{info.FromFallenAmount} → {afterFallen}（+{info.AddFallenAmount}）\n" +
-                $"获得欲望碎片：{info.DesireShardAdded}";
+                $"\u83b7\u5f97\u6b32\u671b\u788e\u7247?{info.DesireShardAdded}\n" +
+                $"\u6559\u56e2\u4fe1\u4ef0?+{info.CultFaithAdded}?{info.CultControlledTownCount} \u4e2a\u53d7\u63a7\u57ce\u9547 ? {info.CultTownDailyFaith}?";
         }
 
         void OnEnable()

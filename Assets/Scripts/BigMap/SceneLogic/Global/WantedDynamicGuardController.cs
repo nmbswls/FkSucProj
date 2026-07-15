@@ -83,7 +83,6 @@ namespace My
 
             float cull = tier?.CullDistance ?? 36f;
             int pressureBehavior = tier?.PressureBehavior ?? 0;
-            int patrolPickN = tier?.PatrolPickN > 0 ? tier.PatrolPickN : 3;
 
             CullFar(cull);
             if (target < ActiveSpawnSlotCount())
@@ -94,7 +93,7 @@ namespace My
 
             while (ActiveSpawnSlotCount() < target)
             {
-                if (!TrySpawnOne(npcId, rMin, rMax, pressureBehavior, patrolPickN))
+                if (!TrySpawnOne(npcId, rMin, rMax, pressureBehavior))
                 {
                     break;
                 }
@@ -190,7 +189,8 @@ namespace My
             }
 
             var db = _logic?.AreaManager?.cacheDatabase;
-            if (!WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, out var applied) || !applied)
+            int patrolPickN = GetCurrentPatrolPickN();
+            if (!WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, patrolPickN, out var applied) || !applied)
             {
                 if (ShouldDestroyOnMacroApplyFailure(session))
                 {
@@ -281,13 +281,12 @@ namespace My
             }
         }
 
-        public void RegisterPressureGuard(long entityId, int resolveKind, int patrolPickN, bool beginInvestigationImmediately)
+        public void RegisterPressureGuard(long entityId, int resolveKind, bool beginInvestigationImmediately)
         {
             _sessions[entityId] = new WantedPressureSession
             {
                 EntityId = entityId,
                 ResolveKind = resolveKind,
-                PatrolPickN = patrolPickN > 0 ? patrolPickN : 3,
                 Phase = WantedPressureSession.ResolveInitialPhase(resolveKind, beginInvestigationImmediately),
             };
         }
@@ -330,12 +329,19 @@ namespace My
         bool TryReplaySessionMacroBehave(NpcUnitLogicEntity npc, WantedPressureSession session, out bool applied)
         {
             var db = _logic?.AreaManager?.cacheDatabase;
+            int patrolPickN = GetCurrentPatrolPickN();
             if (session.Phase == EWantedPressurePhase.WalkingAway)
             {
-                return WantedPressureMacroBehave.TryApplyWalkingAway(npc, session, db, out applied);
+                return WantedPressureMacroBehave.TryApplyWalkingAway(npc, db, out applied);
             }
 
-            return WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, out applied);
+            return WantedPressureMacroBehave.TryApplyResolveKind(npc, session, db, patrolPickN, out applied);
+        }
+
+        int GetCurrentPatrolPickN()
+        {
+            var tier = SelectPressureTier(out _);
+            return tier?.PatrolPickN > 0 ? tier.PatrolPickN : 3;
         }
 
         WantedGuardSpawnTier SelectPressureTier(out int alertTier)
@@ -429,7 +435,7 @@ namespace My
                 return;
             }
 
-            if (WantedPressureMacroBehave.TryApplyWalkingAway(npc, session, db, out var applied) && applied)
+            if (WantedPressureMacroBehave.TryApplyWalkingAway(npc, db, out var applied) && applied)
             {
                 SetSessionPhase(id, EWantedPressurePhase.WalkingAway);
                 WantedPressureNpcBrain.EnterIdle(npc);
@@ -522,7 +528,7 @@ namespace My
             return !senser.SimpleCanSee(player.Pos, player.CurrentLook, spot, prm.Item1, prm.Item2);
         }
 
-        bool TrySpawnOne(string cfgId, float rMin, float rMax, int pressureBehavior, int patrolPickN)
+        bool TrySpawnOne(string cfgId, float rMin, float rMax, int pressureBehavior)
         {
             var player = _logic.playerLogicEntity;
             for (int attempt = 0; attempt < 14; attempt++)
@@ -555,7 +561,6 @@ namespace My
                 RegisterPressureGuard(
                     rec.Id,
                     pressureBehavior,
-                    patrolPickN,
                     pressureBehavior > 0);
                 return true;
             }

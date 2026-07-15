@@ -136,7 +136,18 @@ namespace My.Map
         protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
         {
             base.RefreshEntityRecordInfo(input);
-            // 生效层（含 Override）不回写 Record，避免日程/临时策略污染 Persist
+            if (input is not LogicEntityRecord4Npc npcRecord)
+            {
+                return;
+            }
+
+            // Wanted 动态守卫 macro 落 EntityRecord；日程等临时 Override 仍不回写
+            if (LogicManager?.WantedGuardSpawner?.HasPressureSession(Id) == true)
+            {
+                WantedPressureMacroBehave.SyncEffectiveMacroToRecord(this);
+            }
+
+            AIBrain?.ExportToNpcRecord(npcRecord);
         }
 
         public override bool CheckLocalSwitch(string switchName)
@@ -407,30 +418,31 @@ namespace My.Map
         protected virtual void InitAiBrain()
         {
             AIBrain = AIBrainFactory.CreateAIBrain(this);
+            AIBrain?.TryRestoreFromNpcRecord(NpcRecord);
         }
 
         public override void OnUnitDie(int reason, ResourceDeltaIntent lastIntent = null)
         {
             base.OnUnitDie(reason, lastIntent);
 
-            var items = new List<(string, int)>();
+            var items = new List<DropUtils.DropReward>();
             if (MarkUnsensored)
             {
                 int baseDropId = NpcConfig.DefeatDropId;
                 if (baseDropId > 0)
                 {
-                    items.AddRange(DropUtils.GetBundleDropItems(baseDropId));
+                    items.AddRange(DropUtils.GetBundleDropRewards(baseDropId));
                 }
 
                 long finalDensity = DesireDensityUtil.GetFinalDensity(this);
-                items.AddRange(MindFragment.MindFragmentDropResolver.Roll(this, finalDensity));
+                    foreach (var item in MindFragment.MindFragmentDropResolver.Roll(this, finalDensity)) items.Add(new DropUtils.DropReward { ItemId = item.Item1, Amount = item.Item2 });
             }
             else
             {
                 int dropId = NpcConfig.FallbackDropId > 0 ? NpcConfig.FallbackDropId : NpcConfig.DefeatDropId;
                 if (dropId > 0)
                 {
-                    items.AddRange(DropUtils.GetBundleDropItems(dropId));
+                    items.AddRange(DropUtils.GetBundleDropRewards(dropId));
                 }
             }
 
@@ -976,18 +988,6 @@ namespace My.Map
         }
 
         // 全局 NPC 交谈统一入口对话 id；存在 TbDialogMetaInfo 时由入口生成菜单与分支
-
-        public bool HasDialogEntry()
-        {
-            var glm = LogicManager;
-            if (glm != null && My.UI.NpcInteractHubCatalog.HasAny(this, glm))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
 
         public string GetCurrentDialogId()
         {

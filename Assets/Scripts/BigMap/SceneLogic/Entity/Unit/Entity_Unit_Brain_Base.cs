@@ -40,9 +40,13 @@ namespace My.Map.Unit
 
         public bool IsGuard;
 
-        public const string SentryBrainId = "fixed_turret";
+        // 临时字段，迁到 Luban 前用；配表 ai_brain_id 选模板，NPC 不硬编码 brain 名
+        public bool StartAsSentry;
+
+        public static AIBrainConfig CreateDefault() => new AIBrainConfig();
     }
 
+    // 临时：brain 参数未进表前在此注册；key 与 unit_npc.ai_brain_id 一致
     public static class AIBrainParamsConfigLoader
     {
         public static Dictionary<string, AIBrainConfig> _configs = null;
@@ -52,76 +56,57 @@ namespace My.Map.Unit
             if (_configs == null)
             {
                 _configs = new();
-                {
-                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
-                    var config = new AIBrainConfig();
-                    _configs["default"] = config;
-                }
-                {
-                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
-                    var config = new AIBrainConfig();
-                    _configs["basic_unit_peace"] = config;
-                }
-                {
-                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
-                    var config = new AIBrainConfig();
-                    _configs["default_guard"] = config;
-                    config.IsGuard = true;
-                }
+                _configs["default"] = AIBrainConfig.CreateDefault();
+                _configs["basic_unit_peace"] = AIBrainConfig.CreateDefault();
 
-                {
-                    //var config = ScriptableObject.CreateInstance<AIBrainConfig>();
-                    var config = new AIBrainConfig();
-                    config.ChaseRange = 999;
+                var guard = AIBrainConfig.CreateDefault();
+                guard.IsGuard = true;
+                _configs["default_guard"] = guard;
 
-                    _configs["h_spirit"] = config;
-                }
+                var hSpirit = AIBrainConfig.CreateDefault();
+                hSpirit.ChaseRange = 999;
+                _configs["h_spirit"] = hSpirit;
 
-                {
-                    var config = new AIBrainConfig();
-                    config.ChaseRange = 1f;
-                    _configs[AIBrainConfig.SentryBrainId] = config;
-                }
+                var turret = AIBrainConfig.CreateDefault();
+                turret.ChaseRange = 1f;
+                turret.StartAsSentry = true;
+                _configs["fixed_turret"] = turret;
 
-                {
-                    var config = new AIBrainConfig();
-                    config.CombatMoveStyle = ECombatMoveStyle.HitAndRun;
-                    config.CombatCloseDistance = 1.5f;
-                    config.CombatFarDistance = 4.0f;
-                    config.AttackRestDuration = 1.0f;
-                    config.PostAttackRetreatDist = 3.0f;
-                    _configs["agile_melee"] = config;
-                }
+                var agileMelee = AIBrainConfig.CreateDefault();
+                agileMelee.CombatMoveStyle = ECombatMoveStyle.HitAndRun;
+                agileMelee.CombatCloseDistance = 1.5f;
+                agileMelee.CombatFarDistance = 4.0f;
+                agileMelee.AttackRestDuration = 1.0f;
+                agileMelee.PostAttackRetreatDist = 3.0f;
+                _configs["agile_melee"] = agileMelee;
 
-                {
-                    var config = new AIBrainConfig();
-                    config.CombatMoveStyle = ECombatMoveStyle.SlowHeavy;
-                    config.CombatCloseDistance = 2.5f;
-                    config.CombatFarDistance = 3.5f;
-                    config.AttackRestDuration = 2.5f;
-                    _configs["slow_melee"] = config;
-                }
+                var slowMelee = AIBrainConfig.CreateDefault();
+                slowMelee.CombatMoveStyle = ECombatMoveStyle.SlowHeavy;
+                slowMelee.CombatCloseDistance = 2.5f;
+                slowMelee.CombatFarDistance = 3.5f;
+                slowMelee.AttackRestDuration = 2.5f;
+                _configs["slow_melee"] = slowMelee;
 
-                {
-                    var config = new AIBrainConfig();
-                    config.CombatMoveStyle = ECombatMoveStyle.Kiting;
-                    config.CombatCloseDistance = 4.0f;
-                    config.CombatFarDistance = 7.0f;
-                    config.AttackRestDuration = 1.5f;
-                    _configs["ranged_kiting"] = config;
-                }
+                var rangedKiting = AIBrainConfig.CreateDefault();
+                rangedKiting.CombatMoveStyle = ECombatMoveStyle.Kiting;
+                rangedKiting.CombatCloseDistance = 4.0f;
+                rangedKiting.CombatFarDistance = 7.0f;
+                rangedKiting.AttackRestDuration = 1.5f;
+                _configs["ranged_kiting"] = rangedKiting;
 
-                {
-                    var config = new AIBrainConfig();
-                    config.CombatMoveStyle = ECombatMoveStyle.Caster;
-                    config.CombatCloseDistance = 5.0f;
-                    config.CombatFarDistance = 8.0f;
-                    config.AttackRestDuration = 2.0f;
-                    _configs["caster"] = config;
-                }
+                var caster = AIBrainConfig.CreateDefault();
+                caster.CombatMoveStyle = ECombatMoveStyle.Caster;
+                caster.CombatCloseDistance = 5.0f;
+                caster.CombatFarDistance = 8.0f;
+                caster.AttackRestDuration = 2.0f;
+                _configs["caster"] = caster;
             }
 
-            _configs.TryGetValue(name, out var result);
+            if (!_configs.TryGetValue(name, out var result) || result == null)
+            {
+                return AIBrainConfig.CreateDefault();
+            }
+
             return result;
         }
     }
@@ -222,7 +207,7 @@ namespace My.Map.Unit
     }
 
     // --- 大脑 (Controller) ---
-    public class AIBrainV2
+    public partial class AIBrainV2
     {
         // 组件引用
         public NpcUnitLogicEntity NpcEntity; // 实体逻辑
@@ -282,6 +267,8 @@ namespace My.Map.Unit
 
         public string BrainConfigId { get; private set; }
 
+        public bool IsRestoringFromPersist { get; private set; }
+
         public AIBrainV2(NpcUnitLogicEntity npcOwner)
         {
             this.NpcEntity = npcOwner;
@@ -326,14 +313,7 @@ namespace My.Map.Unit
                 StateChaseWanted = new AIStateChaseWanted(this);
             }
 
-            if (string.Equals(BrainConfigId, AIBrainConfig.SentryBrainId, System.StringComparison.Ordinal))
-            {
-                ChangeState(StateSentry);
-            }
-            else
-            {
-                ChangeState(StateIdle);
-            }
+            ChangeState(Config.StartAsSentry ? StateSentry : StateIdle);
         }
 
         public void TriggerUpdateImmediately()

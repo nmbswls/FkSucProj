@@ -969,6 +969,11 @@ namespace My.Input
                 return;
             }
 
+            if (My.Home.HomeTownViewController.TryHandleManagementClick(LastPos))
+            {
+                return;
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 var huntingRadialOpen = My.UI.HuntingHudPanel.Instance?.ActionRadial;

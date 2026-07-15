@@ -1,7 +1,27 @@
 [
   {
+    "id": "home01_emon",
+    "fallback_rule_id": "home01_emon_pre",
+    "reevaluate_interval_sec": 0.5
+  },
+  {
+    "id": "home01_duran",
+    "fallback_rule_id": "home01_duran_pre",
+    "reevaluate_interval_sec": 0.5
+  },
+  {
+    "id": "home01_evan",
+    "fallback_rule_id": "home01_evan_pre",
+    "reevaluate_interval_sec": 0.5
+  },
+  {
+    "id": "home01_hearn",
+    "fallback_rule_id": "home01_hearn_pre",
+    "reevaluate_interval_sec": 0.5
+  },
+  {
     "id": "home01_vera",
-    "fallback_rule_id": "home01_vera_default",
-    "reevaluate_interval_sec": 1
+    "fallback_rule_id": "home01_vera_pre",
+    "reevaluate_interval_sec": 0.5
   }
 ]

@@ -743,7 +743,7 @@ public class ConsoleGM : MonoBehaviour
                     MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                     EnmityConfId = "default_guard",
                 });
-                glm.WantedGuardSpawner?.RegisterPressureGuard(id, kind, 3, immediate == 1);
+                glm.WantedGuardSpawner?.RegisterPressureGuard(id, kind, immediate == 1);
                 Log($"spawn_investigation_npc pressure_behavior={kind} immediate={immediate} at player+2,2");
             });
 

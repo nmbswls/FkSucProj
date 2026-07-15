@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using My.Saving;
 
 namespace My.Map.Logic
@@ -16,19 +15,14 @@ namespace My.Map.Logic
         WalkingAway = 3,
     }
 
-    // Wanted 动态守卫注册表条目：ResolveKind 为策略，Phase 为进度，macro 快照供读档重放
+    // Wanted 动态守卫注册表条目：仅策略 + 进度；macro 执行参数见 LogicEntityRecord4Npc
     public sealed class WantedPressureSession
     {
         public long EntityId;
         // 策略配置（TbWantedGuardSpawnTier.pressure_behavior），生命周期内不变：0=无宏观行为，1=离场，2=站立，3=路网巡逻
         public int ResolveKind;
-        public int PatrolPickN = 3;
         // 运行时进度，随搜查/macro/离场推进；与 ResolveKind 正交（如 ResolveKind=0 时恒为 None）
         public EWantedPressurePhase Phase = EWantedPressurePhase.None;
-        public bool HasMoveToDespawnTarget;
-        public UnityEngine.Vector2 MoveToDespawnTarget;
-        public string PatrolPortalNetworkId = string.Empty;
-        public List<string> PatrolCycleNodeIds = new List<string>();
 
         public static WantedPressureSession FromPersist(WantedPressureSessionPersist persist)
         {
@@ -43,24 +37,12 @@ namespace My.Map.Logic
                 phase = EWantedPressurePhase.WalkingAway;
             }
 
-            var session = new WantedPressureSession
+            return new WantedPressureSession
             {
                 EntityId = persist.EntityId,
                 ResolveKind = persist.ResolveKind,
-                PatrolPickN = persist.PatrolPickN > 0 ? persist.PatrolPickN : 3,
                 Phase = phase,
-                HasMoveToDespawnTarget = persist.HasMoveToDespawnTarget,
-                MoveToDespawnTarget = persist.MoveToDespawnTarget,
-                PatrolPortalNetworkId = persist.PatrolPortalNetworkId ?? string.Empty,
             };
-
-            session.PatrolCycleNodeIds.Clear();
-            if (persist.PatrolCycleNodeIds != null && persist.PatrolCycleNodeIds.Count > 0)
-            {
-                session.PatrolCycleNodeIds.AddRange(persist.PatrolCycleNodeIds);
-            }
-
-            return session;
         }
 
         public WantedPressureSessionPersist ToPersist()
@@ -69,14 +51,7 @@ namespace My.Map.Logic
             {
                 EntityId = EntityId,
                 ResolveKind = ResolveKind,
-                PatrolPickN = PatrolPickN > 0 ? PatrolPickN : 3,
                 Phase = Phase,
-                HasMoveToDespawnTarget = HasMoveToDespawnTarget,
-                MoveToDespawnTarget = MoveToDespawnTarget,
-                PatrolPortalNetworkId = PatrolPortalNetworkId ?? string.Empty,
-                PatrolCycleNodeIds = PatrolCycleNodeIds != null
-                    ? new List<string>(PatrolCycleNodeIds)
-                    : new List<string>(),
             };
         }
 
@@ -113,11 +88,6 @@ namespace My.Map.Logic
         {
             return Phase == EWantedPressurePhase.MacroActive
                 || Phase == EWantedPressurePhase.WalkingAway;
-        }
-
-        public bool HasPersistedPatrol()
-        {
-            return PatrolCycleNodeIds != null && PatrolCycleNodeIds.Count >= 2;
         }
     }
 }

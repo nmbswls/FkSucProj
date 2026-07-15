@@ -20,14 +20,27 @@ namespace My.UI
         TextMeshProUGUI _titleText;
         TextMeshProUGUI _detailTypeText;
         TextMeshProUGUI _detailLevelText;
+        TextMeshProUGUI _detailQualityText;
         TextMeshProUGUI _detailConcentrationText;
         TextMeshProUGUI _detailShelfLifeText;
         TextMeshProUGUI _detailEffectText;
         TextMeshProUGUI _detailAffixText;
         TextMeshProUGUI _detailLocationText;
+        TextMeshProUGUI _renewalText;
+        Button _renewButton;
+        TextMeshProUGUI _tuneStatusText;
+        Button _tuneButton;
+        Toggle _residueBoostToggle;
+        Button _temporaryTabButton;
+        Button _warehouseTabButton;
+        TextMeshProUGUI _temporaryTabText;
+        TextMeshProUGUI _warehouseTabText;
+        bool _showWarehouse;
         readonly List<Button> _slotButtons = new();
         readonly List<GameObject> _candidateObjects = new();
         int _selectedSlot;
+        long _selectedDonorId;
+        string _lastTuneResult;
 
         void Awake()
         {
@@ -84,77 +97,116 @@ namespace My.UI
 
             _titleText = _builtRoot.Find("Title")?.GetComponent<TextMeshProUGUI>();
             _slotRoot = _builtRoot.Find("EquipSlots");
-            _gridRoot = _builtRoot.Find("CandidatePanel/Viewport/Content");
+            _gridRoot = _builtRoot.Find("SourcePanel/CandidatePanel/Viewport/Content");
+            _temporaryTabButton = _builtRoot.Find("SourcePanel/SourceTabs/TemporaryTab")?.GetComponent<Button>();
+            _warehouseTabButton = _builtRoot.Find("SourcePanel/SourceTabs/WarehouseTab")?.GetComponent<Button>();
+            _temporaryTabText = _temporaryTabButton?.transform.Find("Label")?.GetComponent<TextMeshProUGUI>();
+            _warehouseTabText = _warehouseTabButton?.transform.Find("Label")?.GetComponent<TextMeshProUGUI>();
             var detailRoot = _builtRoot.Find("DetailPanel");
             _detailTypeText = detailRoot?.Find("Type")?.GetComponent<TextMeshProUGUI>();
             _detailLevelText = detailRoot?.Find("Level")?.GetComponent<TextMeshProUGUI>();
+            _detailQualityText = detailRoot?.Find("Quality")?.GetComponent<TextMeshProUGUI>();
             _detailConcentrationText = detailRoot?.Find("Concentration")?.GetComponent<TextMeshProUGUI>();
             _detailShelfLifeText = detailRoot?.Find("ShelfLife")?.GetComponent<TextMeshProUGUI>();
             _detailEffectText = detailRoot?.Find("MainEffect")?.GetComponent<TextMeshProUGUI>();
             _detailAffixText = detailRoot?.Find("ExtraAffix")?.GetComponent<TextMeshProUGUI>();
             _detailLocationText = detailRoot?.Find("Location")?.GetComponent<TextMeshProUGUI>();
-            if (_slotRoot != null && _gridRoot != null && _detailTypeText != null && _detailLevelText != null && _detailConcentrationText != null && _detailShelfLifeText != null && _detailEffectText != null && _detailAffixText != null && _detailLocationText != null)
+            EnsureRenewalControls(detailRoot);
+            if (_slotRoot == null || _gridRoot == null || detailRoot == null || _detailTypeText == null || _detailLevelText == null || _detailQualityText == null || _detailConcentrationText == null || _detailShelfLifeText == null || _detailEffectText == null || _detailAffixText == null || _detailLocationText == null || _renewalText == null || _renewButton == null || _tuneStatusText == null || _tuneButton == null || _residueBoostToggle == null)
             {
+                Debug.LogError("JingYuanTunePanel prefab is missing required layout nodes.");
                 return;
             }
+            _temporaryTabButton.onClick.RemoveAllListeners();
+            _temporaryTabButton.onClick.AddListener(() => { _showWarehouse = false; RefreshView(); });
+            _warehouseTabButton.onClick.RemoveAllListeners();
+            _warehouseTabButton.onClick.AddListener(() => { _showWarehouse = true; RefreshView(); });
+        }
 
-            ClearRoot(_builtRoot);
-            var root = _builtRoot as RectTransform;
-            var background = CreateImage("Background", root, new Color(0.055f, 0.065f, 0.09f, 0.98f));
-            Stretch(background.rectTransform);
+        void EnsureRenewalControls(Transform detailRoot)
+        {
+            if (detailRoot == null) return;
+            _renewalText = detailRoot.Find("Renewal")?.GetComponent<TextMeshProUGUI>();
+            _renewButton = detailRoot.Find("RenewButton")?.GetComponent<Button>();
+            if (_renewalText == null)
+            {
+                _renewalText = CreateText("Renewal", detailRoot, "Renewal: -", 14, TextAlignmentOptions.Left);
+                var rect = _renewalText.rectTransform;
+                rect.anchorMin = new Vector2(0, 0); rect.anchorMax = new Vector2(1, 0);
+                rect.offsetMin = new Vector2(16, 78); rect.offsetMax = new Vector2(-16, 104);
+            }
+            if (_renewButton == null)
+            {
+                var go = CreateObject("RenewButton", detailRoot);
+                go.AddComponent<Image>().color = new Color(0.22f, 0.42f, 0.32f);
+                _renewButton = go.AddComponent<Button>();
+                var rect = go.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0); rect.anchorMax = new Vector2(1, 0);
+                rect.offsetMin = new Vector2(16, 18); rect.offsetMax = new Vector2(-16, 64);
+                var label = CreateText("Label", go.transform, "Renew", 15, TextAlignmentOptions.Center);
+                Stretch(label.rectTransform, 4);
+            }
+            _renewButton.onClick.RemoveAllListeners();
+            _renewButton.onClick.AddListener(RenewSelected);
 
-            _titleText = CreateText("Title", root, "优质精华装备", 28, TextAlignmentOptions.TopLeft);
-            SetRect(_titleText.rectTransform, 28, -24, 0, -70, 0, 0);
+            _tuneStatusText = detailRoot.Find("TuneStatus")?.GetComponent<TextMeshProUGUI>();
+            _tuneButton = detailRoot.Find("TuneButton")?.GetComponent<Button>();
+            _residueBoostToggle = detailRoot.Find("ResidueBoostToggle")?.GetComponent<Toggle>();
+            if (_renewalText == null || _renewButton == null || _tuneStatusText == null || _tuneButton == null || _residueBoostToggle == null)
+            {
+                Debug.LogError("JingYuanTunePanel prefab is missing renewal or tuning controls.");
+                return;
+            }
+            if (_tuneStatusText == null)
+            {
+                _tuneStatusText = CreateText("TuneStatus", detailRoot, "Tune donor: -", 13, TextAlignmentOptions.Left);
+                var rect = _tuneStatusText.rectTransform;
+                rect.anchorMin = new Vector2(0, 0); rect.anchorMax = new Vector2(1, 0);
+                rect.offsetMin = new Vector2(16, 136); rect.offsetMax = new Vector2(-16, 160);
+            }
+            if (_residueBoostToggle == null)
+            {
+                var go = CreateObject("ResidueBoostToggle", detailRoot);
+                _residueBoostToggle = go.AddComponent<Toggle>();
+                var rect = go.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0); rect.anchorMax = new Vector2(1, 0);
+                rect.offsetMin = new Vector2(16, 106); rect.offsetMax = new Vector2(-16, 132);
+                var label = CreateText("Label", go.transform, "Use residue for +20% success", 13, TextAlignmentOptions.Left);
+                Stretch(label.rectTransform, 24);
+            }
+            if (_tuneButton == null)
+            {
+                var go = CreateObject("TuneButton", detailRoot);
+                go.AddComponent<Image>().color = new Color(0.45f, 0.30f, 0.18f);
+                _tuneButton = go.AddComponent<Button>();
+                var rect = go.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0); rect.anchorMax = new Vector2(1, 0);
+                rect.offsetMin = new Vector2(16, 166); rect.offsetMax = new Vector2(-16, 210);
+                var label = CreateText("Label", go.transform, "Tune", 15, TextAlignmentOptions.Center);
+                Stretch(label.rectTransform, 4);
+            }
+            _tuneButton.onClick.RemoveAllListeners();
+            _tuneButton.onClick.AddListener(TuneSelected);
+            _residueBoostToggle.onValueChanged.RemoveAllListeners();
+            _residueBoostToggle.onValueChanged.AddListener(_ => RefreshDetail());
+        }
 
-            var slotLabel = CreateText("SlotLabel", root, "当前装备", 16, TextAlignmentOptions.Left);
-            SetRect(slotLabel.rectTransform, 28, -78, 0, -110, 0, 0);
-            var slots = CreateObject("EquipSlots", root);
-            _slotRoot = slots.transform;
-            SetRect(slots.GetComponent<RectTransform>(), 28, -116, -28, -200, 0, 1);
-            var slotLayout = slots.AddComponent<HorizontalLayoutGroup>();
-            slotLayout.spacing = 12;
-            slotLayout.childForceExpandWidth = false;
-            slotLayout.childForceExpandHeight = true;
+        void RenewSelected()
+        {
+            if (_system == null || _selectedSlot >= _system.Equipped.Count) return;
+            _system.TryRenew(_system.Equipped[_selectedSlot].InstanceId);
+            RefreshView();
+        }
 
-            var candidateLabel = CreateText("CandidateLabel", root, "可装备精华", 16, TextAlignmentOptions.Left);
-            SetRect(candidateLabel.rectTransform, 28, 116, 0, 84, 0, 0);
-            var gridPanel = CreateImage("CandidatePanel", root, new Color(0.09f, 0.1f, 0.14f, 1f));
-            SetRect(gridPanel.rectTransform, 28, 20, -292, 106, 0, 1);
-            var scroll = gridPanel.gameObject.AddComponent<ScrollRect>();
-            scroll.horizontal = false;
-            scroll.vertical = true;
-            scroll.movementType = ScrollRect.MovementType.Clamped;
-            var viewport = CreateObject("Viewport", gridPanel.transform);
-            Stretch(viewport.GetComponent<RectTransform>());
-            viewport.AddComponent<RectMask2D>();
-            var content = CreateObject("Content", viewport.transform);
-            var contentRect = content.GetComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1);
-            contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.anchoredPosition = Vector2.zero;
-            contentRect.sizeDelta = new Vector2(-16, 0);
-            var grid = content.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(170, 76);
-            grid.spacing = new Vector2(8, 8);
-            grid.padding = new RectOffset(8, 8, 8, 8);
-            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 2;
-            var fitter = content.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            scroll.viewport = viewport.GetComponent<RectTransform>();
-            scroll.content = contentRect;
-            _gridRoot = content.transform;
-
-            var detailPanel = CreateImage("DetailPanel", root, new Color(0.09f, 0.1f, 0.14f, 1f));
-            SetRect(detailPanel.rectTransform, 12, 20, -28, 106, 0.68f, 1f);
-            _detailTypeText = CreateText("Type", detailPanel.transform, "请选择装备槽", 20, TextAlignmentOptions.TopLeft);
-            _detailLevelText = CreateText("Level", detailPanel.transform, "等级：", 15, TextAlignmentOptions.Left);
-            _detailConcentrationText = CreateText("Concentration", detailPanel.transform, "浓度：", 15, TextAlignmentOptions.Left);
-            _detailShelfLifeText = CreateText("ShelfLife", detailPanel.transform, "保质期：", 15, TextAlignmentOptions.Left);
-            _detailEffectText = CreateText("MainEffect", detailPanel.transform, "主词条：", 15, TextAlignmentOptions.Left);
-            _detailAffixText = CreateText("ExtraAffix", detailPanel.transform, "额外词条：", 15, TextAlignmentOptions.Left);
-            _detailLocationText = CreateText("Location", detailPanel.transform, "所在位置：", 15, TextAlignmentOptions.Left);
+        void TuneSelected()
+        {
+            if (_system == null || _selectedSlot >= _system.Equipped.Count || _selectedDonorId <= 0) return;
+            var targetId = _system.Equipped[_selectedSlot].InstanceId;
+            var boosted = _residueBoostToggle != null && _residueBoostToggle.isOn;
+            var success = _system.TryTune(targetId, _selectedDonorId, boosted);
+            _selectedDonorId = 0;
+            _lastTuneResult = success ? "Result: Tune succeeded" : "Result: Tune failed or invalid";
+            RefreshView();
         }
 
         void RefreshView()
@@ -162,6 +214,10 @@ namespace My.UI
             if (_builtRoot == null || _system == null) return;
             BuildSlots();
             BuildCandidates();
+            if (_temporaryTabText != null) _temporaryTabText.text = $"随身 {_system.Temporary.Count}/{_system.TemporaryCapacity}";
+            if (_warehouseTabText != null) _warehouseTabText.text = $"仓库 {_system.Warehouse.Count}/{_system.WarehouseCapacity}";
+            if (_temporaryTabButton != null && _temporaryTabButton.image != null) _temporaryTabButton.image.color = _showWarehouse ? new Color(.16f, .17f, .22f) : new Color(.28f, .22f, .38f);
+            if (_warehouseTabButton != null && _warehouseTabButton.image != null) _warehouseTabButton.image.color = _showWarehouse ? new Color(.28f, .22f, .38f) : new Color(.16f, .17f, .22f);
             RefreshDetail();
         }
 
@@ -191,9 +247,14 @@ namespace My.UI
         {
             ClearChildren(_gridRoot, _candidateObjects);
             AddCandidate(null, "卸下精华", "空槽");
-            foreach (var essence in _system.Temporary) AddCandidate(essence, "背包", "");
-            foreach (var essence in _system.Warehouse) AddCandidate(essence, "仓库", "");
-            foreach (var essence in _system.Equipped) AddCandidate(essence, "已装备", "");
+            if (_showWarehouse)
+            {
+                foreach (var essence in _system.Warehouse) AddCandidate(essence, "仓库", "");
+            }
+            else
+            {
+                foreach (var essence in _system.Temporary) AddCandidate(essence, "随身", "");
+            }
         }
 
         void AddCandidate(PremiumEssenceInstance essence, string location, string suffix)
@@ -209,6 +270,25 @@ namespace My.UI
                 13, TextAlignmentOptions.Center);
             Stretch(label.rectTransform, 6);
             ApplyIcon(go.transform, essence, 8, 8, 42, 42);
+            if (essence != null)
+            {
+                var donorGo = CreateObject("DonorButton", go.transform);
+                donorGo.AddComponent<Image>().color = new Color(0.32f, 0.22f, 0.12f, 0.95f);
+                var donorButton = donorGo.AddComponent<Button>();
+                donorButton.onClick.AddListener(() => SelectDonor(essence));
+                var donorRect = donorGo.GetComponent<RectTransform>();
+                donorRect.anchorMin = new Vector2(1, 0); donorRect.anchorMax = new Vector2(1, 0);
+                donorRect.pivot = new Vector2(1, 0); donorRect.anchoredPosition = new Vector2(-5, 5);
+                donorRect.sizeDelta = new Vector2(52, 22);
+                var donorLabel = CreateText("Label", donorGo.transform, "Donor", 10, TextAlignmentOptions.Center);
+                Stretch(donorLabel.rectTransform, 2);
+            }
+        }
+
+        void SelectDonor(PremiumEssenceInstance essence)
+        {
+            _selectedDonorId = essence?.InstanceId ?? 0;
+            RefreshDetail();
         }
 
         void OnCandidateClicked(PremiumEssenceInstance essence)
@@ -216,6 +296,7 @@ namespace My.UI
             if (_system == null) return;
             if (essence == null)
             {
+                _detailQualityText.text = "Quality: -";
                 if (_selectedSlot < _system.Equipped.Count) _system.TryUnequip(_system.Equipped[_selectedSlot].InstanceId);
             }
             else
@@ -238,18 +319,49 @@ namespace My.UI
                 _detailEffectText.text = "主词条：-";
                 _detailAffixText.text = "额外词条：-";
                 _detailLocationText.text = "所在位置：未装备，从下方选择精华";
+                _renewalText.text = "Renewal: -";
+                _renewButton.interactable = false;
+                _tuneStatusText.text = "Tune donor: -";
+                _tuneButton.interactable = false;
                 return;
             }
 
             var effect = JingYuanEssenceCatalog.ResolveEffect(essence.TypeId, essence.DropLevel, essence.Concentration);
             var typeInfo = JingYuanEssenceCatalog.GetTypeInfo(essence.TypeId);
             _detailTypeText.text = typeInfo?.DisplayName ?? essence.TypeId.ToString();
+            _detailQualityText.text = $"Quality: {essence.QualityTier}";
             _detailLevelText.text = $"等级：{essence.DropLevel}";
             _detailConcentrationText.text = $"浓度：{essence.Concentration}%";
             _detailShelfLifeText.text = $"保质期：{essence.RemainingShelfLifeDays} 天";
             _detailEffectText.text = effect == null ? "主词条：暂无" : $"主词条：属性 {effect.AttrId} +{effect.AttrValue}";
             _detailAffixText.text = essence.ExtraAffixIds == null || essence.ExtraAffixIds.Count == 0 ? "额外词条：无" : $"额外词条：{string.Join("、", essence.ExtraAffixIds)}";
             _detailLocationText.text = "所在位置：装备槽";
+            var rule = CfgMgr.Cfgs?.TbJingYuanRenewalRule?.GetOrDefault("default");
+            var inventory = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
+            var canRenew = rule != null && essence.RenewalCount < rule.MaxRenewalCount
+                && _system.JingYuanResidue >= rule.ResidueCost
+                && inventory != null && inventory.CheckHaveItem(rule.DesireCrystalItemId, rule.DesireCrystalCost);
+            _renewalText.text = rule == null
+                ? "Renewal: not configured"
+                : $"Renewal: {essence.RenewalCount}/{rule.MaxRenewalCount}  Cost: Crystal {rule.DesireCrystalCost}, Residue {rule.ResidueCost}";
+            _renewButton.interactable = canRenew;
+            var donor = FindCandidate(_selectedDonorId);
+            _tuneStatusText.text = donor == null
+                ? $"Residue: {_system.JingYuanResidue} | Tune donor: -"
+                : $"Residue: {_system.JingYuanResidue} | Tune donor: {FormatEssenceName(donor)} {donor.Concentration}% | Success: {_system.GetTuneSuccessRate(essence.InstanceId, donor.InstanceId, _residueBoostToggle.isOn)}%";
+            if (!string.IsNullOrEmpty(_lastTuneResult)) _tuneStatusText.text += $" | {_lastTuneResult}";
+            var tuneRule = CfgMgr.Cfgs?.TbJingYuanTuneRule?.GetOrDefault("default");
+            _tuneButton.interactable = donor != null && donor != essence && donor.TypeId == essence.TypeId
+                && tuneRule != null && (!_residueBoostToggle.isOn || _system.JingYuanResidue >= tuneRule.ResidueBoostCost);
+        }
+
+        PremiumEssenceInstance FindCandidate(long instanceId)
+        {
+            if (instanceId <= 0) return null;
+            foreach (var item in _system.Temporary) if (item?.InstanceId == instanceId) return item;
+            foreach (var item in _system.Warehouse) if (item?.InstanceId == instanceId) return item;
+            foreach (var item in _system.Equipped) if (item?.InstanceId == instanceId) return item;
+            return null;
         }
 
         static string FormatEssenceName(PremiumEssenceInstance essence)

@@ -132,12 +132,12 @@ namespace My.Map.Entity
         public void CreateDrop()
         {
             int dropId = cacheConfig.DropBundleId;
-            var dropItems = DropUtils.GetBundleDropItems(dropId);
+            var dropItems = DropUtils.GetBundleDropRewards(dropId);
             if (dropItems != null && dropItems.Count > 0)
             {
                 foreach(var dropOne in dropItems)
                 {
-                    LogicManager.globalDropCollection.CreateDrop(dropOne.Item1, dropOne.Item2, this.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, false, this.Pos);
+                    LogicManager.globalDropCollection.CreateDrop(dropOne, this.Pos + UnityEngine.Random.insideUnitCircle * 0.3f, false, this.Pos);
                 }
             }
         }

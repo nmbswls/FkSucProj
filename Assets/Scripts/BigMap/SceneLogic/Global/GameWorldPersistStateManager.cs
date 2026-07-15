@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using My.Config;
+using My.Home;
 using My.Saving;
 using System;
 using UnityEngine;
@@ -432,6 +433,21 @@ namespace My
             return _logicAreaHomesteadByMapId.TryGetValue(logicAreaId, out var state) ? state : null;
         }
 
+        public int GetControlledTownCount()
+        {
+            var towns = CfgMgr.Cfgs?.TbLogicAreaInfo?.DataList;
+            if (towns == null) return 0;
+            var count = 0;
+            foreach (var town in towns)
+            {
+                if (town != null && town.CanAnnexHomestead && IsLogicAreaControlRequirementMet(town.MapId))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         public int GetLogicAreaControl(string logicAreaId)
         {
             return GetLogicAreaHomesteadState(logicAreaId)?.ControlDegree ?? 0;
@@ -515,7 +531,7 @@ namespace My
 
             foreach (var b in state.Facilities)
             {
-                if (b != null && !string.IsNullOrEmpty(b.FacilityId))
+                if (b != null && (b.SiteId > 0 || !string.IsNullOrEmpty(b.FacilityId)))
                 {
                     return true;
                 }
@@ -540,19 +556,121 @@ namespace My
             {
                 foreach (var b in source.Facilities)
                 {
-                    if (b == null || string.IsNullOrEmpty(b.FacilityId)) continue;
+                    if (b == null || (b.SiteId <= 0 && string.IsNullOrEmpty(b.FacilityId))) continue;
                     clone.Facilities.Add(new TownFacilityPersist
                     {
+                        SiteId = b.SiteId,
                         InstanceId = b.InstanceId,
                         FacilityId = b.FacilityId,
                         IsConstructed = b.IsConstructed,
                         DevelopmentLevel = b.DevelopmentLevel,
-                        OperationPlanId = b.OperationPlanId,
+                        RenovationId = b.RenovationId,
                         AssignedWorkforce = b.AssignedWorkforce,
+                        SupervisorSlots = CloneSupervisorSlots(b.SupervisorSlots),
                     });
                 }
             }
             return clone;
+        }
+
+        static List<FacilitySupervisorSlotPersist> CloneSupervisorSlots(List<FacilitySupervisorSlotPersist> source)
+        {
+            var clone = new List<FacilitySupervisorSlotPersist>();
+            if (source == null)
+            {
+                return clone;
+            }
+
+            foreach (var slot in source)
+            {
+                if (slot == null)
+                {
+                    continue;
+                }
+
+                clone.Add(new FacilitySupervisorSlotPersist
+                {
+                    SlotIndex = slot.SlotIndex,
+                    CharacterKey = slot.CharacterKey,
+                });
+            }
+
+            return clone;
+        }
+
+        public string GetFacilitySupervisor(string townId, int siteId, long instanceId, string facilityId, int slotIndex)
+        {
+            var facility = ResolveFacilityPersist(townId, siteId, instanceId, facilityId, false);
+            return facility == null ? null : GetSupervisorFromFacility(facility, slotIndex);
+        }
+
+        public void SetFacilitySupervisor(string townId, int siteId, long instanceId, string facilityId, int slotIndex, string characterKey)
+        {
+            var facility = ResolveFacilityPersist(townId, siteId, instanceId, facilityId, true);
+            if (facility == null)
+            {
+                return;
+            }
+
+            facility.SupervisorSlots ??= new List<FacilitySupervisorSlotPersist>();
+            for (int i = facility.SupervisorSlots.Count - 1; i >= 0; i--)
+            {
+                var slot = facility.SupervisorSlots[i];
+                if (slot != null && slot.SlotIndex == slotIndex)
+                {
+                    facility.SupervisorSlots.RemoveAt(i);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(characterKey))
+            {
+                facility.SupervisorSlots.Add(new FacilitySupervisorSlotPersist
+                {
+                    SlotIndex = slotIndex,
+                    CharacterKey = characterKey,
+                });
+            }
+
+            NormalizeHomesteadEntry(townId, GetLogicAreaHomesteadState(townId));
+            EvOnLogicAreaHomesteadChanged?.Invoke(townId, GetLogicAreaHomesteadState(townId));
+        }
+
+        public void ClearFacilitySupervisors(TownFacilityPersist facility)
+        {
+            if (facility == null)
+            {
+                return;
+            }
+
+            facility.SupervisorSlots?.Clear();
+        }
+
+        static string GetSupervisorFromFacility(TownFacilityPersist facility, int slotIndex)
+        {
+            if (facility?.SupervisorSlots == null)
+            {
+                return null;
+            }
+
+            foreach (var slot in facility.SupervisorSlots)
+            {
+                if (slot != null && slot.SlotIndex == slotIndex && !string.IsNullOrEmpty(slot.CharacterKey))
+                {
+                    return slot.CharacterKey;
+                }
+            }
+
+            return null;
+        }
+
+        TownFacilityPersist ResolveFacilityPersist(string townId, int siteId, long instanceId, string facilityId, bool create)
+        {
+            if (siteId > 0)
+            {
+                return GetTownFacilityBySite(townId, siteId, create);
+            }
+
+            return GetTownFacility(townId, instanceId, facilityId, create);
         }
         public IReadOnlyList<TownFacilityPersist> GetTownFacilities(string townId)
         {
@@ -560,43 +678,231 @@ namespace My
             return facilitys ?? (IReadOnlyList<TownFacilityPersist>)Array.Empty<TownFacilityPersist>();
         }
 
-        public TownFacilityPersist GetTownFacility(string townId, long instanceId, string facilityId, bool create = false)
+        public TownFacilityPersist GetTownFacilityBySite(string townId, int siteId, bool create = false)
         {
-            if (string.IsNullOrEmpty(townId) || string.IsNullOrEmpty(facilityId)) return null;
+            if (string.IsNullOrEmpty(townId) || siteId <= 0)
+            {
+                return null;
+            }
+
+            var site = TownFacilitySiteCatalog.Get(siteId);
+            if (site == null)
+            {
+                return null;
+            }
+
             var state = create ? GetOrCreateHomesteadState(townId) : GetLogicAreaHomesteadState(townId);
-            if (state == null) return null;
+            if (state == null)
+            {
+                return null;
+            }
+
             state.Facilities ??= new List<TownFacilityPersist>();
             foreach (var facility in state.Facilities)
             {
-                if (facility != null && facility.FacilityId == facilityId && facility.InstanceId == instanceId)
+                if (facility != null && facility.SiteId == siteId)
+                {
+                    EnsureFacilityPersistIdentity(townId, facility);
                     return facility;
+                }
             }
-            if (!create) return null;
-            var created = new TownFacilityPersist { InstanceId = instanceId, FacilityId = facilityId };
+
+            if (!create)
+            {
+                return null;
+            }
+
+            var created = new TownFacilityPersist
+            {
+                SiteId = siteId,
+                FacilityId = site.FacilityCfgId,
+            };
             state.Facilities.Add(created);
             return created;
         }
 
+        public TownFacilityPersist GetTownFacility(string townId, long instanceId, string facilityId, bool create = false)
+        {
+            if (string.IsNullOrEmpty(townId) || string.IsNullOrEmpty(facilityId))
+            {
+                return null;
+            }
+
+            if (instanceId == 0)
+            {
+                var site = TownFacilitySiteCatalog.FindByMapAndFacility(townId, facilityId);
+                if (site != null)
+                {
+                    return GetTownFacilityBySite(townId, site.Id, create);
+                }
+            }
+
+            var state = create ? GetOrCreateHomesteadState(townId) : GetLogicAreaHomesteadState(townId);
+            if (state == null)
+            {
+                return null;
+            }
+
+            state.Facilities ??= new List<TownFacilityPersist>();
+            foreach (var facility in state.Facilities)
+            {
+                if (facility != null && facility.FacilityId == facilityId && facility.InstanceId == instanceId)
+                {
+                    EnsureFacilityPersistIdentity(townId, facility);
+                    return facility;
+                }
+            }
+
+            if (!create)
+            {
+                return null;
+            }
+
+            var created = new TownFacilityPersist { InstanceId = instanceId, FacilityId = facilityId };
+            EnsureFacilityPersistIdentity(townId, created);
+            state.Facilities.Add(created);
+            return created;
+        }
+
+        static void EnsureFacilityPersistIdentity(string townId, TownFacilityPersist facility)
+        {
+            if (facility == null || string.IsNullOrEmpty(townId))
+            {
+                return;
+            }
+
+            if (facility.SiteId > 0)
+            {
+                var site = TownFacilitySiteCatalog.Get(facility.SiteId);
+                if (site != null && string.IsNullOrEmpty(facility.FacilityId))
+                {
+                    facility.FacilityId = site.FacilityCfgId;
+                }
+
+                return;
+            }
+
+            if (facility.InstanceId == 0 && !string.IsNullOrEmpty(facility.FacilityId))
+            {
+                var site = TownFacilitySiteCatalog.FindByMapAndFacility(townId, facility.FacilityId);
+                if (site != null)
+                {
+                    facility.SiteId = site.Id;
+                }
+            }
+        }
+
+        public int GetSiteDevelopmentLevel(string townId, int siteId)
+        {
+            var facility = GetTownFacilityBySite(townId, siteId, false);
+            return facility != null ? Mathf.Max(0, facility.DevelopmentLevel) : 0;
+        }
+
         public int GetFacilityDevelopmentLevel(string logicAreaId, string facilityId)
         {
-            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId)) return 0;
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId))
+            {
+                return 0;
+            }
+
+            var site = TownFacilitySiteCatalog.FindByMapAndFacility(logicAreaId, facilityId);
+            if (site != null)
+            {
+                return GetSiteDevelopmentLevel(logicAreaId, site.Id);
+            }
+
             var state = GetLogicAreaHomesteadState(logicAreaId);
-            if (state?.Facilities == null) return 0;
+            if (state?.Facilities == null)
+            {
+                return 0;
+            }
+
             foreach (var b in state.Facilities)
             {
                 if (b != null && b.FacilityId == facilityId && b.InstanceId == 0)
+                {
                     return Mathf.Max(0, b.DevelopmentLevel);
+                }
             }
+
             return 0;
         }
 
-        public void SetTownFacilityDevelopment(string townId, long instanceId, string facilityId,
-            int level, string operationPlanId, int assignedWorkforce, bool isBuilt)
+        public int GetInstanceFacilityDevelopmentLevel(string townId, long instanceId, string facilityId)
         {
-            var facility = GetTownFacility(townId, instanceId, facilityId, true);
-            if (facility == null) return;
+            if (instanceId == 0)
+            {
+                var site = TownFacilitySiteCatalog.FindByMapAndFacility(townId, facilityId);
+                if (site != null)
+                {
+                    return GetSiteDevelopmentLevel(townId, site.Id);
+                }
+            }
+
+            var facility = GetTownFacility(townId, instanceId, facilityId, false);
+            if (facility != null)
+            {
+                return Mathf.Max(0, facility.DevelopmentLevel);
+            }
+
+            return GetFacilityDevelopmentLevel(townId, facilityId);
+        }
+
+        public void SetSiteDevelopmentLevel(string townId, int siteId, int level, string renovationId, int assignedWorkforce)
+        {
+            var site = TownFacilitySiteCatalog.Get(siteId);
+            if (site == null || string.IsNullOrEmpty(townId))
+            {
+                return;
+            }
+
+            SetTownFacilityDevelopment(townId, 0, site.FacilityCfgId, level, renovationId, assignedWorkforce, level > 0, siteId);
+        }
+
+        public void SetInstanceFacilityDevelopmentLevel(string townId, long instanceId, string facilityId, int level)
+        {
+            var existing = GetTownFacility(townId, instanceId, facilityId, false);
+            var renovationId = existing?.RenovationId;
+            var assignedWorkforce = existing?.AssignedWorkforce ?? 0;
+            var siteId = existing?.SiteId ?? 0;
+            if (siteId <= 0 && instanceId == 0)
+            {
+                siteId = TownFacilitySiteCatalog.FindByMapAndFacility(townId, facilityId)?.Id ?? 0;
+            }
+
+            SetTownFacilityDevelopment(townId, instanceId, facilityId, level, renovationId, assignedWorkforce, level > 0, siteId);
+        }
+
+        public void SetTownFacilityDevelopment(string townId, long instanceId, string facilityId,
+            int level, string renovationId, int assignedWorkforce, bool isBuilt, int siteId = 0)
+        {
+            TownFacilityPersist facility;
+            if (siteId > 0)
+            {
+                facility = GetTownFacilityBySite(townId, siteId, true);
+            }
+            else
+            {
+                facility = GetTownFacility(townId, instanceId, facilityId, true);
+            }
+
+            if (facility == null)
+            {
+                return;
+            }
+
+            if (siteId > 0)
+            {
+                facility.SiteId = siteId;
+            }
+
+            if (!string.IsNullOrEmpty(facilityId))
+            {
+                facility.FacilityId = facilityId;
+            }
+
             facility.DevelopmentLevel = Mathf.Max(0, level);
-            facility.OperationPlanId = operationPlanId;
+            facility.RenovationId = renovationId;
             facility.AssignedWorkforce = Mathf.Max(0, assignedWorkforce);
             facility.IsConstructed = isBuilt && facility.DevelopmentLevel > 0;
             NormalizeHomesteadEntry(townId, GetLogicAreaHomesteadState(townId));
@@ -605,14 +911,26 @@ namespace My
 
         public void SetFacilityDevelopmentLevel(string logicAreaId, string facilityId, int level)
         {
-            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId)) return;
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId))
+            {
+                return;
+            }
+
+            var site = TownFacilitySiteCatalog.FindByMapAndFacility(logicAreaId, facilityId);
+            if (site != null)
+            {
+                SetSiteDevelopmentLevel(logicAreaId, site.Id, level, level > 0 ? GetTownFacilityBySite(logicAreaId, site.Id, false)?.RenovationId : null, 0);
+                return;
+            }
+
             var facility = GetTownFacility(logicAreaId, 0, facilityId, true);
             facility.DevelopmentLevel = Mathf.Max(0, level);
             facility.IsConstructed = facility.DevelopmentLevel > 0;
             if (facility.DevelopmentLevel <= 0)
             {
-                facility.OperationPlanId = null;
+                facility.RenovationId = null;
                 facility.AssignedWorkforce = 0;
+                ClearFacilitySupervisors(facility);
             }
             NormalizeHomesteadEntry(logicAreaId, GetLogicAreaHomesteadState(logicAreaId));
             EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, GetLogicAreaHomesteadState(logicAreaId));

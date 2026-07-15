@@ -21,6 +21,7 @@ namespace cfg.demo
         AddMapControl = 5,
         AddJingYuanCodexProgress = 6,
         AddJingYuanCodexBlurtDrop = 7,
+        AddPremiumEssence = 8,
     }
 
 } 

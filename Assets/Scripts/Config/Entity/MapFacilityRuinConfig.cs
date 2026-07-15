@@ -22,9 +22,20 @@ namespace Config.Map
         public SerializableDict<string, int> RepairMaterials;
 
         /// <summary>
-        /// 完成后的placement
+        /// 修缮完成后对应的设施 id（新字段）
+        /// </summary>
+        public string TargetFacilityId;
+
+        /// <summary>
+        /// 旧资源字段，与 TargetFacilityId 同义
         /// </summary>
         public string PlacementId;
+
         public Vector2 PlaceOffset;
+
+        public string ResolveTargetFacilityId()
+        {
+            return !string.IsNullOrEmpty(TargetFacilityId) ? TargetFacilityId : PlacementId;
+        }
     }
 }

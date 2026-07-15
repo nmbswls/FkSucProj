@@ -6,6 +6,12 @@ using My.Saving;
 
 namespace My.Player
 {
+    public enum ECultAttribute
+    {
+        None = 0,
+        TownDailyFaith = 1,
+    }
+
     public enum CultTechNodeVisualState
     {
         Locked,
@@ -20,12 +26,17 @@ namespace My.Player
         readonly Dictionary<int, int> _techLevels = new();
         readonly HashSet<int> _unlockedSeats = new();
         readonly Dictionary<(int seatId, int nodeId), int> _seatTechLevels = new();
+        readonly Dictionary<ECultAttribute, long> _cultAttributes = new();
         long _faith;
+        GameLogicManager _logic;
 
         public event Action OnCultChanged;
 
         public long Faith => _faith;
         public int UnlockedSeatCount => _unlockedSeats.Count;
+
+        public long GetCultAttributeValue(ECultAttribute attribute)
+            => _cultAttributes.TryGetValue(attribute, out var value) ? value : 0;
 
         public int UnlockedSeatTechNodeCount
         {
@@ -42,6 +53,7 @@ namespace My.Player
 
         public void Initialize(GameLogicManager logic, SaveData savingData)
         {
+            _logic = logic;
             _techLevels.Clear();
             _unlockedSeats.Clear();
             _seatTechLevels.Clear();
@@ -107,6 +119,9 @@ namespace My.Player
             {
                 _faith = 100;
             }
+
+            RebuildCultAttributes();
+            RefreshAutoUnlockedSeats();
         }
 
         public void SaveTo(SaveData savingData)
@@ -167,17 +182,21 @@ namespace My.Player
             return count;
         }
 
-        public bool TryUnlockSeat(int seatId, out string failReason)
+        public void RefreshAutoUnlockedSeats()
         {
-            failReason = null;
-            var seat = CfgMgr.Cfgs?.TbCultAncientSeat?.GetOrDefault(seatId);
-            if (seat == null) { failReason = "no_seat_cfg"; return false; }
-            if (IsSeatUnlocked(seatId)) { failReason = "already_unlocked"; return false; }
-            if (_faith < seat.UnlockFaithCost) { failReason = "faith"; return false; }
-            _faith -= seat.UnlockFaithCost;
-            _unlockedSeats.Add(seatId);
-            OnCultChanged?.Invoke();
-            return true;
+            var seats = CfgMgr.Cfgs?.TbCultAncientSeat?.DataList;
+            if (seats == null) return;
+            var changed = false;
+            foreach (var seat in seats)
+            {
+                if (seat == null || _unlockedSeats.Contains(seat.SeatId)) continue;
+                if (seat.DefaultUnlocked || _logic == null || _logic.CheckCommonCondsAll(seat.UnlockConds))
+                {
+                    _unlockedSeats.Add(seat.SeatId);
+                    changed = true;
+                }
+            }
+            if (changed) OnCultChanged?.Invoke();
         }
 
         public int GetTechNodeLevel(int nodeId)
@@ -279,6 +298,26 @@ namespace My.Player
                 : CultTechNodeVisualState.InsufficientFaith;
         }
 
+        void RebuildCultAttributes()
+        {
+            _cultAttributes.Clear();
+            foreach (var pair in _techLevels)
+            {
+                if (pair.Value <= 0) continue;
+                for (var level = 1; level <= pair.Value; level++)
+                {
+                    var cfg = CfgMgr.Cfgs?.TbCultTechNodeLevel?.Get(pair.Key, level);
+                    if (cfg == null || cfg.CultAttrValue == 0 || string.IsNullOrEmpty(cfg.CultAttr)) continue;
+                    if (!Enum.TryParse(cfg.CultAttr, true, out ECultAttribute attribute)
+                        || attribute == ECultAttribute.None)
+                    {
+                        continue;
+                    }
+                    _cultAttributes[attribute] = GetCultAttributeValue(attribute) + cfg.CultAttrValue;
+                }
+            }
+        }
+
         public bool TryUnlockNode(int nodeId, out string failReason)
         {
             failReason = null;
@@ -316,6 +355,7 @@ namespace My.Player
 
             _faith -= level.FaithCost;
             _techLevels[nodeId] = current + 1;
+            RebuildCultAttributes();
             OnCultChanged?.Invoke();
             return true;
         }

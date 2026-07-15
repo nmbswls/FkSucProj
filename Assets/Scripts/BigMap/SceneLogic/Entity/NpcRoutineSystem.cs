@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
 using My.Map;
+using My.MapExport;
 using UnityEngine;
 
 namespace My.Map.Logic
@@ -102,6 +103,66 @@ namespace My.Map.Logic
             _appliedRules.Remove(record.Id);
         }
 
+        public void EnsureConfiguredNpcsCreated()
+        {
+            var bindings = CfgMgr.Cfgs?.TbNpcRoutineBinding?.DataList;
+            if (bindings == null || _area?.Repo == null)
+            {
+                return;
+            }
+
+            foreach (var binding in bindings)
+            {
+                if (binding == null
+                    || binding.MapVariant != _area.MapChunkSceneKey
+                    || binding.OverlayId != _area.AreaOverlayId
+                    || string.IsNullOrEmpty(binding.CharacterKey)
+                    || string.IsNullOrEmpty(binding.NpcCfgId)
+                    || string.IsNullOrEmpty(binding.RoutineProfileId))
+                {
+                    continue;
+                }
+
+                if (HasConfiguredNpc(binding.CharacterKey))
+                {
+                    continue;
+                }
+
+                var initInfo = new EntityInitInfo4Npc
+                {
+                    CfgId = binding.NpcCfgId,
+                    Position = Vector2.zero,
+                    FaceDir = Vector2.right,
+                    MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+                    IsPeace = true,
+                    CharacterKey = binding.CharacterKey,
+                };
+                var record = _area.CreateEntityRecordFromInitInfo(initInfo) as LogicEntityRecord4Npc;
+                if (record == null)
+                {
+                    Debug.LogWarning($"[NpcRoutine] Failed to create home NPC '{binding.CharacterKey}' with cfg '{binding.NpcCfgId}'.");
+                    continue;
+                }
+
+                ApplyInitialPlacement(record);
+                _area.RegisterEntityRecord(record);
+            }
+        }
+
+        bool HasConfiguredNpc(string characterKey)
+        {
+            foreach (var record in _area.Repo.Records.Values)
+            {
+                if (record is LogicEntityRecord4Npc npc
+                    && string.Equals(npc.CharacterKey, characterKey, System.StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void Tick(float dt)
         {
             if (_area?.Repo?.Records == null) return;
@@ -124,6 +185,8 @@ namespace My.Map.Logic
                     _cooldowns[npc.Id] = DefaultReevaluateInterval;
                     continue;
                 }
+
+                PruneAppliedRuleIfMacroPreempted(entity);
 
                 var resolved = Resolve(npc);
                 if (resolved == null)
@@ -148,6 +211,11 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (IsRoutineBlockedByWanted(entity))
+                {
+                    continue;
+                }
+
                 if (IsRoutineOverrideApplied(entity, resolved.Id))
                 {
                     continue;
@@ -166,6 +234,8 @@ namespace My.Map.Logic
             if (npc?.AIBrain == null) return;
             if (npc.BindingRecord is not LogicEntityRecord4Npc record || !HasBinding(record)) return;
 
+            PruneAppliedRuleIfMacroPreempted(npc);
+
             var resolved = Resolve(record);
             if (resolved == null)
             {
@@ -180,6 +250,11 @@ namespace My.Map.Logic
             }
 
             _activeRules[npc.Id] = resolved.Id;
+            if (IsRoutineBlockedByWanted(npc))
+            {
+                return;
+            }
+
             if (IsRoutineOverrideApplied(npc, resolved.Id))
             {
                 return;
@@ -198,6 +273,35 @@ namespace My.Map.Logic
             return _appliedRules.TryGetValue(npc.Id, out var appliedId)
                 && appliedId == ruleId
                 && npc.MacroMoveBehaveAuthority == BaseUnitLogicEntity.EMacroBehaveAuthority.Routine;
+        }
+
+        // Wanted 抢占 macro 后懒清理 _appliedRules，避免周期性无效 TryAllocate
+        void PruneAppliedRuleIfMacroPreempted(NpcUnitLogicEntity npc)
+        {
+            if (npc == null || !_appliedRules.ContainsKey(npc.Id))
+            {
+                return;
+            }
+
+            if (IsRoutineBlockedByWanted(npc))
+            {
+                _appliedRules.Remove(npc.Id);
+            }
+        }
+
+        static bool IsRoutineBlockedByWanted(NpcUnitLogicEntity npc)
+        {
+            if (npc == null)
+            {
+                return false;
+            }
+
+            if (npc.MacroMoveBehaveAuthority == BaseUnitLogicEntity.EMacroBehaveAuthority.Wanted)
+            {
+                return true;
+            }
+
+            return npc.LogicManager?.WantedGuardSpawner?.HasPressureSession(npc.Id) == true;
         }
 
         static bool IsInIdle(NpcUnitLogicEntity npc)

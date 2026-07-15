@@ -19,40 +19,48 @@ public static class Home01VeraRoutineAssembler
         EnsurePoint(namedRoot, "vera_work_area", new Vector3(15.5f, 29.8f, 0));
         EnsurePoint(namedRoot, "vera_sleep_area", new Vector3(14.3f, 28.7f, 0));
         EnsurePoint(namedRoot, "vera_wait_report", new Vector3(15.0f, 29.2f, 0));
+        EnsurePoint(namedRoot, "home_pre_survivor_fire", new Vector3(16.0f, 29.0f, 0));
+        EnsurePoint(namedRoot, "home_pre_east_watch", new Vector3(22.0f, 29.0f, 0));
+        EnsurePoint(namedRoot, "home_pre_herb_shed", new Vector3(18.0f, 29.0f, 0));
+        EnsurePoint(namedRoot, "home_pre_injured_shelter", new Vector3(15.0f, 31.0f, 0));
+        EnsurePoint(namedRoot, "home_post_fire", new Vector3(16.0f, 30.0f, 0));
+        EnsurePoint(namedRoot, "home_post_herb_shed", new Vector3(18.0f, 30.0f, 0));
+        EnsurePoint(namedRoot, "home_post_watch", new Vector3(22.0f, 30.0f, 0));
+        EnsurePoint(namedRoot, "home_post_east_path", new Vector3(23.0f, 30.0f, 0));
+        EnsurePoint(namedRoot, "home_post_sample_table", new Vector3(20.0f, 30.0f, 0));
+        EnsurePoint(namedRoot, "home_post_vera_room", new Vector3(14.0f, 29.0f, 0));
 
-        var dynamicRoot = areaRoot.Find("DynamicRoot") ?? NewChild(areaRoot, "DynamicRoot");
-        var common = dynamicRoot.Find("Common") ?? NewChild(dynamicRoot, "Common");
-        var villagers = common.Find("镇民") ?? NewChild(common, "镇民");
-        var vera = villagers.Find("home_vera");
-        if (vera == null) vera = NewChild(villagers, "home_vera");
-        vera.position = new Vector3(14.9f, 29.1f, 0);
-        var generator = vera.GetComponent<DynamicEntityExportGenerator>() ?? vera.gameObject.AddComponent<DynamicEntityExportGenerator>();
-        generator.RefreshInfo = new DynamicEntityRefreshInfo
-        {
-            UniqName = "home_vera",
-            InitInfo = new EntityInitInfo4Npc
-            {
-                CfgId = "home_vera",
-                Position = Vector2.zero,
-                FaceDir = Vector2.right,
-                MoveMode = My.Map.UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
-                IsPeace = true,
-                CharacterKey = "home_vera",
-            },
-        };
-        EditorUtility.SetDirty(vera.gameObject);
+        RemoveNpcRefreshGenerators(areaRoot);
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
+
         var chunkRoot = areaRoot.GetComponent<MapChunkEditorRoot>();
-        var variantKey = chunkRoot != null && !string.IsNullOrEmpty(chunkRoot.MapVariantSceneName) ? chunkRoot.MapVariantSceneName : "Home_01";
+        var variantKey = chunkRoot != null && !string.IsNullOrEmpty(chunkRoot.MapVariantSceneName)
+            ? chunkRoot.MapVariantSceneName
+            : "Home_01";
         if (chunkRoot != null)
         {
             var chunkResult = MapChunkExportCore.Export(chunkRoot, variantKey, chunkRoot.ChunkWorldSize, chunkRoot.ChunkOrigin);
             var overlayResult = MapOverlayExportCore.ExportAllOverlays(areaRoot.gameObject, chunkRoot, variantKey);
             Debug.Log($"[Home01VeraRoutineAssembler] Map export chunk={chunkResult.Success} overlay={overlayResult.Success}");
         }
+
         AssetDatabase.SaveAssets();
-        Debug.Log("[Home01VeraRoutineAssembler] Installed Vera routine practice and named points.");
+        Debug.Log("[Home01VeraRoutineAssembler] Installed routine named points and removed NPC refresh generators.");
+    }
+
+    static void RemoveNpcRefreshGenerators(Transform areaRoot)
+    {
+        var generators = areaRoot.GetComponentsInChildren<DynamicEntityExportGenerator>(true);
+        foreach (var generator in generators)
+        {
+            if (generator == null || generator.RefreshInfo?.InitInfo is not EntityInitInfo4Npc)
+            {
+                continue;
+            }
+
+            Undo.DestroyObjectImmediate(generator.gameObject);
+        }
     }
 
     static Transform NewChild(Transform parent, string name)
@@ -67,7 +75,14 @@ public static class Home01VeraRoutineAssembler
         var point = parent.Find(name) ?? NewChild(parent, name);
         point.position = position;
         var generator = point.GetComponent<NamePointGenerator>() ?? point.gameObject.AddComponent<NamePointGenerator>();
-        generator.Info = new NamedPoint { Name = name, PointType = ENamedPointType.Normal, Position = position, Rotation = point.rotation, Scale = point.localScale };
+        generator.Info = new NamedPoint
+        {
+            Name = name,
+            PointType = ENamedPointType.Normal,
+            Position = position,
+            Rotation = point.rotation,
+            Scale = point.localScale,
+        };
         EditorUtility.SetDirty(point.gameObject);
     }
 }

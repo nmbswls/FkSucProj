@@ -18,7 +18,6 @@ public sealed partial class FacilityDevelopmentLevelConfig : Luban.BeanBase
 {
     public FacilityDevelopmentLevelConfig(JSONNode _buf) 
     {
-        { if(!_buf["logic_area_id"].IsString) { throw new SerializationException(); }  LogicAreaId = _buf["logic_area_id"]; }
         { if(!_buf["facility_id"].IsString) { throw new SerializationException(); }  FacilityId = _buf["facility_id"]; }
         { if(!_buf["level"].IsNumber) { throw new SerializationException(); }  Level = _buf["level"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
@@ -34,11 +33,7 @@ public sealed partial class FacilityDevelopmentLevelConfig : Luban.BeanBase
     }
 
     /// <summary>
-    /// 逻辑区域id
-    /// </summary>
-    public string LogicAreaId;
-    /// <summary>
-    /// 建筑id
+    /// 建筑id（全局唯一）
     /// </summary>
     public string FacilityId;
     /// <summary>
@@ -79,7 +74,6 @@ public sealed partial class FacilityDevelopmentLevelConfig : Luban.BeanBase
     public override string ToString()
     {
         return "{ "
-        + "logicAreaId:" + LogicAreaId + ","
         + "facilityId:" + FacilityId + ","
         + "level:" + Level + ","
         + "displayName:" + DisplayName + ","

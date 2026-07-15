@@ -219,34 +219,14 @@ namespace My.Map.Scene
             var player = MainGameManager.Instance?.gameLogicManager?.playerLogicEntity;
             if (player == null) return false;
 
-            if (UnitEntity.IsDead || UnitEntity.MarkUnsensored)
+            var selections = GetInteractSelections();
+            for (int i = 0; i < selections.Count; i++)
             {
-                return true;
-            }
-
-            if (player.IsSpecialCrouchStance)
-            {
-                if (PlayerGamePlayRule.CanPlayerSneakThisNpc(player, NpcEntity))
+                if (selections[i].Selectable)
                 {
                     return true;
                 }
             }
-            else
-            {
-                if (CheckNpcPeaceDialog())
-                {
-                    var glm = MainGameManager.Instance.gameLogicManager;
-                    if (NpcInteractHubCatalog.HasAny(NpcEntity, glm))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            //if (CheckCanBackHit())
-            //{
-            //    return true;
-            //}
 
             return false;
         }
@@ -284,7 +264,7 @@ namespace My.Map.Scene
                 return false;
             }
 
-            if(UnitEntity.IsDead || UnitEntity.MarkDestroyed | UnitEntity.MarkUnsensored)
+            if(UnitEntity.IsDead || UnitEntity.MarkDestroyed || UnitEntity.MarkUnsensored)
             {
                 return false;
             }
@@ -457,7 +437,7 @@ namespace My.Map.Scene
                 {
                     if(NpcEntity.CheckHasState(AttrIdConsts.Charmed))
                     {
-                        if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                        if (CheckNpcPeaceDialog())
                         {
                             ret.Add(new SceneInteractSelection()
                             {

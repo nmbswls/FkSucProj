@@ -200,7 +200,7 @@ namespace My.MiniGame
             int score = successCnt * 1 + perfectCnt * 2;
             int bundleId = PlayerGamePlayRule.GetDropBundleFromStaticZha(score);
 
-            var drops = DropUtils.GetBundleDropItems(bundleId);
+            var drops = DropUtils.GetBundleDropRewards(bundleId);
 
             DOVirtual.DelayedCall(1.2f, () =>
             {
@@ -208,8 +208,8 @@ namespace My.MiniGame
                 {
                     foreach(var oneDrop in drops)
                     {
-                        UIGainRewardCoordinator.Instance.CreateScreenItem(oneDrop.Item1, oneDrop.Item2, null);
-                        MainGameManager.Instance.gameLogicManager.playerDataManager.GiveItemToPlayer(oneDrop.Item1, oneDrop.Item2);
+                        UIGainRewardCoordinator.Instance.CreateScreenItem(oneDrop.ItemId, oneDrop.Amount, null);
+                        MainGameManager.Instance.gameLogicManager.playerDataManager.GiveDropReward(oneDrop);
                     }
                 }
 

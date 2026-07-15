@@ -247,6 +247,11 @@ namespace My.Config
                 }
             }
 
+            if (ItemTagCatalog.HasTag(def, EItemTag.PremiumEssenceDrop))
+            {
+                item.InstanceInfo.GetOrAdd<ItemInstance4PremiumEssence>();
+            }
+
             if (ItemTagCatalog.HasTag(def, EItemTag.Insertion))
             {
                 var insertion = item.InstanceInfo.GetOrAdd<ItemInstance4Insertion>();

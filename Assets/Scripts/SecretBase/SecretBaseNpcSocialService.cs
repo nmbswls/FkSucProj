@@ -1,5 +1,7 @@
 using cfg.demo;
 using My.Config;
+using My.Player;
+using System;
 using UnityEngine;
 
 namespace My.SecretBase
@@ -30,6 +32,26 @@ namespace My.SecretBase
 
             return MainGameManager.Instance != null
                    && MainGameManager.Instance.PlayDialog(row.DialogId);
+        }
+
+        // action_param format: dialog_id|EJingYuanType|drop_level|quality
+        public static bool TryTalkAndGivePremiumEssence(SecretBaseCharacter row, string actionParam)
+        {
+            if (row == null || string.IsNullOrEmpty(actionParam)) return false;
+            var parts = actionParam.Split('|');
+            if (parts.Length < 4 || !Enum.TryParse(parts[1], true, out EJingYuanType type)
+                || !int.TryParse(parts[2], out var level) || !int.TryParse(parts[3], out var quality)) return false;
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm == null || !glm.IsInSecretBaseContext()) return false;
+            var dialogId = parts[0];
+            return MainGameManager.Instance.PlayDialog(dialogId, onDialogEnd: () =>
+            {
+                var system = glm.playerDataManager?.JingYuanEssenceSystem;
+                if (system == null) return;
+                var essence = JingYuanEssenceCatalog.CreateInstanceAtLevel(type, Math.Max(1, level), Math.Max(1, quality), "secret_base_carlisle", null);
+                if (!system.TryAdd(essence, PremiumEssenceStorageState.Temporary))
+                    system.TryAdd(essence, PremiumEssenceStorageState.Warehouse);
+            });
         }
 
         public static ESecretBaseGiveGiftResult TryGiveGift(

@@ -119,6 +119,7 @@ namespace My.MapExport
         public Vector3 Scale;
 
         public CommonCheckCond AppearCond;
+        public CommonCheckCond DisappearCond;
     }
 
 

@@ -340,5 +340,11 @@
     "display_name": "充能",
     "hidden": true,
     "requires_instance": true
+  },
+  {
+    "tag": 58,
+    "display_name": "Premium Essence Drop",
+    "hidden": true,
+    "requires_instance": true
   }
 ]

@@ -6,7 +6,6 @@ namespace My.Home
 {
     public sealed class FacilityDevelopmentDefinition
     {
-        public string LogicAreaId;
         public string FacilityId;
         public string DisplayName;
         public int SortOrder;
@@ -16,7 +15,6 @@ namespace My.Home
 
     public sealed class FacilityDevelopmentLevel
     {
-        public string LogicAreaId;
         public string FacilityId;
         public int Level;
         public string DisplayName;
@@ -28,13 +26,16 @@ namespace My.Home
 
     public static class FacilityDevelopmentCatalog
     {
-        public static FacilityDevelopmentDefinition GetDefinition(string logicAreaId, string facilityId)
+        public static FacilityDevelopmentDefinition GetDefinition(string facilityId)
         {
-            var row = CfgMgr.Cfgs?.TbFacilityDevelopmentDefinition?.Get(logicAreaId, facilityId);
-            if (row == null) return null;
+            var row = CfgMgr.Cfgs?.TbFacilityDevelopmentDefinition?.Get(facilityId);
+            if (row == null)
+            {
+                return null;
+            }
+
             return new FacilityDevelopmentDefinition
             {
-                LogicAreaId = row.LogicAreaId,
                 FacilityId = row.FacilityId,
                 DisplayName = row.DisplayName,
                 SortOrder = row.SortOrder,
@@ -43,13 +44,16 @@ namespace My.Home
             };
         }
 
-        public static FacilityDevelopmentLevel GetLevel(string logicAreaId, string facilityId, int level)
+        public static FacilityDevelopmentLevel GetLevel(string facilityId, int level)
         {
-            var row = CfgMgr.Cfgs?.TbFacilityDevelopmentLevel?.Get(logicAreaId, facilityId, level);
-            if (row == null) return null;
+            var row = CfgMgr.Cfgs?.TbFacilityDevelopmentLevel?.Get(facilityId, level);
+            if (row == null)
+            {
+                return null;
+            }
+
             return new FacilityDevelopmentLevel
             {
-                LogicAreaId = row.LogicAreaId,
                 FacilityId = row.FacilityId,
                 Level = row.Level,
                 DisplayName = row.DisplayName,
@@ -62,24 +66,7 @@ namespace My.Home
 
         public static IReadOnlyList<FacilityDevelopmentDefinition> GetDefinitions(string logicAreaId)
         {
-            var result = new List<FacilityDevelopmentDefinition>();
-            var table = CfgMgr.Cfgs?.TbFacilityDevelopmentDefinition;
-            if (table == null) return result;
-            foreach (var row in table.DataList)
-            {
-                if (row == null || row.LogicAreaId != logicAreaId) continue;
-                result.Add(new FacilityDevelopmentDefinition
-                {
-                    LogicAreaId = row.LogicAreaId,
-                    FacilityId = row.FacilityId,
-                    DisplayName = row.DisplayName,
-                    SortOrder = row.SortOrder,
-                    MaxLevel = row.MaxLevel,
-                    Icon = row.Icon,
-                });
-            }
-            result.Sort((left, right) => left.SortOrder.CompareTo(right.SortOrder));
-            return result;
+            return TownFacilitySiteCatalog.GetDefinitionsForMap(logicAreaId);
         }
     }
 }

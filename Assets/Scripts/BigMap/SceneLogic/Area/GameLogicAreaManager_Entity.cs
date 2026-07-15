@@ -6,6 +6,7 @@ using System.Linq;
 using cfg.demo;
 using Config;
 using My.Config;
+using My.Home;
 using My.Map;
 using My.MapExport;
 using Map.Logic.Events;
@@ -948,6 +949,31 @@ namespace My.Map.Logic
                 _cacheEntityList.Add(entity);
             }
             return _cacheEntityList;
+        }
+
+        public void ReevaluateTownFacilityVisibility(string logicAreaId, string facilityId)
+        {
+            if (string.IsNullOrEmpty(facilityId) || EntityRefreshInfo == null)
+            {
+                return;
+            }
+
+            foreach (var refreshInfo in EntityRefreshInfo)
+            {
+                if (refreshInfo == null)
+                {
+                    continue;
+                }
+
+                bool related = TownFacilityCondKeys.CondReferencesFacility(refreshInfo.AppearCond, logicAreaId, facilityId)
+                               || TownFacilityCondKeys.CondReferencesFacility(refreshInfo.DisappearCond, logicAreaId, facilityId);
+                if (!related)
+                {
+                    continue;
+                }
+
+                HandleOneRefreshInfo(refreshInfo);
+            }
         }
     }
 }

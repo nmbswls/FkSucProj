@@ -4,7 +4,9 @@
     "level": 1,
     "prereq_node_ids": [],
     "faith_cost": 0,
-    "effect_desc": "解锁教团布道树外环。"
+    "effect_desc": "解锁教团布道树外环。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   },
   {
     "node_id": 10,
@@ -13,7 +15,9 @@
       1
     ],
     "faith_cost": 30,
-    "effect_desc": "解锁暗室密传相关占位效果。"
+    "effect_desc": "解锁暗室密传相关占位效果。",
+    "cult_attr": "TownDailyFaith",
+    "cult_attr_value": 1
   },
   {
     "node_id": 11,
@@ -22,7 +26,9 @@
       1
     ],
     "faith_cost": 30,
-    "effect_desc": "解锁梦中显圣相关占位效果。"
+    "effect_desc": "解锁梦中显圣相关占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   },
   {
     "node_id": 12,
@@ -31,7 +37,9 @@
       1
     ],
     "faith_cost": 40,
-    "effect_desc": "解锁威压改宗相关占位效果。"
+    "effect_desc": "解锁威压改宗相关占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   },
   {
     "node_id": 13,
@@ -40,22 +48,173 @@
       1
     ],
     "faith_cost": 35,
-    "effect_desc": "解锁工艺贡礼相关占位效果。"
+    "effect_desc": "解锁工艺贡礼相关占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   },
   {
     "node_id": 20,
     "level": 1,
-    "prereq_node_ids": [],
-    "faith_cost": 80,
-    "effect_desc": "淑女残座共鸣：往去回忆事件占位。"
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 20,
+    "effect_desc": "淑女残座共鸣：往去回忆事件占位。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   },
   {
     "node_id": 21,
     "level": 1,
     "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 25,
+    "effect_desc": "暗火低语占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 22,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 25,
+    "effect_desc": "残页誓词占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 23,
+    "level": 1,
+    "prereq_node_ids": [
       10
     ],
-    "faith_cost": 60,
-    "effect_desc": "血契布道效率占位提升。"
+    "faith_cost": 25,
+    "effect_desc": "梦痕收集占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 24,
+    "level": 1,
+    "prereq_node_ids": [
+      10
+    ],
+    "faith_cost": 30,
+    "effect_desc": "夜半宣讲占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 25,
+    "level": 1,
+    "prereq_node_ids": [
+      10
+    ],
+    "faith_cost": 35,
+    "effect_desc": "无名灯塔占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 26,
+    "level": 1,
+    "prereq_node_ids": [
+      11
+    ],
+    "faith_cost": 25,
+    "effect_desc": "惊惧刻印占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 27,
+    "level": 1,
+    "prereq_node_ids": [
+      11
+    ],
+    "faith_cost": 30,
+    "effect_desc": "沉默注视占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 28,
+    "level": 1,
+    "prereq_node_ids": [
+      11
+    ],
+    "faith_cost": 35,
+    "effect_desc": "服从仪式占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 29,
+    "level": 1,
+    "prereq_node_ids": [
+      12
+    ],
+    "faith_cost": 25,
+    "effect_desc": "献礼熔炉占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 30,
+    "level": 1,
+    "prereq_node_ids": [
+      12
+    ],
+    "faith_cost": 30,
+    "effect_desc": "丝线圣痕占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 31,
+    "level": 1,
+    "prereq_node_ids": [
+      12
+    ],
+    "faith_cost": 35,
+    "effect_desc": "宴席余香占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 32,
+    "level": 1,
+    "prereq_node_ids": [
+      13
+    ],
+    "faith_cost": 25,
+    "effect_desc": "秘仪徽章占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 33,
+    "level": 1,
+    "prereq_node_ids": [
+      13
+    ],
+    "faith_cost": 30,
+    "effect_desc": "温柔陷阱占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
+  },
+  {
+    "node_id": 34,
+    "level": 1,
+    "prereq_node_ids": [
+      13
+    ],
+    "faith_cost": 35,
+    "effect_desc": "回声工坊占位效果。",
+    "cult_attr": "",
+    "cult_attr_value": 0
   }
 ]

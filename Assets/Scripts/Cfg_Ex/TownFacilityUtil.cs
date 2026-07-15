@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using cfg.demo;
-using My.Home;
 using My.Map;
 using My.Map.Logic;
 
@@ -45,20 +44,12 @@ namespace My.Config
 
         public static bool HasDevelopableFacilities(string logicAreaId)
         {
-            return FacilityDevelopmentCatalog.GetDefinitions(logicAreaId).Count > 0;
+            return My.Home.TownFacilitySiteCatalog.HasSites(logicAreaId);
         }
 
         public static IReadOnlyList<string> GetDistinctLogicAreaIdsWithDevelopableFacilities()
         {
-            _logicAreaIds.Clear();
-            var table = CfgMgr.Cfgs?.TbFacilityDevelopmentDefinition;
-            if (table == null) return _logicAreaIds;
-            foreach (var row in table.DataList)
-            {
-                if (row == null || string.IsNullOrEmpty(row.LogicAreaId)) continue;
-                if (!_logicAreaIds.Contains(row.LogicAreaId)) _logicAreaIds.Add(row.LogicAreaId);
-            }
-            return _logicAreaIds;
+            return My.Home.TownFacilitySiteCatalog.GetDistinctMapIds();
         }
     }
 }

@@ -20,6 +20,7 @@ namespace My.UI
 
         [SerializeField] Button btnExit;
         [SerializeField] Button btnBuild;
+        [SerializeField] Button btnJingYuanWarehouse;
         [SerializeField] Button btnSwitch;
         [SerializeField] Button btnNextPeriod;
         [SerializeField] TextMeshProUGUI txtFakeState;
@@ -38,6 +39,11 @@ namespace My.UI
             if (btnBuild != null)
             {
                 btnBuild.onClick.AddListener(() => UIManager.Instance.ShowPanel(SecretBaseBuildPanel.PanelIdConst));
+            }
+
+            if (btnJingYuanWarehouse != null)
+            {
+                btnJingYuanWarehouse.onClick.AddListener(() => UIManager.Instance.ShowPanel(JingYuanWarehousePanel.PanelIdConst));
             }
 
             if (btnSwitch != null)

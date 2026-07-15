@@ -20,7 +20,7 @@ public partial class TbFacilityDevelopmentDefinition
 {
     private readonly System.Collections.Generic.List<demo.FacilityDevelopmentDefinitionConfig> _dataList;
 
-    private System.Collections.Generic.Dictionary<(string, string), demo.FacilityDevelopmentDefinitionConfig> _dataMapUnion;
+    private System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinitionConfig> _dataMapUnion;
 
     public TbFacilityDevelopmentDefinition(JSONNode _buf)
     {
@@ -33,16 +33,16 @@ public partial class TbFacilityDevelopmentDefinition
             { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentDefinitionConfig.DeserializeFacilityDevelopmentDefinitionConfig(_ele);  }
             _dataList.Add(_v);
         }
-        _dataMapUnion = new System.Collections.Generic.Dictionary<(string, string), demo.FacilityDevelopmentDefinitionConfig>();
+        _dataMapUnion = new System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinitionConfig>();
         foreach(var _v in _dataList)
         {
-            _dataMapUnion.Add((_v.LogicAreaId, _v.FacilityId), _v);
+            _dataMapUnion.Add(_v.FacilityId, _v);
         }
     }
 
     public System.Collections.Generic.List<demo.FacilityDevelopmentDefinitionConfig> DataList => _dataList;
 
-    public demo.FacilityDevelopmentDefinitionConfig Get(string logic_area_id, string facility_id) => _dataMapUnion.TryGetValue((logic_area_id, facility_id), out demo.FacilityDevelopmentDefinitionConfig __v) ? __v : default;
+    public demo.FacilityDevelopmentDefinitionConfig Get(string facility_id) => _dataMapUnion.TryGetValue(facility_id, out demo.FacilityDevelopmentDefinitionConfig __v) ? __v : default;
     
     public void ResolveRef(Tables tables)
     {

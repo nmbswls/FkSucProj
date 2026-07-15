@@ -1596,6 +1596,8 @@ namespace My.Map.Unit
             _prepared = true;
         }
 
+        public AIReturnContext GetReturnContext() => _context;
+
         public void RestartPreparedReturn()
         {
             _brain.NpcEntity.StopMove();
@@ -1724,7 +1726,10 @@ namespace My.Map.Unit
         {
             base.OnEnter();
 
-            _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "我逃", 2f);
+            if (!_brain.IsRestoringFromPersist)
+            {
+                _brain.NpcEntity.LogicManager.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "我逃", 2f);
+            }
             // _brain.NpcEntity.PlayAnimation("Panic");
             //_brain.Aggro.ClearGridSignal();
         }
@@ -1757,7 +1762,7 @@ namespace My.Map.Unit
         }
     }
 
-    public class AIStateSearch : AIBaseState
+    public partial class AIStateSearch : AIBaseState
     {
         private enum SearchPhase
         {
@@ -1833,9 +1838,24 @@ namespace My.Map.Unit
                     break;
             }
         }
+
+        public void RestoreFromPersist(int phase, Vector2 orgPoint, float lookEndTime)
+        {
+            _phase = (SearchPhase)Mathf.Clamp(phase, 0, 1);
+            searchOrgPoint = orgPoint;
+            _lookAroundTimer = lookEndTime;
+            if (_phase == SearchPhase.MovingToPos)
+            {
+                _brain.NpcEntity.TryMoveTo(searchOrgPoint);
+            }
+            else
+            {
+                _brain.NpcEntity.StopMove();
+            }
+        }
     }
 
-    public class AIStateChaseWanted : AIBaseState
+    public partial class AIStateChaseWanted : AIBaseState
     {
         public override string StateName => "ChaseWanted";
 
@@ -1854,7 +1874,10 @@ namespace My.Map.Unit
             chaseChillTimer = 0;
             wantedUnitId = _brain.NpcEntity.LogicManager.playerLogicEntity.Id;
 
-            _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "抓你。", 2.0f);
+            if (!_brain.IsRestoringFromPersist)
+            {
+                _brain.NpcEntity.viewer.ShowMapSpeachBubble(_brain.NpcEntity.Id, "抓你。", 2.0f);
+            }
         }
 
         public override void OnUpdate()
@@ -1931,6 +1954,20 @@ namespace My.Map.Unit
             base.OnExit();
 
             _brain.NpcEntity.UnregisterGazeBySourceTag("ChaseWanted");
+        }
+
+        public void RestoreFromPersist(long targetId, float chillEndTime)
+        {
+            wantedUnitId = targetId > 0 ? targetId : _brain.NpcEntity.LogicManager.playerLogicEntity.Id;
+            chaseChillTimer = chillEndTime;
+            if (chaseChillTimer <= 0f)
+            {
+                var searchTarget = _brain.NpcEntity.LogicManager.GetLogicEntity(wantedUnitId, false);
+                if (searchTarget != null)
+                {
+                    _brain.NpcEntity.TryMoveTo(searchTarget.Pos, stopDistance: 0.1f, moveSpeedRate: 1f);
+                }
+            }
         }
     }
 

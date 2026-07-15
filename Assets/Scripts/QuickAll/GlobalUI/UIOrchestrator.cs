@@ -380,6 +380,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = Home.TownFacilityDetailPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/TownFacilityDetailPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = My.UI.SecretBaseHudPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/SecretBaseHudPanel",
                 defaultLayer = UILayer.HUD,
@@ -390,6 +398,30 @@ namespace My.UI
             {
                 panelId = My.UI.SecretBaseBuildPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/SecretBaseBuildPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.JingYuanWarehousePanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/SecretBaseJingYuanWarehousePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.JingYuanCarriedPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/JingYuanCarriedPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.JingYuanPoolPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/JingYuanPoolPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

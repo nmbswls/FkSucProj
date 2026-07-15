@@ -664,7 +664,7 @@ namespace My
                 destination.TargetPos);
         }
 
-        public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow, string itemId = null)
+        public bool HandleUseItem(long userUnit, long cnt, ItemUse useRow, string itemId = null, ItemStack sourceStack = null)
         {
             var srcActor = GetLogicEntity(userUnit) as BaseUnitLogicEntity;
             if (srcActor == null)
@@ -702,10 +702,10 @@ namespace My
                         int it = 0;
                         while(it++ < cnt)
                         {
-                            var items = DropUtils.GetBundleDropItems(dropId);
+                            var items = DropUtils.GetBundleDropRewards(dropId);
                             for (int i = 0; i < items.Count; i++)
                             {
-                                playerDataManager.GiveItemToPlayer(items[i].Item1, items[i].Item2);
+                                playerDataManager.GiveDropReward(items[i]);
                             }
                         }
                     }
@@ -782,6 +782,29 @@ namespace My
                             extractAdd,
                             amountAdd,
                             Player.EJingYuanProgressSource.ItemGrant);
+                    }
+                    break;
+                case EItemUseType.AddPremiumEssence:
+                    {
+                        if (cnt <= 0 || playerDataManager.JingYuanEssenceSystem == null)
+                        {
+                            break;
+                        }
+
+                        var type = (cfg.demo.EJingYuanType)Mathf.Clamp((int)useRow.P1, 1, 12);
+                        var level = Mathf.Clamp((int)useRow.P2, 1, 5);
+                        var quality = Mathf.Clamp((int)useRow.P3, 1, 3);
+                        var amount = (int)Mathf.Clamp(cnt, 1, 100);
+                        if (sourceStack?.InstanceInfo?.Get<ItemInstance4PremiumEssence>() != null)
+                        {
+                            playerDataManager.JingYuanEssenceSystem.TryAddFromItemStack(sourceStack);
+                            break;
+                        }
+                        for (var i = 0; i < amount; i++)
+                        {
+                            playerDataManager.JingYuanEssenceSystem.CreateAndAddAbstractDrop(
+                                type, level, quality, itemId);
+                        }
                     }
                     break;
             }

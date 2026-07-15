@@ -252,6 +252,8 @@ namespace My.Map.Logic
 
             logicManager.ApplyPendingMapRuntimeAfterMapInit(mapOVerlayId);
 
+            NpcRoutine.EnsureConfiguredNpcsCreated();
+
             SetupDesireCrystalSession(mapOVerlayId);
 
             BossEncounters?.Dispose();

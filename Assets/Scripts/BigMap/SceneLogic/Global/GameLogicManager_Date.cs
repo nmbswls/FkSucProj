@@ -35,6 +35,9 @@ namespace My
             public long FromFallenAmount = 0;
             public long DesireShardAdded = 0;
             public Dictionary<string, long> TownFacilityOutputs = new();
+            public int CultControlledTownCount;
+            public long CultTownDailyFaith;
+            public long CultFaithAdded;
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -179,6 +182,19 @@ namespace My
                     balanceInfo.TownFacilityOutputs[kv.Key] = kv.Value;
                 }
             }
+
+            var cult = playerDataManager?.ProgressionSystem?.DemonCult;
+            cult?.RefreshAutoUnlockedSeats();
+            var controlledTownCount = worldPersistState?.GetControlledTownCount() ?? 0;
+            var cultFaithPerTown = cult?.GetCultAttributeValue(ECultAttribute.TownDailyFaith) ?? 0;
+            var cultFaithAdded = controlledTownCount * cultFaithPerTown;
+            if (cultFaithAdded != 0)
+            {
+                cult?.AddFaith(cultFaithAdded);
+            }
+            balanceInfo.CultControlledTownCount = controlledTownCount;
+            balanceInfo.CultTownDailyFaith = cultFaithPerTown;
+            balanceInfo.CultFaithAdded = cultFaithAdded;
 
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);

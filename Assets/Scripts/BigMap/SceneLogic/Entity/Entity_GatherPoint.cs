@@ -78,12 +78,21 @@ namespace My.Map.Entity
 
             var dropId = cacheConfig.DropBundleId;
             
-            var items = DropUtils.GetBundleDropItems(dropId);
+            var items = DropUtils.GetBundleDropRewards(dropId);
 
             foreach (var item in items)
             {
-                string itemId = item.Item1;
-                int cnt = item.Item2;
+                string itemId = item.ItemId;
+                int cnt = item.Amount;
+
+                if (item.PremiumEssence != null && !cacheConfig.GatherOnGround)
+                {
+                    if (!LogicManager.playerDataManager.JingYuanEssenceSystem.TryAddFromItemStack(item.CreateItemStack()))
+                    {
+                        LogicManager.globalDropCollection.CreateDrop(item, Pos + UnityEngine.Random.insideUnitCircle * 0.4f, false, Pos);
+                    }
+                    continue;
+                }
 
                 long put = 0;
                 if(!cacheConfig.GatherOnGround)
@@ -93,7 +102,7 @@ namespace My.Map.Entity
                 if(put < cnt)
                 {
                     Debug.Log("bag full create drop");
-                    LogicManager.globalDropCollection.CreateDrop(item.Item1, cnt - put, Pos + UnityEngine.Random.insideUnitCircle * 0.4f, false, Pos);
+                    LogicManager.globalDropCollection.CreateDrop(itemId, cnt - put, Pos + UnityEngine.Random.insideUnitCircle * 0.4f, false, Pos);
                 }
             }
 

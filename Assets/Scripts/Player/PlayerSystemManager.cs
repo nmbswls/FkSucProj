@@ -491,6 +491,16 @@ namespace My.Player
             return gained;
         }
 
+        public long GiveDropReward(DropUtils.DropReward reward)
+        {
+            if (reward == null) return 0;
+            if (reward.PremiumEssence != null)
+            {
+                return JingYuanEssenceSystem.TryAddFromItemStack(reward.CreateItemStack()) ? reward.Amount : 0;
+            }
+            return GiveItemToPlayer(reward.ItemId, reward.Amount);
+        }
+
         void NotifyItemChanged(string itemId)
         {
             if (string.IsNullOrEmpty(itemId))

@@ -5,6 +5,36 @@ using System.Collections.Generic;
 namespace cfg.demo
 {
     [System.Serializable]
+    public sealed class JingYuanTuneRule
+    {
+        public JingYuanTuneRule(JSONNode b) { RuleId = b["rule_id"]; BaseSuccessRate = b["base_success_rate"].AsInt; ConcentrationDiffRate = b["concentration_diff_rate"].AsInt; TargetConcentrationPenalty = b["target_concentration_penalty"].AsInt; LowerLevelPenaltyPerLevel = b["lower_level_penalty_per_level"].AsInt; MinSuccessRate = b["min_success_rate"].AsInt; MaxSuccessRate = b["max_success_rate"].AsInt; MinGain = b["min_gain"].AsInt; MaxGain = b["max_gain"].AsInt; ResidueOnFailure = b["residue_on_failure"].AsInt; ResidueOnSuccess = b["residue_on_success"].AsInt; AffixInheritRate = b["affix_inherit_rate"].AsInt; ResidueBoostCost = b["residue_boost_cost"].AsInt; ResidueBoostSuccessRate = b["residue_boost_success_rate"].AsInt; }
+        public string RuleId; public int BaseSuccessRate; public int ConcentrationDiffRate; public int TargetConcentrationPenalty; public int LowerLevelPenaltyPerLevel; public int MinSuccessRate; public int MaxSuccessRate; public int MinGain; public int MaxGain; public int ResidueOnFailure; public int ResidueOnSuccess; public int AffixInheritRate; public int ResidueBoostCost; public int ResidueBoostSuccessRate;
+        public void ResolveRef(Tables tables) { }
+    }
+    public sealed class TbJingYuanTuneRule
+    {
+        readonly Dictionary<string, JingYuanTuneRule> _map = new(); public readonly List<JingYuanTuneRule> DataList = new();
+        public TbJingYuanTuneRule(JSONNode b) { foreach (var e in b.Children) { var v = new JingYuanTuneRule(e); DataList.Add(v); _map.Add(v.RuleId, v); } }
+        public JingYuanTuneRule GetOrDefault(string key) => _map.TryGetValue(key, out var v) ? v : null;
+        public void ResolveRef(Tables tables) { foreach (var v in DataList) v.ResolveRef(tables); }
+    }
+
+    [System.Serializable]
+    public sealed class JingYuanRenewalRule
+    {
+        public JingYuanRenewalRule(JSONNode b) { RuleId = b["rule_id"]; DesireCrystalItemId = b["desire_crystal_item_id"]; DesireCrystalCost = b["desire_crystal_cost"].AsInt; ResidueCost = b["residue_cost"].AsInt; AddedShelfLifeDays = b["added_shelf_life_days"].AsInt; MaxRenewalCount = b["max_renewal_count"].AsInt; }
+        public string RuleId; public string DesireCrystalItemId; public int DesireCrystalCost; public int ResidueCost; public int AddedShelfLifeDays; public int MaxRenewalCount;
+        public void ResolveRef(Tables tables) { }
+    }
+    public sealed class TbJingYuanRenewalRule
+    {
+        readonly Dictionary<string, JingYuanRenewalRule> _map = new(); public readonly List<JingYuanRenewalRule> DataList = new();
+        public TbJingYuanRenewalRule(JSONNode b) { foreach (var e in b.Children) { var v = new JingYuanRenewalRule(e); DataList.Add(v); _map.Add(v.RuleId, v); } }
+        public JingYuanRenewalRule GetOrDefault(string key) => _map.TryGetValue(key, out var v) ? v : null;
+        public void ResolveRef(Tables tables) { foreach (var v in DataList) v.ResolveRef(tables); }
+    }
+
+    [System.Serializable]
     public sealed class JingYuanTypeInfo
     {
         public JingYuanTypeInfo(JSONNode b) { TypeId = (EJingYuanType)b["type_id"].AsInt; DisplayName = b["display_name"]; IconPath = b["icon_path"]; RaceId = b["race_id"]; MatchTag = b["match_tag"]; SortOrder = b["sort_order"].AsInt; }

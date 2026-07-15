@@ -17,8 +17,11 @@ namespace My.Player
         public EJingYuanType TypeId;
         public int Concentration;
         public int DropLevel;
+        public int QualityTier;
+        public string SourceItemId;
         public List<string> ExtraAffixIds = new();
         public int RemainingShelfLifeDays;
+        public int RenewalCount;
         public string SourceType;
         public PremiumEssenceStorageState StorageState;
     }

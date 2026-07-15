@@ -116,6 +116,21 @@ public partial class Tables
     /// 家园建筑升级项
     /// </summary>
     public demo.TbFacilityDevelopmentLevel TbFacilityDevelopmentLevel {get; }
+    /// <summary>
+    /// 设施改造项
+    /// </summary>
+    public demo.TbFacilityRenovation TbFacilityRenovation {get; }
+    /// <summary>
+    /// 城镇设施信标
+    /// </summary>
+    /// <summary>
+    /// 地图设施站点
+    /// </summary>
+    public demo.TbTownFacilitySite TbTownFacilitySite {get; }
+    /// <summary>
+    /// 可派驻设施监工的角色
+    /// </summary>
+    public demo.TbCharacterFacilitySupervisor TbCharacterFacilitySupervisor {get; }
     public demo.TbJingYuanCodexDef TbJingYuanCodexDef {get; }
     public demo.TbJingYuanCodexLevel TbJingYuanCodexLevel {get; }
     public demo.TbJingYuanTuneTier TbJingYuanTuneTier {get; }
@@ -128,6 +143,8 @@ public partial class Tables
     public demo.TbJingYuanEssenceLevelMap TbJingYuanEssenceLevelMap {get; }
     public demo.TbJingYuanTypePoolEnum TbJingYuanTypePoolEnum {get; }
     public demo.TbNamedNpcJingYuanType TbNamedNpcJingYuanType {get; }
+    public demo.TbJingYuanTuneRule TbJingYuanTuneRule {get; }
+    public demo.TbJingYuanRenewalRule TbJingYuanRenewalRule {get; }
     /// <summary>
     /// 养成总面板选项卡
     /// </summary>
@@ -260,6 +277,9 @@ public partial class Tables
         TbFacilityDefinition = new demo.TbFacilityDefinition(loader("demo_tbfacilitydefinition"));
         TbFacilityDevelopmentDefinition = new demo.TbFacilityDevelopmentDefinition(loader("demo_tbfacilitydevelopmentdefinition"));
         TbFacilityDevelopmentLevel = new demo.TbFacilityDevelopmentLevel(loader("demo_tbfacilitydevelopmentlevel"));
+        TbFacilityRenovation = new demo.TbFacilityRenovation(loader("demo_tbfacilityrenovation"));
+        TbTownFacilitySite = new demo.TbTownFacilitySite(loader("demo_tbtownfacilitysite"));
+        TbCharacterFacilitySupervisor = new demo.TbCharacterFacilitySupervisor(loader("demo_tbcharacterfacilitysupervisor"));
         TbJingYuanCodexDef = new demo.TbJingYuanCodexDef(loader("demo_tbjingyuancodexdef"));
         TbJingYuanCodexLevel = new demo.TbJingYuanCodexLevel(loader("demo_tbjingyuancodexlevel"));
         TbJingYuanTuneTier = new demo.TbJingYuanTuneTier(loader("demo_tbjingyuantunetier"));
@@ -272,6 +292,8 @@ public partial class Tables
         TbJingYuanEssenceLevelMap = new demo.TbJingYuanEssenceLevelMap(loader("demo_tbjingyuanessencelevelmap"));
         TbJingYuanTypePoolEnum = new demo.TbJingYuanTypePoolEnum(loader("demo_tbjingyuantypepoolenum"));
         TbNamedNpcJingYuanType = new demo.TbNamedNpcJingYuanType(loader("demo_tbnamednpcjingyuantype"));
+        TbJingYuanTuneRule = new demo.TbJingYuanTuneRule(loader("demo_tbjingyuantunerule"));
+        TbJingYuanRenewalRule = new demo.TbJingYuanRenewalRule(loader("demo_tbjingyuanrenewalrule"));
         TbProgressionHubTab = new demo.TbProgressionHubTab(loader("demo_tbprogressionhubtab"));
         TbPlayerAttachInfo = new demo.TbPlayerAttachInfo(loader("demo_tbplayerattachinfo"));
         TbItemDismantle = new demo.TbItemDismantle(loader("demo_tbitemdismantle"));
@@ -382,6 +404,9 @@ public partial class Tables
         TbFacilityDefinition.ResolveRef(this);
         TbFacilityDevelopmentDefinition.ResolveRef(this);
         TbFacilityDevelopmentLevel.ResolveRef(this);
+        TbFacilityRenovation.ResolveRef(this);
+        TbTownFacilitySite.ResolveRef(this);
+        TbCharacterFacilitySupervisor.ResolveRef(this);
         TbJingYuanCodexDef.ResolveRef(this);
         TbJingYuanCodexLevel.ResolveRef(this);
         TbJingYuanTuneTier.ResolveRef(this);
@@ -394,6 +419,8 @@ public partial class Tables
         TbJingYuanEssenceLevelMap.ResolveRef(this);
         TbJingYuanTypePoolEnum.ResolveRef(this);
         TbNamedNpcJingYuanType.ResolveRef(this);
+        TbJingYuanTuneRule.ResolveRef(this);
+        TbJingYuanRenewalRule.ResolveRef(this);
         TbProgressionHubTab.ResolveRef(this);
         TbPlayerAttachInfo.ResolveRef(this);
         TbItemDismantle.ResolveRef(this);

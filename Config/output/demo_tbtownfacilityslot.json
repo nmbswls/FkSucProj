@@ -1,0 +1,32 @@
+[
+  {
+    "logic_area_id": "homestead_01",
+    "facility_id": "elder_hall",
+    "sort_order": 1
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "facility_id": "merchant_stall",
+    "sort_order": 2
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "facility_id": "teleport_gate",
+    "sort_order": 3
+  },
+  {
+    "logic_area_id": "village_01",
+    "facility_id": "village_hall",
+    "sort_order": 1
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "facility_id": "tavern",
+    "sort_order": 4
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "facility_id": "transport_camp",
+    "sort_order": 5
+  }
+]

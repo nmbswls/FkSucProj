@@ -9,5 +9,6 @@ namespace My.Map
     {
         public string Key;
         public CommonCheckCond AppearCond;
+        public CommonCheckCond DisappearCond;
     }
 }

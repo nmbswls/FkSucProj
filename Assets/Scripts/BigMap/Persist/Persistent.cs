@@ -1,6 +1,7 @@
 
 
 using My.Map.Entity;
+using My.Map.Entity.AI;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -157,6 +158,50 @@ namespace My.Map.Logic
 
         // 有序闭环节点 id（与路网节点 GameObject 名一致）；相邻及首尾段分别最短路拼接
         public List<string> PatrolCycleNodeIds = new();
+
+        // 非 Idle Brain 状态落库（读档续态）
+        public EAIBrainPersistState BrainPersistState;
+        public bool HasBrainHomePos;
+        public Vector2 BrainHomePos;
+        public bool HasBrainSuspiciousPos;
+        public Vector2 BrainSuspiciousPos;
+
+        public long BrainAggroTargetId;
+        public bool BrainCombatEngaged;
+        public List<NpcBrainThreatPersist> BrainThreats = new();
+
+        // Search
+        public int BrainSearchPhase;
+        public Vector2 BrainSearchOrgPoint;
+        public float BrainSearchLookEndTime;
+
+        // Return
+        public int BrainReturnReason;
+        public string BrainReturnSourceId = string.Empty;
+        public bool HasBrainReturnTargetPos;
+        public Vector2 BrainReturnTargetPos;
+        public float BrainReturnMoveSpeedRate = 0.7f;
+        public float BrainReturnReengageDelay = 5f;
+        public bool BrainReturnIgnoreSuspicion;
+        public bool BrainReturnIgnoreWanted;
+        public bool BrainReturnIgnoreAttract;
+        public float BrainReturnHealthRecoverDuration;
+        public bool BrainReturnInvulnerable;
+
+        // ChaseWanted
+        public long BrainChaseTargetId;
+        public float BrainChaseChillEndTime;
+
+        // PoisonBait
+        public long BrainPoisonBaitTargetId;
+
+        // Attracted focus
+        public bool HasBrainAttractFocus;
+        public Vector3 BrainAttractFocusPos;
+        public float BrainAttractFocusPriority;
+        public float BrainAttractFocusTimestamp;
+        public int BrainAttractFocusType;
+        public long BrainAttractFocusSourceId;
     }
 
 

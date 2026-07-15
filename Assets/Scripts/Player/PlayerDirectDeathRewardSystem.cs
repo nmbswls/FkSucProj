@@ -53,15 +53,17 @@ namespace My.Player
 
             if (npc.DirectDropId > 0)
             {
-                var items = DropUtils.GetBundleDropItems(npc.DirectDropId);
+                var items = DropUtils.GetBundleDropRewards(npc.DirectDropId);
                 for (int i = 0; i < items.Count; i++)
                 {
                     var item = items[i];
-                    long gained = _owner.GiveItemToPlayer(item.Item1, item.Item2);
-                    if (gained < item.Item2)
+                    long gained = item.PremiumEssence != null
+                        ? (_owner.JingYuanEssenceSystem.TryAddFromItemStack(item.CreateItemStack()) ? 1 : 0)
+                        : _owner.GiveItemToPlayer(item.ItemId, item.Amount);
+                    if (gained < item.Amount)
                     {
                         Debug.LogError(
-                            $"{LogTag} Direct reward inventory overflow: npc={evt.KilledCfgId}, item={item.Item1}, requested={item.Item2}, gained={gained}.");
+                            $"{LogTag} Direct reward inventory overflow: npc={evt.KilledCfgId}, item={item.ItemId}, requested={item.Amount}, gained={gained}.");
                     }
                 }
             }

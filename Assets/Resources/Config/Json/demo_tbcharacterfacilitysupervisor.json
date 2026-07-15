@@ -1,0 +1,26 @@
+[
+  {
+    "character_key": "home_elder",
+    "can_assign_supervisor": true,
+    "sort_order": 1,
+    "display_title": "长老"
+  },
+  {
+    "character_key": "home_merchant",
+    "can_assign_supervisor": true,
+    "sort_order": 2,
+    "display_title": "商摊主"
+  },
+  {
+    "character_key": "home_vera",
+    "can_assign_supervisor": true,
+    "sort_order": 3,
+    "display_title": "侍从"
+  },
+  {
+    "character_key": "carlisle",
+    "can_assign_supervisor": true,
+    "sort_order": 10,
+    "display_title": "猎手"
+  }
+]

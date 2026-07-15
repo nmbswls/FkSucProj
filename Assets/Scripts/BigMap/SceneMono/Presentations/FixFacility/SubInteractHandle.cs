@@ -25,7 +25,7 @@ namespace My.Map.Scene
 
         public string ShowName => "查看";
 
-        public Vector2 Pos => throw new System.NotImplementedException();
+        public Vector2 Pos => transform.position;
 
         public bool InteractFocused { get; set; }
         public bool IsInteractDetail { get; set; }

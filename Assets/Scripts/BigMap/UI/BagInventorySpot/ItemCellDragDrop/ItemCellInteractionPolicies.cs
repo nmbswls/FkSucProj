@@ -127,6 +127,17 @@ namespace My.UI
                 }
 
                 var srcContainer = LootPointUIPanel.Instance.Loot.GetLootItemContainer();
+                var lootStack = srcContainer.GetItemByIdx(payload.SourceIndex);
+                var essenceSystem = MainGameManager.Instance.gameLogicManager.playerDataManager.JingYuanEssenceSystem;
+                if (lootStack?.InstanceInfo?.Get<ItemInstance4PremiumEssence>() != null)
+                {
+                    if (essenceSystem != null && essenceSystem.TryAddFromItemStack(lootStack))
+                    {
+                        srcContainer.SetItemData(payload.SourceIndex, null);
+                        LootPointUIPanel.Instance.RefreshContent();
+                    }
+                    return;
+                }
                 var bag = MainGameManager.Instance.gameLogicManager.playerDataManager.InventorySystem.GetBagById(bagId);
                 var modified = ItemUtils.MoveOrMergeOrSwapItem(srcContainer, payload.SourceIndex, bag, dstIndex);
                 if (modified)

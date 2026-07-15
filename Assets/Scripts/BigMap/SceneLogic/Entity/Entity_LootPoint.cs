@@ -80,10 +80,10 @@ namespace My.Map
                     containItems.Add(null);
                 }
 
-                var items = DropUtils.GetBundleDropItems(dropId);
+                var items = DropUtils.GetBundleDropRewards(dropId);
                 for (int i = 0; i < items.Count; i++)
                 {
-                    containItems[i] = ItemCatalog.CreateItemStack(items[i].Item1, items[i].Item2);
+                    containItems[i] = items[i].CreateItemStack();
 
                     //var itemConf = FakeItemDatabase.GetIcon();
                     ItemSearchProgress[i] = 1.5f;
@@ -415,4 +415,3 @@ namespace My.Map
     }
 
 }
-

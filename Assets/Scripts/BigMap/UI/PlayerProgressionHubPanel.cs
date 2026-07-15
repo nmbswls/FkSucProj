@@ -122,7 +122,17 @@ namespace My.UI
 
         public static void OpenRunes() => Open(ProgressionHubTab.Runes);
 
-        public static void OpenJingYuanTune() => Open(ProgressionHubTab.JingYuanTune);
+        public static void OpenJingYuanTune()
+        {
+            var glm = ResolveGameLogic();
+            if (!JingYuanFacilityAccess.CanOpenTune(glm))
+            {
+                Debug.LogWarning("[PlayerProgressionHubPanel] JingYuan tuning requires the Secret Base JingYuan Pool.");
+                return;
+            }
+
+            Open(ProgressionHubTab.JingYuanTune);
+        }
 
         public SkillLoadoutPanel SkillPage => _skill;
 

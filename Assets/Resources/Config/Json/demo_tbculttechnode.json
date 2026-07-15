@@ -1,65 +1,22 @@
-[
-  {
-    "node_id": 1,
-    "display_name": "教座之心",
-    "desc": "教团权能的核心。铭刻后可向外延展布道戒律。",
-    "max_level": 1,
-    "ring": 0,
-    "angle_deg": 0,
-    "icon_path": ""
-  },
-  {
-    "node_id": 10,
-    "display_name": "暗室密传",
-    "desc": "以隐秘方式传播教义，侧重亵渎材料与低暴露。",
-    "max_level": 1,
-    "ring": 1,
-    "angle_deg": 45,
-    "icon_path": ""
-  },
-  {
-    "node_id": 11,
-    "display_name": "梦中显圣",
-    "desc": "借梦境显圣传教，与入梦玩法呼应。",
-    "max_level": 1,
-    "ring": 1,
-    "angle_deg": 135,
-    "icon_path": ""
-  },
-  {
-    "node_id": 12,
-    "display_name": "威压改宗",
-    "desc": "以威压迫使改宗，信仰来得快，人间关系风险高。",
-    "max_level": 1,
-    "ring": 1,
-    "angle_deg": 225,
-    "icon_path": ""
-  },
-  {
-    "node_id": 13,
-    "display_name": "工艺贡礼",
-    "desc": "以精致工艺品为贡礼传教，衔接文明副产物献纳。",
-    "max_level": 1,
-    "ring": 1,
-    "angle_deg": 315,
-    "icon_path": ""
-  },
-  {
-    "node_id": 20,
-    "display_name": "往去余韵",
-    "desc": "供奉「淑女」残座的入门铭刻，可触发往去回忆碎片。",
-    "max_level": 1,
-    "ring": 2,
-    "angle_deg": 90,
-    "icon_path": ""
-  },
-  {
-    "node_id": 21,
-    "display_name": "血契布道",
-    "desc": "将密传与血契结合，提升传教效率（占位效果）。",
-    "max_level": 1,
-    "ring": 2,
-    "angle_deg": 0,
-    "icon_path": ""
-  }
+﻿[
+  {"node_id":1,"display_name":"教座之心","desc":"教团权能的核心。铭刻后可向外延展布道戒律。","max_level":1,"ring":1,"angle_deg":90,"icon_path":""},
+  {"node_id":10,"display_name":"暗室密传","desc":"以隐秘方式传播教义，侧重亵渎材料与低暴露。","max_level":1,"ring":1,"angle_deg":18,"icon_path":""},
+  {"node_id":11,"display_name":"梦中显圣","desc":"借梦境显圣传教，与入梦玩法呼应。","max_level":1,"ring":1,"angle_deg":-54,"icon_path":""},
+  {"node_id":12,"display_name":"威压改宗","desc":"以威压迫使改宗，信仰来得快，人间关系风险高。","max_level":1,"ring":1,"angle_deg":-126,"icon_path":""},
+  {"node_id":13,"display_name":"工艺贡礼","desc":"以精致工艺品为贡礼传教，衔接文明副产物献纳。","max_level":1,"ring":1,"angle_deg":162,"icon_path":""},
+  {"node_id":20,"display_name":"往去余韵","desc":"供奉淑女残座的入门铭刻，可触发往去回忆碎片。","max_level":1,"ring":2,"angle_deg":76,"icon_path":""},
+  {"node_id":21,"display_name":"暗火低语","desc":"将隐秘话语送入夜色，展示外圈供奉节点。","max_level":1,"ring":2,"angle_deg":104,"icon_path":""},
+  {"node_id":22,"display_name":"残页誓词","desc":"以残缺誓词维系信徒之间的联系。","max_level":1,"ring":2,"angle_deg":132,"icon_path":""},
+  {"node_id":23,"display_name":"梦痕收集","desc":"收集梦境中浮现的象征，作为教团叙事入口。","max_level":1,"ring":2,"angle_deg":4,"icon_path":""},
+  {"node_id":24,"display_name":"夜半宣讲","desc":"在无人注视时留下微弱的宣讲痕迹。","max_level":1,"ring":2,"angle_deg":32,"icon_path":""},
+  {"node_id":25,"display_name":"无名灯塔","desc":"让迷失者在梦里看见教团的微光。","max_level":1,"ring":2,"angle_deg":60,"icon_path":""},
+  {"node_id":26,"display_name":"惊惧刻印","desc":"把短暂的惊惧转化为信仰记忆。","max_level":1,"ring":2,"angle_deg":-68,"icon_path":""},
+  {"node_id":27,"display_name":"沉默注视","desc":"以持续注视制造不可言说的压力。","max_level":1,"ring":2,"angle_deg":-40,"icon_path":""},
+  {"node_id":28,"display_name":"服从仪式","desc":"用简短仪式塑造供奉者的服从感。","max_level":1,"ring":2,"angle_deg":-12,"icon_path":""},
+  {"node_id":29,"display_name":"献礼熔炉","desc":"将工艺贡礼锻造成可展示的信仰象征。","max_level":1,"ring":2,"angle_deg":-140,"icon_path":""},
+  {"node_id":30,"display_name":"丝线圣痕","desc":"以细密纹样记录每一次微小供奉。","max_level":1,"ring":2,"angle_deg":-112,"icon_path":""},
+  {"node_id":31,"display_name":"宴席余香","desc":"让一场宴席留下持续发酵的传教话题。","max_level":1,"ring":2,"angle_deg":-84,"icon_path":""},
+  {"node_id":32,"display_name":"秘仪徽章","desc":"把教团徽记嵌入日常工艺品的细节中。","max_level":1,"ring":2,"angle_deg":148,"icon_path":""},
+  {"node_id":33,"display_name":"温柔陷阱","desc":"以优雅的礼节邀请新的供奉者靠近。","max_level":1,"ring":2,"angle_deg":176,"icon_path":""},
+  {"node_id":34,"display_name":"回声工坊","desc":"把旧时代的回声制成可反复传播的作品。","max_level":1,"ring":2,"angle_deg":204,"icon_path":""}
 ]

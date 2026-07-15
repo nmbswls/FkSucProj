@@ -127,6 +127,28 @@ namespace My
         }
     }
 
+    [Serializable]
+    public sealed class ItemInstance4PremiumEssence : ItemInstanceComponent
+    {
+        public long InstanceId;
+        public cfg.demo.EJingYuanType TypeId;
+        public int Concentration;
+        public int DropLevel;
+        public int QualityTier = 1;
+
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4PremiumEssence
+            {
+                InstanceId = InstanceId,
+                TypeId = TypeId,
+                Concentration = Concentration,
+                DropLevel = DropLevel,
+                QualityTier = QualityTier,
+            };
+        }
+    }
+
 
     [Serializable]
     public class ItemStack

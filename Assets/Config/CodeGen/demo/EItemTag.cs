@@ -70,6 +70,7 @@ namespace cfg.demo
         Dew = 55,
         Fairy = 56,
         Charge = 57,
+        PremiumEssenceDrop = 58,
     }
 
 } 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using My;
 using My.Map;
 using My.Map.Entity;
+using My.Map.Entity.AI;
 using My.Map.Unit;
 using UnityEngine;
 
@@ -98,6 +99,72 @@ namespace My.Map.Unit
         public bool HasThreatEntry(long id)
         {
             return _threatTable.ContainsKey(id);
+        }
+
+        public void ExportThreats(List<NpcBrainThreatPersist> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            output.Clear();
+            foreach (var kv in _threatTable)
+            {
+                if (kv.Key <= 0)
+                {
+                    continue;
+                }
+
+                output.Add(new NpcBrainThreatPersist
+                {
+                    EntityId = kv.Key,
+                    TotalDamage = kv.Value.TotalDamage,
+                });
+            }
+        }
+
+        public void RestoreFromPersist(long targetId, bool combatEngaged, List<NpcBrainThreatPersist> threats)
+        {
+            _threatTable.Clear();
+            CurrentTargetId = 0;
+            CombatEngaged = false;
+            LastKnownTargetPos = null;
+            _clearCoolTimer = 0;
+
+            if (threats != null)
+            {
+                for (int i = 0; i < threats.Count; i++)
+                {
+                    var row = threats[i];
+                    if (row == null || row.EntityId <= 0)
+                    {
+                        continue;
+                    }
+
+                    var info = GetOrAddHostile(row.EntityId);
+                    info.TotalDamage = Mathf.Max(info.TotalDamage, row.TotalDamage);
+                    info.LastInteractionTime = LogicTime.time;
+                }
+            }
+
+            if (targetId > 0)
+            {
+                var info = GetOrAddHostile(targetId);
+                info.TotalDamage = Mathf.Max(info.TotalDamage, SharedThreatFloor + 1f);
+                info.LastInteractionTime = LogicTime.time;
+                CurrentTargetId = targetId;
+            }
+
+            CombatEngaged = combatEngaged || CurrentTargetId > 0;
+            if (CurrentTargetId > 0)
+            {
+                var targetEntity = _unit.LogicManager.GetLogicEntity(CurrentTargetId, false);
+                if (targetEntity != null)
+                {
+                    LastKnownTargetPos = targetEntity.Pos;
+                }
+            }
         }
 
         public bool HasSelfDamageThreat()

@@ -1467,6 +1467,14 @@ namespace My.Map
                 }
             }
 
+            public UnitBagContainer(GameLogicManager logicManager, int maxSlots, List<DropUtils.DropReward> items)
+            {
+                this.logicManager = logicManager;
+                this.MaxSlots = maxSlots;
+                for (int i = 0; i < MaxSlots; i++) containItems.Add(null);
+                for (int i = 0; i < items.Count && i < MaxSlots; i++) containItems[i] = items[i]?.CreateItemStack();
+            }
+
             public List<ItemStack> InnerItems
             {
                 get

@@ -4,6 +4,7 @@ using My.Config;
 using My.Home;
 using My.Map;
 using My.Map.Scene;
+using My.UI.Home;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,56 +44,29 @@ namespace My.UI
 
         private void OnDestroy()
         {
-            UnsubscribeAoiPresentationShown();
-        }
-
-        public override void Show()
-        {
-            base.Show();
-            SubscribeAoiPresentationShown();
-            HomeTownViewController.SetManagementPanelOpen(true);
-            Refresh();
-        }
-
-        public override void Hide()
-        {
-            UnsubscribeAoiPresentationShown();
-            HomeTownViewController.SetManagementPanelOpen(false);
-            base.Hide();
-        }
-
-        private void SubscribeAoiPresentationShown()
-        {
-            var aoi = SceneAOIManager.Instance;
-            if (aoi == null)
+            if (IsVisible)
             {
-                return;
+                HomeTownViewController.LeaveFacilityManagementView();
             }
-
-            aoi.AfterPresentationShown -= OnAoiAfterPresentationShown;
-            aoi.AfterPresentationShown += OnAoiAfterPresentationShown;
-        }
-
-        private void UnsubscribeAoiPresentationShown()
-        {
-            var aoi = SceneAOIManager.Instance;
-            if (aoi == null)
-            {
-                return;
-            }
-
-            aoi.AfterPresentationShown -= OnAoiAfterPresentationShown;
-        }
-
-        private void OnAoiAfterPresentationShown(IScenePresentation pres, ILogicEntity entity)
-        {
-            HomeTownViewController.ApplyPresentationVisibilityForTownManagement(pres, entity);
         }
 
         public override void Setup(object data = null)
         {
             base.Setup(data);
             Refresh();
+        }
+
+        public override void Show()
+        {
+            base.Show();
+            HomeTownViewController.EnterFacilityManagementView();
+            Refresh();
+        }
+
+        public override void Hide()
+        {
+            HomeTownViewController.LeaveFacilityManagementView();
+            base.Hide();
         }
 
         public void Refresh()
@@ -168,6 +142,7 @@ namespace My.UI
                 {
                     _selected = captured;
                     RefreshDetail();
+                    OpenFacilityDetail(captured);
                 });
 
                 _rowObjs.Add(row);
@@ -277,6 +252,23 @@ namespace My.UI
 
         public static void TryOpenFromHud()
         {
+        }
+
+        static void OpenFacilityDetail(FixedFacilityInfo facility)
+        {
+            if (facility == null)
+            {
+                return;
+            }
+
+            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(
+                MainGameManager.Instance?.gameLogicManager?.AreaManager);
+            TownFacilityDetailPanel.Open(new TownFacilityDetailOpenArgs
+            {
+                InstanceId = facility.InstanceId,
+                FacilityId = facility.FacilityId,
+                LogicAreaId = logicAreaId,
+            });
         }
     }
 }

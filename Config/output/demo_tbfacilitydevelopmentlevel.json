@@ -1,6 +1,5 @@
 [
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "elder_hall",
     "level": 1,
     "display_name": "初建",
@@ -24,7 +23,6 @@
     ]
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "elder_hall",
     "level": 2,
     "display_name": "扩建",
@@ -52,7 +50,6 @@
     ]
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "elder_hall",
     "level": 3,
     "display_name": "完善",
@@ -84,7 +81,6 @@
     ]
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "merchant_stall",
     "level": 1,
     "display_name": "开张",
@@ -108,7 +104,6 @@
     ]
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "merchant_stall",
     "level": 2,
     "display_name": "扩容",
@@ -136,7 +131,6 @@
     ]
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "teleport_gate",
     "level": 1,
     "display_name": "修复",
@@ -155,7 +149,6 @@
     "daily_outputs": []
   },
   {
-    "logic_area_id": "homestead_01",
     "facility_id": "teleport_gate",
     "level": 2,
     "display_name": "强化",
@@ -174,7 +167,6 @@
     "daily_outputs": []
   },
   {
-    "logic_area_id": "village_01",
     "facility_id": "village_hall",
     "level": 1,
     "display_name": "接管",
@@ -198,7 +190,6 @@
     ]
   },
   {
-    "logic_area_id": "village_01",
     "facility_id": "village_hall",
     "level": 2,
     "display_name": "整顿",
@@ -222,6 +213,121 @@
       {
         "item_id": "gold",
         "count": 15
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 1,
+    "display_name": "起建",
+    "desc": "搭建边境酒馆",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 25
+      },
+      {
+        "item_id": "gold",
+        "count": 80
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 2,
+    "display_name": "扩建",
+    "desc": "增加情报与通识产出",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 40
+      },
+      {
+        "item_id": "gold",
+        "count": 150
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 12
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 3,
+    "display_name": "完善",
+    "desc": "成为聚落情报枢纽",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 60
+      },
+      {
+        "item_id": "gold",
+        "count": 250
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 20
+      }
+    ]
+  },
+  {
+    "facility_id": "transport_camp",
+    "level": 1,
+    "display_name": "起建",
+    "desc": "搭建运输队营地",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 30
+      },
+      {
+        "item_id": "stone",
+        "count": 15
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "facility_id": "transport_camp",
+    "level": 2,
+    "display_name": "扩建",
+    "desc": "扩大商队周转能力",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 50
+      },
+      {
+        "item_id": "gold",
+        "count": 120
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 18
       }
     ]
   }

@@ -2,6 +2,7 @@ using DG.Tweening;
 using Map.Entity;
 using My.Map.Entity;
 using My.UI;
+using My.UI.Home;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -184,6 +185,16 @@ namespace My.Map.Scene
 
         public bool TriggerInteract(int selectionId, int playerId)
         {
+            if (selectionId == TownFacilityInteractUtil.SelectManageFacility)
+            {
+                var facilityId = TownFacilityInteractUtil.ResolveFacilityIdFromRuin(RepairPointEntity?.CfgId);
+                if (!string.IsNullOrEmpty(facilityId))
+                {
+                    TownFacilityInteractUtil.OpenDetail(facilityId);
+                    return true;
+                }
+            }
+
             if (RepairPointEntity.Cfg.AutoRepair)
             {
                 MainGameManager.Instance.ShowMapSpeachBubble(RepairPointEntity.Id, "没修好。", 1f);
@@ -256,10 +267,20 @@ namespace My.Map.Scene
             {
                 ret.Add(new SceneInteractSelection()
                 {
-                    SelectId = 1,
-                    SelectContent = "查看",
+                    SelectId = TownFacilityInteractUtil.SelectManageFacility,
+                    SelectContent = "设施管理",
                 });
                 return ret;
+            }
+
+            var manageFacilityId = TownFacilityInteractUtil.ResolveFacilityIdFromRuin(RepairPointEntity.CfgId);
+            if (!string.IsNullOrEmpty(manageFacilityId))
+            {
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = TownFacilityInteractUtil.SelectManageFacility,
+                    SelectContent = "设施管理",
+                });
             }
 
             bool enoughMat = RepairPointEntity.CheckEnoughRepairMaterial();

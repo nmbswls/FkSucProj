@@ -2,6 +2,7 @@ using Cinemachine;
 using Map.Entity;
 using Map.Logic;
 using Map.Scene;
+using My.Home;
 using My.Map;
 using My.Map.Entity;
 using My.Map.Hunting;
@@ -231,6 +232,7 @@ namespace My
             }
 
             TryRefreshCameraShowStatus();
+            HomeTownViewController.TickCamera(Time.deltaTime);
 
             RumorTextSpawner.IsActive = false;
 

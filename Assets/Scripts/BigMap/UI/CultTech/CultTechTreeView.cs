@@ -20,7 +20,7 @@ namespace My.UI.CultTech
         [SerializeField] TextMeshProUGUI detailStatusHint;
         [SerializeField] Button unlockButton;
 
-        readonly List<CultTechNodeView> _generatedNodes = new();
+        readonly Dictionary<int, CultTechNodeView> _nodeViewMap = new();
         DemonCultSystem _cult;
         int _selectedNodeId;
 
@@ -59,9 +59,9 @@ namespace My.UI.CultTech
                 faithText.text = $"信仰 {_cult.Faith}  ·  铭刻 {_cult.GetUnlockedTechCount()}";
             }
 
-            foreach (var node in _generatedNodes)
+            foreach (var pair in _nodeViewMap)
             {
-                node?.Refresh(_cult);
+                pair.Value?.Refresh(_cult, pair.Key == _selectedNodeId);
             }
 
             ShowDetail(_selectedNodeId);
@@ -106,7 +106,7 @@ namespace My.UI.CultTech
         void Rebuild()
         {
             EnsureLayout();
-            ClearGeneratedContent();
+            _nodeViewMap.Clear();
             if (_cult == null || nodeViewContainer == null)
             {
                 ClearDetail();
@@ -117,31 +117,57 @@ namespace My.UI.CultTech
             if (table == null)
             {
                 Debug.LogWarning("[CultTechTreeView] Cult node config is missing");
-                ClearDetail();
                 return;
             }
 
             var positions = new Dictionary<int, Vector2>();
-            foreach (var row in table)
+            var binders = nodeViewContainer.GetComponentsInChildren<CultTechNodeBinder>(true);
+            foreach (var binder in binders)
             {
-                if (row == null || row.NodeId <= 0) continue;
-                var pos = ResolveRadialPosition(row);
-                var nodeView = CultTechNodeView.Create(nodeViewContainer, row.NodeId, this);
-                if (nodeView.transform is RectTransform rect)
+                var node = CfgMgr.Cfgs?.TbCultTechNode?.GetOrDefault(binder.CultNodeId);
+                var view = binder.GetComponent<CultTechNodeView>() ?? binder.GetComponentInChildren<CultTechNodeView>(true);
+                bool valid = node != null && view != null;
+                binder.gameObject.SetActive(valid);
+                if (!valid)
                 {
-                    rect.anchorMin = new Vector2(0.5f, 0.5f);
-                    rect.anchorMax = new Vector2(0.5f, 0.5f);
-                    rect.pivot = new Vector2(0.5f, 0.5f);
-                    rect.anchoredPosition = pos;
+                    continue;
                 }
-                _generatedNodes.Add(nodeView);
-                positions[row.NodeId] = pos;
+
+                view.BindHost(this);
+                _nodeViewMap[binder.CultNodeId] = view;
+                if (view.transform is RectTransform rect)
+                {
+                    positions[binder.CultNodeId] = rect.anchoredPosition;
+                }
             }
 
             BuildConnections(table, positions);
-            if (_selectedNodeId <= 0 || CfgMgr.Cfgs?.TbCultTechNode?.GetOrDefault(_selectedNodeId) == null)
+            if (_selectedNodeId <= 0 || !_nodeViewMap.ContainsKey(_selectedNodeId))
+            {
                 _selectedNodeId = FindInitialSelection(table);
+            }
+
+            if (_nodeViewMap.Count != CountConfiguredNodes())
+            {
+                Debug.LogError($"[CultTechTreeView] Prefab layout has {_nodeViewMap.Count}/{CountConfiguredNodes()} configured nodes.");
+            }
+
             Refresh();
+        }
+
+        int CountConfiguredNodes()
+        {
+            var table = CfgMgr.Cfgs?.TbCultTechNode?.DataList;
+            int count = 0;
+            if (table != null)
+            {
+                foreach (var row in table)
+                {
+                    if (row != null && row.NodeId > 0) count++;
+                }
+            }
+
+            return count;
         }
 
         static Vector2 ResolveRadialPosition(CultTechNode row)
@@ -183,15 +209,24 @@ namespace My.UI.CultTech
 
         void BuildConnections(IReadOnlyList<CultTechNode> table, Dictionary<int, Vector2> positions)
         {
-            var connections = new GameObject("Connections", typeof(RectTransform));
-            connections.transform.SetParent(nodeViewContainer, false);
-            var connectionRect = connections.GetComponent<RectTransform>();
-            connectionRect.anchorMin = new Vector2(0.5f, 0.5f);
-            connectionRect.anchorMax = new Vector2(0.5f, 0.5f);
-            connectionRect.pivot = new Vector2(0.5f, 0.5f);
-            connectionRect.anchoredPosition = Vector2.zero;
-            connectionRect.sizeDelta = Vector2.zero;
-            connections.transform.SetAsFirstSibling();
+            var connections = nodeViewContainer.Find("Connections");
+            if (connections == null)
+            {
+                Debug.LogError("CultTechTreeView requires a Connections prefab container.");
+                return;
+            }
+
+            for (int index = connections.childCount - 1; index >= 0; index--)
+            {
+                Destroy(connections.GetChild(index).gameObject);
+            }
+
+            var connectionPrefab = Resources.Load<GameObject>("UI/Prefabs/PlayerProgressionHubPanelSub/CultTechConnection_View");
+            if (connectionPrefab == null)
+            {
+                Debug.LogError("CultTechTreeView requires CultTechConnection_View.prefab.");
+                return;
+            }
 
             foreach (var row in table)
             {
@@ -209,9 +244,13 @@ namespace My.UI.CultTech
                         continue;
                     }
 
-                    var line = new GameObject($"Line_{prerequisite}_{row.NodeId}", typeof(RectTransform), typeof(Image));
-                    line.transform.SetParent(connections.transform, false);
-                    line.GetComponent<Image>().color = new Color(0.62f, 0.28f, 0.4f, 0.7f);
+                    var line = Instantiate(connectionPrefab, connections, false);
+                    line.name = $"Line_{prerequisite}_{row.NodeId}";
+                    var image = line.GetComponent<Image>();
+                    if (image != null)
+                    {
+                        image.color = new Color(0.62f, 0.28f, 0.4f, 0.7f);
+                    }
                     var rect = line.GetComponent<RectTransform>();
                     var delta = target - source;
                     rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -326,167 +365,37 @@ namespace My.UI.CultTech
 
         void ClearGeneratedContent()
         {
-            _generatedNodes.Clear();
+            _nodeViewMap.Clear();
             if (nodeViewContainer == null)
             {
                 return;
             }
 
-            for (int i = nodeViewContainer.childCount - 1; i >= 0; i--)
+            var connections = nodeViewContainer.Find("Connections");
+            if (connections != null)
             {
-                Destroy(nodeViewContainer.GetChild(i).gameObject);
+                for (int index = connections.childCount - 1; index >= 0; index--)
+                {
+                    Destroy(connections.GetChild(index).gameObject);
+                }
             }
         }
 
         void EnsureLayout()
         {
-            EnsureBackground();
-            EnsureFaithText();
-            EnsureTreeRoot();
-            EnsureDetailArea();
-            WireUnlockButton();
-        }
-
-        void EnsureBackground()
-        {
-            var bg = transform.Find("Background")?.GetComponent<Image>();
-            if (bg != null)
-            {
-                return;
-            }
-
-            var go = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            go.transform.SetParent(transform, false);
-            go.transform.SetAsFirstSibling();
-            var rect = (RectTransform)go.transform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            go.GetComponent<Image>().color = new Color(0.06f, 0.04f, 0.08f, 0.96f);
-        }
-
-        void EnsureFaithText()
-        {
-            if (faithText != null)
-            {
-                return;
-            }
-
-            faithText = transform.Find("FaithText")?.GetComponent<TextMeshProUGUI>();
-            if (faithText != null)
-            {
-                return;
-            }
-
-            var go = new GameObject("FaithText", typeof(RectTransform));
-            go.transform.SetParent(transform, false);
-            var rect = (RectTransform)go.transform;
-            rect.anchorMin = new Vector2(0.02f, 0.92f);
-            rect.anchorMax = new Vector2(0.68f, 0.98f);
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            faithText = go.AddComponent<TextMeshProUGUI>();
-            faithText.fontSize = 22f;
-            faithText.alignment = TextAlignmentOptions.MidlineLeft;
-            faithText.raycastTarget = false;
-        }
-
-        void EnsureTreeRoot()
-        {
-            if (nodeViewContainer != null)
-            {
-                return;
-            }
-
-            nodeViewContainer = transform.Find("TreeRoot");
-            if (nodeViewContainer != null)
-            {
-                return;
-            }
-
-            var go = new GameObject("TreeRoot", typeof(RectTransform));
-            go.transform.SetParent(transform, false);
-            var rect = (RectTransform)go.transform;
-            rect.anchorMin = new Vector2(0.02f, 0.06f);
-            rect.anchorMax = new Vector2(0.68f, 0.9f);
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            nodeViewContainer = go.transform;
-        }
-
-        void EnsureDetailArea()
-        {
-            detailTitle ??= transform.Find("DetailArea/DetailTitle")?.GetComponent<TextMeshProUGUI>();
-            detailBody ??= transform.Find("DetailArea/DetailBody")?.GetComponent<TextMeshProUGUI>();
-            detailStatusHint ??= transform.Find("DetailArea/DetailStatusHint")?.GetComponent<TextMeshProUGUI>();
-            unlockButton ??= transform.Find("DetailArea/UnlockButton")?.GetComponent<Button>();
-
-            var detailRoot = transform.Find("DetailArea") as RectTransform;
-            if (detailRoot == null)
-            {
-                var go = new GameObject("DetailArea", typeof(RectTransform), typeof(Image));
-                go.transform.SetParent(transform, false);
-                detailRoot = (RectTransform)go.transform;
-                detailRoot.anchorMin = new Vector2(0.7f, 0.06f);
-                detailRoot.anchorMax = new Vector2(0.98f, 0.9f);
-                detailRoot.offsetMin = Vector2.zero;
-                detailRoot.offsetMax = Vector2.zero;
-                go.GetComponent<Image>().color = new Color(0.1f, 0.06f, 0.12f, 0.94f);
-            }
-
-            detailTitle ??= CreateDetailText(detailRoot, "DetailTitle", new Vector2(0.05f, 0.82f), new Vector2(0.95f, 0.96f), 22f);
-            detailBody ??= CreateDetailText(detailRoot, "DetailBody", new Vector2(0.05f, 0.28f), new Vector2(0.95f, 0.8f), 15f);
-            detailStatusHint ??= CreateDetailText(detailRoot, "DetailStatusHint", new Vector2(0.05f, 0.16f), new Vector2(0.95f, 0.26f), 15f);
-
-            if (unlockButton == null)
-            {
-                var btnGo = new GameObject("UnlockButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                btnGo.transform.SetParent(detailRoot, false);
-                var btnRect = (RectTransform)btnGo.transform;
-                btnRect.anchorMin = new Vector2(0.15f, 0.04f);
-                btnRect.anchorMax = new Vector2(0.85f, 0.14f);
-                btnRect.offsetMin = Vector2.zero;
-                btnRect.offsetMax = Vector2.zero;
-                btnGo.GetComponent<Image>().color = new Color(0.45f, 0.18f, 0.28f, 1f);
-                unlockButton = btnGo.GetComponent<Button>();
-
-                var labelGo = new GameObject("Label", typeof(RectTransform));
-                labelGo.transform.SetParent(btnGo.transform, false);
-                var labelRect = (RectTransform)labelGo.transform;
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = Vector2.zero;
-                labelRect.offsetMax = Vector2.zero;
-                var label = labelGo.AddComponent<TextMeshProUGUI>();
-                label.text = "铭刻";
-                label.fontSize = 18f;
-                label.alignment = TextAlignmentOptions.Center;
-                label.raycastTarget = false;
-            }
-        }
-
-        static TextMeshProUGUI CreateDetailText(RectTransform parent, string name, Vector2 anchorMin, Vector2 anchorMax, float fontSize)
-        {
-            var existing = parent.Find(name)?.GetComponent<TextMeshProUGUI>();
-            if (existing != null)
-            {
-                return existing;
-            }
-
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            var rect = (RectTransform)go.transform;
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            var text = go.AddComponent<TextMeshProUGUI>();
-            text.fontSize = fontSize;
-            text.alignment = TextAlignmentOptions.TopLeft;
-            text.enableWordWrapping = true;
-            text.raycastTarget = false;
-            return text;
+            nodeViewContainer ??= transform.Find("TreeRoot");
+            faithText ??= transform.Find("FaithText")?.GetComponent<TextMeshProUGUI>();
+            detailTitle ??= transform.Find("DetailArea/DetailTitle")?.GetComponent<TextMeshProUGUI>()
+                ?? transform.Find("DetailTitle")?.GetComponent<TextMeshProUGUI>();
+            detailBody ??= transform.Find("DetailArea/DetailBody")?.GetComponent<TextMeshProUGUI>()
+                ?? transform.Find("DetailBody")?.GetComponent<TextMeshProUGUI>();
+            detailStatusHint ??= transform.Find("DetailArea/DetailStatusHint")?.GetComponent<TextMeshProUGUI>()
+                ?? transform.Find("DetailStatusHint")?.GetComponent<TextMeshProUGUI>();
+            unlockButton ??= transform.Find("DetailArea/UnlockButton")?.GetComponent<Button>()
+                ?? transform.Find("UnlockButton")?.GetComponent<Button>();
+            if (nodeViewContainer == null || faithText == null || detailTitle == null || detailBody == null
+                || detailStatusHint == null || unlockButton == null)
+                Debug.LogError("CultTechTreeView requires its layout nodes in the CultPanel prefab.");
         }
 
         void WireUnlockButton()

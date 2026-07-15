@@ -455,6 +455,7 @@ public static class MapOverlayExportCore
             Rotation = t.rotation,
             Scale = t.localScale,
             AppearCond = provider != null ? provider.AppearCond : null,
+            DisappearCond = provider != null ? provider.DisappearCond : null,
         });
     }
 

@@ -23,6 +23,8 @@ public sealed partial class CultTechNodeLevel : Luban.BeanBase
         { var __json0 = _buf["prereq_node_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } PrereqNodeIds = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  PrereqNodeIds.Add(__v0); }   }
         { if(!_buf["faith_cost"].IsNumber) { throw new SerializationException(); }  FaithCost = _buf["faith_cost"]; }
         { if(!_buf["effect_desc"].IsString) { throw new SerializationException(); }  EffectDesc = _buf["effect_desc"]; }
+        { if(!_buf["cult_attr"].IsString) { throw new SerializationException(); }  CultAttr = _buf["cult_attr"]; }
+        { if(!_buf["cult_attr_value"].IsNumber) { throw new SerializationException(); }  CultAttrValue = _buf["cult_attr_value"]; }
     }
 
     public static CultTechNodeLevel DeserializeCultTechNodeLevel(JSONNode _buf)
@@ -50,6 +52,14 @@ public sealed partial class CultTechNodeLevel : Luban.BeanBase
     /// 效果说明(占位)
     /// </summary>
     public string EffectDesc;
+    /// <summary>
+    /// ??????????????
+    /// </summary>
+    public string CultAttr;
+    /// <summary>
+    /// ?????
+    /// </summary>
+    public int CultAttrValue;
    
     public const int __ID__ = -918306329;
     public override int GetTypeId() => __ID__;
@@ -66,6 +76,8 @@ public sealed partial class CultTechNodeLevel : Luban.BeanBase
         + "prereqNodeIds:" + Luban.StringUtil.CollectionToString(PrereqNodeIds) + ","
         + "faithCost:" + FaithCost + ","
         + "effectDesc:" + EffectDesc + ","
+        + "cultAttr:" + CultAttr + ","
+        + "cultAttrValue:" + CultAttrValue + ","
         + "}";
     }
 }

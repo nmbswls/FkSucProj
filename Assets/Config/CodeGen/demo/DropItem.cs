@@ -24,6 +24,9 @@ public sealed partial class DropItem : Luban.BeanBase
         { if(!_buf["weight_in_group"].IsNumber) { throw new SerializationException(); }  WeightInGroup = _buf["weight_in_group"]; }
         { var __json0 = _buf["item_id_list"]; if(!__json0.IsArray) { throw new SerializationException(); } ItemIdList = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  ItemIdList.Add(__v0); }   }
         { var __json0 = _buf["item_count_range_list"]; if(!__json0.IsArray) { throw new SerializationException(); } ItemCountRangeList = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  ItemCountRangeList.Add(__v0); }   }
+        { if(!_buf["premium_essence_type"].IsNumber) { throw new SerializationException(); }  PremiumEssenceType = (demo.EJingYuanType)(int)_buf["premium_essence_type"]; }
+        { if(!_buf["premium_concentration_min"].IsNumber) { throw new SerializationException(); }  PremiumConcentrationMin = _buf["premium_concentration_min"]; }
+        { if(!_buf["premium_concentration_max"].IsNumber) { throw new SerializationException(); }  PremiumConcentrationMax = _buf["premium_concentration_max"]; }
     }
 
     public static DropItem DeserializeDropItem(JSONNode _buf)
@@ -55,6 +58,9 @@ public sealed partial class DropItem : Luban.BeanBase
     /// 道具数量波动
     /// </summary>
     public System.Collections.Generic.List<int> ItemCountRangeList;
+    public demo.EJingYuanType PremiumEssenceType;
+    public int PremiumConcentrationMin;
+    public int PremiumConcentrationMax;
    
     public const int __ID__ = 332813933;
     public override int GetTypeId() => __ID__;
@@ -72,6 +78,9 @@ public sealed partial class DropItem : Luban.BeanBase
         + "weightInGroup:" + WeightInGroup + ","
         + "itemIdList:" + Luban.StringUtil.CollectionToString(ItemIdList) + ","
         + "itemCountRangeList:" + Luban.StringUtil.CollectionToString(ItemCountRangeList) + ","
+        + "premiumEssenceType:" + PremiumEssenceType + ","
+        + "premiumConcentrationMin:" + PremiumConcentrationMin + ","
+        + "premiumConcentrationMax:" + PremiumConcentrationMax + ","
         + "}";
     }
 }

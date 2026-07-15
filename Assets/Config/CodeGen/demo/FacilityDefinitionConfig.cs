@@ -16,6 +16,7 @@ public sealed partial class FacilityDefinitionConfig : Luban.BeanBase
         Capabilities = buf["capabilities"];
         if (!buf["max_workforce"].IsNumber) throw new SerializationException();
         MaxWorkforce = buf["max_workforce"];
+        MaxSupervisorSlots = buf["max_supervisor_slots"].IsNumber ? buf["max_supervisor_slots"].AsInt : 0;
         if (!buf["presentation_prefab"].IsString) throw new SerializationException();
         PresentationPrefab = buf["presentation_prefab"];
         if (!buf["interaction_handler_id"].IsString) throw new SerializationException();
@@ -27,6 +28,7 @@ public sealed partial class FacilityDefinitionConfig : Luban.BeanBase
     public string DisplayName;
     public int Capabilities;
     public int MaxWorkforce;
+    public int MaxSupervisorSlots;
     public string PresentationPrefab;
     public string InteractionHandlerId;
     public const int __ID__ = 193847201;

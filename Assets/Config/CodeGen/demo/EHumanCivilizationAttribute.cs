@@ -56,6 +56,10 @@ namespace cfg.demo
         /// Human knowledge gain bonus tier
         /// </summary>
         HumanKnowledgeGainBonus = 9,
+        /// <summary>
+        /// Town facility gold output bonus tier
+        /// </summary>
+        TownFacilityGoldOutput = 10,
     }
 
 } 

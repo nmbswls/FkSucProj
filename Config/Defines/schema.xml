@@ -87,6 +87,23 @@
         <var name="Dew" value="55"/>
         <var name="Fairy" value="56"/>
         <var name="Charge" value="57"/>
+        <var name="PremiumEssenceDrop" value="58"/>
+    </enum>
+
+    <enum name="EJingYuanType">
+        <var name="None" value="0"/>
+        <var name="OrcI" value="1"/>
+        <var name="OrcII" value="2"/>
+        <var name="HumanI" value="3"/>
+        <var name="HumanII" value="4"/>
+        <var name="HumanIII" value="5"/>
+        <var name="HumanIV" value="6"/>
+        <var name="HumanV" value="7"/>
+        <var name="HumanVI" value="8"/>
+        <var name="HumanVII" value="9"/>
+        <var name="MonsterI" value="10"/>
+        <var name="MonsterII" value="11"/>
+        <var name="MonsterIII" value="12"/>
     </enum>
 
     <!-- 与 My.EContainerType 数值必须一致 -->
@@ -114,6 +131,7 @@
         <var name="AddMapControl" value="5"/>
         <var name="AddJingYuanCodexProgress" value="6"/>
         <var name="AddJingYuanCodexBlurtDrop" value="7"/>
+        <var name="AddPremiumEssence" value="8"/>
     </enum>
 
     <enum name="EItemUseConsumePolicy">
@@ -146,6 +164,7 @@
 		<var name="OpenTalentTree" value="2"/>
 		<var name="OpenPanel" value="3"/>
 		<var name="OpenOptionGroup" value="4"/>
+		<var name="GivePremiumEssence" value="5"/>
     </enum>
 
     <!-- Statistic / EventGrant：共性计数与通用授予 -->
