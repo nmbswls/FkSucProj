@@ -271,14 +271,14 @@ namespace My.UI
         public void RefreshView()
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
-            var logicAreaId = LogicAreaHomesteadUtil.ResolveCurrentLogicAreaId(glm?.AreaManager);
-            if (glm == null || string.IsNullOrEmpty(logicAreaId) || !LogicAreaHomesteadUtil.SupportsControlDegree(logicAreaId))
+            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(glm?.AreaManager);
+            if (glm == null || string.IsNullOrEmpty(logicAreaId) || !TownFacilityUtil.SupportsControlDegree(logicAreaId))
             {
                 gameObject.SetActive(false);
                 return;
             }
 
-            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            var req = TownFacilityUtil.GetHomesteadReq(logicAreaId);
             var current = glm.worldPersistState?.GetLogicAreaControl(logicAreaId) ?? 0;
             var required = req?.RequiredControl ?? 0;
             if (required <= 0)

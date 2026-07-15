@@ -125,7 +125,7 @@ namespace My
                     }
                 case EEntityType.HomeFacility:
                     {
-                        return $"Prefab/Presentations/HomePlacement/{cfgId}";
+                        return $"Prefab/Presentations/HomeFacility/{cfgId}";
                     }
                 case EEntityType.Player:
                     return $"Prefab/Presentations/FakePlayer";

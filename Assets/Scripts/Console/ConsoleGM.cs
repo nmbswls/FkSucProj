@@ -281,6 +281,34 @@ public class ConsoleGM : MonoBehaviour
                 PlayerProgressionHubPanel.ToggleRunes();
             });
 
+        Register("cult_ui", "Open cult doctrine tree panel",
+            null,
+            _ =>
+            {
+                My.UI.CultTech.CultTechTreePanel.Open();
+            });
+
+        Register("add_faith", "Add cult faith add_faith <amount>",
+            new[] { new CmdParam("amount", "long，信仰增量") },
+            args =>
+            {
+                if (args.Count < 1 || !long.TryParse(args[0], out var amount))
+                {
+                    LogError("用法：add_faith <amount>");
+                    return;
+                }
+
+                var cult = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.ProgressionSystem?.DemonCult;
+                if (cult == null)
+                {
+                    LogError("DemonCult unavailable");
+                    return;
+                }
+
+                cult.AddFaith(amount);
+                Log($"Faith now {cult.Faith}");
+            });
+
         Register("grant_rune", "获得指定符文 grant_rune <rune_id>",
             new[] { new CmdParam("runeId", "string，rune_id") },
             args =>

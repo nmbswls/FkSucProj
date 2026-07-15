@@ -79,7 +79,7 @@ namespace My.UI
             }
 
             RefreshSummary(info);
-            outputGrid?.Refresh(info.TownBuildingOutputs);
+            outputGrid?.Refresh(info.TownFacilityOutputs);
         }
 
         void RefreshSummary(GameLogicManager.OneDayBalanceInfo info)

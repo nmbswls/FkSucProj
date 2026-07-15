@@ -188,6 +188,17 @@
 
     <!-- 2. 定义复杂结构 Bean (列表中的元素结构) -->
     <!-- 这个结构体代表"一个奖励" -->
+    <enum name="EQuestDialogShowCondType">
+        <var name="None" value="0"/>
+        <var name="ObjectiveDialogTriggered" value="1"/>
+        <var name="ObjectiveDialogNotTriggered" value="2"/>
+    </enum>
+
+    <bean name="QuestDialogShowCond" tags="sep=,">
+        <var name="type" type="EQuestDialogShowCondType" comment="任务对话显示条件"/>
+        <var name="dialog_id" type="int" comment="QuestObjectiveDialog.id"/>
+    </bean>
+
     <bean name="CommonCheckCond" tags="sep=,">
         <var name="type" type="ECommonCheckType" comment="类型"/>
         <var name="param1" type="long" comment="p1"/>
@@ -413,6 +424,24 @@
         <var name="Hunting" value="3"/>
         <var name="InPatrolGroup" value="4"/>
         <var name="MoveToThenDespawn" value="5"/>
+    </enum>
+
+    <enum name="ENpcRoutineDayPeriod">
+        <var name="Any" value="0"/>
+        <var name="Day" value="1"/>
+        <var name="Night" value="2"/>
+    </enum>
+
+    <enum name="ENpcRoutineActivityType">
+        <var name="StayCurrent" value="0"/>
+        <var name="AnchorPoint" value="1"/>
+        <var name="WanderAroundPoint" value="2"/>
+        <var name="PatrolPath" value="3"/>
+    </enum>
+
+    <enum name="ENpcRoutineRelocatePolicy">
+        <var name="Move" value="0"/>
+        <var name="Snap" value="1"/>
     </enum>
 	
 	<enum name="EMindFacetCat1">

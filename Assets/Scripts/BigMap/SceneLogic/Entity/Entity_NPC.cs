@@ -39,6 +39,9 @@ namespace My.Map
 
         public AIBrainV2? AIBrain;
 
+        // Routine 写入的表现标签，供表现层按需读取；逻辑侧不解释语义
+        public string RoutinePresentationTag { get; set; } = string.Empty;
+
         public List<SkillRuntime> GetAiReadySkills()
         {
             var skills = ablilityManager.GetAllReadySkills();
@@ -122,6 +125,13 @@ namespace My.Map
             }
 
             this.MoveBehaveInfo.MoveToDespawnTarget = npcRecord.MoveToDespawnTarget;
+            this.MoveBehaveInfo.MoveToTarget = npcRecord.MoveToTarget;
+            this.MoveBehaveInfo.WanderRadius = npcRecord.WanderRadius;
+            if (npcRecord.FaceDir.sqrMagnitude > 1e-8f)
+            {
+                this.MoveBehaveInfo.HasFaceDir = true;
+                this.MoveBehaveInfo.FaceDir = npcRecord.FaceDir.normalized;
+            }
         }
 
         protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
@@ -131,6 +141,11 @@ namespace My.Map
                 && MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn)
             {
                 nr.MoveToDespawnTarget = MoveBehaveInfo.MoveToDespawnTarget;
+            }
+            if (input is LogicEntityRecord4Npc moveTargetRecord && MoveBehaveInfo != null
+                && MoveBehaveInfo.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToPoint)
+            {
+                moveTargetRecord.MoveToTarget = MoveBehaveInfo.MoveToTarget;
             }
         }
 
@@ -981,12 +996,8 @@ namespace My.Map
 
         public bool HasDialogEntry()
         {
-            if(!string.IsNullOrEmpty(GetCurrentDialogId()))
-            {
-                return true;
-            }
-
-            if(LogicManager.shopDataManager.TryGetShopDefByNpcId(CfgId, out var shopInfo))
+            var glm = LogicManager;
+            if (glm != null && My.UI.NpcInteractHubCatalog.HasAny(this, glm))
             {
                 return true;
             }

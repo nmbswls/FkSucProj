@@ -226,6 +226,7 @@ namespace My
                 list.Add(new DreamEntryTendencyWinCounts
                 {
                     CharDreamEntryId = item.CharDreamEntryId,
+                    AttemptCount = item.AttemptCount,
                     ForceWins = item.ForceWins,
                     SoothingWins = item.SoothingWins,
                     TrickWins = item.TrickWins,
@@ -342,7 +343,11 @@ namespace My
 
         }
 
-        public void IncrementDreamEntryTendencyWin(string characterKey, int entryId, DreamTendencyKind tendency)
+        public void RecordDreamEntryResult(
+            string characterKey,
+            int entryId,
+            bool won,
+            DreamTendencyKind? tendency)
         {
             if (string.IsNullOrEmpty(characterKey) || entryId <= 0)
             {
@@ -368,7 +373,13 @@ namespace My
                 st.DreamEntryWinCounts.Add(row);
             }
 
-            switch (tendency)
+            row.AttemptCount++;
+            if (!won || !tendency.HasValue)
+            {
+                return;
+            }
+
+            switch (tendency.Value)
             {
                 case DreamTendencyKind.Force:
                     row.ForceWins++;
@@ -380,6 +391,11 @@ namespace My
                     row.TrickWins++;
                     break;
             }
+        }
+
+        public void IncrementDreamEntryTendencyWin(string characterKey, int entryId, DreamTendencyKind tendency)
+        {
+            RecordDreamEntryResult(characterKey, entryId, true, tendency);
         }
 
         public bool TryGetDreamEntryWinCounts(string characterKey, int entryId, out DreamEntryTendencyWinCounts data)
@@ -415,6 +431,29 @@ namespace My
             }
 
             return data.ForceWins > 0 || data.SoothingWins > 0 || data.TrickWins > 0;
+        }
+
+        public int GetDreamEntryResultCount(
+            string characterKey,
+            int entryId,
+            DreamEntryResultRequirement requirement)
+        {
+            if (!TryGetDreamEntryWinCounts(characterKey, entryId, out var data) || data == null)
+            {
+                return 0;
+            }
+
+            return requirement switch
+            {
+                DreamEntryResultRequirement.AnyAttempt => Math.Max(
+                    data.AttemptCount,
+                    data.ForceWins + data.SoothingWins + data.TrickWins),
+                DreamEntryResultRequirement.AnyWin => data.ForceWins + data.SoothingWins + data.TrickWins,
+                DreamEntryResultRequirement.ForceWin => data.ForceWins,
+                DreamEntryResultRequirement.SoothingWin => data.SoothingWins,
+                DreamEntryResultRequirement.TrickWin => data.TrickWins,
+                _ => 0,
+            };
         }
 
 

@@ -42,7 +42,7 @@ public sealed partial class HumanTechNode : Luban.BeanBase
     /// </summary>
     public int NodeId;
     /// <summary>
-    /// ???
+    /// ????
     /// </summary>
     public string DisplayName;
     /// <summary>
@@ -50,7 +50,7 @@ public sealed partial class HumanTechNode : Luban.BeanBase
     /// </summary>
     public int MaxLevel;
     /// <summary>
-    /// ??????
+    /// 1
     /// </summary>
     public int RequiredCivilizationLevel;
     /// <summary>

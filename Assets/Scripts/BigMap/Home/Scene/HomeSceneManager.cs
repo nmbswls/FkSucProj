@@ -63,7 +63,7 @@ namespace My
         public HomeDataManager DataSource { get { return MainGameManager.Instance.gameLogicManager.homeDataManager; } }
         public PreviewTilemapController previewTilemapController;
 
-        //public List<HomeScenePlacement> homeScenePlacements = new();
+        //public List<HomeScenePlacement> fixedFacilities = new();
         private BuildMaskRuntime runtime;
         public Grid BuildGrid;
         private HashSet<Vector3Int> occupied = new HashSet<Vector3Int>();
@@ -97,7 +97,7 @@ namespace My
         }
 
         // 旧内城建造已废弃（由 SecretBase 替代）
-        public void InitHomePlacements()
+        public void InitFixedFacilities()
         {
         }
 
@@ -119,22 +119,6 @@ namespace My
 
         
 
-        public bool CanPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell)
-        {
-            return false;
-        }
-
-        /// <summary>
-        /// 放置
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="rot"></param>
-        /// <param name="pivotCell"></param>
-        /// <param name="isMove"></param>
-        public void TryPlace(HomeFacilityCfg obj, EPlacementRotation rot, Vector3Int pivotCell, bool isMove)
-        {
-        }
-
         public bool CanBuildAtWorld(Vector3 worldPos)
         {
             Vector3Int cell = BuildGrid.WorldToCell(worldPos);
@@ -142,12 +126,7 @@ namespace My
             int ly = cell.y - runtime.originY;
             if (!runtime.InBounds(lx, ly)) return false;
             return runtime.IsBuildableCell(lx, ly) && !runtime.IsInitiallyOccupied(lx, ly);
-        }
-
-        public void AddHomePlacement()
-        {
-
-        }
+        }
 
         public List<HomeSimpleNpc> homeSimpleNpc = new List<HomeSimpleNpc>();
 

@@ -114,6 +114,7 @@ namespace My.Map.Logic
         // MarkDefeated / MarkAttaching / Unsensored 等为当前地图 Record 范畴，不由 CharacterKey 全局档案同步。
         public string CharacterKey = string.Empty;
 
+
         public bool IsPeace;
 
         public UnitMoveBehaveInfo.EMoveBehaveType MoveBehaveType;
@@ -132,6 +133,12 @@ namespace My.Map.Logic
         /// MoveToThenDespawn 目标（逻辑坐标）；与 MovePath 线路推进互斥，用于路人离场 / 动态守卫退场等。
         /// </summary>
         public Vector2 MoveToDespawnTarget;
+        public Vector2 MoveToTarget;
+
+        /// <summary>
+        /// WanderAroundPoint 半径；仅 Routine / 生成初始化使用
+        /// </summary>
+        public float WanderRadius;
 
         public bool IsForeigner;
 
@@ -208,10 +215,7 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4HomeFacility : LogicEntityRecord4InteractPoint
     {
-        public long BindingFacilityId;
 
-        // 城镇岗位分配人数（与 HomeFacilityInstance.ArrangePeopleNum 同步）
-        public int ArrangePeopleNum;
     }
 
     // 

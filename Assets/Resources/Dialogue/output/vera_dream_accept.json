@@ -1,0 +1,35 @@
+{
+  "DialogId": "vera_dream_accept",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Vera offers the first character-dream quest.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "我已经把伤员用过的东西洗过三遍了。可一闭眼，水盆里还是有洗不掉的颜色。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "不是水的问题。你把一栋早就空了的房子，也一起端回来了。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "薇拉",
+              "Content": "……如果您真能进入人的梦，请替我确认一件事。那里是否还有人在等我。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

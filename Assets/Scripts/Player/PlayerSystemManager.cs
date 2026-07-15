@@ -278,7 +278,8 @@ namespace My.Player
             SkillSystem?.WriteToSave(data);
             MagicClothes.SaveTo(data.PlayerData);
             ProgressionSystem?.TalentManager?.SaveTo(data.PlayerData);
-            ProgressionSystem?.HumanCivilization?.SaveTo(data.PlayerData);
+            ProgressionSystem?.HumanCivilization?.SaveTo(data);
+            ProgressionSystem?.DemonCult?.SaveTo(data);
             EquipmentManager?.SaveTo(data.PlayerData);
             BodyPartSystem?.WriteToSave(data.PlayerData);
             RumorIntel.SaveTo(data.PlayerData);
@@ -289,6 +290,7 @@ namespace My.Player
             JingYuanCodexSystem?.WriteToSave(data.PlayerData);
             StatisticSystem?.WriteToSave(data.PlayerData);
             EventGrantSystem?.WriteToSave(data.PlayerData);
+            QuestSystem?.WriteToSave(data.PlayerData);
             DialogTriggerSystem?.SaveTo(data.PlayerData);
 
             data.PlayerData.FuncOpenList ??= new List<EFuncOpenType>();
@@ -377,6 +379,16 @@ namespace My.Player
             logicManager?.worldPersistState?.NpcCharacters?.IncrementDreamEntryTendencyWin(characterKey, entryId, tendency);
         }
 
+        public void RecordDreamEntryResult(
+            string characterKey,
+            int entryId,
+            bool won,
+            My.MiniGame.Dream.DreamTendencyKind? tendency)
+        {
+            logicManager?.worldPersistState?.NpcCharacters?.RecordDreamEntryResult(
+                characterKey, entryId, won, tendency);
+        }
+
         public bool TryGetDreamEntryWinCounts(string characterKey, int entryId, out DreamEntryTendencyWinCounts data)
         {
             data = null;
@@ -392,6 +404,15 @@ namespace My.Player
         public bool HasAnyDreamEntryWin(string characterKey, int entryId)
         {
             return logicManager?.worldPersistState?.NpcCharacters?.HasAnyDreamEntryWin(characterKey, entryId) ?? false;
+        }
+
+        public int GetDreamEntryResultCount(
+            string characterKey,
+            int entryId,
+            My.MiniGame.Dream.DreamEntryResultRequirement requirement)
+        {
+            return logicManager?.worldPersistState?.NpcCharacters?.GetDreamEntryResultCount(
+                characterKey, entryId, requirement) ?? 0;
         }
 
         public void Tick(float dt)

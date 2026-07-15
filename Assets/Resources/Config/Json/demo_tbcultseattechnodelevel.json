@@ -1,0 +1,9 @@
+[
+  {
+    "node_id": 20,
+    "level": 1,
+    "prereq_node_ids": [],
+    "faith_cost": 80,
+    "effect_desc": "淑女残座共鸣：往去回忆事件占位。"
+  }
+]

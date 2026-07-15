@@ -20,7 +20,7 @@
         "count": 1
       }
     ],
-    "effect_key": "open_town_management",
+    "effect_key": 1,
     "effect_value": 1
   },
   {
@@ -46,7 +46,7 @@
         "count": 2
       }
     ],
-    "effect_key": "open_scavenge_exchange",
+    "effect_key": 2,
     "effect_value": 1
   },
   {
@@ -72,7 +72,7 @@
         "count": 2
       }
     ],
-    "effect_key": "tavern_human_knowledge",
+    "effect_key": 3,
     "effect_value": 1
   },
   {
@@ -98,7 +98,7 @@
         "count": 3
       }
     ],
-    "effect_key": "basic_woodworking",
+    "effect_key": 4,
     "effect_value": 1
   },
   {
@@ -124,7 +124,7 @@
         "count": 4
       }
     ],
-    "effect_key": "town_stability",
+    "effect_key": 5,
     "effect_value": 1
   },
   {
@@ -150,7 +150,7 @@
         "count": 5
       }
     ],
-    "effect_key": "workshop_operation",
+    "effect_key": 6,
     "effect_value": 1
   }
 ]

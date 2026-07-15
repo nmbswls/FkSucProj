@@ -17,11 +17,12 @@ namespace My.Dialog
         public int Priority;
     }
 
+    // Hub 选项源：Accept / Objective / Remind 三张表，按 character_key 过滤。
     public static class QuestHubOptionBuilder
     {
-        private const int SortRemind = 0;
+        private const int SortObjective = 0;
         private const int SortAccept = 1;
-        private const int SortFulfill = 2;
+        private const int SortRemind = 2;
 
         public static List<QuestHubOption> Build(string characterKey, PlayerQuestSystem questSystem, My.GameLogicManager glm)
         {
@@ -31,43 +32,27 @@ namespace My.Dialog
                 return result;
             }
 
-            foreach (var row in CfgMgr.Cfgs.TbQuestInteractDialog.DataList)
+            foreach (var row in QuestDialogResolver.ListObjectiveByCharacter(characterKey))
             {
-                if (row == null || !QuestDialogResolver.IsHubRole(row.DialogRole))
+                if (TryBuildObjective(row, questSystem, out var opt))
                 {
-                    continue;
+                    result.Add(opt);
                 }
+            }
 
-                if (!string.Equals(row.CharacterKey, characterKey, StringComparison.Ordinal))
+            foreach (var row in QuestDialogResolver.ListAcceptByCharacter(characterKey))
+            {
+                if (TryBuildAccept(row, questSystem, glm, out var opt))
                 {
-                    continue;
+                    result.Add(opt);
                 }
+            }
 
-                if (!PassesShowCond(row, glm))
+            foreach (var row in QuestDialogResolver.ListRemindByCharacter(characterKey))
+            {
+                if (TryBuildRemind(row, questSystem, out var opt))
                 {
-                    continue;
-                }
-
-                switch (row.DialogRole)
-                {
-                    case EQuestDialogRole.Remind:
-                        if (TryBuildRemind(row, questSystem, out var remindOpt))
-                        {
-                            result.Add(remindOpt);
-                        }
-                        break;
-                    case EQuestDialogRole.Accept:
-                        if (TryBuildAccept(row, questSystem, out var acceptOpt))
-                        {
-                            result.Add(acceptOpt);
-                        }
-                        break;
-                    case EQuestDialogRole.Fulfill:
-                        if (TryBuildFulfill(row, questSystem, out var fulfillOpt))
-                        {
-                            result.Add(fulfillOpt);
-                        }
-                        break;
+                    result.Add(opt);
                 }
             }
 
@@ -86,33 +71,16 @@ namespace My.Dialog
             return a.Priority.CompareTo(b.Priority);
         }
 
-        private static bool PassesShowCond(QuestInteractDialogData row, My.GameLogicManager glm)
-        {
-            if (row.ShowCond == null || row.ShowCond.Count == 0)
-            {
-                return true;
-            }
-
-            foreach (var cond in row.ShowCond)
-            {
-                if (cond == null)
-                {
-                    continue;
-                }
-
-                if (!glm.CheckCommonCond(cond, GamePlayerIds.Local))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static bool TryBuildRemind(QuestInteractDialogData row, PlayerQuestSystem questSystem, out QuestHubOption option)
+        private static bool TryBuildRemind(QuestRemindDialog row, PlayerQuestSystem questSystem, out QuestHubOption option)
         {
             option = default;
-            if (!questSystem.CheckQuestRunning(row.QuestId))
+            if (row == null || !questSystem.CheckQuestRunning(row.QuestId))
+            {
+                return false;
+            }
+
+            // 空对话不进 Hub，避免点了无反应
+            if (string.IsNullOrEmpty(row.DialogId))
             {
                 return false;
             }
@@ -133,9 +101,21 @@ namespace My.Dialog
                 return false;
             }
 
+            // 需先触发指定 ObjectiveDialog，才出现可重复的 Remind
+            if (row.RequireObjectiveDialogId > 0
+                && !quest.IsObjectiveDialogTriggered(row.RequireObjectiveDialogId))
+            {
+                return false;
+            }
+
+            if (!QuestDialogShowCondUtil.Passes(row.ShowCond, quest))
+            {
+                return false;
+            }
+
             option = new QuestHubOption
             {
-                OptionText = ResolveOptionText(row, "我还该做什么？"),
+                OptionText = ResolveOptionText(row.OptionText, "我还该做什么？"),
                 EntryDialogId = row.DialogId,
                 Session = QuestDialogSession.CreateRemind(row.QuestId, row.CharacterKey, row.DialogId),
                 SortOrder = SortRemind,
@@ -144,9 +124,18 @@ namespace My.Dialog
             return true;
         }
 
-        private static bool TryBuildAccept(QuestInteractDialogData row, PlayerQuestSystem questSystem, out QuestHubOption option)
+        private static bool TryBuildAccept(
+            QuestAcceptDialog row,
+            PlayerQuestSystem questSystem,
+            My.GameLogicManager glm,
+            out QuestHubOption option)
         {
             option = default;
+            if (row == null)
+            {
+                return false;
+            }
+
             var questCfg = CfgMgr.Cfgs.TbQuestData.GetOrDefault(row.QuestId);
             if (questCfg == null || questCfg.IsAutoAccept)
             {
@@ -156,6 +145,17 @@ namespace My.Dialog
             if (questSystem.CheckQuestRunning(row.QuestId) || questSystem.CheckQuestFinish(row.QuestId))
             {
                 return false;
+            }
+
+            if (row.OpenCond != null)
+            {
+                foreach (var cond in row.OpenCond)
+                {
+                    if (cond != null && !glm.CheckCommonCond(cond, GamePlayerIds.Local))
+                    {
+                        return false;
+                    }
+                }
             }
 
             foreach (var cond in questCfg.AcceeptCond)
@@ -168,19 +168,19 @@ namespace My.Dialog
 
             option = new QuestHubOption
             {
-                OptionText = ResolveOptionText(row, $"关于{questCfg.Name}……"),
-                EntryDialogId = row.DialogId,
-                Session = QuestDialogSession.CreateAccept(row.QuestId, row.CharacterKey, row.DialogId),
+                OptionText = ResolveOptionText(row.OptionText, $"关于{questCfg.Name}……"),
+                EntryDialogId = row.EntryDialogId,
+                Session = QuestDialogSession.CreateAccept(row.QuestId, row.CharacterKey, row.EntryDialogId, row.Id),
                 SortOrder = SortAccept,
                 Priority = row.Priority,
             };
             return true;
         }
 
-        private static bool TryBuildFulfill(QuestInteractDialogData row, PlayerQuestSystem questSystem, out QuestHubOption option)
+        private static bool TryBuildObjective(QuestObjectiveDialog row, PlayerQuestSystem questSystem, out QuestHubOption option)
         {
             option = default;
-            if (string.IsNullOrEmpty(row.ObjId))
+            if (row == null || string.IsNullOrEmpty(row.ObjId))
             {
                 return false;
             }
@@ -197,40 +197,42 @@ namespace My.Dialog
                 return false;
             }
 
+            if (!QuestDialogShowCondUtil.Passes(row.ShowCond, quest))
+            {
+                return false;
+            }
+
             if (!step.objectiveMap.TryGetValue(row.ObjId, out var objRuntime))
             {
                 return false;
             }
 
-            if (!QuestObjectiveFulfillUtil.SupportsDialogFulfill(objRuntime.Data.ObjType))
+            // once：仅在兑现成功并 Mark 后隐藏（失败不 Mark，可重试）
+            if (row.Once && quest.IsObjectiveDialogTriggered(row.Id))
             {
                 return false;
             }
 
-            if (objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
+            if (!QuestObjectiveFulfillUtil.CanPresentDialogFulfill(objRuntime, questSystem))
             {
                 return false;
             }
 
             option = new QuestHubOption
             {
-                OptionText = ResolveOptionText(row, QuestObjectiveFulfillUtil.GetFulfillOptionFallbackText(objRuntime.Data)),
-                EntryDialogId = row.DialogId,
-                Session = QuestDialogSession.CreateFulfill(row.QuestId, row.ObjId, row.CharacterKey, row.DialogId),
-                SortOrder = SortFulfill,
+                OptionText = ResolveOptionText(row.OptionText, QuestObjectiveFulfillUtil.GetFulfillOptionFallbackText(objRuntime.Data)),
+                EntryDialogId = row.EntryDialogId,
+                Session = QuestDialogSession.CreateObjective(
+                    row.QuestId, row.ObjId, row.CharacterKey, row.EntryDialogId, row.Id),
+                SortOrder = SortObjective,
                 Priority = row.Priority,
             };
             return true;
         }
 
-        private static string ResolveOptionText(QuestInteractDialogData row, string fallback)
+        private static string ResolveOptionText(string optionText, string fallback)
         {
-            if (!string.IsNullOrEmpty(row.OptionText))
-            {
-                return row.OptionText;
-            }
-
-            return fallback;
+            return !string.IsNullOrEmpty(optionText) ? optionText : fallback;
         }
     }
 }

@@ -51,6 +51,7 @@ namespace My.UI
         RuneUpgrade,
         SkillInSchool,
         SkillEquipped,
+        HumanTech,
     }
 
 

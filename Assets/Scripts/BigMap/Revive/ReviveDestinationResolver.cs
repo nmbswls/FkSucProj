@@ -77,7 +77,7 @@ namespace My
                 return false;
             }
 
-            var currentLogicAreaId = LogicAreaHomesteadUtil.ResolveCurrentLogicAreaId(glm?.AreaManager);
+            var currentLogicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(glm?.AreaManager);
             if (!string.IsNullOrWhiteSpace(rule.SourceLogicAreaId)
                 && !string.Equals(rule.SourceLogicAreaId, currentLogicAreaId, StringComparison.Ordinal))
             {

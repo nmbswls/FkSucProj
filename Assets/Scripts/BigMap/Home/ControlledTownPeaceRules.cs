@@ -9,18 +9,18 @@ namespace My.Home
 
         public static bool ShouldApply(GameLogicManager glm)
         {
-            if (glm?.logicAreaHomesteadManager == null)
+            if (glm?.townFacilityDevelopmentSystem == null)
             {
                 return false;
             }
 
-            var logicAreaId = glm.logicAreaHomesteadManager.ResolveCurrentLogicAreaId();
+            var logicAreaId = glm.townFacilityDevelopmentSystem.ResolveCurrentLogicAreaId();
             if (string.IsNullOrEmpty(logicAreaId))
             {
                 return false;
             }
 
-            return glm.logicAreaHomesteadManager.IsAreaUnderPlayerControl(logicAreaId);
+            return glm.townFacilityDevelopmentSystem.IsAreaUnderPlayerControl(logicAreaId);
         }
     }
 }

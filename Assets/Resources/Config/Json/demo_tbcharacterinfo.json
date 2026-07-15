@@ -38,5 +38,13 @@
       2
     ],
     "gifts_per_day": 1
+  },
+  {
+    "key": "home_vera",
+    "name": "薇拉",
+    "supports_favor": true,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 1
   }
 ]

@@ -69,6 +69,41 @@ namespace My.Map.Unit
         void OnExit(AIBrainV2 brain);
     }
 
+    public sealed class Policy_MoveToPoint : IIdlePolicy
+    {
+        private const float ArriveDistance = 0.25f;
+        bool _appliedFace;
+
+        public void OnEnter(AIBrainV2 brain)
+        {
+            _appliedFace = false;
+            brain.NpcEntity.TryMoveTo(brain.NpcEntity.MoveBehaveInfo.MoveToTarget, stopDistance: ArriveDistance);
+        }
+        public void OnTick(AIBrainV2 brain, float dt)
+        {
+            var target = brain.NpcEntity.MoveBehaveInfo.MoveToTarget;
+            if (Vector2.Distance(brain.NpcEntity.Pos, target) <= ArriveDistance)
+            {
+                brain.NpcEntity.StopMove();
+                TryApplyFace(brain);
+            }
+            else
+            {
+                brain.NpcEntity.TryMoveTo(target, stopDistance: ArriveDistance);
+            }
+        }
+        public void OnExit(AIBrainV2 brain) { brain.NpcEntity.StopMove(); }
+
+        void TryApplyFace(AIBrainV2 brain)
+        {
+            if (_appliedFace) return;
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            if (behave == null || !behave.HasFaceDir || behave.FaceDir.sqrMagnitude <= 1e-8f) return;
+            brain.NpcEntity.ForceSetFaceTarget(behave.FaceDir.normalized, false);
+            _appliedFace = true;
+        }
+    }
+
     // 简单的工厂类
     public static class MovePolicyFactory
     {
@@ -91,6 +126,18 @@ namespace My.Map.Unit
                     return new Policy_StandStill();
                 case UnitMoveBehaveInfo.EMoveBehaveType.MoveToThenDespawn:
                     return new Policy_MoveToPointThenDespawn();
+                case UnitMoveBehaveInfo.EMoveBehaveType.MoveToPoint:
+                    return new Policy_MoveToPoint();
+                case UnitMoveBehaveInfo.EMoveBehaveType.WanderAroundPoint:
+                    return new Policy_WanderAroundPoint();
+                case UnitMoveBehaveInfo.EMoveBehaveType.PathLoop:
+                    if (behave.PathLoopPoints != null && behave.PathLoopPoints.Count >= 2)
+                    {
+                        return new Policy_PathLoop();
+                    }
+
+                    Debug.LogWarning("[MovePolicyFactory] PathLoop requires PathLoopPoints (>=2); falling back to StandStill.");
+                    return new Policy_StandStill();
                 case UnitMoveBehaveInfo.EMoveBehaveType.MovePath:
                 case UnitMoveBehaveInfo.EMoveBehaveType.NoMove:
                 default:
@@ -156,42 +203,142 @@ namespace My.Map.Unit
         }
     }
 
-    // 1. 原地站立策略
+    // 遗留占位；Routine / 工厂使用 Policy_WanderAroundPoint
     public class Policy_Wander : IIdlePolicy
     {
+        public void OnEnter(AIBrainV2 brain) { brain.NpcEntity.StopMove(); }
+        public void OnTick(AIBrainV2 brain, float dt) { brain.HomePos = brain.NpcEntity.Pos; }
+        public void OnExit(AIBrainV2 brain) { }
+    }
 
-        private float _wanderTimer;
-        private Vector2? _currWanderPoint = null;
+    // 在圆心 MoveToTarget、半径 WanderRadius 内间歇闲逛
+    public sealed class Policy_WanderAroundPoint : IIdlePolicy
+    {
+        const float ArriveDistance = 0.3f;
+        const float RepickInterval = 2.5f;
+
+        float _repickTimer;
+        Vector2? _currTarget;
+        bool _appliedFace;
+
         public void OnEnter(AIBrainV2 brain)
         {
-            brain.NpcEntity.StopMove();
+            _repickTimer = 0f;
+            _currTarget = null;
+            _appliedFace = false;
+            brain.HomePos = brain.NpcEntity.MoveBehaveInfo.MoveToTarget;
+            PickNewTarget(brain, forceCenterIfFar: true);
         }
 
         public void OnTick(AIBrainV2 brain, float dt)
         {
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            var center = behave.MoveToTarget;
+            brain.HomePos = center;
 
+            if (_currTarget == null)
+            {
+                PickNewTarget(brain, forceCenterIfFar: false);
+                return;
+            }
 
-            // 站着需要经常
+            if (Vector2.Distance(brain.NpcEntity.Pos, _currTarget.Value) <= ArriveDistance)
+            {
+                brain.NpcEntity.StopMove();
+                TryApplyFace(brain);
+                _repickTimer -= dt;
+                if (_repickTimer <= 0f)
+                {
+                    PickNewTarget(brain, forceCenterIfFar: false);
+                }
+            }
+            else
+            {
+                brain.NpcEntity.TryMoveTo(_currTarget.Value, stopDistance: ArriveDistance);
+            }
+        }
+
+        public void OnExit(AIBrainV2 brain) { brain.NpcEntity.StopMove(); }
+
+        void PickNewTarget(AIBrainV2 brain, bool forceCenterIfFar)
+        {
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            var center = behave.MoveToTarget;
+            float radius = Mathf.Max(0.1f, behave.WanderRadius);
+            _repickTimer = RepickInterval;
+            _appliedFace = false;
+
+            if (forceCenterIfFar && Vector2.Distance(brain.NpcEntity.Pos, center) > radius * 1.25f)
+            {
+                _currTarget = center;
+            }
+            else
+            {
+                _currTarget = center + UnityEngine.Random.insideUnitCircle * radius;
+            }
+
+            brain.NpcEntity.TryMoveTo(_currTarget.Value, stopDistance: ArriveDistance);
+        }
+
+        void TryApplyFace(AIBrainV2 brain)
+        {
+            if (_appliedFace) return;
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            if (behave == null || !behave.HasFaceDir || behave.FaceDir.sqrMagnitude <= 1e-8f) return;
+            brain.NpcEntity.ForceSetFaceTarget(behave.FaceDir.normalized, false);
+            _appliedFace = true;
+        }
+    }
+
+    // 沿世界坐标点列循环走动（NamedPath）
+    public sealed class Policy_PathLoop : IIdlePolicy
+    {
+        const float ArriveDistance = 0.4f;
+        int _idx;
+        bool _ok;
+
+        public void OnEnter(AIBrainV2 brain)
+        {
+            _idx = 0;
+            _ok = false;
+            var points = brain.NpcEntity.MoveBehaveInfo?.PathLoopPoints;
+            if (points == null || points.Count < 2) return;
+            _ok = true;
+            brain.NpcEntity.TryMoveTo(points[_idx], stopDistance: ArriveDistance);
+        }
+
+        public void OnTick(AIBrainV2 brain, float dt)
+        {
+            var points = brain.NpcEntity.MoveBehaveInfo?.PathLoopPoints;
+            if (!_ok || points == null || points.Count < 2)
+            {
+                brain.HomePos = brain.NpcEntity.Pos;
+                return;
+            }
+
+            var target = points[_idx];
+            if (Vector2.Distance(brain.NpcEntity.Pos, target) <= ArriveDistance)
+            {
+                _idx = (_idx + 1) % points.Count;
+                brain.NpcEntity.TryMoveTo(points[_idx], stopDistance: ArriveDistance);
+            }
+            else
+            {
+                brain.NpcEntity.TryMoveTo(target, stopDistance: ArriveDistance);
+            }
+
             brain.HomePos = brain.NpcEntity.Pos;
         }
 
-        protected void TickWanderPoint(AIBrainV2 brain)
+        public void OnExit(AIBrainV2 brain)
         {
-            //if(LogicTime.time - _wanderTimer < brain.Config.WanderInterval)
-            //{
-            //    return;
-            //}
-
-            //_wanderTimer = LogicTime.time;
-
-            //Vector2 wandarOrg = brain.HomePos == null ? brain.NpcEntity.Pos : brain.HomePos.Value;
-            //_currWanderPoint = UnityEngine.Random.insideUnitCircle * 1.0f + wandarOrg;
-
-            //brain.NpcEntity.TryMoveTo(_currWanderPoint.Value);
+            brain.NpcEntity.StopMove();
+            var behave = brain.NpcEntity.MoveBehaveInfo;
+            if (behave != null && behave.HasFaceDir && behave.FaceDir.sqrMagnitude > 1e-8f)
+            {
+                brain.NpcEntity.ForceSetFaceTarget(behave.FaceDir.normalized, false);
+            }
         }
-
-
-        public void OnExit(AIBrainV2 brain) { }
     }
 
     public class Policy_GraphPatrol : IIdlePolicy
@@ -360,9 +507,22 @@ namespace My.Map.Unit
         {
         }
 
+        public void RefreshIdlePolicy()
+        {
+            if (_brain.CurrentState != this) return;
+            _idlePolicy?.OnExit(_brain);
+            _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(_brain.NpcEntity.MoveBehaveInfo);
+            _idlePolicy.OnEnter(_brain);
+        }
+
         public override void OnEnter()
         {
             base.OnEnter();
+            // 先通知 Area 刷新和平意图，再构建 IdlePolicy（Brain 不点名具体子系统）
+            if (_brain.NpcEntity is NpcUnitLogicEntity idleNpc)
+            {
+                idleNpc.LogicManager?.AreaManager?.NotifyNpcEnteredIdle(idleNpc);
+            }
             _idlePolicy?.OnExit(_brain);
             _idlePolicy = MovePolicyFactory.CreateFromMoveBehave(_brain.NpcEntity.MoveBehaveInfo);
             _idlePolicy.OnEnter(_brain);
@@ -429,7 +589,7 @@ namespace My.Map.Unit
         {
             base.OnExit();
             _idlePolicy.OnExit(_brain);
-            _brain.HomePos = _brain.NpcEntity.Pos; // 更新复位坐标点
+            _brain.HomePos = _brain.NpcEntity.Pos;
         }
     }
 
@@ -853,7 +1013,9 @@ namespace My.Map.Unit
                 return true;
             }
 
-            float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value);
+            var returnPosition = _brain.GetBehaviorReturnPosition();
+            if (returnPosition == null) return false;
+            float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, returnPosition.Value);
             //float distToTarget = Vector3.Distance(_brain.NpcEntity.Pos, _currentTarget.Pos);
             float chaseRange = _brain.Config.ChaseRange;
             if(_brain.NpcEntity.IsInHBehaveMode())
@@ -1331,9 +1493,10 @@ namespace My.Map.Unit
                 return true;
             }
 
-            if (_brain.HomePos != null)
+            var returnPosition = _brain.GetBehaviorReturnPosition();
+            if (returnPosition != null)
             {
-                float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, _brain.HomePos.Value);
+                float distToHome = Vector3.Distance(_brain.NpcEntity.Pos, returnPosition.Value);
                 float chaseRange = _brain.Config.ChaseRange;
                 if (_brain.NpcEntity.IsInHBehaveMode())
                 {
@@ -1456,7 +1619,7 @@ namespace My.Map.Unit
             }
             _prepared = false;
             _lastRecoverTime = LogicTime.time;
-            var target = _context.TargetPosition ?? _brain.HomePos;
+            var target = _context.TargetPosition ?? _brain.GetBehaviorReturnPosition();
             if(target != null)
             {
                 _brain.NpcEntity.TryMoveTo(target.Value, moveSpeedRate: _context.MoveSpeedRate);
@@ -1486,7 +1649,7 @@ namespace My.Map.Unit
                 }
             }
 
-            var target = _context.TargetPosition ?? _brain.HomePos;
+            var target = _context.TargetPosition ?? _brain.GetBehaviorReturnPosition();
             if (target != null)
             {
                 if (Vector3.Distance(_brain.NpcEntity.Pos, target.Value) < 0.5f)

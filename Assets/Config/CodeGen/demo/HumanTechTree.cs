@@ -34,11 +34,11 @@ public sealed partial class HumanTechTree : Luban.BeanBase
     /// </summary>
     public string TreeId;
     /// <summary>
-    /// ???
+    /// ????
     /// </summary>
     public string DisplayName;
     /// <summary>
-    /// ???????
+    /// UI/Prefabs/TalentTreeLayouts/HumanTechTreeLayout
     /// </summary>
     public string LayoutPrefabPath;
     /// <summary>

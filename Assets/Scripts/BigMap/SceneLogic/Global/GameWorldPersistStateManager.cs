@@ -27,9 +27,9 @@ namespace My
         private readonly Dictionary<string, bool> _microPlotConsumed = new();
 
         // logic_area map_id -> homestead runtime
-        private readonly Dictionary<string, LogicAreaHomesteadPersist> _logicAreaHomesteadByMapId = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, TownDevelopmentPersist> _logicAreaHomesteadByMapId = new(StringComparer.Ordinal);
 
-        public event Action<string, LogicAreaHomesteadPersist> EvOnLogicAreaHomesteadChanged;
+        public event Action<string, TownDevelopmentPersist> EvOnLogicAreaHomesteadChanged;
 
         public GameWorldPersistStateManager()
         {
@@ -167,20 +167,15 @@ namespace My
             }
 
             _logicAreaHomesteadByMapId.Clear();
-            if (savingData?.PlayerData?.LogicAreaHomesteadByMapId != null)
+            if (savingData?.TownDevelopmentById != null)
             {
-                foreach (var kv in savingData.PlayerData.LogicAreaHomesteadByMapId)
+                foreach (var kv in savingData.TownDevelopmentById)
                 {
-                    if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value))
-                    {
-                        continue;
-                    }
-
-                    _logicAreaHomesteadByMapId[kv.Key] = CloneHomesteadPersist(kv.Value);
+                    if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value)) continue;
+                    _logicAreaHomesteadByMapId[kv.Key] = CloneTownDevelopment(kv.Value);
                 }
             }
         }
-
         public void ApplyRuntimeToSaveData(SaveData data)
         {
             if (data.PlayerData == null)
@@ -272,20 +267,14 @@ namespace My
 
             data.PlayerData.SecretBaseBuildLevel = _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
 
-            data.PlayerData.LogicAreaHomesteadByMapId ??= new Dictionary<string, LogicAreaHomesteadPersist>();
-            data.PlayerData.LogicAreaHomesteadByMapId.Clear();
+            data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
+            data.TownDevelopmentById.Clear();
             foreach (var kv in _logicAreaHomesteadByMapId)
             {
-                if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value))
-                {
-                    continue;
-                }
-
-                data.PlayerData.LogicAreaHomesteadByMapId[kv.Key] = CloneHomesteadPersist(kv.Value);
+                if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value)) continue;
+                data.TownDevelopmentById[kv.Key] = CloneTownDevelopment(kv.Value);
             }
-        }
-
-        public int GetSecretBaseBuildLevel()
+        }        public int GetSecretBaseBuildLevel()
         {
             return _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
         }
@@ -433,7 +422,7 @@ namespace My
             }
         }
 
-        public LogicAreaHomesteadPersist GetLogicAreaHomesteadState(string logicAreaId)
+        public TownDevelopmentPersist GetLogicAreaHomesteadState(string logicAreaId)
         {
             if (string.IsNullOrEmpty(logicAreaId))
             {
@@ -460,7 +449,7 @@ namespace My
                 return GetLogicAreaControl(logicAreaId);
             }
 
-            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            var req = TownFacilityUtil.GetHomesteadReq(logicAreaId);
             if (req == null)
             {
                 Debug.LogWarning($"AddLogicAreaControl: logic area has no homestead req config: {logicAreaId}");
@@ -487,7 +476,7 @@ namespace My
                 return true;
             }
 
-            var req = LogicAreaHomesteadUtil.GetHomesteadReq(logicAreaId);
+            var req = TownFacilityUtil.GetHomesteadReq(logicAreaId);
             if (req == null || req.RequiredControl <= 0)
             {
                 return false;
@@ -496,18 +485,18 @@ namespace My
             return GetLogicAreaControl(logicAreaId) >= req.RequiredControl;
         }
 
-        LogicAreaHomesteadPersist GetOrCreateHomesteadState(string logicAreaId)
+        TownDevelopmentPersist GetOrCreateHomesteadState(string logicAreaId)
         {
             if (!_logicAreaHomesteadByMapId.TryGetValue(logicAreaId, out var state) || state == null)
             {
-                state = new LogicAreaHomesteadPersist();
+                state = new TownDevelopmentPersist();
                 _logicAreaHomesteadByMapId[logicAreaId] = state;
             }
 
             return state;
         }
 
-        static bool HasMeaningfulHomesteadState(LogicAreaHomesteadPersist state)
+        static bool HasMeaningfulHomesteadState(TownDevelopmentPersist state)
         {
             if (state == null)
             {
@@ -519,14 +508,14 @@ namespace My
                 return true;
             }
 
-            if (state.Buildings == null)
+            if (state.Facilities == null)
             {
                 return false;
             }
 
-            foreach (var b in state.Buildings)
+            foreach (var b in state.Facilities)
             {
-                if (b != null && !string.IsNullOrEmpty(b.BuildingId) && b.Level > 0)
+                if (b != null && !string.IsNullOrEmpty(b.FacilityId))
                 {
                     return true;
                 }
@@ -535,104 +524,100 @@ namespace My
             return false;
         }
 
-        static LogicAreaHomesteadPersist CloneHomesteadPersist(LogicAreaHomesteadPersist source)
+        static TownDevelopmentPersist CloneTownDevelopment(TownDevelopmentPersist source)
         {
-            var clone = new LogicAreaHomesteadPersist
+            var clone = new TownDevelopmentPersist
             {
+                Prosperity = source.Prosperity,
+                Population = source.Population,
+                Influence = source.Influence,
+                Stability = source.Stability,
                 ControlDegree = source.ControlDegree,
                 IsAnnexed = source.IsAnnexed,
+                Facilities = new List<TownFacilityPersist>(),
             };
-
-            if (source.Buildings != null)
+            if (source.Facilities != null)
             {
-                foreach (var b in source.Buildings)
+                foreach (var b in source.Facilities)
                 {
-                    if (b == null || string.IsNullOrEmpty(b.BuildingId) || b.Level <= 0)
+                    if (b == null || string.IsNullOrEmpty(b.FacilityId)) continue;
+                    clone.Facilities.Add(new TownFacilityPersist
                     {
-                        continue;
-                    }
-
-                    clone.Buildings.Add(new HomesteadBuildingPersist
-                    {
-                        BuildingId = b.BuildingId,
-                        Level = b.Level,
+                        InstanceId = b.InstanceId,
+                        FacilityId = b.FacilityId,
+                        IsConstructed = b.IsConstructed,
+                        DevelopmentLevel = b.DevelopmentLevel,
+                        OperationPlanId = b.OperationPlanId,
+                        AssignedWorkforce = b.AssignedWorkforce,
                     });
                 }
             }
-
             return clone;
         }
-
-        public int GetHomesteadBuildingLevel(string logicAreaId, string buildingId)
+        public IReadOnlyList<TownFacilityPersist> GetTownFacilities(string townId)
         {
-            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(buildingId))
-            {
-                return 0;
-            }
+            var facilitys = GetLogicAreaHomesteadState(townId)?.Facilities;
+            return facilitys ?? (IReadOnlyList<TownFacilityPersist>)Array.Empty<TownFacilityPersist>();
+        }
 
+        public TownFacilityPersist GetTownFacility(string townId, long instanceId, string facilityId, bool create = false)
+        {
+            if (string.IsNullOrEmpty(townId) || string.IsNullOrEmpty(facilityId)) return null;
+            var state = create ? GetOrCreateHomesteadState(townId) : GetLogicAreaHomesteadState(townId);
+            if (state == null) return null;
+            state.Facilities ??= new List<TownFacilityPersist>();
+            foreach (var facility in state.Facilities)
+            {
+                if (facility != null && facility.FacilityId == facilityId && facility.InstanceId == instanceId)
+                    return facility;
+            }
+            if (!create) return null;
+            var created = new TownFacilityPersist { InstanceId = instanceId, FacilityId = facilityId };
+            state.Facilities.Add(created);
+            return created;
+        }
+
+        public int GetFacilityDevelopmentLevel(string logicAreaId, string facilityId)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId)) return 0;
             var state = GetLogicAreaHomesteadState(logicAreaId);
-            if (state?.Buildings == null)
+            if (state?.Facilities == null) return 0;
+            foreach (var b in state.Facilities)
             {
-                return 0;
+                if (b != null && b.FacilityId == facilityId && b.InstanceId == 0)
+                    return Mathf.Max(0, b.DevelopmentLevel);
             }
-
-            foreach (var b in state.Buildings)
-            {
-                if (b != null && b.BuildingId == buildingId)
-                {
-                    return Mathf.Max(0, b.Level);
-                }
-            }
-
             return 0;
         }
 
-        public void SetHomesteadBuildingLevel(string logicAreaId, string buildingId, int level)
+        public void SetTownFacilityDevelopment(string townId, long instanceId, string facilityId,
+            int level, string operationPlanId, int assignedWorkforce, bool isBuilt)
         {
-            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(buildingId))
-            {
-                return;
-            }
-
-            level = Mathf.Max(0, level);
-            var state = GetOrCreateHomesteadState(logicAreaId);
-            state.Buildings ??= new List<HomesteadBuildingPersist>();
-
-            for (int i = 0; i < state.Buildings.Count; i++)
-            {
-                var b = state.Buildings[i];
-                if (b != null && b.BuildingId == buildingId)
-                {
-                    if (level <= 0)
-                    {
-                        state.Buildings.RemoveAt(i);
-                    }
-                    else
-                    {
-                        b.Level = level;
-                    }
-
-                    NormalizeHomesteadEntry(logicAreaId, state);
-                    EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, state);
-                    return;
-                }
-            }
-
-            if (level <= 0)
-            {
-                NormalizeHomesteadEntry(logicAreaId, state);
-                return;
-            }
-
-            state.Buildings.Add(new HomesteadBuildingPersist
-            {
-                BuildingId = buildingId,
-                Level = level,
-            });
-            EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, state);
+            var facility = GetTownFacility(townId, instanceId, facilityId, true);
+            if (facility == null) return;
+            facility.DevelopmentLevel = Mathf.Max(0, level);
+            facility.OperationPlanId = operationPlanId;
+            facility.AssignedWorkforce = Mathf.Max(0, assignedWorkforce);
+            facility.IsConstructed = isBuilt && facility.DevelopmentLevel > 0;
+            NormalizeHomesteadEntry(townId, GetLogicAreaHomesteadState(townId));
+            EvOnLogicAreaHomesteadChanged?.Invoke(townId, GetLogicAreaHomesteadState(townId));
         }
 
-        void NormalizeHomesteadEntry(string logicAreaId, LogicAreaHomesteadPersist state)
+        public void SetFacilityDevelopmentLevel(string logicAreaId, string facilityId, int level)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(facilityId)) return;
+            var facility = GetTownFacility(logicAreaId, 0, facilityId, true);
+            facility.DevelopmentLevel = Mathf.Max(0, level);
+            facility.IsConstructed = facility.DevelopmentLevel > 0;
+            if (facility.DevelopmentLevel <= 0)
+            {
+                facility.OperationPlanId = null;
+                facility.AssignedWorkforce = 0;
+            }
+            NormalizeHomesteadEntry(logicAreaId, GetLogicAreaHomesteadState(logicAreaId));
+            EvOnLogicAreaHomesteadChanged?.Invoke(logicAreaId, GetLogicAreaHomesteadState(logicAreaId));
+        }
+        void NormalizeHomesteadEntry(string logicAreaId, TownDevelopmentPersist state)
         {
             if (state == null || HasMeaningfulHomesteadState(state))
             {

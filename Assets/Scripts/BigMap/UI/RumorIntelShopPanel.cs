@@ -22,6 +22,7 @@ namespace My.UI
         RumorIntelShopListPopulation _listPopulation;
 
         string _mapId;
+        string _feedback;
 
         void Awake()
         {
@@ -79,6 +80,7 @@ namespace My.UI
         {
             base.Setup(data);
             _mapId = data as string;
+            _feedback = null;
             if (string.IsNullOrEmpty(_mapId))
             {
                 Debug.LogWarning("[RumorIntelShop] Setup expects string mapId.");
@@ -113,10 +115,12 @@ namespace My.UI
 
             if (titleLabel != null)
             {
-                titleLabel.text = string.IsNullOrEmpty(_mapId) ? "Intel shop" : $"Intel — {_mapId}";
+                var map = CfgMgr.Cfgs.TbAreaOverlayStateInfo?.GetOrDefault(_mapId);
+                var mapName = map != null && !string.IsNullOrEmpty(map.Desc) ? map.Desc : _mapId;
+                titleLabel.text = string.IsNullOrEmpty(mapName) ? "秘闻" : $"秘闻 - {mapName}";
             }
 
-            _listPopulation?.ClearAndPopulate(_mapId, TryBuy);
+            _listPopulation?.ClearAndPopulate(_mapId, TryBuy, _feedback);
         }
 
         void TryBuy(string rumorId)
@@ -131,9 +135,28 @@ namespace My.UI
             if (!ok)
             {
                 Debug.LogWarning("[RumorIntelShop] Purchase failed: " + err);
+                _feedback = GetPurchaseErrorText(err);
+            }
+            else
+            {
+                _feedback = "秘闻已购入，将在下次潜入该区域时生效。";
             }
 
             Refresh();
+        }
+
+        static string GetPurchaseErrorText(string error)
+        {
+            return error switch
+            {
+                "rumor_cost" => "秘闻点数不足。",
+                "rumor_already_active" => "该秘闻已经处于待生效状态。",
+                "rumor_random_slot_occupied" => "该区域已有一条随机秘闻等待生效。",
+                "rumor_not_in_offer" => "该秘闻已不在当前候选中。",
+                "rumor_cond_fail" => "当前条件不满足，无法购买该秘闻。",
+                "rumor_no_map" => "尚未选择潜入区域。",
+                _ => "购买失败，请重新打开秘闻界面。",
+            };
         }
     }
 }

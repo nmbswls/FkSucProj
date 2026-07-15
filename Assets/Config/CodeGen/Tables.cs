@@ -25,7 +25,6 @@ public partial class Tables
     public demo.TbEventGrant TbEventGrant {get; }
     public demo.TbDropBundle TbDropBundle {get; }
     public demo.TbDropItem TbDropItem {get; }
-    public demo.TbFixedFacility TbFixedFacility {get; }
     public demo.TbBornPoint TbBornPoint {get; }
     public demo.TbUnitNpc TbUnitNpc {get; }
     public demo.TbUnitNpcAttr TbUnitNpcAttr {get; }
@@ -34,7 +33,6 @@ public partial class Tables
     public demo.TbQuestStepData TbQuestStepData {get; }
     public demo.TbQuestStepOutcome TbQuestStepOutcome {get; }
     public demo.TbQuestStepObjective TbQuestStepObjective {get; }
-    public demo.TbQuestInteractDialog TbQuestInteractDialog {get; }
     public demo.TbDialogMetaInfo TbDialogMetaInfo {get; }
     public demo.TbItemData TbItemData {get; }
     public demo.TbShop TbShop {get; }
@@ -112,11 +110,12 @@ public partial class Tables
     /// <summary>
     /// 逻辑区域可管理建筑
     /// </summary>
-    public demo.TbHomesteadBuilding TbHomesteadBuilding {get; }
+    public demo.TbFacilityDefinition TbFacilityDefinition {get; }
+    public demo.TbFacilityDevelopmentDefinition TbFacilityDevelopmentDefinition {get; }
     /// <summary>
     /// 家园建筑升级项
     /// </summary>
-    public demo.TbHomesteadBuildingUpgrade TbHomesteadBuildingUpgrade {get; }
+    public demo.TbFacilityDevelopmentLevel TbFacilityDevelopmentLevel {get; }
     public demo.TbJingYuanCodexDef TbJingYuanCodexDef {get; }
     public demo.TbJingYuanCodexLevel TbJingYuanCodexLevel {get; }
     public demo.TbJingYuanTuneTier TbJingYuanTuneTier {get; }
@@ -160,6 +159,18 @@ public partial class Tables
     public demo.TbHumanTechTree TbHumanTechTree {get; }
     public demo.TbHumanTechNode TbHumanTechNode {get; }
     public demo.TbHumanTechNodeLevel TbHumanTechNodeLevel {get; }
+    public demo.TbQuestAcceptDialog TbQuestAcceptDialog {get; }
+    public demo.TbQuestRemindDialog TbQuestRemindDialog {get; }
+    public demo.TbQuestObjectiveDialog TbQuestObjectiveDialog {get; }
+    public demo.TbNpcRoutineProfile TbNpcRoutineProfile {get; }
+    public demo.TbNpcRoutineRule TbNpcRoutineRule {get; }
+    public demo.TbNpcRoutineBinding TbNpcRoutineBinding {get; }
+    public demo.TbCultTechNode TbCultTechNode {get; }
+    public demo.TbCultTechNodeLevel TbCultTechNodeLevel {get; }
+    public demo.TbCultAncientSeat TbCultAncientSeat {get; }
+    public demo.TbCultSeatTechNode TbCultSeatTechNode {get; }
+    public demo.TbCultSeatTechNodeLevel TbCultSeatTechNodeLevel {get; }
+    public demo.TbNpcLocomotionProfile TbNpcLocomotionProfile {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -171,7 +182,6 @@ public partial class Tables
         TbEventGrant = new demo.TbEventGrant(loader("demo_tbeventgrant"));
         TbDropBundle = new demo.TbDropBundle(loader("demo_tbdropbundle"));
         TbDropItem = new demo.TbDropItem(loader("demo_tbdropitem"));
-        TbFixedFacility = new demo.TbFixedFacility(loader("demo_tbfixedfacility"));
         TbBornPoint = new demo.TbBornPoint(loader("demo_tbbornpoint"));
         TbUnitNpc = new demo.TbUnitNpc(loader("demo_tbunitnpc"));
         TbUnitNpcAttr = new demo.TbUnitNpcAttr(loader("demo_tbunitnpcattr"));
@@ -180,7 +190,6 @@ public partial class Tables
         TbQuestStepData = new demo.TbQuestStepData(loader("demo_tbqueststepdata"));
         TbQuestStepOutcome = new demo.TbQuestStepOutcome(loader("demo_tbqueststepoutcome"));
         TbQuestStepObjective = new demo.TbQuestStepObjective(loader("demo_tbqueststepobjective"));
-        TbQuestInteractDialog = new demo.TbQuestInteractDialog(loader("demo_tbquestinteractdialog"));
         TbDialogMetaInfo = new demo.TbDialogMetaInfo(loader("demo_tbdialogmetainfo"));
         TbItemData = new demo.TbItemData(loader("demo_tbitemdata"));
         TbShop = new demo.TbShop(loader("demo_tbshop"));
@@ -243,8 +252,9 @@ public partial class Tables
         TbRuneUpgradeInfo = new demo.TbRuneUpgradeInfo(loader("demo_tbruneupgradeinfo"));
         TbRuneEquipSlot = new demo.TbRuneEquipSlot(loader("demo_tbruneequipslot"));
         TbEntitySkillLevel = new demo.TbEntitySkillLevel(loader("demo_tbentityskilllevel"));
-        TbHomesteadBuilding = new demo.TbHomesteadBuilding(loader("demo_tbhomesteadbuilding"));
-        TbHomesteadBuildingUpgrade = new demo.TbHomesteadBuildingUpgrade(loader("demo_tbhomesteadbuildingupgrade"));
+        TbFacilityDefinition = new demo.TbFacilityDefinition(loader("demo_tbfacilitydefinition"));
+        TbFacilityDevelopmentDefinition = new demo.TbFacilityDevelopmentDefinition(loader("demo_tbfacilitydevelopmentdefinition"));
+        TbFacilityDevelopmentLevel = new demo.TbFacilityDevelopmentLevel(loader("demo_tbfacilitydevelopmentlevel"));
         TbJingYuanCodexDef = new demo.TbJingYuanCodexDef(loader("demo_tbjingyuancodexdef"));
         TbJingYuanCodexLevel = new demo.TbJingYuanCodexLevel(loader("demo_tbjingyuancodexlevel"));
         TbJingYuanTuneTier = new demo.TbJingYuanTuneTier(loader("demo_tbjingyuantunetier"));
@@ -264,6 +274,18 @@ public partial class Tables
         TbHumanTechTree = new demo.TbHumanTechTree(loader("demo_tbhumantechtree"));
         TbHumanTechNode = new demo.TbHumanTechNode(loader("demo_tbhumantechnode"));
         TbHumanTechNodeLevel = new demo.TbHumanTechNodeLevel(loader("demo_tbhumantechnodelevel"));
+        TbQuestAcceptDialog = new demo.TbQuestAcceptDialog(loader("demo_tbquestacceptdialog"));
+        TbQuestRemindDialog = new demo.TbQuestRemindDialog(loader("demo_tbquestreminddialog"));
+        TbQuestObjectiveDialog = new demo.TbQuestObjectiveDialog(loader("demo_tbquestobjectivedialog"));
+        TbNpcRoutineProfile = new demo.TbNpcRoutineProfile(loader("demo_tbnpcroutineprofile"));
+        TbNpcRoutineRule = new demo.TbNpcRoutineRule(loader("demo_tbnpcroutinerule"));
+        TbNpcRoutineBinding = new demo.TbNpcRoutineBinding(loader("demo_tbnpcroutinebinding"));
+        TbCultTechNode = new demo.TbCultTechNode(loader("demo_tbculttechnode"));
+        TbCultTechNodeLevel = new demo.TbCultTechNodeLevel(loader("demo_tbculttechnodelevel"));
+        TbCultAncientSeat = new demo.TbCultAncientSeat(loader("demo_tbcultancientseat"));
+        TbCultSeatTechNode = new demo.TbCultSeatTechNode(loader("demo_tbcultseattechnode"));
+        TbCultSeatTechNodeLevel = new demo.TbCultSeatTechNodeLevel(loader("demo_tbcultseattechnodelevel"));
+        TbNpcLocomotionProfile = new demo.TbNpcLocomotionProfile(loader("demo_tbnpclocomotionprofile"));
         ResolveRef();
     }
     
@@ -277,7 +299,6 @@ public partial class Tables
         TbEventGrant.ResolveRef(this);
         TbDropBundle.ResolveRef(this);
         TbDropItem.ResolveRef(this);
-        TbFixedFacility.ResolveRef(this);
         TbBornPoint.ResolveRef(this);
         TbUnitNpc.ResolveRef(this);
         TbUnitNpcAttr.ResolveRef(this);
@@ -286,7 +307,6 @@ public partial class Tables
         TbQuestStepData.ResolveRef(this);
         TbQuestStepOutcome.ResolveRef(this);
         TbQuestStepObjective.ResolveRef(this);
-        TbQuestInteractDialog.ResolveRef(this);
         TbDialogMetaInfo.ResolveRef(this);
         TbItemData.ResolveRef(this);
         TbShop.ResolveRef(this);
@@ -349,8 +369,9 @@ public partial class Tables
         TbRuneUpgradeInfo.ResolveRef(this);
         TbRuneEquipSlot.ResolveRef(this);
         TbEntitySkillLevel.ResolveRef(this);
-        TbHomesteadBuilding.ResolveRef(this);
-        TbHomesteadBuildingUpgrade.ResolveRef(this);
+        TbFacilityDefinition.ResolveRef(this);
+        TbFacilityDevelopmentDefinition.ResolveRef(this);
+        TbFacilityDevelopmentLevel.ResolveRef(this);
         TbJingYuanCodexDef.ResolveRef(this);
         TbJingYuanCodexLevel.ResolveRef(this);
         TbJingYuanTuneTier.ResolveRef(this);
@@ -370,6 +391,18 @@ public partial class Tables
         TbHumanTechTree.ResolveRef(this);
         TbHumanTechNode.ResolveRef(this);
         TbHumanTechNodeLevel.ResolveRef(this);
+        TbQuestAcceptDialog.ResolveRef(this);
+        TbQuestRemindDialog.ResolveRef(this);
+        TbQuestObjectiveDialog.ResolveRef(this);
+        TbNpcRoutineProfile.ResolveRef(this);
+        TbNpcRoutineRule.ResolveRef(this);
+        TbNpcRoutineBinding.ResolveRef(this);
+        TbCultTechNode.ResolveRef(this);
+        TbCultTechNodeLevel.ResolveRef(this);
+        TbCultAncientSeat.ResolveRef(this);
+        TbCultSeatTechNode.ResolveRef(this);
+        TbCultSeatTechNodeLevel.ResolveRef(this);
+        TbNpcLocomotionProfile.ResolveRef(this);
     }
 }
 

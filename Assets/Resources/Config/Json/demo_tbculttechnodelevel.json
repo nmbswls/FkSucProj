@@ -1,0 +1,61 @@
+[
+  {
+    "node_id": 1,
+    "level": 1,
+    "prereq_node_ids": [],
+    "faith_cost": 0,
+    "effect_desc": "解锁教团布道树外环。"
+  },
+  {
+    "node_id": 10,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 30,
+    "effect_desc": "解锁暗室密传相关占位效果。"
+  },
+  {
+    "node_id": 11,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 30,
+    "effect_desc": "解锁梦中显圣相关占位效果。"
+  },
+  {
+    "node_id": 12,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 40,
+    "effect_desc": "解锁威压改宗相关占位效果。"
+  },
+  {
+    "node_id": 13,
+    "level": 1,
+    "prereq_node_ids": [
+      1
+    ],
+    "faith_cost": 35,
+    "effect_desc": "解锁工艺贡礼相关占位效果。"
+  },
+  {
+    "node_id": 20,
+    "level": 1,
+    "prereq_node_ids": [],
+    "faith_cost": 80,
+    "effect_desc": "淑女残座共鸣：往去回忆事件占位。"
+  },
+  {
+    "node_id": 21,
+    "level": 1,
+    "prereq_node_ids": [
+      10
+    ],
+    "faith_cost": 60,
+    "effect_desc": "血契布道效率占位提升。"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "DialogId": "vera_dream_accept_fail",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Quest accept failed.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "现在还不是谈这件事的时候。先把眼前的人安顿好吧。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

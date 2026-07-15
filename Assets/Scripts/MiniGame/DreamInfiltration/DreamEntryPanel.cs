@@ -8,12 +8,6 @@ using UnityEngine.UI;
 
 namespace My.MiniGame.Dream
 {
-
-    public class DreamEntry4SpecialCharacter
-    {
-        public string CharacterKey { get; set; }
-    }
-
     public class DreamEntryPanel : PanelWithInput
     {
         [Header("Prefab（必填，勿在运行时创建 UI）")]
@@ -21,13 +15,9 @@ namespace My.MiniGame.Dream
         [SerializeField] private RectTransform spotButtonTemplate;
 
         private TbDreamInfiltrationSpot _dreamSpotTable;
+        private TbCharDreamEntryInfo _characterDreamEntryTable;
         private RectTransform _rootRt;
         private readonly List<(string themeId, string themeDisplayName)> _rolledThemes = new();
-
-        /// <summary>
-        /// 特殊入口列表
-        /// </summary>
-        public List<DreamEntry4SpecialCharacter> SpecialCharacterEntrys { get; private set; } = new();
 
         public override int FocusPriority => 820;
 
@@ -52,6 +42,7 @@ namespace My.MiniGame.Dream
         public override void Setup(object data = null)
         {
             _dreamSpotTable = CfgMgr.Cfgs?.TbDreamInfiltrationSpot;
+            _characterDreamEntryTable = CfgMgr.Cfgs?.TbCharDreamEntryInfo;
             if (_dreamSpotTable == null || _dreamSpotTable.DataList == null || _dreamSpotTable.DataList.Count == 0)
             {
                 Debug.LogError("[DreamInfiltration] TbDreamInfiltrationSpot missing or empty. Check demo_tbdreaminfiltrationspot.json and Tables loader.");
@@ -120,6 +111,46 @@ namespace My.MiniGame.Dream
                     view.BindFromData(spot, rolled.themeDisplayName, i, OnSpotClicked);
                 else
                     Debug.LogError("[DreamInfiltration] SpotTemplate missing DreamEntrySpotButtonView.");
+            }
+
+            RebuildCharacterEntries();
+        }
+
+        private void RebuildCharacterEntries()
+        {
+            var entries = _characterDreamEntryTable?.DataList;
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var psm = glm?.playerDataManager;
+            if (entries == null || psm == null || glm == null)
+            {
+                return;
+            }
+
+            var visibleIndex = 0;
+            foreach (var entry in entries)
+            {
+                if (entry == null || !DreamCharacterEntryHelper.IsCharacterEntryUnlocked(entry, psm, glm))
+                {
+                    continue;
+                }
+
+                var character = CfgMgr.Cfgs?.TbCharacterInfo?.GetOrDefault(entry.CharacterKey);
+                var displayName = string.IsNullOrEmpty(character?.Name)
+                    ? entry.CharacterKey
+                    : character.Name;
+
+                var inst = Instantiate(spotButtonTemplate, spotsContainer);
+                inst.gameObject.SetActive(true);
+                var view = inst.GetComponent<DreamEntrySpotButtonView>();
+                if (view != null)
+                {
+                    view.BindCharacterEntry(entry.Id, displayName, visibleIndex, OnCharacterEntryClicked);
+                    visibleIndex++;
+                }
+                else
+                {
+                    Debug.LogError("[DreamInfiltration] SpotTemplate missing DreamEntrySpotButtonView.");
+                }
             }
         }
 

@@ -17,7 +17,7 @@ namespace My.UI
 
         [SerializeField] GameObject buyRowTemplate;
 
-        public void ClearAndPopulate(string mapId, Action<string> tryBuy)
+        public void ClearAndPopulate(string mapId, Action<string> tryBuy, string feedback = null)
         {
             if (listHost == null || CfgMgr.Cfgs == null)
             {
@@ -43,7 +43,12 @@ namespace My.UI
 
             var rumor = glm.playerDataManager.RumorIntel;
 
-            AddSection("=== Fixed ===");
+            if (!string.IsNullOrEmpty(feedback))
+            {
+                AddHint(feedback);
+            }
+
+            AddSection("固定秘闻");
             var fixedList = rumor.ListPurchasableFixed(mapId);
             foreach (var def in fixedList)
             {
@@ -52,13 +57,13 @@ namespace My.UI
 
             if (fixedList.Count == 0)
             {
-                AddHint("No fixed intel available.");
+                AddHint("当前没有可购买的固定秘闻。");
             }
 
-            AddSection("=== Rumor pool (pick one) ===");
+            AddSection("随机秘闻（选择一条）");
             if (rumor.HasActiveRandomIntel(mapId))
             {
-                AddHint("Random intel slot occupied; finish infiltration or wait expire.");
+                AddHint("已有随机秘闻等待生效；完成一次潜入或等待其过期后可再次选择。");
             }
             else
             {
@@ -75,7 +80,7 @@ namespace My.UI
                 }
             }
 
-            AddSection("=== Pending (next infiltration) ===");
+            AddSection("下次潜入生效");
             var actives = rumor.GetActiveSnapshot(mapId);
             foreach (var a in actives)
             {
@@ -86,7 +91,7 @@ namespace My.UI
 
             if (actives.Count == 0)
             {
-                AddHint("(none)");
+                AddHint("暂无待生效秘闻。");
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listHost);

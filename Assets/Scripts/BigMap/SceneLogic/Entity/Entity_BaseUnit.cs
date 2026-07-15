@@ -48,6 +48,15 @@ namespace My.Map
             /// 前往 MoveToDespawnTarget 逻辑坐标后销毁实体（动态压力守卫退场 / 路人离场可复用）
             /// </summary>
             MoveToThenDespawn,
+            MoveToPoint,
+            /// <summary>
+            /// 在 MoveToTarget 为圆心、WanderRadius 为半径的范围内闲逛
+            /// </summary>
+            WanderAroundPoint,
+            /// <summary>
+            /// 沿 PathLoopPoints 世界坐标点列循环走动（NamedPath 解析结果）
+            /// </summary>
+            PathLoop,
         }
 
         public EMoveBehaveType MoveBehaveMode 
@@ -65,6 +74,23 @@ namespace My.Map
         /// MoveToThenDespawn 目标点（逻辑坐标）
         /// </summary>
         public Vector2 MoveToDespawnTarget;
+        public Vector2 MoveToTarget;
+
+        /// <summary>
+        /// WanderAroundPoint 半径（逻辑单位）
+        /// </summary>
+        public float WanderRadius;
+
+        /// <summary>
+        /// 到达/站定后的可选朝向
+        /// </summary>
+        public bool HasFaceDir;
+        public Vector2 FaceDir;
+
+        /// <summary>
+        /// PathLoop 世界坐标点列
+        /// </summary>
+        public List<Vector2> PathLoopPoints = new();
 
         // 路网巡逻实例数据（来自 LogicEntityRecord4Npc / 导出）
         public string PatrolPortalNetworkId = string.Empty;

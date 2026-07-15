@@ -375,8 +375,11 @@ namespace My.Map
 
                 if(!aborted)
                 {
-                    foreach(var kv in _def.RewardItems)
-                    _glm.playerDataManager.GiveItemToPlayer(kv.Key, kv.Value);
+                    foreach (var kv in _def.RewardItems)
+                    {
+                        var amount = _glm.playerDataManager.ProgressionSystem?.HumanCivilization?.ModifyExplorationLoot(kv.Value) ?? kv.Value;
+                        _glm.playerDataManager.GiveItemToPlayer(kv.Key, amount);
+                    }
                 }
                 _owner.ClearRunnerIf(this);
             }

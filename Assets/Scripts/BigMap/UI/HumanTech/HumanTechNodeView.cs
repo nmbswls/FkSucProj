@@ -14,6 +14,8 @@ namespace My.UI.HumanTech
         TextMeshProUGUI _titleText;
         TextMeshProUGUI _levelText;
         TextMeshProUGUI _actionText;
+        Image _iconImage;
+        HumanTechHoverProvider _hoverProvider;
 
         public void Bind(int nodeId, HumanTechTreeView host)
         {
@@ -25,6 +27,8 @@ namespace My.UI.HumanTech
             _titleText = texts.Length > 0 ? texts[0] : null;
             _levelText = texts.Length > 1 ? texts[1] : null;
             _actionText = texts.Length > 2 ? texts[2] : null;
+            _iconImage = transform.Find("Image")?.GetComponent<Image>();
+            _hoverProvider = GetComponent<HumanTechHoverProvider>() ?? gameObject.AddComponent<HumanTechHoverProvider>();
             if (_actionButton != null)
             {
                 _actionButton.onClick.RemoveAllListeners();
@@ -42,6 +46,15 @@ namespace My.UI.HumanTech
             if (_levelText != null) _levelText.text = $"Lv{current}/{max}";
             if (_actionText != null) _actionText.text = current >= max ? "Max" : "Unlock";
             if (_actionButton != null) _actionButton.interactable = state == HumanTechNodeVisualState.Unlockable;
+            if (_iconImage != null)
+            {
+                var sprite = node == null || string.IsNullOrEmpty(node.IconPath)
+                    ? null
+                    : SimpleResManager.Load<Sprite>($"Sprites/HumanTech/{node.IconPath}")
+                      ?? SimpleResManager.Load<Sprite>($"Sprites/Skill/{node.IconPath}");
+                _iconImage.sprite = sprite;
+                _iconImage.enabled = sprite != null;
+            }
         }
 
         void OnActionClicked() { _host?.TryUnlock(_nodeId); }

@@ -2,7 +2,8 @@ using My.Config;
 
 namespace My
 {
-    // CharacterKey 与 TbCharacterInfo 的显示名桥接；地图导出填 CharacterKey，任务 start_npc_id 用于地图显示，递交/接取对话见 quest_dialog_info。
+    // CharacterKey 与 TbCharacterInfo 的显示名桥接。
+    // 接取/提醒/目标推进入口以 Accept/Remind/ObjectiveDialog.character_key 为准；StartNpcId 无运行时消费方。
     public static class NpcCharacterInfoUtil
     {
         public static string GetDisplayName(string characterKey, string fallback = null)

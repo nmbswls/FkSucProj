@@ -1,4 +1,3 @@
-using cfg.demo;
 using My.Cfg_Ex;
 using My.Map.Logic;
 using My.Player;
@@ -73,7 +72,7 @@ namespace My.Dialog
             {
                 case EDialogueQuestAction.Accept:
                 {
-                    if (!QuestDialogSession.TryResolveAccept(session, out var questId, out var characterKey))
+                    if (!QuestDialogSession.TryResolveAccept(session, out var questId, out var characterKey, out var acceptDialogId))
                     {
                         Debug.LogWarning("[Dialog] Quest session missing accept vars.");
                         ReturnToNpcHub(srcEntityId);
@@ -86,28 +85,42 @@ namespace My.Dialog
                         glm.AreaManager?.ForceCheckAllRefreshInfos();
                     }
 
-                    var role = ok ? EQuestDialogRole.AcceptSuccess : EQuestDialogRole.AcceptFail;
-                    var dialogId = QuestDialogResolver.Resolve(questId, "", characterKey, role);
+                    var dialogId = QuestDialogResolver.ResolveAcceptResult(acceptDialogId, questId, characterKey, ok);
                     PlayResultDialog(dialogId, srcEntityId);
                     break;
                 }
-                case EDialogueQuestAction.Fulfill:
+                case EDialogueQuestAction.Objective:
                 {
-                    if (!QuestDialogSession.TryResolveFulfill(session, out var questId, out var objId, out var characterKey))
+                    if (!QuestDialogSession.TryResolveObjective(
+                            session, out var questId, out var objId, out var characterKey, out var objectiveDialogId))
                     {
-                        Debug.LogWarning("[Dialog] Quest session missing fulfill vars.");
+                        Debug.LogWarning("[Dialog] Quest session missing objective vars.");
                         ReturnToNpcHub(srcEntityId);
                         break;
                     }
 
+                    // 先兑现（交物品 / 校验 Talk NPC），成功后再 Mark 触发态（once / Talk 进度 / Remind 门闩）
                     var ok = questSystem.TryFulfillObjective(characterKey, questId, objId, out _);
                     if (ok)
                     {
+                        var triggerId = objectiveDialogId;
+                        if (triggerId <= 0)
+                        {
+                            triggerId = QuestDialogResolver.FindObjective(questId, objId, characterKey)?.Id ?? 0;
+                        }
+
+                        if (triggerId > 0)
+                        {
+                            questSystem.MarkObjectiveDialogTriggered(questId, triggerId, objId);
+                        }
+
+                        // Talk 进度在 Mark 后才增加，此处再尝试 AutoNext
+                        questSystem.TryAdvanceAfterObjectiveDialog(questId);
                         glm.AreaManager?.ForceCheckAllRefreshInfos();
                     }
 
-                    var role = ok ? EQuestDialogRole.FulfillSuccess : EQuestDialogRole.FulfillFail;
-                    var dialogId = QuestDialogResolver.Resolve(questId, objId, characterKey, role);
+                    var dialogId = QuestDialogResolver.ResolveObjectiveResult(
+                        objectiveDialogId, questId, objId, characterKey, ok);
                     PlayResultDialog(dialogId, srcEntityId);
                     break;
                 }
@@ -131,6 +144,12 @@ namespace My.Dialog
 
         private static void ReturnToNpcHub(long? srcEntityId)
         {
+            if (srcEntityId.HasValue && srcEntityId.Value != 0)
+            {
+                My.UI.NpcInteractHubPanel.Open(srcEntityId.Value);
+                return;
+            }
+
             MainGameManager.Instance?.PlayDialog(DialoguePlayer.NpcDialogHubId, srcEntityId);
         }
     }

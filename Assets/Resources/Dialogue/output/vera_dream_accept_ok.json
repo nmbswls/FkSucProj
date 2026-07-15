@@ -1,0 +1,25 @@
+{
+  "DialogId": "vera_dream_accept_ok",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Quest accepted.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "等您回到能安睡的地方，我会尽量不再抵抗那段梦。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

@@ -9,6 +9,7 @@ namespace My.Player
     {
         Locked,
         Unlockable,
+        InsufficientCost,
         Unlocked,
     }
 
@@ -24,12 +25,14 @@ namespace My.Player
         {
             _logic = logic;
             _techLevels.Clear();
-            if (savingData?.PlayerData?.HumanTechNodeLevels == null)
+            var entries = savingData?.HumanCivilization?.TechNodes;
+
+            if (entries == null)
             {
                 return;
             }
 
-            foreach (var entry in savingData.PlayerData.HumanTechNodeLevels)
+            foreach (var entry in entries)
             {
                 if (entry != null && entry.NodeId > 0 && entry.Level > 0)
                 {
@@ -38,15 +41,16 @@ namespace My.Player
             }
         }
 
-        public void SaveTo(PlayerData playerData)
+        public void SaveTo(SaveData savingData)
         {
-            if (playerData == null)
+            if (savingData == null)
             {
                 return;
             }
 
-            playerData.HumanTechNodeLevels ??= new List<HumanTechNodeLevelPersist>();
-            playerData.HumanTechNodeLevels.Clear();
+            savingData.HumanCivilization ??= new HumanCivilizationPersist();
+            savingData.HumanCivilization.TechNodes ??= new List<HumanTechNodeLevelPersist>();
+            savingData.HumanCivilization.TechNodes.Clear();
             foreach (var pair in _techLevels)
             {
                 if (pair.Value <= 0)
@@ -54,7 +58,7 @@ namespace My.Player
                     continue;
                 }
 
-                playerData.HumanTechNodeLevels.Add(new HumanTechNodeLevelPersist
+                savingData.HumanCivilization.TechNodes.Add(new HumanTechNodeLevelPersist
                 {
                     NodeId = pair.Key,
                     Level = pair.Value,
@@ -131,7 +135,7 @@ namespace My.Player
                 return HumanTechNodeVisualState.Locked;
             }
 
-            return HumanTechNodeVisualState.Unlockable;
+            return CanPayUnlockCosts(level) ? HumanTechNodeVisualState.Unlockable : HumanTechNodeVisualState.InsufficientCost;
         }
 
         public bool TryUnlockTechNode(int nodeId, out string failReason)
@@ -206,7 +210,7 @@ namespace My.Player
 
         bool CheckCommonConditions(IReadOnlyList<CommonCheckCond> conditions)
         {
-            return _logic == null || _logic.CheckCommonCondsAll(conditions);
+            return _logic != null && _logic.CheckCommonCondsAll(conditions);
         }
 
         bool CheckCustomCondition(HumanCivilizationCustomCond cond)
@@ -224,7 +228,7 @@ namespace My.Player
                     return false;
                 }
 
-                return _logic.worldPersistState.GetHomesteadBuildingLevel(parts[0], parts[1]) >= cond.Param2;
+                return _logic.worldPersistState.GetFacilityDevelopmentLevel(parts[0], parts[1]) >= cond.Param2;
             }
 
             return false;
@@ -253,6 +257,77 @@ namespace My.Player
             return level?.UnlockCosts != null && level.UnlockCosts.Count > 0;
         }
 
+        bool CanPayUnlockCosts(HumanTechNodeLevel level)
+        {
+            var player = _logic?.playerDataManager;
+            if (player == null)
+            {
+                return false;
+            }
+
+            if (!HasUnlockCosts(level))
+            {
+                return true;
+            }
+
+            foreach (var cost in level.UnlockCosts)
+            {
+                if (cost != null && !string.IsNullOrEmpty(cost.ItemId) && cost.Count > 0
+                    && !player.CheckHaveItem(cost.ItemId, cost.Count))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public long GetTechEffectValue(EHumanCivilizationAttribute effectKey)
+        {
+            if (effectKey == EHumanCivilizationAttribute.None)
+            {
+                return 0;
+            }
+
+            long value = 0;
+            foreach (var pair in _techLevels)
+            {
+                if (pair.Value <= 0)
+                {
+                    continue;
+                }
+
+                for (int level = 1; level <= pair.Value; level++)
+                {
+                    var row = My.Config.CfgMgr.Cfgs?.TbHumanTechNodeLevel?.Get(pair.Key, level);
+                    if (row != null && row.EffectKey == effectKey)
+                    {
+                        value += row.EffectValue;
+                    }
+                }
+            }
+
+            return value;
+        }
+
+        public long GetTradeCost(long baseCost)
+        {
+            if (baseCost <= 0) return 0;
+            var tier = GetTechEffectValue(EHumanCivilizationAttribute.ScavengeExchangeAccess);
+            return Math.Max(1, (long)Math.Ceiling(baseCost * 100d / (100d + Math.Max(0, tier) * 10d)));
+        }
+
+        public long ModifyExplorationLoot(long baseAmount)
+        {
+            if (baseAmount <= 0) return 0;
+            var tier = GetTechEffectValue(EHumanCivilizationAttribute.ExplorationLootValueBonus);
+            return Math.Max(0, (long)Math.Floor(baseAmount * (1d + Math.Max(0, tier) * 0.1d)));
+        }
+
+        public bool HasTechEffect(EHumanCivilizationAttribute effectKey, long minValue = 1)
+        {
+            return GetTechEffectValue(effectKey) >= minValue;
+        }
         bool TryPayUnlockCosts(HumanTechNodeLevel level, out string failReason)
         {
             failReason = null;

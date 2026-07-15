@@ -1630,7 +1630,7 @@ namespace My.Map.Entity
             // 新实例：RegisterBuff 之后会统一 Notify；此处仅处理已存在实例的层数/持续时间变更
             if (!isAdd && BuffOwner is LogicEntityBase leOwner)
             {
-                leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(Def);
+                leOwner.NotifyAnimLayerRefreshIfAnimOverrideBuff(this);
             }
 
             if (EffectsEnabled)

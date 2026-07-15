@@ -4,34 +4,57 @@
     "character_key": "v1_merchant",
     "priority": 1,
     "has_locals": "h1",
-    "no_locals": ""
+    "no_locals": "",
+    "show_conds": []
   },
   {
     "id": 2,
     "character_key": "v1_merchant",
     "priority": 2,
     "has_locals": "h2",
-    "no_locals": ""
+    "no_locals": "",
+    "show_conds": []
   },
   {
     "id": 3,
     "character_key": "v1_merchant",
     "priority": 3,
     "has_locals": "h3",
-    "no_locals": ""
+    "no_locals": "",
+    "show_conds": []
   },
   {
     "id": 4,
     "character_key": "v1_merchant",
     "priority": 4,
     "has_locals": "h4",
-    "no_locals": ""
+    "no_locals": "",
+    "show_conds": []
   },
   {
     "id": 5,
     "character_key": "v1_merchant",
     "priority": 5,
     "has_locals": "h5",
-    "no_locals": ""
+    "no_locals": "",
+    "show_conds": []
+  },
+  {
+    "id": 101,
+    "character_key": "home_vera",
+    "priority": 1,
+    "has_locals": "",
+    "no_locals": "",
+    "show_conds": [
+      {
+        "type": 5,
+        "param1": 213,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "213_s1",
+        "param6": "0"
+      }
+    ]
   }
 ]

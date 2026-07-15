@@ -10,6 +10,8 @@ namespace My.Dialog
         public const string ObjId = "obj_id";
         public const string CharacterKey = "character_key";
         public const string EntryDialogId = "entry_dialog_id";
+        public const string AcceptDialogId = "accept_dialog_id";
+        public const string ObjectiveDialogId = "objective_dialog_id";
     }
 
     // 对话运行期上下文，不进 DialogChoiceOption JSON

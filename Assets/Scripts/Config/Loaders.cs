@@ -1,3 +1,4 @@
+using System;
 using Config.Map;
 using Config.Unit;
 using My;
@@ -310,37 +311,5 @@ namespace Config
         }
     }
 
-    #region build
 
-    public static class HomeFacilityCfgtLoader
-    {
-
-        private static Dictionary<string, HomeFacilityCfg> _byId = new Dictionary<string, HomeFacilityCfg>();
-
-        public static HomeFacilityCfg Get(string cfgId)
-        {
-            if (_byId.TryGetValue(cfgId, out var data))
-                return data;
-
-            var loadOne = Load(cfgId);
-            _byId[cfgId] = loadOne;
-            return loadOne;
-        }
-
-
-        private static HomeFacilityCfg Load(string cfgId)
-        {
-            var data = Resources.Load<HomeFacilityCfg>($"Config/Placement/{cfgId}");
-            if (data == null)
-                Debug.LogError($"MapAreaEffectLoader not found at Resources/Config/Placement/{cfgId}");
-            return data;
-        }
-
-        public static void Clear()
-        {
-            _byId.Clear();
-        }
-    }
-
-    #endregion
 }

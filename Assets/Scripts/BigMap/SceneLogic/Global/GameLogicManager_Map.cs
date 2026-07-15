@@ -221,6 +221,10 @@ namespace My
 
         public void PostNewAreaLoaded()
         {
+            if (AreaManager?.cacheMapOverlayCfg?.IsHome == true)
+            {
+                homeDataManager?.SetTownContext(TownFacilityUtil.ResolveCurrentLogicAreaId(AreaManager));
+            }
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
             RefreshPlayerPeaceMode();
             PeaceCombatBuffRefresh.Refresh(this);

@@ -23,6 +23,7 @@ public sealed partial class CharDreamEntryInfo : Luban.BeanBase
         { if(!_buf["priority"].IsNumber) { throw new SerializationException(); }  Priority = _buf["priority"]; }
         { if(!_buf["has_locals"].IsString) { throw new SerializationException(); }  HasLocals = _buf["has_locals"]; }
         { if(!_buf["no_locals"].IsString) { throw new SerializationException(); }  NoLocals = _buf["no_locals"]; }
+        { var __json0 = _buf["show_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowConds.Add(__v0); }   }
     }
 
     public static CharDreamEntryInfo DeserializeCharDreamEntryInfo(JSONNode _buf)
@@ -50,12 +51,17 @@ public sealed partial class CharDreamEntryInfo : Luban.BeanBase
     /// 条件：没有变量
     /// </summary>
     public string NoLocals;
+    /// <summary>
+    /// 显示条件
+    /// </summary>
+    public System.Collections.Generic.List<demo.CommonCheckCond> ShowConds;
    
     public const int __ID__ = -1990763906;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
     {
+        foreach (var _e in ShowConds) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -66,6 +72,7 @@ public sealed partial class CharDreamEntryInfo : Luban.BeanBase
         + "priority:" + Priority + ","
         + "hasLocals:" + HasLocals + ","
         + "noLocals:" + NoLocals + ","
+        + "showConds:" + Luban.StringUtil.CollectionToString(ShowConds) + ","
         + "}";
     }
 }

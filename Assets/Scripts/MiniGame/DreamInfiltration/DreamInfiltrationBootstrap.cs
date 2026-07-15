@@ -30,23 +30,6 @@ namespace My.MiniGame.Dream
             UIManager.Instance.ShowPanel(DreamInfiltrationIds.EntryPanel, null, UILayer.Overlay);
         }
 
-        public static void OpenEntryForCharacter(string characterKey, int charDreamEntryId)
-        {
-            if (UIManager.Instance == null)
-            {
-                Debug.LogWarning("[DreamInfiltration] UIManager not ready.");
-                return;
-            }
-
-            if (!DreamCharacterEntryHelper.TryCreateGameplayContext(characterKey, charDreamEntryId, out var ctx))
-            {
-                return;
-            }
-
-            EnterMiniGame();
-            UIManager.Instance.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);
-        }
-
         // LogicTime 暂停与清输入；与 PauseController 约定来源名 DreamPauseSource
         public static void EnterMiniGame()
         {

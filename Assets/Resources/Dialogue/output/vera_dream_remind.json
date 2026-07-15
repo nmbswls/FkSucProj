@@ -1,0 +1,25 @@
+{
+  "DialogId": "vera_dream_remind",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Vera waits for the player to use the Secret Base dream facility.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "等夜深下来，我会试着不再抵抗那段梦。剩下的，就交给您了。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

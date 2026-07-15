@@ -59,14 +59,16 @@ namespace My
         public void RefreshWorkforceVisuals()
         {
             ReleaseWorkforceVisuals();
-            if (_logic == null || FacilityEntity?.InnerFacilityRef == null)
+            if (_logic == null || FacilityEntity == null)
             {
                 return;
             }
 
-            var inst = FacilityEntity.InnerFacilityRef;
-            int n = Mathf.Max(0, inst.ArrangePeopleNum);
-            if (n == 0 || inst.CfgRef == null || !inst.CfgRef.SupportsWorkforceAssignment)
+            var homeManager = MainGameManager.Instance?.gameLogicManager?.homeDataManager;
+            var facilityId = FacilityEntity.FacilityId;
+            var facilityDefinition = FacilityDefinitionCatalog.Get(facilityId);
+            int n = Mathf.Max(0, homeManager?.GetFacilityWorkforce(FacilityEntity.FacilityInstanceId, facilityId) ?? 0);
+            if (n == 0 || facilityDefinition == null || !facilityDefinition.Capabilities.HasFlag(FacilityCapability.Workforce))
             {
                 return;
             }
@@ -143,14 +145,9 @@ namespace My
                 return false;
             }
 
-            var innerCfg = FacilityEntity.InnerFacilityRef.CfgRef;
+            var homeManager = MainGameManager.Instance?.gameLogicManager?.homeDataManager;
+            var innerCfg = FacilityDefinitionCatalog.Get(FacilityEntity?.FacilityId);
             if (innerCfg == null)
-            {
-                return false;
-            }
-
-            var func = innerCfg.SubFuncInfos.Find(item => item.SubHandleIdx == subIdx);
-            if (func == null)
             {
                 return false;
             }
@@ -174,7 +171,7 @@ namespace My
 
         public bool SubTriggerInteract(int subIdx, int selectionId, int playerId)
         {
-            MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"我是{FacilityEntity.InnerFacilityRef.Id}。", 1f);
+            MainGameManager.Instance.ShowMapSpeachBubble(MainGameManager.Instance.playerScenePresenter.Id, $"我是{FacilityEntity.FacilityId}。", 1f);
             _interactCdTimer[subIdx] = LogicTime.time;
             return true;
         }

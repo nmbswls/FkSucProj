@@ -9,6 +9,18 @@ namespace My.Map
 
     public abstract partial class LogicEntityBase
     {
+        private sealed class LocomotionPreferenceEntry
+        {
+            public string SourceId;
+            public int Priority;
+            public long Order;
+            public string IdleAnim;
+            public string MoveAnim;
+        }
+
+        private readonly Dictionary<string, LocomotionPreferenceEntry> _locomotionPreferences = new();
+        private long _nextLocomotionPreferenceOrder;
+
         public event Action<string, int, bool> EventOnAnimPlay;
 
         public event EventHandler<AnimLayerRefreshEventArgs> EventOnAnimLayerRefreshed;
@@ -28,30 +40,45 @@ namespace My.Map
 
         private readonly Dictionary<int, List<AnimStackEntry>> _animStacks = new();
 
+        public void SetLocomotionPreference(string sourceId, int priority, string idleAnim, string moveAnim)
+        {
+            if (string.IsNullOrEmpty(sourceId)) return;
+            _locomotionPreferences[sourceId] = new LocomotionPreferenceEntry
+            {
+                SourceId = sourceId,
+                Priority = priority,
+                Order = ++_nextLocomotionPreferenceOrder,
+                IdleAnim = idleAnim ?? string.Empty,
+                MoveAnim = moveAnim ?? string.Empty,
+            };
+            RequestAnimLayerRefresh(0);
+        }
+
+        public void ClearLocomotionPreference(string sourceId)
+        {
+            if (string.IsNullOrEmpty(sourceId) || !_locomotionPreferences.Remove(sourceId)) return;
+            RequestAnimLayerRefresh(0);
+        }
+
         /// <summary>
         /// 获取 动画覆盖
         /// 如；覆盖idle 需要从 这里获取
         /// </summary>
         public virtual string GetAnimOverride(string rawAnimName)
         {
-            var buffs = BuffContainer.Values;
-            foreach (var b in buffs)
+            LocomotionPreferenceEntry selected = null;
+            foreach (var preference in _locomotionPreferences.Values)
             {
-                foreach (var eff in b.Def.ResolveDurationEffects())
-                {
-                    if (eff == null || eff.DurationType != Entity.EBuffDurationType.AnimOverride)
-                    {
-                        continue;
-                    }
-
-                    if (eff.ParamStr1 == rawAnimName)
-                    {
-                        return eff.ParamStr2;
-                    }
-                }
+                var candidate = rawAnimName == "idle" ? preference.IdleAnim :
+                    rawAnimName == "move" || rawAnimName == "walk" ? preference.MoveAnim : string.Empty;
+                if (string.IsNullOrEmpty(candidate)) continue;
+                if (selected == null || preference.Priority > selected.Priority ||
+                    preference.Priority == selected.Priority && preference.Order > selected.Order)
+                    selected = preference;
             }
-
-            return rawAnimName;
+            return selected == null ? rawAnimName :
+                rawAnimName == "walk" && string.IsNullOrEmpty(selected.MoveAnim) ? rawAnimName :
+                rawAnimName == "idle" ? selected.IdleAnim : selected.MoveAnim;
         }
 
         public long PushAnimRequest(in AnimPlayRequest request)
@@ -239,20 +266,31 @@ namespace My.Map
         }
 
         // RegisterBuff / UnregisterBuff 用：仅 AnimOverride 类 Buff 会影响层 0 的 locomotion 解析
-        private void RequestAnimLayerRefreshIfAnimOverrideBuff(BuffDefinition def)
+        private void RequestAnimLayerRefreshIfAnimOverrideBuff(BuffInstance buffInst)
         {
-            if (def == null || !def.HasAnimOverrideDuration())
+            if (buffInst == null || buffInst.Def == null || !buffInst.Def.HasAnimOverrideDuration())
             {
                 return;
             }
 
-            RequestAnimLayerRefresh(0);
+            var sourceId = $"buff:{buffInst.InstanceId}";
+            ClearLocomotionPreference(sourceId);
+            string idle = string.Empty;
+            string move = string.Empty;
+            foreach (var eff in buffInst.Def.ResolveDurationEffects())
+            {
+                if (eff == null || eff.DurationType != Entity.EBuffDurationType.AnimOverride) continue;
+                if (eff.ParamStr1 == "idle") idle = eff.ParamStr2;
+                if (eff.ParamStr1 == "move" || eff.ParamStr1 == "walk") move = eff.ParamStr2;
+            }
+            if (!string.IsNullOrEmpty(idle) || !string.IsNullOrEmpty(move))
+                SetLocomotionPreference(sourceId, 1000, idle, move);
         }
 
         // BuffInstance.OnBuffAddOrUpdate 等非 EntityBase 路径调用
-        public void NotifyAnimLayerRefreshIfAnimOverrideBuff(BuffDefinition def)
+        public void NotifyAnimLayerRefreshIfAnimOverrideBuff(BuffInstance buffInst)
         {
-            RequestAnimLayerRefreshIfAnimOverrideBuff(def);
+            RequestAnimLayerRefreshIfAnimOverrideBuff(buffInst);
         }
     }
 }

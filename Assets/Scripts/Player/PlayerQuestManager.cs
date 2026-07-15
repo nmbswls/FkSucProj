@@ -44,18 +44,27 @@ namespace My.Player
     public class QuestObjectiveRuntime
     {
         protected PlayerQuestSystem ctx { get; set; }
+        public QuestInstance OwnerQuest { get; private set; }
         public readonly cfg.demo.QuestStepObjective Data;
         public long ProgressVal = 0;
 
-        public QuestObjectiveRuntime(cfg.demo.QuestStepObjective data, PlayerQuestSystem ctx)
+        public QuestObjectiveRuntime(cfg.demo.QuestStepObjective data, PlayerQuestSystem ctx, QuestInstance ownerQuest)
         {
             Data = data;
             this.ctx = ctx;
+            OwnerQuest = ownerQuest;
         }
 
+        // IsOption：可选目标。不挡出口完成；达成时记入 CompletedOptions，供 UI / completion_tag。
+        // IsHidden：对玩家隐藏的条件目标（如暗失败条件）；不参与任务板展示。二者正交，勿混用。
         public bool IsOptional()
         {
             return Data.IsOption;
+        }
+
+        public bool IsHidden()
+        {
+            return Data.IsHidden;
         }
 
         public long GetRequireProgress()
@@ -65,8 +74,15 @@ namespace My.Player
 
         public long GetCurrProgress()
         {
+            if (Data.ObjType == cfg.demo.EQuestObjectiveType.CharacterDream)
+            {
+                return GetCharacterDreamProgress();
+            }
+
             switch (Data.ObjType)
             {
+                case cfg.demo.EQuestObjectiveType.Talk:
+                    return GetTalkProgressFromTriggeredDialogs();
                 case cfg.demo.EQuestObjectiveType.OwnItem:
                     {
                         var itemId = Data.ObjP4;
@@ -83,6 +99,35 @@ namespace My.Player
                 default:
                     return ProgressVal;
             }
+        }
+
+        // Talk：只读任务实例上按 obj_id 记的触发次数（Mark 时写入，不查 Dialog 表）
+        long GetTalkProgressFromTriggeredDialogs()
+        {
+            if (OwnerQuest == null || string.IsNullOrEmpty(Data.ObjId))
+            {
+                return 0;
+            }
+
+            return Math.Min(OwnerQuest.GetTalkDialogProgress(Data.ObjId), Data.ObjProgress);
+        }
+
+        long GetCharacterDreamProgress()
+        {
+            var psm = ctx?.Ctx?.playerDataManager;
+            if (psm == null || string.IsNullOrEmpty(Data.ObjP5) || Data.ObjP0 <= 0)
+            {
+                return 0;
+            }
+
+            if (!Enum.IsDefined(typeof(My.MiniGame.Dream.DreamEntryResultRequirement), Data.ObjP1))
+            {
+                return 0;
+            }
+
+            var requirement = (My.MiniGame.Dream.DreamEntryResultRequirement)Data.ObjP1;
+            var count = psm.GetDreamEntryResultCount(Data.ObjP5, Data.ObjP0, requirement);
+            return Math.Min(count, Data.ObjProgress);
         }
 
         public void OnLogicEvent(IMapLogicEvent evt)
@@ -109,7 +154,7 @@ namespace My.Player
 
         private float _tickNextTimer;
 
-        public StepRuntime(cfg.demo.QuestStepData data, PlayerQuestSystem ctx)
+        public StepRuntime(cfg.demo.QuestStepData data, PlayerQuestSystem ctx, QuestInstance ownerQuest)
         {
             CurrStepId = data.StepId;
             CacheStepCfg = data;
@@ -118,7 +163,7 @@ namespace My.Player
             _objectiveRuntimes = new QuestObjectiveRuntime[data.CfgObjectives.Count];
             for (int i = 0; i < _objectiveRuntimes.Length; i++)
             {
-                _objectiveRuntimes[i] = new QuestObjectiveRuntime(data.CfgObjectives[i], ctx);
+                _objectiveRuntimes[i] = new QuestObjectiveRuntime(data.CfgObjectives[i], ctx, ownerQuest);
 
                 objectiveMap[_objectiveRuntimes[i].Data.ObjId] = _objectiveRuntimes[i];
             }
@@ -156,6 +201,8 @@ namespace My.Player
         //}
 
         
+        // 出口匹配：按 Outcomes 表序取第一个「所需非可选目标均达成」的 outcome。
+        // IsOption 目标：未达成不挡出口；已达成则收集进 options。IsHidden 不影响本匹配（仅展示/失败叙事用）。
         public bool CheckCompletion(out string outcomeId, out List<string> options)
         {
             outcomeId = null;
@@ -234,6 +281,13 @@ namespace My.Player
         // 这是子系统交互的关键
         private HashSet<string> _internalTags = new HashSet<string>();
 
+        // 已触发的 ObjectiveDialog 行 id（once / Remind 门闩）
+        private HashSet<int> _triggeredObjectiveDialogIds = new HashSet<int>();
+        // Talk 进度：obj_id → 已计入的触发次数（仅 Mark 时增加）
+        private Dictionary<string, int> _talkDialogProgressByObjId = new Dictionary<string, int>();
+
+        public IReadOnlyCollection<string> InternalTags => _internalTags;
+
         public bool ErrFlag;
         public bool SuccessFlag;
         public bool FailFlag;
@@ -258,11 +312,91 @@ namespace My.Player
                 return;
             }
 
-            var runtime = new StepRuntime(initStep, ctx);
+            var runtime = new StepRuntime(initStep, ctx, this);
             _activeStep = runtime;
 
             IsActive = true;
 
+            RefreshEventListener();
+        }
+
+        // 从存档恢复进行中任务（步骤 + 目标进度 + 内部标签）
+        public QuestInstance(cfg.demo.QuestData data, PlayerQuestSystem ctx, ActiveQuestPersist persist)
+        {
+            this.ctx = ctx;
+            cacheCfg = data;
+
+            var stepId = persist != null && !string.IsNullOrEmpty(persist.StepId)
+                ? persist.StepId
+                : data.InitStepId;
+            var stepCfg = cacheCfg.GetStep(stepId);
+            if (stepCfg == null)
+            {
+                Debug.LogError($"[Quest] Restore failed: step not found quest={data.QuestId} step={stepId}");
+                ErrFlag = true;
+                IsActive = false;
+                return;
+            }
+
+            _activeStep = new StepRuntime(stepCfg, ctx, this);
+            if (persist?.Objectives != null)
+            {
+                foreach (var objPersist in persist.Objectives)
+                {
+                    if (objPersist == null || string.IsNullOrEmpty(objPersist.ObjId))
+                    {
+                        continue;
+                    }
+
+                    if (_activeStep.objectiveMap.TryGetValue(objPersist.ObjId, out var runtime))
+                    {
+                        runtime.ProgressVal = objPersist.ProgressVal;
+                    }
+                }
+            }
+
+            if (persist?.InternalTags != null)
+            {
+                foreach (var tag in persist.InternalTags)
+                {
+                    if (!string.IsNullOrEmpty(tag))
+                    {
+                        _internalTags.Add(tag);
+                    }
+                }
+            }
+
+            if (persist?.TriggeredObjectiveDialogIds != null)
+            {
+                foreach (var dialogId in persist.TriggeredObjectiveDialogIds)
+                {
+                    if (dialogId > 0)
+                    {
+                        _triggeredObjectiveDialogIds.Add(dialogId);
+                    }
+                }
+            }
+
+            if (persist?.TalkDialogProgress != null)
+            {
+                foreach (var entry in persist.TalkDialogProgress)
+                {
+                    if (entry == null || string.IsNullOrEmpty(entry.ObjId) || entry.Count <= 0)
+                    {
+                        continue;
+                    }
+
+                    _talkDialogProgressByObjId[entry.ObjId] = entry.Count;
+                }
+            }
+
+            // 旧存档只有 Triggered ids、没有 Talk 记账时，按表重建一次（仅加载迁移）
+            if (_talkDialogProgressByObjId.Count == 0 && _triggeredObjectiveDialogIds.Count > 0)
+            {
+                RebuildTalkDialogProgressFromTriggeredIds();
+            }
+
+            IsActive = true;
             RefreshEventListener();
         }
 
@@ -348,6 +482,7 @@ namespace My.Player
                 return;
             }
 
+            // 步骤出口副作用（变量等）。Outcome.FinishReward 为步骤出口时机奖励，尚未在此兑现。
             ApplyOutcomeEffects(outcomeCfg);
 
             if(_activeStep.CompletedOptions != null)
@@ -381,7 +516,7 @@ namespace My.Player
                 var nextStep = cacheCfg.GetStep(outcomeCfg.NextStepId);
                 if (nextStep != null)
                 {
-                    var nextRuntime = new StepRuntime(nextStep, ctx);
+                    var nextRuntime = new StepRuntime(nextStep, ctx, this);
                     _activeStep = nextRuntime;
                 }
                 else
@@ -424,9 +559,7 @@ namespace My.Player
             }
         }
 
-        /// <summary>
-        /// 处理任务完成
-        /// </summary>
+        // 任务终局奖励（QuestData.FinishReward）。与 Outcome.FinishReward（步骤出口时机）是两个发放点。
         public void OnQuestComplete()
         {
             if(cacheCfg.FinishReward != null)
@@ -498,9 +631,141 @@ namespace My.Player
                     }
 
                     map[cacheCfg.QuestId] = this;
+                    if (!_currentListernTypes.Contains(eType))
+                    {
+                        _currentListernTypes.Add(eType);
+                    }
                 }
             }
             
+        }
+
+        public void ClearEventListeners()
+        {
+            if (_currentListernTypes.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var e in _currentListernTypes)
+            {
+                if (ctx.EventRouter.TryGetValue(e, out var map))
+                {
+                    map.Remove(cacheCfg.QuestId);
+                }
+            }
+
+            _currentListernTypes.Clear();
+        }
+
+        public bool IsObjectiveDialogTriggered(int dialogId)
+        {
+            return dialogId > 0 && _triggeredObjectiveDialogIds.Contains(dialogId);
+        }
+
+        public int GetTalkDialogProgress(string objId)
+        {
+            if (string.IsNullOrEmpty(objId))
+            {
+                return 0;
+            }
+
+            return _talkDialogProgressByObjId.TryGetValue(objId, out var count) ? count : 0;
+        }
+
+        // dialog 触发作账：记 once，并按 obj_id 增加 Talk 进度（同一 dialogId 只计一次）
+        public void MarkObjectiveDialogTriggered(int dialogId, string objId)
+        {
+            if (dialogId <= 0)
+            {
+                return;
+            }
+
+            if (!_triggeredObjectiveDialogIds.Add(dialogId))
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(objId))
+            {
+                return;
+            }
+
+            _talkDialogProgressByObjId.TryGetValue(objId, out var count);
+            _talkDialogProgressByObjId[objId] = count + 1;
+        }
+
+        void RebuildTalkDialogProgressFromTriggeredIds()
+        {
+            var table = CfgMgr.Cfgs?.TbQuestObjectiveDialog?.DataList;
+            if (table == null || cacheCfg == null)
+            {
+                return;
+            }
+
+            var questId = cacheCfg.QuestId;
+            for (int i = 0; i < table.Count; i++)
+            {
+                var row = table[i];
+                if (row == null || row.QuestId != questId || string.IsNullOrEmpty(row.ObjId))
+                {
+                    continue;
+                }
+
+                if (!_triggeredObjectiveDialogIds.Contains(row.Id))
+                {
+                    continue;
+                }
+
+                _talkDialogProgressByObjId.TryGetValue(row.ObjId, out var count);
+                _talkDialogProgressByObjId[row.ObjId] = count + 1;
+            }
+        }
+
+        public ActiveQuestPersist ToPersist()
+        {
+            var persist = new ActiveQuestPersist
+            {
+                QuestId = cacheCfg.QuestId,
+                StepId = _activeStep != null ? _activeStep.CurrStepId : string.Empty,
+                Objectives = new List<QuestObjectivePersist>(),
+                InternalTags = new List<string>(_internalTags),
+                TriggeredObjectiveDialogIds = new List<int>(_triggeredObjectiveDialogIds),
+                TalkDialogProgress = new List<QuestTalkDialogProgressPersist>(),
+            };
+
+            foreach (var pair in _talkDialogProgressByObjId)
+            {
+                if (string.IsNullOrEmpty(pair.Key) || pair.Value <= 0)
+                {
+                    continue;
+                }
+
+                persist.TalkDialogProgress.Add(new QuestTalkDialogProgressPersist
+                {
+                    ObjId = pair.Key,
+                    Count = pair.Value,
+                });
+            }
+
+            if (_activeStep?.ObjectiveRuntimes != null)
+            {
+                foreach (var obj in _activeStep.ObjectiveRuntimes)
+                {
+                    if (obj?.Data == null)
+                    {
+                        continue;
+                    }
+
+                    persist.Objectives.Add(new QuestObjectivePersist
+                    {
+                        ObjId = obj.Data.ObjId,
+                        ProgressVal = obj.ProgressVal,
+                    });
+                }
+            }
+
+            return persist;
         }
 
         #region 监听
@@ -652,18 +917,19 @@ namespace My.Player
                 return false;
             }
 
-            if (objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
-            {
-                failReason = "already_done";
-                return false;
-            }
-
             switch (objRuntime.Data.ObjType)
             {
                 case cfg.demo.EQuestObjectiveType.SubmitItem:
+                    if (objRuntime.GetCurrProgress() >= objRuntime.GetRequireProgress())
+                    {
+                        failReason = "already_done";
+                        return false;
+                    }
+
                     return TryFulfillSubmitItem(objRuntime, out failReason);
                 case cfg.demo.EQuestObjectiveType.Talk:
-                    return TryFulfillTalk(characterKey, objRuntime, out failReason);
+                    // Talk：此处只校验 NPC；进度与步骤推进在 Mark 之后由 TryAdvanceAfterObjectiveDialog 处理
+                    return TryValidateTalkNpc(characterKey, objRuntime, out failReason);
                 default:
                     failReason = "not_fulfillable_type";
                     return false;
@@ -719,7 +985,7 @@ namespace My.Player
             }
         }
 
-        private bool TryFulfillTalk(string characterKey, QuestObjectiveRuntime objRuntime, out string failReason)
+        private bool TryValidateTalkNpc(string characterKey, QuestObjectiveRuntime objRuntime, out string failReason)
         {
             failReason = null;
             var needCharacterKey = objRuntime.Data.ObjP5;
@@ -730,18 +996,24 @@ namespace My.Player
                 return false;
             }
 
-            objRuntime.ProgressVal = objRuntime.GetRequireProgress();
-            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+            return true;
+        }
 
-            if (_activeStep.CacheStepCfg.AutoNext)
+        // Mark Talk 进度之后调用：刷 UI 并尝试 AutoNext
+        public void TryAdvanceAfterObjectiveDialog()
+        {
+            if (_activeStep == null)
             {
-                if (_activeStep.CheckCompletion(out string outcomeId, out var options))
-                {
-                    _activeStep.OnStepCompleted(outcomeId, options);
-                }
+                return;
             }
 
-            return true;
+            ctx.RaiseQuestObjUpdateEvent(cacheCfg.QuestId);
+
+            if (_activeStep.CacheStepCfg.AutoNext
+                && _activeStep.CheckCompletion(out string outcomeId, out var options))
+            {
+                _activeStep.OnStepCompleted(outcomeId, options);
+            }
         }
 
         private bool TryFulfillSubmitItem(QuestObjectiveRuntime objRuntime, out string failReason)
@@ -808,6 +1080,13 @@ namespace My.Player
         public void InitSystem(GameLogicManager ctx, SaveData savingData)
         {
             this.Ctx = ctx;
+            _questInfoMap.Clear();
+            _finishQuestSet.Clear();
+            _autoAcceptQuests.Clear();
+            _eventRouter.Clear();
+            MarkQuestId = 0;
+
+            LoadFromSave(savingData?.PlayerData);
 
             TryRefreshQuest();
 
@@ -840,6 +1119,87 @@ namespace My.Player
                     MarkQuestId = firstQuest.cacheCfg.QuestId;
                 }
             }
+        }
+
+        void LoadFromSave(PlayerData pd)
+        {
+            if (pd == null)
+            {
+                return;
+            }
+
+            if (pd.FinishedQuestIds != null)
+            {
+                foreach (var id in pd.FinishedQuestIds)
+                {
+                    _finishQuestSet.Add(id);
+                }
+            }
+
+            if (pd.ActiveQuests != null)
+            {
+                foreach (var persist in pd.ActiveQuests)
+                {
+                    if (persist == null || persist.QuestId <= 0)
+                    {
+                        continue;
+                    }
+
+                    if (_finishQuestSet.Contains(persist.QuestId) || _questInfoMap.ContainsKey(persist.QuestId))
+                    {
+                        continue;
+                    }
+
+                    var cfg = CfgMgr.Cfgs?.TbQuestData?.GetOrDefault(persist.QuestId);
+                    if (cfg == null)
+                    {
+                        Debug.LogWarning($"[Quest] Skip restore missing cfg questId={persist.QuestId}");
+                        continue;
+                    }
+
+                    var inst = new QuestInstance(cfg, this, persist);
+                    if (!inst.IsActive)
+                    {
+                        continue;
+                    }
+
+                    _questInfoMap[cfg.QuestId] = inst;
+                }
+            }
+
+            if (pd.MarkQuestId != 0 && _questInfoMap.ContainsKey(pd.MarkQuestId))
+            {
+                MarkQuestId = pd.MarkQuestId;
+            }
+        }
+
+        public void WriteToSave(PlayerData pd)
+        {
+            if (pd == null)
+            {
+                return;
+            }
+
+            pd.FinishedQuestIds ??= new List<int>();
+            pd.FinishedQuestIds.Clear();
+            foreach (var id in _finishQuestSet)
+            {
+                pd.FinishedQuestIds.Add(id);
+            }
+
+            pd.ActiveQuests ??= new List<ActiveQuestPersist>();
+            pd.ActiveQuests.Clear();
+            foreach (var quest in _questInfoMap.Values)
+            {
+                if (quest == null || !quest.IsActive || quest.cacheCfg == null)
+                {
+                    continue;
+                }
+
+                pd.ActiveQuests.Add(quest.ToPersist());
+            }
+
+            pd.MarkQuestId = MarkQuestId;
         }
 
         public void PostInit(PlayerSystemManager owner)
@@ -891,6 +1251,11 @@ namespace My.Player
 
             foreach(var removedId in _removedQuests)
             {
+                if (_questInfoMap.TryGetValue(removedId, out var dying))
+                {
+                    dying.ClearEventListeners();
+                }
+
                 _questInfoMap.Remove(removedId);
 
                 if(MarkQuestId == removedId)
@@ -974,6 +1339,7 @@ namespace My.Player
             EventOnQuestStepUpdate?.Invoke(questId);
         }
 
+        // 接取入口：由 TbQuestAcceptDialog.character_key 决定谁能谈；不校验 QuestData.StartNpcId。
         public bool TryAcceptQuestFromNpc(string characterKey, int questId, out string failReason)
         {
             failReason = null;
@@ -1020,6 +1386,7 @@ namespace My.Player
             return true;
         }
 
+        // 可接列表只扫 TbQuestAcceptDialog × characterKey；QuestData.StartNpcId 不参与。
         public List<QuestAcceptOption> GetAvailableAcceptOptions(string characterKey)
         {
             var result = new List<QuestAcceptOption>();
@@ -1028,14 +1395,9 @@ namespace My.Player
                 return result;
             }
 
-            foreach (var row in CfgMgr.Cfgs.TbQuestInteractDialog.DataList)
+            foreach (var row in My.Cfg_Ex.QuestDialogResolver.ListAcceptByCharacter(characterKey))
             {
-                if (row == null || row.DialogRole != cfg.demo.EQuestDialogRole.Accept)
-                {
-                    continue;
-                }
-
-                if (!string.Equals(row.CharacterKey, characterKey, StringComparison.Ordinal))
+                if (row == null)
                 {
                     continue;
                 }
@@ -1049,6 +1411,24 @@ namespace My.Player
                 if (_finishQuestSet.Contains(questCfg.QuestId) || _questInfoMap.ContainsKey(questCfg.QuestId))
                 {
                     continue;
+                }
+
+                if (row.OpenCond != null)
+                {
+                    bool openOk = true;
+                    foreach (var cond in row.OpenCond)
+                    {
+                        if (cond != null && !Ctx.CheckCommonCond(cond))
+                        {
+                            openOk = false;
+                            break;
+                        }
+                    }
+
+                    if (!openOk)
+                    {
+                        continue;
+                    }
                 }
 
                 bool allPassed = true;
@@ -1076,6 +1456,26 @@ namespace My.Player
             return result;
         }
 
+        public void MarkObjectiveDialogTriggered(int questId, int objectiveDialogId, string objId)
+        {
+            if (!_questInfoMap.TryGetValue(questId, out var quest) || quest == null)
+            {
+                return;
+            }
+
+            quest.MarkObjectiveDialogTriggered(objectiveDialogId, objId);
+        }
+
+        public void TryAdvanceAfterObjectiveDialog(int questId)
+        {
+            if (!_questInfoMap.TryGetValue(questId, out var quest) || quest == null)
+            {
+                return;
+            }
+
+            quest.TryAdvanceAfterObjectiveDialog();
+        }
+
         public List<QuestFulfillOption> GetPendingFulfillOptions(string characterKey)
         {
             var result = new List<QuestFulfillOption>();
@@ -1084,14 +1484,9 @@ namespace My.Player
                 return result;
             }
 
-            foreach (var row in CfgMgr.Cfgs.TbQuestInteractDialog.DataList)
+            foreach (var row in My.Cfg_Ex.QuestDialogResolver.ListObjectiveByCharacter(characterKey))
             {
-                if (row == null || row.DialogRole != cfg.demo.EQuestDialogRole.Fulfill)
-                {
-                    continue;
-                }
-
-                if (!string.Equals(row.CharacterKey, characterKey, StringComparison.Ordinal))
+                if (row == null)
                 {
                     continue;
                 }
@@ -1112,17 +1507,22 @@ namespace My.Player
                     continue;
                 }
 
+                if (!My.Cfg_Ex.QuestDialogShowCondUtil.Passes(row.ShowCond, quest))
+                {
+                    continue;
+                }
+
                 if (!step.objectiveMap.TryGetValue(row.ObjId, out var obj))
                 {
                     continue;
                 }
 
-                if (!QuestObjectiveFulfillUtil.SupportsDialogFulfill(obj.Data.ObjType))
+                if (row.Once && quest.IsObjectiveDialogTriggered(row.Id))
                 {
                     continue;
                 }
 
-                if (obj.GetCurrProgress() >= obj.GetRequireProgress())
+                if (!QuestObjectiveFulfillUtil.CanPresentDialogFulfill(obj, this))
                 {
                     continue;
                 }

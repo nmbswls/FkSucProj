@@ -32,17 +32,22 @@ namespace My.MiniGame.Dream
                 return false;
             }
 
-            var psm = MainGameManager.Instance?.gameLogicManager?.playerDataManager;
-            if (!IsCharacterEntryUnlocked(entry, psm))
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            var psm = glm?.playerDataManager;
+            if (!IsCharacterEntryUnlocked(entry, psm, glm))
             {
                 Debug.Log("[DreamInfiltration] Character dream entry locked.");
                 return false;
             }
 
+            var character = CfgMgr.Cfgs?.TbCharacterInfo?.GetOrDefault(entry.CharacterKey);
+            var characterName = character?.Name;
             ctx = new DreamGameplayContext
             {
                 ThemeId = "character_dream",
-                ThemeDisplayName = $"角色梦境 #{entryId}",
+                ThemeDisplayName = string.IsNullOrEmpty(characterName)
+                    ? $"角色梦境 #{entryId}"
+                    : $"{characterName}的梦境",
                 EntrySource = DreamEntrySourceKind.CharacterEntry,
                 CharacterKey = entry.CharacterKey,
                 CharDreamEntryId = entry.Id,
@@ -50,9 +55,23 @@ namespace My.MiniGame.Dream
             return true;
         }
 
-        public static bool IsCharacterEntryUnlocked(CharDreamEntryInfo entry, PlayerSystemManager psm)
+        public static bool IsCharacterEntryUnlocked(
+            CharDreamEntryInfo entry,
+            PlayerSystemManager psm,
+            GameLogicManager glm)
         {
             if (entry == null) return false;
+
+            if (glm == null || !glm.CheckCommonCondsAll(entry.ShowConds))
+            {
+                return false;
+            }
+
+            if (!MatchesLocalSwitchConditions(entry, psm))
+            {
+                return false;
+            }
+
             if (entry.Priority <= 1) return true;
             if (psm == null) return false;
 
@@ -60,6 +79,55 @@ namespace My.MiniGame.Dream
             if (prev == null) return false;
 
             return psm.HasAnyDreamEntryWin(entry.CharacterKey, prev.Id);
+        }
+
+        static bool MatchesLocalSwitchConditions(CharDreamEntryInfo entry, PlayerSystemManager psm)
+        {
+            if (string.IsNullOrWhiteSpace(entry.HasLocals)
+                && string.IsNullOrWhiteSpace(entry.NoLocals))
+            {
+                return true;
+            }
+
+            if (psm == null || string.IsNullOrEmpty(entry.CharacterKey))
+            {
+                return false;
+            }
+
+            foreach (var switchName in SplitSwitchNames(entry.HasLocals))
+            {
+                if (!psm.NamedNpcHasLocalSwitch(entry.CharacterKey, switchName))
+                {
+                    return false;
+                }
+            }
+
+            foreach (var switchName in SplitSwitchNames(entry.NoLocals))
+            {
+                if (psm.NamedNpcHasLocalSwitch(entry.CharacterKey, switchName))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        static System.Collections.Generic.IEnumerable<string> SplitSwitchNames(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                yield break;
+            }
+
+            foreach (var part in raw.Split(new[] { ',', ';', '|' }, System.StringSplitOptions.RemoveEmptyEntries))
+            {
+                var switchName = part.Trim();
+                if (!string.IsNullOrEmpty(switchName))
+                {
+                    yield return switchName;
+                }
+            }
         }
 
         static CharDreamEntryInfo FindEntryByPriority(string characterKey, int priority)

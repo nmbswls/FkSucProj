@@ -255,6 +255,13 @@ namespace My.Map.Unit
 
         // 黑板 (Blackboard) - 状态间共享数据
         public Vector2? HomePos;
+
+        public Vector2? GetBehaviorReturnPosition()
+        {
+            return NpcEntity?.MoveBehaveInfo?.MoveBehaveMode == UnitMoveBehaveInfo.EMoveBehaveType.MoveToPoint
+                ? NpcEntity.MoveBehaveInfo.MoveToTarget
+                : HomePos;
+        }
         public Vector2? SuspiciousPos; // <--- 搜索目标点 (最后目击位置/声音来源)
 
         public long PoisonBaitTargetInteractInstId;
@@ -399,6 +406,12 @@ namespace My.Map.Unit
             {
                 TryArmAttractTriggerForExistingFocus();
             }
+        }
+
+        public void RefreshIdlePolicy()
+        {
+            StateIdle.RefreshIdlePolicy();
+            TriggerUpdateImmediately();
         }
 
         public bool TryDisengageFromCombat(CombatDisengageRequest request)

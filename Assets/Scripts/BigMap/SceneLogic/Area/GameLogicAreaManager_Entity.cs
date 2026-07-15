@@ -320,6 +320,11 @@ namespace My.Map.Logic
                 return false;
             }
 
+            if (record is LogicEntityRecord4Npc npcRecord)
+            {
+                EventOnNpcRefreshRecordCreated?.Invoke(this, npcRecord);
+            }
+
             if (overridePosition.HasValue)
             {
                 record.Position = overridePosition.Value;
@@ -775,9 +780,6 @@ namespace My.Map.Logic
                 case EEntityType.HomeFacility:
                     {
                         var realRecord = new LogicEntityRecord4HomeFacility();
-
-                        var initInfo4HomeFacility = (EntityInitInfo4HomePlacement)initInfo;
-                        realRecord.BindingFacilityId = initInfo4HomeFacility.BindingFacilityId;
                         record = realRecord;
                         break;
                     }

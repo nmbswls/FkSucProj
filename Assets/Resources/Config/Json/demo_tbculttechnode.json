@@ -1,0 +1,65 @@
+[
+  {
+    "node_id": 1,
+    "display_name": "教座之心",
+    "desc": "教团权能的核心。铭刻后可向外延展布道戒律。",
+    "max_level": 1,
+    "ring": 0,
+    "angle_deg": 0,
+    "icon_path": ""
+  },
+  {
+    "node_id": 10,
+    "display_name": "暗室密传",
+    "desc": "以隐秘方式传播教义，侧重亵渎材料与低暴露。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 45,
+    "icon_path": ""
+  },
+  {
+    "node_id": 11,
+    "display_name": "梦中显圣",
+    "desc": "借梦境显圣传教，与入梦玩法呼应。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 135,
+    "icon_path": ""
+  },
+  {
+    "node_id": 12,
+    "display_name": "威压改宗",
+    "desc": "以威压迫使改宗，信仰来得快，人间关系风险高。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 225,
+    "icon_path": ""
+  },
+  {
+    "node_id": 13,
+    "display_name": "工艺贡礼",
+    "desc": "以精致工艺品为贡礼传教，衔接文明副产物献纳。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 315,
+    "icon_path": ""
+  },
+  {
+    "node_id": 20,
+    "display_name": "往去余韵",
+    "desc": "供奉「淑女」残座的入门铭刻，可触发往去回忆碎片。",
+    "max_level": 1,
+    "ring": 2,
+    "angle_deg": 90,
+    "icon_path": ""
+  },
+  {
+    "node_id": 21,
+    "display_name": "血契布道",
+    "desc": "将密传与血契结合，提升传教效率（占位效果）。",
+    "max_level": 1,
+    "ring": 2,
+    "angle_deg": 0,
+    "icon_path": ""
+  }
+]

@@ -1,4 +1,5 @@
 using System;
+using My.Config;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,7 +51,11 @@ namespace My.UI
 
             if (priceLabel != null)
             {
-                priceLabel.text = $"{cost}x {costId}";
+                var costDef = ItemCatalog.GetItemDef(costId);
+                var costName = costDef != null && !string.IsNullOrEmpty(costDef.DisplayName)
+                    ? costDef.DisplayName
+                    : costId;
+                priceLabel.text = $"{costName} x{cost}";
             }
 
             _rumorId = rumorId;

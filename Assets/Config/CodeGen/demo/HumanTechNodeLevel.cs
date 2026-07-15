@@ -23,7 +23,7 @@ public sealed partial class HumanTechNodeLevel : Luban.BeanBase
         { var __json0 = _buf["prereq_node_ids"]; if(!__json0.IsArray) { throw new SerializationException(); } PrereqNodeIds = new System.Collections.Generic.List<int>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  PrereqNodeIds.Add(__v0); }   }
         { var __json0 = _buf["unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  UnlockConds.Add(__v0); }   }
         { var __json0 = _buf["unlock_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  UnlockCosts.Add(__v0); }   }
-        { if(!_buf["effect_key"].IsString) { throw new SerializationException(); }  EffectKey = _buf["effect_key"]; }
+        { if(!_buf["effect_key"].IsNumber) { throw new SerializationException(); }  EffectKey = (demo.EHumanCivilizationAttribute)_buf["effect_key"].AsInt; }
         { if(!_buf["effect_value"].IsNumber) { throw new SerializationException(); }  EffectValue = _buf["effect_value"]; }
     }
 
@@ -53,9 +53,9 @@ public sealed partial class HumanTechNodeLevel : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<demo.TalentUnlockCost> UnlockCosts;
     /// <summary>
-    /// ??key
+    /// ??????
     /// </summary>
-    public string EffectKey;
+    public demo.EHumanCivilizationAttribute EffectKey;
     /// <summary>
     /// ???
     /// </summary>

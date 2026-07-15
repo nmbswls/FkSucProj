@@ -16,6 +16,7 @@ namespace My.MiniGame.Dream
         private Button _closeBtn;
         private DreamSettlementPayload _payload;
         private bool _closeWired;
+        private bool _outcomeApplied;
 
         public override int FocusPriority => 840;
 
@@ -53,14 +54,22 @@ namespace My.MiniGame.Dream
 
         private void OnCloseClicked()
         {
-            DreamInfiltrationOutcomeApplier.Apply(_payload);
+            ApplyOutcomeOnce();
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
             DreamInfiltrationBootstrap.ExitMiniGame();
+        }
+
+        private void ApplyOutcomeOnce()
+        {
+            if (_outcomeApplied) return;
+            _outcomeApplied = true;
+            DreamInfiltrationOutcomeApplier.Apply(_payload);
         }
 
         public override void Setup(object data = null)
         {
             _payload = data as DreamSettlementPayload ?? new DreamSettlementPayload();
+            _outcomeApplied = false;
             if (_bodyTmp == null) ResolveRefs();
             if (_bodyTmp == null)
             {
@@ -92,7 +101,7 @@ namespace My.MiniGame.Dream
 
         public override bool OnCancel()
         {
-            DreamInfiltrationOutcomeApplier.Apply(_payload);
+            ApplyOutcomeOnce();
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
             DreamInfiltrationBootstrap.ExitMiniGame();
             return true;

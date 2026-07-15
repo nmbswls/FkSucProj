@@ -35,6 +35,10 @@ namespace cfg.demo
         /// obj_p0=interact_id(0=any) obj_p4=cfg_id obj_p5=uniq_name
         /// </summary>
         InteractEntity = 6,
+        /// <summary>
+        /// obj_p0=char_dream_entry_id obj_p1=result_requirement obj_p5=character_key
+        /// </summary>
+        CharacterDream = 7,
     }
 
 } 

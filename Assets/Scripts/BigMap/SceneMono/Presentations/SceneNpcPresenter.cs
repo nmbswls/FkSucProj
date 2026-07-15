@@ -235,7 +235,8 @@ namespace My.Map.Scene
             {
                 if (CheckNpcPeaceDialog())
                 {
-                    if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                    var glm = MainGameManager.Instance.gameLogicManager;
+                    if (NpcInteractHubCatalog.HasAny(NpcEntity, glm))
                     {
                         return true;
                     }
@@ -328,11 +329,7 @@ namespace My.Map.Scene
 
             if(selectionId == ID_NormalDialog)
             {
-                var entryId = DialoguePlayer.NpcDialogHubId;
-                if (!string.IsNullOrEmpty(entryId))
-                {
-                    NpcEntity.LogicManager.viewer.PlayDialog(entryId, srcEntityId: Id);
-                }
+                NpcInteractHubPanel.Open(Id);
                 return true;
             }
             else if (selectionId == ID_DeepAbsorbEnable)
@@ -474,7 +471,8 @@ namespace My.Map.Scene
                     {
                         if (CheckNpcPeaceDialog())
                         {
-                            if (!string.IsNullOrEmpty(NpcEntity.GetCurrentDialogId()))
+                            var glm = MainGameManager.Instance.gameLogicManager;
+                            if (NpcInteractHubCatalog.HasAny(NpcEntity, glm))
                             {
                                 ret.Add(new SceneInteractSelection()
                                 {

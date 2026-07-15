@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using cfg.demo;
 using My;
 using My.Config;
@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace My.Player
 {
-    // 秘闻情报：存档在 PlayerData.MapRumorByMapId；世界日与 GameLogicManager.SettlementDayIndex 对齐
+    // 绉橀椈鎯呮姤锛氬瓨妗ｅ湪 PlayerData.MapRumorByMapId锛涗笘鐣屾棩涓?GameLogicManager.SettlementDayIndex 瀵归綈
     public sealed class RumorIntelSystem : IPlayerSystem
     {
         GameLogicManager _glm;
@@ -106,7 +106,7 @@ namespace My.Player
             var b = GetOrCreateBlock(mapId);
             foreach (var a in b.ActiveIntel)
             {
-                if (a.IsRandomKind)
+                if (a.IsRandomKind && Day < a.ExpireSettlementDay)
                 {
                     return true;
                 }
@@ -150,6 +150,14 @@ namespace My.Player
             foreach (var row in CfgMgr.Cfgs.TbRumorRandomPool.DataList)
             {
                 if (row.PoolId != poolId)
+                {
+                    continue;
+                }
+
+                var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(row.RumorId);
+                if (def == null
+                    || def.IntelKind != ERumorIntelKind.RandomPoolEntry
+                    || !_glm.CheckCommonCondsAll(def.AppearConds))
                 {
                     continue;
                 }
@@ -225,7 +233,7 @@ namespace My.Player
         public List<RumorIntel> ListPurchasableFixed(string mapId)
         {
             var result = new List<RumorIntel>();
-            if (CfgMgr.Cfgs == null || _glm == null)
+            if (CfgMgr.Cfgs == null || _glm == null || string.IsNullOrEmpty(mapId))
             {
                 return result;
             }
@@ -263,6 +271,12 @@ namespace My.Player
                 return false;
             }
 
+            if (string.IsNullOrEmpty(mapId))
+            {
+                error = "rumor_no_map";
+                return false;
+            }
+
             var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(rumorId);
             if (def == null)
             {
@@ -271,6 +285,7 @@ namespace My.Player
             }
 
             var day = Day;
+            PruneExpiredRumors(day);
             if (IsRumorActive(mapId, rumorId, day))
             {
                 error = "rumor_already_active";
@@ -303,13 +318,14 @@ namespace My.Player
                 }
             }
 
-            if (!_glm.playerDataManager.CheckHaveItem(def.CostItemId, def.CostCount))
+            var tradeCost = _glm.playerDataManager.ProgressionSystem?.HumanCivilization?.GetTradeCost(def.CostCount) ?? def.CostCount;
+            if (!_glm.playerDataManager.CheckHaveItem(def.CostItemId, tradeCost))
             {
                 error = "rumor_cost";
                 return false;
             }
 
-            var left = _glm.playerDataManager.CostItem(def.CostItemId, def.CostCount);
+            var left = _glm.playerDataManager.CostItem(def.CostItemId, tradeCost);
             if (left != 0)
             {
                 error = "rumor_cost";
@@ -341,11 +357,17 @@ namespace My.Player
             return b.ActiveIntel.FindAll(a => day < a.ExpireSettlementDay);
         }
 
-        public void ConsumeAllActiveForMap(string mapId)
+        public void ConsumeActiveForMap(string mapId, IReadOnlyCollection<string> rumorIds)
         {
+            if (rumorIds == null || rumorIds.Count == 0)
+            {
+                return;
+            }
+
+            var consumed = rumorIds as HashSet<string> ?? new HashSet<string>(rumorIds);
             var b = GetOrCreateBlock(mapId);
-            var day = Day;
-            b.ActiveIntel.RemoveAll(a => day < a.ExpireSettlementDay);
+            b.ActiveIntel.RemoveAll(a => consumed.Contains(a.RumorId));
         }
     }
 }
+

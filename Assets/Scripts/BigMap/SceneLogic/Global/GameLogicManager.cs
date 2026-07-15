@@ -107,7 +107,7 @@ namespace My
         public PlayerSystemManager playerDataManager;
         public GameWorldPersistStateManager worldPersistState;
         public HomeDataManager homeDataManager;
-        public LogicAreaHomesteadManager logicAreaHomesteadManager;
+        public TownFacilityDevelopmentManager townFacilityDevelopmentSystem;
         public ShopDataManager shopDataManager;
 
 
@@ -166,14 +166,14 @@ namespace My
 
             homeDataManager = new(this);
             homeDataManager.LoadHomeData(saveData);
-            homeDataManager.EvOnPlacementUpdate += (placementInfo) =>
+            homeDataManager.EvOnFacilityUpdate += () =>
             {
                 
 
                 //AreaManager.EntityRefreshInfo.Add(refreshInfo);
             };
 
-            logicAreaHomesteadManager = new LogicAreaHomesteadManager(this);
+            townFacilityDevelopmentSystem = new TownFacilityDevelopmentManager(this);
             PeaceCombatBuffRefresh.BindRefreshEvents(this);
 
             factionRelationManager = new();
@@ -463,8 +463,8 @@ namespace My
 
                 case EEntityType.HomeFacility:
                     {
-                        var homePlacement = new HomeFacilityLogicEntity(this, record.Id, record.CfgId, record.Position, record);
-                        newEntity = homePlacement;
+                        var facilityEntity = new HomeFacilityLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                        newEntity = facilityEntity;
                     }
                     break;
 

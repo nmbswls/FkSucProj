@@ -34,7 +34,7 @@ namespace My
             public long AddFallenAmount = 0;
             public long FromFallenAmount = 0;
             public long DesireShardAdded = 0;
-            public Dictionary<string, long> TownBuildingOutputs = new();
+            public Dictionary<string, long> TownFacilityOutputs = new();
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -171,12 +171,12 @@ namespace My
             //  
             playerDataManager.ProgressionSystem.BaseStats.OnFallenAmountUpdate(playerDataManager.TotalFallPeopleAmount);
 
-            var townOutputs = logicAreaHomesteadManager?.ApplyDailySettlement(playerDataManager);
+            var townOutputs = townFacilityDevelopmentSystem?.ApplyDailySettlement(playerDataManager);
             if (townOutputs?.MergedOutputs != null && townOutputs.MergedOutputs.Count > 0)
             {
                 foreach (var kv in townOutputs.MergedOutputs)
                 {
-                    balanceInfo.TownBuildingOutputs[kv.Key] = kv.Value;
+                    balanceInfo.TownFacilityOutputs[kv.Key] = kv.Value;
                 }
             }
 

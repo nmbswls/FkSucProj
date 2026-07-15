@@ -59,10 +59,10 @@ namespace My.UI
             }
 
 
-            if (btnPrimary != null)
+            if (btnRumor != null)
             {
-                btnPrimary.onClick.RemoveAllListeners();
-                btnPrimary.onClick.AddListener(OnClickOpenRumorIntel);
+                btnRumor.onClick.RemoveAllListeners();
+                btnRumor.onClick.AddListener(OnClickOpenRumorIntel);
             }
             
 
@@ -219,6 +219,8 @@ namespace My.UI
 
             var glm = MainGameManager.Instance?.gameLogicManager;
             btnPrimary.interactable = glm != null && _selectedMap != null;
+            if (btnRumor != null)
+                btnRumor.interactable = glm?.playerDataManager?.RumorIntel != null && _selectedMap != null;
             if (_btnPrimaryLabel != null)
                 _btnPrimaryLabel.text = "潜入";
         }
@@ -247,7 +249,7 @@ namespace My.UI
         {
             if (_selectedMap == null)
             {
-                Debug.LogWarning("[WorldMapPanel] Select a map before opening intel shop.");
+                Debug.LogWarning("[UIBedroomDeploy] Select a map before opening intel shop.");
                 return;
             }
 

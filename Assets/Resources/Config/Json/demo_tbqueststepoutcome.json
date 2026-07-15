@@ -332,5 +332,29 @@
     "set_variables": [
       "forest_01.heart_reported"
     ]
+  },
+  {
+    "outcome_id": "213_s1_Main",
+    "need_objective_ids": [
+      "213_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "213_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "213_s2_Main",
+    "need_objective_ids": [
+      "213_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.vera_dream_done"
+    ]
   }
 ]

@@ -51,6 +51,8 @@ namespace My.Map.Logic
     /// </summary>
     public partial class GameLogicAreaManager
     {
+        public GameLogicManager LogicManager => logicManager;
+        public event Action<GameLogicAreaManager, LogicEntityRecord4Npc> EventOnNpcRefreshRecordCreated;
         //public int ChunkCellSize = 32;  // ����������ؿ��ڴ����ø��Ӵ�С
         private readonly Settings settings;
 
@@ -64,6 +66,7 @@ namespace My.Map.Logic
         public LogicEntityRepository Repo;
         public LongLivedRegistry LongLived { get; } = new();
         public SummonedEntityRegistry Summons { get; }
+        public NpcRoutineSystem NpcRoutine { get; }
 
         public string AreaOverlayId = string.Empty;
         public AreaOverlayStateInfo cacheMapOverlayCfg { get; private set; }
@@ -108,6 +111,7 @@ namespace My.Map.Logic
 
             innerListener = new(this);
             Summons = new SummonedEntityRegistry(this);
+            NpcRoutine = new NpcRoutineSystem(this);
         }
 
         public class InnerListener : IMapLogicEventHandler
@@ -131,6 +135,7 @@ namespace My.Map.Logic
         /// </summary>
         public void InitilizeMap(string mapOVerlayId)
         {
+            NpcRoutine.Clear();
             this.AreaOverlayId = mapOVerlayId;
             cacheMapOverlayCfg = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapOVerlayId);
 
@@ -256,6 +261,7 @@ namespace My.Map.Logic
 
         public void CleanArea()
         {
+            NpcRoutine.Clear();
             Summons.ClearAll();
             BossEncounters?.Dispose();
             BossEncounters = null;
@@ -444,8 +450,15 @@ namespace My.Map.Logic
         }
 
         // 区域每帧驱动：刷新、实体生命周期、邪恶警戒等
+        // AI Idle 进入时的通用钩子；Area 决定转发给哪些子系统，Brain 不点名具体 feature
+        public void NotifyNpcEnteredIdle(NpcUnitLogicEntity npc)
+        {
+            NpcRoutine?.SyncOnEnteredIdle(npc);
+        }
+
         public void Tick(float dt)
         {
+            NpcRoutine.Tick(dt);
             // 动态刷新出现/消失
             CheckRefreshAppearAndDisappear(dt);
 

@@ -467,7 +467,7 @@ public partial class DialoguePlayer : MonoBehaviour
                 cmd.QuestId > 0 ? cmd.QuestId : 0,
                 characterKey,
                 ""),
-            EDialogueQuestAction.Fulfill => QuestDialogSession.CreateFulfill(
+            EDialogueQuestAction.Objective => QuestDialogSession.CreateObjective(
                 cmd.QuestId > 0 ? cmd.QuestId : 0,
                 cmd.ObjId,
                 characterKey,
@@ -812,7 +812,6 @@ public partial class DialoguePlayer : MonoBehaviour
                                 }
                             }
                             break;
-
                     }
                     SafeComplete();
                 }

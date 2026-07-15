@@ -412,6 +412,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = My.UI.NpcInteractHubPanel.Pid,
+                resourcePath = "UI/Prefabs/NpcInteractHubPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = My.UI.Talent.CharacterTalentTreePanel.Pid,
                 resourcePath = "UI/Prefabs/CharacterTalentTreePanel",
                 defaultLayer = UILayer.Popup,
@@ -422,6 +430,22 @@ namespace My.UI
             {
                 panelId = My.UI.HumanTech.HumanTechTreePanel.Pid,
                 resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/HumanTechTreePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.CultTech.CultTechTreePanel.Pid,
+                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/CultTechTreePanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.CultTech.AncientSeatTreePanel.Pid,
+                resourcePath = "UI/Prefabs/PlayerProgressionHubPanelSub/AncientSeatTreePanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

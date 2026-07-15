@@ -425,5 +425,25 @@
       }
     ],
     "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 213,
+    "name": "水盆里的旧影",
+    "desc": "返回秘密基地，从入梦设施进入薇拉的梦境，并把结果告诉她。",
+    "init_step_id": "213_s1",
+    "finish_reward": [],
+    "is_auto_accept": false,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 205,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_vera"
   }
 ]

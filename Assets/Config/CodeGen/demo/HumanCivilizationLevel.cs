@@ -35,11 +35,11 @@ public sealed partial class HumanCivilizationLevel : Luban.BeanBase
     /// </summary>
     public int Level;
     /// <summary>
-    /// ???
+    /// ????
     /// </summary>
     public string DisplayName;
     /// <summary>
-    /// ??
+    /// ??????????????
     /// </summary>
     public string Desc;
     /// <summary>

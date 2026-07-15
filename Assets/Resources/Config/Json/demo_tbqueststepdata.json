@@ -390,5 +390,33 @@
     "outcomes": [
       "212_s2_Main"
     ]
+  },
+  {
+    "step_id": "213_s1",
+    "quest_id": 213,
+    "desc": "返回秘密基地，从入梦设施进入薇拉的梦境。",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "213_s1_Main"
+    ],
+    "outcomes": [
+      "213_s1_Main"
+    ]
+  },
+  {
+    "step_id": "213_s2",
+    "quest_id": 213,
+    "desc": "将梦中看到的结果告诉薇拉。",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "home_vera",
+    "objectives": [
+      "213_s2_Main"
+    ],
+    "outcomes": [
+      "213_s2_Main"
+    ]
   }
 ]

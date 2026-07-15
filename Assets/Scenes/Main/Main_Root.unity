@@ -3224,6 +3224,8 @@ MonoBehaviour:
     TipPanelName: SkillInSchoolTip
   - TipType: 8
     TipPanelName: SkillEquippedTip
+  - TipType: 9
+    TipPanelName: HumanTechTip
 --- !u!1 &1248278157
 GameObject:
   m_ObjectHideFlags: 0

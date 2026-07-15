@@ -17,6 +17,7 @@ namespace My.Player
         public PlayerGearManager GearManager { get; private set; }
         public PlayerTalentManager TalentManager { get; private set; }
         public HumanCivilizationSystem HumanCivilization { get; private set; }
+        public DemonCultSystem DemonCult { get; private set; }
 
         public ProgressionAggregator ProgressionRoot { get; private set; }
         public ProgressionAggregator BodyPartAggregator { get; private set; }
@@ -50,6 +51,9 @@ namespace My.Player
 
             HumanCivilization = new HumanCivilizationSystem();
             HumanCivilization.Initialize(ctx, savingData);
+
+            DemonCult = new DemonCultSystem();
+            DemonCult.Initialize(ctx, savingData);
 
             GearManager = new PlayerGearManager();
             GearManager.InitializeAggregatorOnly();

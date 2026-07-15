@@ -85,6 +85,16 @@ When assisting scene placement, gather these prompt inputs before editing:
 - For dynamic spawners, member count, member ids, member entity configs, relative offsets, facing, and behavior.
 - Placement safety: walkable ground, no `Hole`, no wall/decor collider overlap, and no conflict with born points, teleporters, or key interactables.
 
+## Dream Infiltration
+
+In this project, "入梦" always means the dream minigame entered through the dream facility in `secretbase`.
+
+- NPC dialogue, quest options, map interactions, and cutscenes must never start a character dream directly.
+- World content may unlock or hide a character dream entry through config-driven conditions owned by the relevant source of truth, such as a quest step, relationship state, or persistent character state.
+- The player must return to `secretbase`, interact with the dream facility, and select an unlocked entry in `DreamEntryPanel` to start the minigame.
+- Dream-related quest objectives must query persistent settlement results. Do not use a one-shot dream-finished event as the source of completion truth, and do not couple the dream system back to feature-specific quest APIs.
+- Treat entry unlock, minigame execution, settlement persistence, and quest progress query as separate stages.
+
 ## UI Development
 
 Build UI on top of the project's `PanelBase` pattern.

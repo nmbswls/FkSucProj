@@ -23,7 +23,7 @@ namespace My.UI
         [SerializeField] private TextMeshProUGUI txtWorkforceValue;
         [SerializeField] private Button btnClose;
 
-        private HomeDataManager.HomeFacilityInstance _selected;
+        private FixedFacilityInfo _selected;
         private readonly List<GameObject> _rowObjs = new();
 
         private void Awake()
@@ -134,14 +134,14 @@ namespace My.UI
 
             _rowObjs.Clear();
 
-            foreach (var p in hm.PlacementInfos)
+            foreach (var p in hm.FixedFacilities)
             {
                 if (p.Removed)
                 {
                     continue;
                 }
 
-                var row = new GameObject($"town_row_{p.InstId}", typeof(RectTransform));
+                var row = new GameObject($"town_row_{p.InstanceId}", typeof(RectTransform));
                 row.transform.SetParent(listRoot, false);
                 var rt = row.GetComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(0, 36);
@@ -159,7 +159,8 @@ namespace My.UI
                 leRt.offsetMax = new Vector2(-8, -4);
                 var txt = labelGo.AddComponent<TextMeshProUGUI>();
                 txt.fontSize = 18;
-                txt.text = $"{p.CfgRef?.Name ?? p.Id}  (id:{p.InstId})";
+                var built = hm.IsFacilityConstructed(p.InstanceId, p.FacilityId);
+                txt.text = $"{p.Definition?.DisplayName ?? p.FacilityId}  (id:{p.InstanceId})  {(built ? "Built" : "Unbuilt")}";
                 txt.raycastTarget = false;
 
                 var captured = p;
@@ -179,7 +180,7 @@ namespace My.UI
             {
                 if (txtDetailName != null)
                 {
-                    txtDetailName.text = "Select a building";
+                    txtDetailName.text = "Select a facility";
                 }
 
                 if (txtDetailInfo != null)
@@ -197,15 +198,18 @@ namespace My.UI
 
             if (txtDetailName != null)
             {
-                txtDetailName.text = _selected.CfgRef != null ? _selected.CfgRef.Name : _selected.Id;
+                txtDetailName.text = _selected.Definition != null ? _selected.Definition.DisplayName : _selected.FacilityId;
             }
 
-            bool workplace = _selected.CfgRef != null && _selected.CfgRef.SupportsWorkforceAssignment;
+            var hm = MainGameManager.Instance?.gameLogicManager?.homeDataManager;
+            bool built = hm?.IsFacilityConstructed(_selected.InstanceId, hm.GetFacilityId(_selected)) == true;
+            bool workplace = built && _selected.Definition != null && hm.SupportsFacilityWorkforce(_selected);
             if (txtDetailInfo != null)
             {
                 txtDetailInfo.text = workplace
-                    ? $"Workplace — max workers: {_selected.CfgRef.MaxWorkforce}"
-                    : "No workforce assignment for this building type.";
+                    ? $"Workplace - max workers: {hm.GetFacilityWorkforceCapacity(_selected)}"
+                    : !built ? "Build this facility before managing it."
+                    : "No workforce assignment for this facility type.";
             }
 
             if (workforceSlider != null)
@@ -215,11 +219,13 @@ namespace My.UI
                 {
                     workforceSlider.wholeNumbers = true;
                     workforceSlider.minValue = 0;
-                    workforceSlider.maxValue = Mathf.Max(1, _selected.CfgRef.MaxWorkforce);
-                    workforceSlider.SetValueWithoutNotify(_selected.ArrangePeopleNum);
+                    workforceSlider.maxValue = Mathf.Max(1, hm.GetFacilityWorkforceCapacity(_selected));
+                    var facilityId = hm.GetFacilityId(_selected);
+                    var workers = hm.GetFacilityWorkforce(_selected.InstanceId, facilityId);
+                    workforceSlider.SetValueWithoutNotify(workers);
                     if (txtWorkforceValue != null)
                     {
-                        txtWorkforceValue.text = $"Workers: {_selected.ArrangePeopleNum}";
+                        txtWorkforceValue.text = $"Workers: {workers}";
                     }
                 }
             }
@@ -227,13 +233,13 @@ namespace My.UI
 
         private void OnWorkforceSlider(float v)
         {
-            if (_selected == null || _selected.CfgRef == null || !_selected.CfgRef.SupportsWorkforceAssignment)
+            if (_selected == null || _selected.Definition == null || MainGameManager.Instance?.gameLogicManager?.homeDataManager.SupportsFacilityWorkforce(_selected) != true)
             {
                 return;
             }
 
             int iv = Mathf.RoundToInt(v);
-            if (MainGameManager.Instance?.gameLogicManager?.homeDataManager.TrySetPlacementWorkforce(_selected.InstId, iv, out _) == true)
+            if (MainGameManager.Instance?.gameLogicManager?.homeDataManager.TrySetFacilityWorkforce(_selected.InstanceId, iv, out _) == true)
             {
                 if (txtWorkforceValue != null)
                 {

@@ -1,0 +1,35 @@
+{
+  "DialogId": "vera_dream_after",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Post-dream talk objective.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "那栋房子里没有人。铃响只是因为我一直等着它响。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "现在知道了。以后端水的时候，只管看盆里有什么。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "薇拉",
+              "Content": "是。至少今晚，我会试着只洗一次。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

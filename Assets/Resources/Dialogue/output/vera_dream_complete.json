@@ -1,0 +1,25 @@
+{
+  "DialogId": "vera_dream_complete",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "1",
+      "Note": "Quest completion confirmation.",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "薇拉",
+              "Content": "您若要去人多的地方，衣装和清洁总要有人照看。请把这些事交给我。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

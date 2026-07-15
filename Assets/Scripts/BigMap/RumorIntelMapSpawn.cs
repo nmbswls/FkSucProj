@@ -59,6 +59,8 @@ namespace My
                 }
             }
 
+            var appliedRumorIds = new HashSet<string>();
+
             foreach (var a in actives)
             {
                 var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(a.RumorId);
@@ -74,6 +76,14 @@ namespace My
                     case ERumorEffectType.Chest:
                         if (string.IsNullOrEmpty(def.LootPointCfgId))
                         {
+                            Debug.LogWarning($"[RumorIntel] Rumor {a.RumorId} has no loot point config.");
+                            continue;
+                        }
+
+                        if (global::Config.MapLootPointConfigLoader.Get(def.LootPointCfgId) == null)
+                        {
+                            Debug.LogWarning(
+                                $"[RumorIntel] Rumor {a.RumorId} references unknown loot point {def.LootPointCfgId}.");
                             continue;
                         }
 
@@ -85,10 +95,19 @@ namespace My
                             Position = pos,
                             ItemInitialized = false,
                         });
+                        appliedRumorIds.Add(a.RumorId);
                         break;
                     case ERumorEffectType.Npc:
                         if (string.IsNullOrEmpty(def.NpcCfgId))
                         {
+                            Debug.LogWarning($"[RumorIntel] Rumor {a.RumorId} has no NPC config.");
+                            continue;
+                        }
+
+                        if (CfgMgr.Cfgs.TbUnitNpc.GetOrDefault(def.NpcCfgId) == null)
+                        {
+                            Debug.LogWarning(
+                                $"[RumorIntel] Rumor {a.RumorId} references unknown NPC {def.NpcCfgId}.");
                             continue;
                         }
 
@@ -103,11 +122,16 @@ namespace My
                             MoveBehaveType = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
                             EnmityConfId = "default_npc",
                         });
+                        appliedRumorIds.Add(a.RumorId);
+                        break;
+                    default:
+                        Debug.LogWarning(
+                            $"[RumorIntel] Rumor {a.RumorId} has unsupported effect type {def.EffectType}.");
                         break;
                 }
             }
 
-            rumor.ConsumeAllActiveForMap(mapId);
+            rumor.ConsumeActiveForMap(mapId, appliedRumorIds);
         }
 
         Vector2 PickPos(List<NamedPoint> rumorPoints)

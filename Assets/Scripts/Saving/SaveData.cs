@@ -48,6 +48,7 @@ namespace My.Saving
     [Serializable]
     public class PlayerData
     {
+        [JsonProperty("Level")]
         public int Level;
         public float CurrentHP;
         public float MaxHP;
@@ -91,7 +92,6 @@ namespace My.Saving
         public List<TalentNodeLevelPersist> TalentNodeLevels = new();
 
         // 人类文明科技节点等级（当前首期节点均为单级，但保留等级字段）
-        public List<HumanTechNodeLevelPersist> HumanTechNodeLevels = new();
 
         // 存档点正式解锁（全局；键 save_point_id，局外传送列表用）
         public List<SavePointUnlockPersist> SavePointUnlocks = new();
@@ -105,7 +105,6 @@ namespace My.Saving
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
         // 逻辑区域家园收编运行时（键 logic_area map_id）
-        public Dictionary<string, LogicAreaHomesteadPersist> LogicAreaHomesteadByMapId = new();
 
         // 地图小剧情触发器消费态：键 mapId|triggerId
         public Dictionary<string, bool> MicroPlotConsumedByKey = new();
@@ -133,28 +132,40 @@ namespace My.Saving
         // EventGrant GrantItemsOnce 已领取 id
         public List<string> ClaimedEventGrantIds = new();
 
+        // 任务：进行中实例 + 已结束 id + 追踪标记
+        public List<ActiveQuestPersist> ActiveQuests = new();
+        public List<int> FinishedQuestIds = new();
+        public int MarkQuestId;
+
         // 本地玩家功能解锁（原 SaveData 根级 FuncOpenList 已迁入）
         public List<EFuncOpenType> FuncOpenList = new();
     }
 
     [Serializable]
-    public class LogicAreaHomesteadPersist
+    public class QuestObjectivePersist
     {
-        // 当前控制度
-        public int ControlDegree;
-
-        // 是否已收编为家园
-        public bool IsAnnexed;
-
-        // 各建筑当前等级（0 表示尚未升级）
-        public List<HomesteadBuildingPersist> Buildings = new();
+        public string ObjId;
+        public long ProgressVal;
     }
 
     [Serializable]
-    public class HomesteadBuildingPersist
+    public class QuestTalkDialogProgressPersist
     {
-        public string BuildingId;
-        public int Level;
+        public string ObjId;
+        public int Count;
+    }
+
+    [Serializable]
+    public class ActiveQuestPersist
+    {
+        public int QuestId;
+        public string StepId;
+        public List<QuestObjectivePersist> Objectives = new();
+        public List<string> InternalTags = new();
+        // 已触发的 QuestObjectiveDialog.id（once / Remind 门闩）
+        public List<int> TriggeredObjectiveDialogIds = new();
+        // Talk 目标进度：按 obj_id 记账（Mark 时写入，读进度不查 Dialog 表）
+        public List<QuestTalkDialogProgressPersist> TalkDialogProgress = new();
     }
 
     [Serializable]
@@ -183,6 +194,7 @@ namespace My.Saving
     public class TalentNodeLevelPersist
     {
         public int NodeId;
+        [JsonProperty("Level")]
         public int Level;
     }
 
@@ -190,6 +202,7 @@ namespace My.Saving
     public class HumanTechNodeLevelPersist
     {
         public int NodeId;
+        [JsonProperty("Level")]
         public int Level;
     }
 
@@ -215,6 +228,7 @@ namespace My.Saving
     public class BodyPartPersist
     {
         public int PartId;
+        [JsonProperty("Level")]
         public int Level;
         public long Exp;
     }
@@ -223,6 +237,7 @@ namespace My.Saving
     public class LearnedSkillEntry
     {
         public string SkillId;
+        [JsonProperty("Level")]
         public int Level;
     }
 
@@ -230,6 +245,7 @@ namespace My.Saving
     public class GrantedSkillEntry
     {
         public string SkillId;
+        [JsonProperty("Level")]
         public int Level;
     }
 
@@ -245,6 +261,7 @@ namespace My.Saving
     public class DreamEntryTendencyWinCounts
     {
         public int CharDreamEntryId;
+        public int AttemptCount;
         public int ForceWins;
         public int SoothingWins;
         public int TrickWins;
@@ -437,6 +454,66 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class HumanCivilizationPersist
+    {
+        public List<HumanTechNodeLevelPersist> TechNodes = new();
+    }
+
+    [Serializable]
+    public class CultTechNodeLevelPersist
+    {
+        public int NodeId;
+        [JsonProperty("Level")]
+        public int Level;
+    }
+
+    [Serializable]
+    public class CultAncientSeatPersist
+    {
+        public int SeatId;
+        public bool Unlocked;
+    }
+
+    [Serializable]
+    public class CultSeatTechNodeLevelPersist
+    {
+        public int SeatId;
+        public int NodeId;
+        public int Level;
+    }
+
+    [Serializable]
+    public class DemonCultPersist
+    {
+        public long Faith;
+        public List<CultTechNodeLevelPersist> TechNodes = new();
+        public List<CultAncientSeatPersist> AncientSeats = new();
+        public List<CultSeatTechNodeLevelPersist> SeatTechNodes = new();
+    }
+
+    [Serializable]
+    public class TownDevelopmentPersist
+    {
+        public int Prosperity;
+        public int Population;
+        public int Influence;
+        public int Stability;
+        public int ControlDegree;
+        public bool IsAnnexed;
+        public List<TownFacilityPersist> Facilities = new();
+    }
+
+    [Serializable]
+    public class TownFacilityPersist
+    {
+        public long InstanceId;
+        public string FacilityId;
+        public bool IsConstructed;
+        public int DevelopmentLevel;
+        public string OperationPlanId;
+        public int AssignedWorkforce;
+    }
+
     public class SaveData
     {
         public MetaData Meta;
@@ -467,6 +544,15 @@ namespace My.Saving
 
         public GlobalRuntimePersistData GlobalRuntime;
 
+        // Global human civilization progress, separate from player-owned progression.
+        public HumanCivilizationPersist HumanCivilization = new();
+
+        // 教团：信仰 + 布道/教义节点
+        public DemonCultPersist DemonCult = new();
+
+        // Per-town development state keyed by stable town or logic-area id.
+        public Dictionary<string, TownDevelopmentPersist> TownDevelopmentById = new();
+
         public List<EFuncOpenType> FuncOpenList = new();
 
         public Dictionary<string, MapRuntimePersistData> MapRuntimeByMapId = new();
@@ -486,6 +572,9 @@ namespace My.Saving
             SpecialInventoryBags = new List<PlayerBagPersist>();
             SecretBaseStorage = new SecretBaseStoragePersist();
             PlayerBuffs = new List<BuffPersistData>();
+            HumanCivilization = new HumanCivilizationPersist();
+            DemonCult = new DemonCultPersist();
+            TownDevelopmentById = new Dictionary<string, TownDevelopmentPersist>();
         }
 
         public static void EnsureHydrated(SaveData data)
@@ -493,6 +582,21 @@ namespace My.Saving
             if (data == null) return;
             data.Meta ??= new MetaData();
             data.PlayerData ??= new PlayerData();
+            data.HumanCivilization ??= new HumanCivilizationPersist();
+            data.HumanCivilization.TechNodes ??= new List<HumanTechNodeLevelPersist>();
+            data.DemonCult ??= new DemonCultPersist();
+            data.DemonCult.TechNodes ??= new List<CultTechNodeLevelPersist>();
+            data.DemonCult.AncientSeats ??= new List<CultAncientSeatPersist>();
+            data.DemonCult.SeatTechNodes ??= new List<CultSeatTechNodeLevelPersist>();
+            data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
+            foreach (var town in data.TownDevelopmentById.Values)
+            {
+                if (town?.Facilities == null) continue;
+                foreach (var facility in town.Facilities)
+                {
+                    if (facility != null && facility.DevelopmentLevel > 0) facility.IsConstructed = true;
+                }
+            }
             data.PlayerData.GlobalSwitchMap ??= new Dictionary<string, bool>();
             data.PlayerData.FishingSpotByUniqName ??= new Dictionary<string, FishingSpotRuntimeSave>();
             data.PlayerData.HomeRuinByUniqName ??= new Dictionary<string, RepairPointRuntimeSave>();
@@ -506,7 +610,6 @@ namespace My.Saving
             data.PlayerData.PassiveSkillSlotOverrides ??= new List<string>();
             data.PlayerData.NpcCharacterPersistByKey ??= new Dictionary<string, NpcCharacterPersistData>();
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
-            data.PlayerData.HumanTechNodeLevels ??= new List<HumanTechNodeLevelPersist>();
             data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
             data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
             if (data.PlayerData.SecretBaseBuildLevel < 1)
@@ -514,11 +617,25 @@ namespace My.Saving
                 data.PlayerData.SecretBaseBuildLevel = 1;
             }
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
-            data.PlayerData.LogicAreaHomesteadByMapId ??= new Dictionary<string, LogicAreaHomesteadPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.TriggeredDialogIds ??= new List<string>();
             data.PlayerData.StatCounters ??= new Dictionary<string, long>();
             data.PlayerData.ClaimedEventGrantIds ??= new List<string>();
+            data.PlayerData.ActiveQuests ??= new List<ActiveQuestPersist>();
+            foreach (var q in data.PlayerData.ActiveQuests)
+            {
+                if (q == null)
+                {
+                    continue;
+                }
+
+                q.Objectives ??= new List<QuestObjectivePersist>();
+                q.InternalTags ??= new List<string>();
+                q.TriggeredObjectiveDialogIds ??= new List<int>();
+                q.TalkDialogProgress ??= new List<QuestTalkDialogProgressPersist>();
+            }
+
+            data.PlayerData.FinishedQuestIds ??= new List<int>();
             data.PlayerData.OwnedRuneIds ??= new List<string>();
             data.PlayerData.UnlockedRuneUpgradeIds ??= new List<string>();
             data.PlayerData.EquippedRunes ??= new List<RuneEquipPersist>();
