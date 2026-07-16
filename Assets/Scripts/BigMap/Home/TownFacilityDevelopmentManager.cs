@@ -432,8 +432,8 @@ namespace My.Home
                 TryMergeOutputBundle(
                     logicAreaId,
                     facilityId,
-                    upgradeDef.OutputInterval,
-                    upgradeDef.OutputItems,
+                    1,
+                    upgradeDef.DailyOutputs,
                     facilityRow,
                     settlementDay,
                     mergedOutputs);

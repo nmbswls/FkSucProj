@@ -7,7 +7,7 @@ namespace My.Home
     // 地图设施站点配表查询（town_facility_site）
     public static class TownFacilitySiteCatalog
     {
-        public static TownFacilitySiteConfig Get(int siteId)
+        public static TownFacilitySite Get(int siteId)
         {
             if (siteId <= 0)
             {
@@ -17,7 +17,7 @@ namespace My.Home
             return CfgMgr.Cfgs?.TbTownFacilitySite?.GetOrDefault(siteId);
         }
 
-        public static TownFacilitySiteConfig FindByMapAndFacility(string mapId, string facilityCfgId)
+        public static TownFacilitySite FindByMapAndFacility(string mapId, string facilityCfgId)
         {
             if (string.IsNullOrEmpty(mapId) || string.IsNullOrEmpty(facilityCfgId))
             {
@@ -46,7 +46,7 @@ namespace My.Home
             return null;
         }
 
-        public static TownFacilitySiteConfig FindByMapAndSlot(string mapId, string slot)
+        public static TownFacilitySite FindByMapAndSlot(string mapId, string slot)
         {
             if (string.IsNullOrEmpty(mapId) || string.IsNullOrEmpty(slot))
             {
@@ -85,9 +85,9 @@ namespace My.Home
             return result;
         }
 
-        public static IReadOnlyList<TownFacilitySiteConfig> GetSitesForMap(string mapId)
+        public static IReadOnlyList<TownFacilitySite> GetSitesForMap(string mapId)
         {
-            var result = new List<TownFacilitySiteConfig>();
+            var result = new List<TownFacilitySite>();
             var table = CfgMgr.Cfgs?.TbTownFacilitySite?.DataList;
             if (table == null || string.IsNullOrEmpty(mapId))
             {

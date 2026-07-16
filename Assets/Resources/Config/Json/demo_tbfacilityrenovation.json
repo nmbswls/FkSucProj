@@ -48,7 +48,15 @@
         "count": 2
       }
     ],
-    "effects": []
+    "effects": [
+      {
+        "effect_type": 2,
+        "target_facility_id": "-",
+        "building_attr": 0,
+        "human_attr": 7,
+        "value": 2
+      }
+    ]
   },
   {
     "facility_cfg_id": "village_hall",
@@ -65,7 +73,15 @@
         "count": 1
       }
     ],
-    "effects": []
+    "effects": [
+      {
+        "effect_type": 2,
+        "target_facility_id": "-",
+        "building_attr": 0,
+        "human_attr": 5,
+        "value": 1
+      }
+    ]
   },
   {
     "facility_cfg_id": "tavern",

@@ -170,6 +170,17 @@ public partial class Tables
     /// ?? NPC ?????
     /// </summary>
     public demo.TbNpcViewRandomization TbNpcViewRandomization {get; }
+    public demo.TbCultAncientSeat TbCultAncientSeat {get; }
+    public demo.TbCultSeatTechNode TbCultSeatTechNode {get; }
+    public demo.TbCultSeatTechNodeLevel TbCultSeatTechNodeLevel {get; }
+    public demo.TbJingYuanTypeInfo TbJingYuanTypeInfo {get; }
+    public demo.TbJingYuanPremiumEssence TbJingYuanPremiumEssence {get; }
+    public demo.TbJingYuanPremiumEffect TbJingYuanPremiumEffect {get; }
+    public demo.TbJingYuanEssenceLevelMap TbJingYuanEssenceLevelMap {get; }
+    public demo.TbJingYuanTypePoolEnum TbJingYuanTypePoolEnum {get; }
+    public demo.TbNamedNpcJingYuanType TbNamedNpcJingYuanType {get; }
+    public demo.TbJingYuanTuneRule TbJingYuanTuneRule {get; }
+    public demo.TbJingYuanRenewalRule TbJingYuanRenewalRule {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -287,6 +298,17 @@ public partial class Tables
         TbCharacterFacilitySupervisor = new demo.TbCharacterFacilitySupervisor(loader("demo_tbcharacterfacilitysupervisor"));
         TbHumanArmar = new demo.TbHumanArmar(loader("demo_tbhumanarmar"));
         TbNpcViewRandomization = new demo.TbNpcViewRandomization(loader("demo_tbnpcviewrandomization"));
+        TbCultAncientSeat = new demo.TbCultAncientSeat(loader("demo_tbcultancientseat"));
+        TbCultSeatTechNode = new demo.TbCultSeatTechNode(loader("demo_tbcultseattechnode"));
+        TbCultSeatTechNodeLevel = new demo.TbCultSeatTechNodeLevel(loader("demo_tbcultseattechnodelevel"));
+        TbJingYuanTypeInfo = new demo.TbJingYuanTypeInfo(loader("demo_tbjingyuantypeinfo"));
+        TbJingYuanPremiumEssence = new demo.TbJingYuanPremiumEssence(loader("demo_tbjingyuanpremiumessence"));
+        TbJingYuanPremiumEffect = new demo.TbJingYuanPremiumEffect(loader("demo_tbjingyuanpremiumeffect"));
+        TbJingYuanEssenceLevelMap = new demo.TbJingYuanEssenceLevelMap(loader("demo_tbjingyuanessencelevelmap"));
+        TbJingYuanTypePoolEnum = new demo.TbJingYuanTypePoolEnum(loader("demo_tbjingyuantypepoolenum"));
+        TbNamedNpcJingYuanType = new demo.TbNamedNpcJingYuanType(loader("demo_tbnamednpcjingyuantype"));
+        TbJingYuanTuneRule = new demo.TbJingYuanTuneRule(loader("demo_tbjingyuantunerule"));
+        TbJingYuanRenewalRule = new demo.TbJingYuanRenewalRule(loader("demo_tbjingyuanrenewalrule"));
         ResolveRef();
     }
     
@@ -406,6 +428,17 @@ public partial class Tables
         TbCharacterFacilitySupervisor.ResolveRef(this);
         TbHumanArmar.ResolveRef(this);
         TbNpcViewRandomization.ResolveRef(this);
+        TbCultAncientSeat.ResolveRef(this);
+        TbCultSeatTechNode.ResolveRef(this);
+        TbCultSeatTechNodeLevel.ResolveRef(this);
+        TbJingYuanTypeInfo.ResolveRef(this);
+        TbJingYuanPremiumEssence.ResolveRef(this);
+        TbJingYuanPremiumEffect.ResolveRef(this);
+        TbJingYuanEssenceLevelMap.ResolveRef(this);
+        TbJingYuanTypePoolEnum.ResolveRef(this);
+        TbNamedNpcJingYuanType.ResolveRef(this);
+        TbJingYuanTuneRule.ResolveRef(this);
+        TbJingYuanRenewalRule.ResolveRef(this);
     }
 }
 

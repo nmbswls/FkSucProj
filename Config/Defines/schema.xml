@@ -68,6 +68,8 @@
         <var name="MarketSaleChanceBonus" value="3"/>
         <var name="MarketPriceBonus" value="4"/>
         <var name="MarketSlotCount" value="5"/>
+        <var name="TransportMinPickupCount" value="6"/>
+        <var name="TransportMaxPickupCount" value="7"/>
     </enum>
 
     <!-- AddHunger: p1=饥饿增量(逻辑内再乘系数); GiveDrop: p1=drop_bundle_id; UseSkill: s1=技能/能力名; UnlockRuneUpgrade: s1=upgrade_id; AddMapControl: p1=控制度增量; s1=logic_area map_id; AddJingYuanCodexProgress: s1=codex_id; p1=榨取次数; p2=amount(x1000); AddJingYuanCodexBlurtDrop: s1=codex_id; p1=榨取次数; cnt=amount(x1000) -->
@@ -111,6 +113,7 @@
 		<var name="FuncOpen" value="7"/>
 		<var name="CharacterFavorLevel" value="8"/>
 		<var name="HumanTechUnlockedCount" value="9"/>
+		<var name="ControlledTownCount" value="10"/>
 		<var name="NamedNpcLocalSwitch" value="11"/>
     </enum>
 

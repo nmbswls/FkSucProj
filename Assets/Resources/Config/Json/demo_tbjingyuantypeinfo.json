@@ -1,0 +1,98 @@
+[
+  {
+    "type_id": 1,
+    "display_name": "兽人精元",
+    "icon_path": "jingyuan/orccommon",
+    "race_id": "orc",
+    "match_tag": "orccommon",
+    "sort_order": 1
+  },
+  {
+    "type_id": 2,
+    "display_name": "兽人精英精元",
+    "icon_path": "jingyuan/orcelite",
+    "race_id": "orc",
+    "match_tag": "orcelite",
+    "sort_order": 2
+  },
+  {
+    "type_id": 3,
+    "display_name": "白羊座精元",
+    "icon_path": "jingyuan/signaries",
+    "race_id": "human",
+    "match_tag": "signaries",
+    "sort_order": 3
+  },
+  {
+    "type_id": 4,
+    "display_name": "金牛座精元",
+    "icon_path": "jingyuan/signtaurus",
+    "race_id": "human",
+    "match_tag": "signtaurus",
+    "sort_order": 4
+  },
+  {
+    "type_id": 5,
+    "display_name": "双子座精元",
+    "icon_path": "jingyuan/signgemini",
+    "race_id": "human",
+    "match_tag": "signgemini",
+    "sort_order": 5
+  },
+  {
+    "type_id": 6,
+    "display_name": "巨蟹座精元",
+    "icon_path": "jingyuan/signcancer",
+    "race_id": "human",
+    "match_tag": "signcancer",
+    "sort_order": 6
+  },
+  {
+    "type_id": 7,
+    "display_name": "狮子座精元",
+    "icon_path": "jingyuan/signleo",
+    "race_id": "human",
+    "match_tag": "signleo",
+    "sort_order": 7
+  },
+  {
+    "type_id": 8,
+    "display_name": "处女座精元",
+    "icon_path": "jingyuan/signvirgo",
+    "race_id": "human",
+    "match_tag": "signvirgo",
+    "sort_order": 8
+  },
+  {
+    "type_id": 9,
+    "display_name": "天秤座精元",
+    "icon_path": "jingyuan/signlibra",
+    "race_id": "human",
+    "match_tag": "signlibra",
+    "sort_order": 9
+  },
+  {
+    "type_id": 10,
+    "display_name": "天蝎座精元",
+    "icon_path": "jingyuan/signscorpio",
+    "race_id": "human",
+    "match_tag": "signscorpio",
+    "sort_order": 10
+  },
+  {
+    "type_id": 11,
+    "display_name": "射手座精元",
+    "icon_path": "jingyuan/signsagittarius",
+    "race_id": "human",
+    "match_tag": "signsagittarius",
+    "sort_order": 11
+  },
+  {
+    "type_id": 12,
+    "display_name": "摩羯座精元",
+    "icon_path": "jingyuan/signcapricorn",
+    "race_id": "human",
+    "match_tag": "signcapricorn",
+    "sort_order": 12
+  }
+]

@@ -60,7 +60,7 @@ namespace My.Home
                     sourceFacilityId,
                     targetFacilityId,
                     attribute,
-                    FacilityDevelopmentCatalog.GetLevel(sourceFacilityId, level)?.Effects,
+                    null,
                     ref total);
                 if (!string.IsNullOrEmpty(renovationId))
                 {
@@ -106,7 +106,7 @@ namespace My.Home
 
                 var renovationId = GetRenovationId(glm, logicAreaId, facilityId);
                 AccumulateHumanCivilizationBonus(
-                    FacilityDevelopmentCatalog.GetLevel(facilityId, level)?.Effects,
+                    null,
                     attribute,
                     ref total);
                 if (!string.IsNullOrEmpty(renovationId))
@@ -128,9 +128,8 @@ namespace My.Home
                 ? new FacilityOutputBundle()
                 : new FacilityOutputBundle
                 {
-                    OutputInterval = row.OutputInterval,
-                    OutputItems = row.OutputItems,
-                    Effects = row.Effects,
+                    OutputInterval = 1,
+                    OutputItems = row.DailyOutputs,
                 };
         }
 
@@ -264,24 +263,30 @@ namespace My.Home
             }
         }
 
-        internal static FacilityEffect Map(FacilityEffectConfig row)
+        internal static FacilityEffect Map(cfg.demo.FacilityEffect row)
         {
             if (row == null)
             {
                 return null;
             }
 
+            var targetFacilityId = row.TargetFacilityId;
+            if (targetFacilityId == "-")
+            {
+                targetFacilityId = string.Empty;
+            }
+
             return new FacilityEffect
             {
                 EffectType = row.EffectType,
-                TargetFacilityId = row.TargetFacilityId,
+                TargetFacilityId = targetFacilityId,
                 BuildingAttr = row.BuildingAttr,
                 HumanAttr = row.HumanAttr,
                 Value = row.Value,
             };
         }
 
-        internal static List<FacilityEffect> MapList(List<FacilityEffectConfig> rows)
+        internal static List<FacilityEffect> MapList(List<cfg.demo.FacilityEffect> rows)
         {
             var result = new List<FacilityEffect>();
             if (rows == null)

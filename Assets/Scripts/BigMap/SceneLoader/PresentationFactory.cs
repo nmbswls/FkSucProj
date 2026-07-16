@@ -69,7 +69,7 @@ namespace My
                 case EEntityType.Npc:
                     {
                         var npcCfg = CfgMgr.Cfgs.TbUnitNpc.Get(cfgId);
-                        string prefabName = NpcViewRandomizationCatalog.ResolvePrefabName(cfgId, entityId);
+                        string prefabName = npcCfg.PrefabName;
                         if (string.IsNullOrEmpty(prefabName))
                         {
                             prefabName = cfgId;
@@ -197,6 +197,8 @@ namespace My
             }
             var go = TryGet(prefabKey) ?? _asset.Instantiate(prefabKey);
             _activePrefabKeys[go] = prefabKey;
+            if (logic.Type == EEntityType.Npc)
+                NpcViewVariantApplier.Apply(go, logic.CfgId, logic.Id);
             go.transform.SetParent(parent);
             var pres = go.GetComponent<IScenePresentation>();
             //if (pres == null)
@@ -232,6 +234,9 @@ namespace My
                 return null;
             }
             GameObject go = await _assetAsync.InstantiateAsync(key);
+
+            if (logic.Type == EEntityType.Npc)
+                NpcViewVariantApplier.Apply(go, logic.CfgId, logic.Id);
 
             var pres = go.GetComponent<IScenePresentation>();
             if (pres == null)

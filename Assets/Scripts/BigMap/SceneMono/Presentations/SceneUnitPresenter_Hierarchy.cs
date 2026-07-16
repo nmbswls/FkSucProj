@@ -4,6 +4,15 @@ namespace My.Map.Scene
 {
     public abstract partial class SceneUnitPresenter
     {
+        public void RefreshViewHierarchy()
+        {
+            ViewRoot = null;
+            AgentView = null;
+            ShadowView = null;
+            MainViewRt = null;
+            TryAutoBindViewHierarchy();
+        }
+
         [SerializeField] bool autoBindViewHierarchy = true;
 
         void TryAutoBindViewHierarchy()

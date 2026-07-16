@@ -11,16 +11,12 @@ namespace My.Config
     /// </summary>
     public static class NpcViewRandomizationCatalog
     {
-        public static string ResolvePrefabName(string npcId, long entityId)
+        public static bool TryResolveViewPrefabName(string npcId, long entityId, out string prefabName)
         {
-            var npc = CfgMgr.Cfgs?.TbUnitNpc?.GetOrDefault(npcId);
-            var fallback = npc?.PrefabName;
-            if (string.IsNullOrEmpty(fallback))
-                fallback = npcId;
-
+            prefabName = null;
             var table = CfgMgr.Cfgs?.TbNpcViewRandomization;
             if (table == null)
-                return fallback;
+                return false;
 
             var variants = new List<NpcViewRandomization>();
             foreach (var row in table.DataList)
@@ -30,7 +26,7 @@ namespace My.Config
             }
 
             if (variants.Count == 0)
-                return fallback;
+                return false;
 
             long seed = entityId == 0 ? StableHash(npcId) : entityId;
             var random = new System.Random(unchecked((int)(seed ^ (seed >> 32))));
@@ -41,9 +37,24 @@ namespace My.Config
             foreach (var row in variants)
             {
                 if (roll < row.Weight)
-                    return row.ViewPrefabName;
+                {
+                    prefabName = row.ViewPrefabName;
+                    return true;
+                }
                 roll -= row.Weight;
             }
+            return false;
+        }
+
+        public static string ResolvePrefabName(string npcId, long entityId)
+        {
+            var npc = CfgMgr.Cfgs?.TbUnitNpc?.GetOrDefault(npcId);
+            var fallback = npc?.PrefabName;
+            if (string.IsNullOrEmpty(fallback))
+                fallback = npcId;
+
+            if (TryResolveViewPrefabName(npcId, entityId, out var viewPrefabName))
+                return viewPrefabName;
             return fallback;
         }
 

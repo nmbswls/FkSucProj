@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using cfg.demo;
 using My;
 using My.Config;
 using My.Home;
@@ -320,8 +321,8 @@ namespace My.UI.Home
             {
                 if (_facilityLevel > 0)
                 {
-                    string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(levelDef?.OutputInterval ?? 1);
-                    string items = TownFacilityDetailUiFormatter.FormatOutputItems(levelDef?.OutputItems);
+                    string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(1);
+                    string items = TownFacilityDetailUiFormatter.FormatOutputItems(levelDef?.DailyOutputs);
                     txtDailyOutput.text = $"产出  {interval}  {items}";
                 }
                 else
@@ -366,8 +367,8 @@ namespace My.UI.Home
 
             if (txtNextDailyOutput != null)
             {
-                string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(nextLevelDef.OutputInterval);
-                string items = TownFacilityDetailUiFormatter.FormatOutputItems(nextLevelDef.OutputItems);
+                string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(1);
+                string items = TownFacilityDetailUiFormatter.FormatOutputItems(nextLevelDef.DailyOutputs);
                 txtNextDailyOutput.text = $"升级后产出  {interval}  {items}";
             }
 

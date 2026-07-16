@@ -19,6 +19,8 @@ namespace cfg.demo
         MarketSaleChanceBonus = 3,
         MarketPriceBonus = 4,
         MarketSlotCount = 5,
+        TransportMinPickupCount = 6,
+        TransportMaxPickupCount = 7,
     }
 
 } 

@@ -1,0 +1,102 @@
+[
+  {
+    "node_id": 20,
+    "seat_id": 1,
+    "display_name": "往去余韵",
+    "desc": "供奉淑女残座的入门火团，可触发往去回忆碎片。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 90,
+    "icon_path": ""
+  },
+  {
+    "node_id": 21,
+    "seat_id": 1,
+    "display_name": "镜中微光",
+    "desc": "在古老者之座边缘点亮一枚微光火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 18,
+    "icon_path": ""
+  },
+  {
+    "node_id": 22,
+    "seat_id": 1,
+    "display_name": "晚钟回声",
+    "desc": "把无法抵达的晚钟声收进供奉仪式。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 162,
+    "icon_path": ""
+  },
+  {
+    "node_id": 23,
+    "seat_id": 1,
+    "display_name": "白绸誓约",
+    "desc": "以白绸和低声誓约维系座席共鸣。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": -54,
+    "icon_path": ""
+  },
+  {
+    "node_id": 24,
+    "seat_id": 1,
+    "display_name": "远行灯盏",
+    "desc": "为往去者留下可以回望的灯盏。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": -126,
+    "icon_path": ""
+  },
+  {
+    "node_id": 120,
+    "seat_id": 2,
+    "display_name": "未名共鸣 I",
+    "desc": "未名之座的第一枚供奉火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 90,
+    "icon_path": ""
+  },
+  {
+    "node_id": 121,
+    "seat_id": 2,
+    "display_name": "未名共鸣 II",
+    "desc": "未名之座的第二枚供奉火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 18,
+    "icon_path": ""
+  },
+  {
+    "node_id": 122,
+    "seat_id": 2,
+    "display_name": "未名共鸣 III",
+    "desc": "未名之座的第三枚供奉火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": 162,
+    "icon_path": ""
+  },
+  {
+    "node_id": 123,
+    "seat_id": 2,
+    "display_name": "未名共鸣 IV",
+    "desc": "未名之座的第四枚供奉火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": -54,
+    "icon_path": ""
+  },
+  {
+    "node_id": 124,
+    "seat_id": 2,
+    "display_name": "未名共鸣 V",
+    "desc": "未名之座的第五枚供奉火团。",
+    "max_level": 1,
+    "ring": 1,
+    "angle_deg": -126,
+    "icon_path": ""
+  }
+]

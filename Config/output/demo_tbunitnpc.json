@@ -429,7 +429,7 @@
     "id": "civil",
     "name": "市民",
     "desc": "",
-    "prefab_name": "civil",
+    "prefab_name": "civil_shell",
     "attr_template_id": 10000,
     "emnity_cfg_id": "default_npc",
     "faction_id": 0,

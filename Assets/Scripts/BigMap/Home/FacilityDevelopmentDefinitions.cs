@@ -13,19 +13,6 @@ namespace My.Home
         public string Icon;
     }
 
-    public sealed class FacilityDevelopmentLevel
-    {
-        public string FacilityId;
-        public int Level;
-        public string DisplayName;
-        public string Desc;
-        public List<CommonCheckCond> UnlockConds;
-        public List<TalentUnlockCost> UnlockCosts;
-        public int OutputInterval = 1;
-        public List<TalentUnlockCost> OutputItems;
-        public List<FacilityEffect> Effects;
-    }
-
     public static class FacilityDevelopmentCatalog
     {
         public static FacilityDevelopmentDefinition GetDefinition(string facilityId)
@@ -48,24 +35,7 @@ namespace My.Home
 
         public static FacilityDevelopmentLevel GetLevel(string facilityId, int level)
         {
-            var row = CfgMgr.Cfgs?.TbFacilityDevelopmentLevel?.Get(facilityId, level);
-            if (row == null)
-            {
-                return null;
-            }
-
-            return new FacilityDevelopmentLevel
-            {
-                FacilityId = row.FacilityId,
-                Level = row.Level,
-                DisplayName = row.DisplayName,
-                Desc = row.Desc,
-                UnlockConds = row.UnlockConds,
-                UnlockCosts = row.UnlockCosts,
-                OutputInterval = row.OutputInterval > 0 ? row.OutputInterval : 1,
-                OutputItems = row.OutputItems,
-                Effects = TownFacilityEffectCatalog.MapList(row.Effects),
-            };
+            return CfgMgr.Cfgs?.TbFacilityDevelopmentLevel?.Get(facilityId, level);
         }
 
         public static IReadOnlyList<FacilityDevelopmentDefinition> GetDefinitions(string logicAreaId)

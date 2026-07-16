@@ -39,7 +39,7 @@ namespace My.Home
 
             foreach (var row in table.DataList)
             {
-                if (row == null || row.FacilityId != facilityId)
+                if (row == null || row.FacilityCfgId != facilityId)
                 {
                     continue;
                 }
@@ -98,11 +98,11 @@ namespace My.Home
             return true;
         }
 
-        static FacilityRenovationDefinition Map(FacilityRenovationConfig row)
+        static FacilityRenovationDefinition Map(FacilityRenovation row)
         {
             return new FacilityRenovationDefinition
             {
-                FacilityId = row.FacilityId,
+                FacilityId = row.FacilityCfgId,
                 RenovationId = row.RenovationId,
                 DisplayName = row.DisplayName,
                 Desc = row.Desc,
@@ -110,8 +110,8 @@ namespace My.Home
                 SortOrder = row.SortOrder,
                 UnlockConds = row.UnlockConds,
                 LearnCosts = row.LearnCosts,
-                OutputInterval = row.OutputInterval > 0 ? row.OutputInterval : 1,
-                OutputItems = row.OutputItems,
+                OutputInterval = 1,
+                OutputItems = row.DailyOutputs,
                 Effects = TownFacilityEffectCatalog.MapList(row.Effects),
             };
         }

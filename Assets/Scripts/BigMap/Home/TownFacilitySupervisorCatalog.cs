@@ -15,7 +15,7 @@ namespace My.Home
 
     public static class TownFacilitySupervisorCatalog
     {
-        public static CharacterFacilitySupervisorConfig Get(string characterKey)
+        public static CharacterFacilitySupervisor Get(string characterKey)
         {
             return string.IsNullOrEmpty(characterKey)
                 ? null
