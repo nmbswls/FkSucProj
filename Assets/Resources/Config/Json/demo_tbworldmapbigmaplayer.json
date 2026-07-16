@@ -54,5 +54,19 @@
     "world_min_y": 0,
     "world_max_x": 64,
     "world_max_y": 64
+  },
+  {
+    "id": 5,
+    "area_var_id": "village_01_road",
+    "is_main": true,
+    "region_key": "default",
+    "room_id": "",
+    "rule_priority": 0,
+    "forbid_open_world_map": false,
+    "big_map_texture_path": "village_01_road",
+    "world_min_x": -16,
+    "world_min_y": 0,
+    "world_max_x": 16,
+    "world_max_y": 240
   }
 ]

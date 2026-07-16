@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "display_name": "风",
+    "description": "流动、扩散与轻盈",
+    "sort_order": 10
+  },
+  {
+    "id": 2,
+    "display_name": "雷",
+    "description": "震荡、跃迁与爆发",
+    "sort_order": 20
+  },
+  {
+    "id": 3,
+    "display_name": "火",
+    "description": "燃烧、升温与破坏",
+    "sort_order": 30
+  },
+  {
+    "id": 4,
+    "display_name": "水",
+    "description": "浸润、溶解与流转",
+    "sort_order": 40
+  },
+  {
+    "id": 5,
+    "display_name": "土",
+    "description": "承载、凝固与厚重",
+    "sort_order": 50
+  },
+  {
+    "id": 6,
+    "display_name": "暗",
+    "description": "隐匿、侵蚀与虚影",
+    "sort_order": 60
+  },
+  {
+    "id": 7,
+    "display_name": "血",
+    "description": "血气、献祭与生机代价",
+    "sort_order": 70
+  },
+  {
+    "id": 8,
+    "display_name": "咒",
+    "description": "禁制、诅缚与术式残留",
+    "sort_order": 80
+  },
+  {
+    "id": 9,
+    "display_name": "光",
+    "description": "照耀、净化与显形",
+    "sort_order": 90
+  },
+  {
+    "id": 10,
+    "display_name": "灵",
+    "description": "灵性、感应与共鸣",
+    "sort_order": 100
+  }
+]

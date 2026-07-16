@@ -357,6 +357,17 @@
         <var name="count" type="long" comment="数量"/>
     </bean>
 
+    <!-- 炼金：Datas/alchemy.xlsx，表见 __tables__；维度 A=功效，维度 B=属性，彼此无交叉；维度项用 int 主键配表描述 -->
+    <bean name="AlchemyVirtueValue" tags="sep=,">
+        <var name="virtue_id" type="int" comment="功效 id，见 TbAlchemyVirtueDef"/>
+        <var name="value" type="int"/>
+    </bean>
+
+    <bean name="AlchemyAspectValue" tags="sep=,">
+        <var name="aspect_id" type="int" comment="属性 id，见 TbAlchemyAspectDef"/>
+        <var name="value" type="int"/>
+    </bean>
+
     <!-- 符文：Datas/rune.xlsx（rune_data / rune_upgrade_info / rune_equip_slot），表见 __tables__ -->
     <enum name="ERuneType">
         <var name="Permanent" value="1"/>

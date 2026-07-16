@@ -2346,10 +2346,10 @@ namespace My.Map.Entity
             }
             if (!string.IsNullOrEmpty(p2))
             {
-                float.TryParse(p1, out sjDamage);
+                float.TryParse(p2, out sjDamage);
             }
 
-            npcUnit.OnNpcBlurt(sjAmount, sjDamage);
+            npcUnit.OnNpcBlurt(sjAmount, sjDamage, caster.Id);
 
 
             if(!npcUnit.NpcConfig.NoRealJing)

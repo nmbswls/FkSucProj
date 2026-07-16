@@ -18,5 +18,10 @@
     "map_id": "forest_01",
     "name": "Forest",
     "can_annex_homestead": false
+  },
+  {
+    "map_id": "village_01_road",
+    "name": "晨钟镇南北道",
+    "can_annex_homestead": false
   }
 ]

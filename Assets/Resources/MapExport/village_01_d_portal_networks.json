@@ -2,7 +2,7 @@
     "area_id": "village_01_d",
     "networks": [
         {
-            "network_id": "PortalNetworks",
+            "network_id": "walker_main",
             "nodes": [
                 {
                     "node_id": "patrol_001",
@@ -16,7 +16,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 5
                 },
                 {
                     "node_id": "patrol_002",
@@ -30,7 +31,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_003",
@@ -44,7 +46,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_004",
@@ -58,7 +61,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_005",
@@ -72,7 +76,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_006",
@@ -86,7 +91,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_007",
@@ -100,7 +106,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_008",
@@ -114,7 +121,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 6
                 },
                 {
                     "node_id": "patrol_009",
@@ -128,7 +136,8 @@
                         "y": 0.0,
                         "z": 0.0,
                         "w": 1.0
-                    }
+                    },
+                    "point_type": 7
                 }
             ],
             "edges": [

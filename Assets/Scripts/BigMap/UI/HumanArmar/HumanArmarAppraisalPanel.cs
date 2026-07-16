@@ -218,7 +218,7 @@ namespace My.UI
 
         void Close() => UIManager.Instance.HidePanel(PanelIdConst);
 
-        public override bool OnCancel()
+        public bool OnCancel()
         {
             Close();
             return true;

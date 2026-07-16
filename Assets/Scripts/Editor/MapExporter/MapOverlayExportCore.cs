@@ -966,6 +966,18 @@ public static class MapOverlayExportCore
     {
         var export = new PortalNetworkExport { NetworkId = prov.NetworkId };
         var seenNames = new HashSet<string>();
+        var pointTypes = new Dictionary<Transform, ENamedPointType>();
+        if (prov.NodeTypes != null)
+        {
+            foreach (var binding in prov.NodeTypes)
+            {
+                if (binding?.node != null)
+                {
+                    pointTypes[binding.node] = binding.pointType;
+                }
+            }
+        }
+
         foreach (var t in prov.Nodes)
         {
             if (t == null)
@@ -984,6 +996,9 @@ public static class MapOverlayExportCore
                 NodeId = id,
                 Position = t.position,
                 Rotation = t.rotation,
+                PointType = pointTypes.TryGetValue(t, out var pointType)
+                    ? pointType
+                    : ENamedPointType.Normal,
             });
         }
 
@@ -1061,6 +1076,7 @@ public static class MapOverlayExportCore
                     node_id = n.NodeId,
                     position = n.Position,
                     rotation = n.Rotation,
+                    point_type = n.PointType,
                 };
             }
 

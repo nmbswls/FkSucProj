@@ -97,5 +97,16 @@
     "scene_name": "Forest_01",
     "thumb_map": "forest_01",
     "is_secret_base": false
+  },
+  {
+    "var_id": "village_01_road",
+    "name": "晨钟镇南北道",
+    "desc": "家园与晨钟镇之间的南北过渡道路",
+    "logic_area_id": "village_01_road",
+    "show_in_map": false,
+    "show_conds": [],
+    "scene_name": "Village01_Road",
+    "thumb_map": "village_01_road",
+    "is_secret_base": false
   }
 ]

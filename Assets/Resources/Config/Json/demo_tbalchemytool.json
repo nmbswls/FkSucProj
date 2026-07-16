@@ -1,0 +1,43 @@
+[
+  {
+    "tool_id": "tool_mortar",
+    "display_name": "研钵",
+    "bonus_virtues": [
+      {
+        "virtue_id": 5,
+        "value": 1
+      }
+    ],
+    "bonus_aspects": [],
+    "extra_material_slots": 0
+  },
+  {
+    "tool_id": "tool_glass_rod",
+    "display_name": "玻璃搅拌棒",
+    "bonus_virtues": [],
+    "bonus_aspects": [
+      {
+        "aspect_id": 4,
+        "value": 1
+      }
+    ],
+    "extra_material_slots": 0
+  },
+  {
+    "tool_id": "tool_alchemy_kit",
+    "display_name": "炼金工具包",
+    "bonus_virtues": [
+      {
+        "virtue_id": 6,
+        "value": 2
+      }
+    ],
+    "bonus_aspects": [
+      {
+        "aspect_id": 10,
+        "value": 1
+      }
+    ],
+    "extra_material_slots": 1
+  }
+]

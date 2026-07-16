@@ -32,6 +32,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 102
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
         (2)
@@ -39,6 +47,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -60,12 +76,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 104
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
       Position: {x: 45.600574, y: 17.365303, z: -0.005412549}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -87,6 +119,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 107
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_house_yellow
       Position: {x: 57.26, y: 26.82, z: 0}
@@ -100,12 +140,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 109
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_house_wood
       Position: {x: 49.35, y: 20.24, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -127,6 +183,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 112
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guoshu_01
         (2)
@@ -134,6 +198,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -155,6 +227,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 114
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guoshu_01
       Position: {x: 49.84, y: 10.13, z: 0}
@@ -168,12 +248,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 115
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guanmu_tall
       Position: {x: 49.9, y: 3.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -195,6 +291,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 117
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guanmu
         (4)
@@ -202,6 +306,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -223,6 +335,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 119
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guanmu
         (2)
@@ -237,12 +357,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 120
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_guanmu
       Position: {x: 48.92, y: 4.18, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -264,6 +400,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 122
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (2)
@@ -271,6 +415,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -292,6 +444,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 124
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (7)
@@ -299,6 +459,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -320,6 +488,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 126
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (5)
@@ -327,6 +503,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -348,6 +532,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 128
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_fence_vertical
       Position: {x: 51.36, y: 0.54, z: 0}
@@ -361,12 +553,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 129
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_daocaoren
       Position: {x: 47.95, y: 17.89, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -388,6 +596,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 132
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_shuijing
         (1)
@@ -395,6 +611,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -415,12 +639,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 134
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_house_village_01
       Position: {x: 49.11, y: 22.8, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -442,6 +682,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 141
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (2)
@@ -449,6 +697,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -470,12 +726,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 143
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
       Position: {x: 43.98, y: 2.22, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -497,6 +769,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 145
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (9)
@@ -504,6 +784,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -525,6 +813,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 148
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (6)
@@ -532,6 +828,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -553,6 +857,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 150
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (4)
@@ -560,6 +872,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -581,6 +901,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 152
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (2)
@@ -588,6 +916,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -609,12 +945,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 154
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
       Position: {x: 33.1, y: 13.41, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -636,12 +988,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 156
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Stone1_grass_shadow
       Position: {x: 32.17, y: 3.43, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -667,6 +1035,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 108
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_house_wood
         (1)
@@ -674,6 +1050,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -695,6 +1079,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 131
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_shuijing
         (2)
@@ -709,6 +1101,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 146
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (8)
@@ -716,6 +1116,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -741,12 +1149,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 136
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_tree
       Position: {x: 0, y: 0, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -767,6 +1191,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 140
       Key: MapChunk/Main_Area_01/SceneBake/village_01_n/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (3)
@@ -774,6 +1206,14 @@ MonoBehaviour:
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -799,6 +1239,14 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     FovStaticSegments: []
   - Chunk:
       X: 1
@@ -817,12 +1265,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
     - ItemId: 158
       Key: 1/P1
       Position: {x: 43.789997, y: 38.72, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
         Type: 0
         Param1: 0
         Param2: 0
@@ -1121,7 +1585,7 @@ MonoBehaviour:
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
   EntityRefreshInfo:
   - StaticId: 100
-    UniqName: 
+    UniqName: teleporter_to_village_01_road
     AppearCond:
       Type: 0
       Param1: 0
@@ -1140,10 +1604,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009708
+      rid: 4481876947955351714
   - StaticId: 101
     UniqName: 
     AppearCond:
@@ -1164,10 +1632,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009709
+      rid: 4481876947955351715
   - StaticId: 102
     UniqName: 
     AppearCond:
@@ -1188,10 +1660,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009710
+      rid: 4481876947955351716
   - StaticId: 103
     UniqName: 
     AppearCond:
@@ -1212,10 +1688,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009711
+      rid: 4481876947955351717
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -1236,10 +1716,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009712
+      rid: 4481876947955351718
   - StaticId: 105
     UniqName: 
     AppearCond:
@@ -1260,10 +1744,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009713
+      rid: 4481876947955351719
   - StaticId: 106
     UniqName: 
     AppearCond:
@@ -1284,10 +1772,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009714
+      rid: 4481876947955351720
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -1308,11 +1800,43 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009715
+      rid: 4481876947955351721
   - StaticId: 108
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876947955351722
+  - StaticId: 109
     UniqName: gp_03
     AppearCond:
       Type: 0
@@ -1332,11 +1856,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009716
-  - StaticId: 109
+      rid: 4481876947955351723
+  - StaticId: 110
     UniqName: gp_02
     AppearCond:
       Type: 0
@@ -1356,11 +1884,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009717
-  - StaticId: 110
+      rid: 4481876947955351724
+  - StaticId: 111
     UniqName: gp_01
     AppearCond:
       Type: 0
@@ -1380,34 +1912,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009718
-  - StaticId: 111
-    UniqName: 
-    AppearCond:
-      Type: 1
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 958884395162009719
+      rid: 4481876947955351725
   - StaticId: 112
     UniqName: 
     AppearCond:
@@ -1428,14 +1940,18 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009720
+      rid: 4481876947955351726
   - StaticId: 113
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 1
       Param1: 0
       Param2: 0
       Param3: 0
@@ -1452,10 +1968,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009721
+      rid: 4481876947955351727
   - StaticId: 114
     UniqName: 
     AppearCond:
@@ -1476,10 +1996,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009722
+      rid: 4481876947955351728
   - StaticId: 115
     UniqName: 
     AppearCond:
@@ -1500,10 +2024,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009723
+      rid: 4481876947955351729
   - StaticId: 116
     UniqName: 
     AppearCond:
@@ -1524,10 +2052,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009724
+      rid: 4481876947955351730
   - StaticId: 117
     UniqName: 
     AppearCond:
@@ -1548,10 +2080,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009725
+      rid: 4481876947955351731
   - StaticId: 118
     UniqName: 
     AppearCond:
@@ -1572,10 +2108,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009726
+      rid: 4481876947955351732
   - StaticId: 119
     UniqName: 
     AppearCond:
@@ -1596,10 +2136,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009727
+      rid: 4481876947955351733
   - StaticId: 120
     UniqName: 
     AppearCond:
@@ -1620,10 +2164,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009728
+      rid: 4481876947955351734
   - StaticId: 121
     UniqName: 
     AppearCond:
@@ -1644,10 +2192,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009729
+      rid: 4481876947955351735
   - StaticId: 122
     UniqName: 
     AppearCond:
@@ -1668,10 +2220,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009730
+      rid: 4481876947955351736
   - StaticId: 123
     UniqName: 
     AppearCond:
@@ -1692,10 +2248,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009731
+      rid: 4481876947955351737
   - StaticId: 124
     UniqName: 
     AppearCond:
@@ -1716,59 +2276,15 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009732
+      rid: 4481876947955351738
   - StaticId: 125
-    UniqName: cornor_01_b
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 958884395162009733
-  - StaticId: 126
-    UniqName: cornor_01_a
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 958884395162009734
-  - StaticId: 127
     UniqName: 
     AppearCond:
       Type: 0
@@ -1788,10 +2304,70 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009735
+      rid: 4481876947955351739
+  - StaticId: 126
+    UniqName: cornor_01_b
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876947955351740
+  - StaticId: 127
+    UniqName: cornor_01_a
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876947955351741
   - StaticId: 128
     UniqName: 
     AppearCond:
@@ -1812,10 +2388,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009736
+      rid: 4481876947955351742
   - StaticId: 129
     UniqName: 
     AppearCond:
@@ -1836,10 +2416,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009737
+      rid: 4481876947955351743
   - StaticId: 130
     UniqName: 
     AppearCond:
@@ -1860,10 +2444,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009738
+      rid: 4481876947955351744
   - StaticId: 131
     UniqName: 
     AppearCond:
@@ -1884,10 +2472,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009739
+      rid: 4481876947955351745
   - StaticId: 132
     UniqName: 
     AppearCond:
@@ -1908,10 +2500,14 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009740
+      rid: 4481876947955351746
   - StaticId: 133
     UniqName: 
     AppearCond:
@@ -1932,10 +2528,42 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 958884395162009741
+      rid: 4481876947955351747
+  - StaticId: 134
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876947955351748
   NamedPoints:
   - Name: control_gan_look
     PointType: 0
@@ -2043,17 +2671,17 @@ MonoBehaviour:
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_03
-    PointType: 4
+    PointType: 5
     Position: {x: 70.850006, y: 52.22, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_02
-    PointType: 4
+    PointType: 5
     Position: {x: 68.91, y: 22.119999, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   - Name: walker_born_01
-    PointType: 4
+    PointType: 5
     Position: {x: 37.15, y: 39.38, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
@@ -2098,11 +2726,12 @@ MonoBehaviour:
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 0, y: 0, z: 0}
   NamedPaths:
-  - Name: walker_01
+  - Name: walker_03
     Points:
-    - walker_born_01
-    - p_003
     - walker_born_02
+    - p_002
+    - p_001
+    - walker_born_03
     Tag: walker
   - Name: walker_02
     Points:
@@ -2111,43 +2740,51 @@ MonoBehaviour:
     - p_006
     - walker_born_03
     Tag: walker
-  - Name: walker_03
+  - Name: walker_01
     Points:
+    - walker_born_01
+    - p_003
     - walker_born_02
-    - p_002
-    - p_001
-    - walker_born_03
     Tag: walker
   PortalNetworks:
-  - NetworkId: PortalNetworks
+  - NetworkId: walker_main
     Nodes:
     - NodeId: patrol_001
       Position: {x: 34.79, y: 17.05, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 5
     - NodeId: patrol_002
       Position: {x: 36.57, y: 8.3, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_003
       Position: {x: 41.79, y: 6.54, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_004
       Position: {x: 52.36, y: 5.71, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_005
       Position: {x: 67.26, y: 6.13, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_006
       Position: {x: 64.57, y: 12.21, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_007
       Position: {x: 63.55, y: 20.5, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_008
       Position: {x: 52.47, y: 26.21, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 6
     - NodeId: patrol_009
       Position: {x: 43.43, y: 26.21, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
+      PointType: 7
     Edges:
     - NodeA: patrol_001
       NodeB: patrol_002
@@ -2176,10 +2813,21 @@ MonoBehaviour:
     - NodeA: patrol_001
       NodeB: patrol_009
       Weight: 12.59187
+  BossEncounters: []
   references:
     version: 2
     RefIds:
-    - rid: 958884395162009708
+    - rid: 4481876947955351714
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 46.45, y: 37.23}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: village_01_road
+        TargetNamedPoint: village_01_road_to_town
+    - rid: 4481876947955351715
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -2190,7 +2838,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009709
+    - rid: 4481876947955351716
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: control_gan_01
@@ -2201,7 +2849,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009710
+    - rid: 4481876947955351717
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon_01
@@ -2217,7 +2865,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009711
+    - rid: 4481876947955351718
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: memory_point
@@ -2228,7 +2876,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009712
+    - rid: 4481876947955351719
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_top
@@ -2239,7 +2887,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009713
+    - rid: 4481876947955351720
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_seed
@@ -2252,7 +2900,7 @@ MonoBehaviour:
           - VineGrowLength
           values:
           - 3.7
-    - rid: 958884395162009714
+    - rid: 4481876947955351721
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
@@ -2260,7 +2908,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009715
+    - rid: 4481876947955351722
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_entry_01
@@ -2268,7 +2916,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009716
+    - rid: 4481876947955351723
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2276,7 +2924,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009717
+    - rid: 4481876947955351724
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2284,7 +2932,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009718
+    - rid: 4481876947955351725
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2292,7 +2940,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009719
+    - rid: 4481876947955351726
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2302,7 +2950,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_out
-    - rid: 958884395162009720
+    - rid: 4481876947955351727
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2312,7 +2960,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_in
-    - rid: 958884395162009721
+    - rid: 4481876947955351728
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2323,7 +2971,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009722
+    - rid: 4481876947955351729
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2334,7 +2982,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009723
+    - rid: 4481876947955351730
       type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_insult_girl
@@ -2345,7 +2993,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009724
+    - rid: 4481876947955351731
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
@@ -2356,7 +3004,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009725
+    - rid: 4481876947955351732
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -2367,7 +3015,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009726
+    - rid: 4481876947955351733
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -2378,7 +3026,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 958884395162009727
+    - rid: 4481876947955351734
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -2400,11 +3048,11 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 958884395162009742
+            rid: 4481876947955351749
         - GroupIdx: 1
           InitInfo:
-            rid: 958884395162009743
-    - rid: 958884395162009728
+            rid: 4481876947955351750
+    - rid: 4481876947955351735
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
@@ -2412,7 +3060,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009729
+    - rid: 4481876947955351736
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2420,7 +3068,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009730
+    - rid: 4481876947955351737
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2428,7 +3076,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009731
+    - rid: 4481876947955351738
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -2436,7 +3084,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009732
+    - rid: 4481876947955351739
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
@@ -2452,7 +3100,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009733
+    - rid: 4481876947955351740
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -2468,7 +3116,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009734
+    - rid: 4481876947955351741
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -2484,7 +3132,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009735
+    - rid: 4481876947955351742
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -2500,7 +3148,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009736
+    - rid: 4481876947955351743
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -2516,7 +3164,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009737
+    - rid: 4481876947955351744
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -2532,7 +3180,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009738
+    - rid: 4481876947955351745
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
@@ -2548,7 +3196,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009739
+    - rid: 4481876947955351746
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
@@ -2556,7 +3204,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009740
+    - rid: 4481876947955351747
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -2564,7 +3212,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009741
+    - rid: 4481876947955351748
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -2572,7 +3220,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 958884395162009742
+    - rid: 4481876947955351749
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
@@ -2588,7 +3236,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 958884395162009743
+    - rid: 4481876947955351750
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01

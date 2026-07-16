@@ -24,6 +24,9 @@ namespace My.MapExport
         DigPoint,
         GuardSpawner,
         WalkerStart,
+        WalkerSpawn,
+        WalkerTransit,
+        WalkerDespawn,
 
         PatrolPoint, // 路点类型
 
@@ -58,6 +61,7 @@ namespace My.MapExport
         public string NodeId;
         public Vector3 Position;
         public Quaternion Rotation;
+        public ENamedPointType PointType = ENamedPointType.Normal;
     }
 
     [Serializable]
@@ -98,6 +102,7 @@ namespace My.MapExport
         public string node_id;
         public Vector3 position;
         public Quaternion rotation;
+        public ENamedPointType point_type;
     }
 
     [Serializable]

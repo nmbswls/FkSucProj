@@ -15,6 +15,17 @@ namespace My.MapExport
         List<Transform> nodes = new();
 
         [Serializable]
+        public class NodeTypeBinding
+        {
+            public Transform node;
+            public ENamedPointType pointType = ENamedPointType.Normal;
+        }
+
+        [Tooltip("可选：为 network 节点指定用途；未绑定节点保持 Normal。")]
+        [SerializeField]
+        List<NodeTypeBinding> nodeTypes = new();
+
+        [Serializable]
         public class EdgeBinding
         {
             public Transform a;
@@ -29,6 +40,8 @@ namespace My.MapExport
         public string NetworkId => string.IsNullOrEmpty(networkId) ? gameObject.name : networkId;
 
         public IReadOnlyList<Transform> Nodes => nodes;
+
+        public IReadOnlyList<NodeTypeBinding> NodeTypes => nodeTypes;
 
         public IReadOnlyList<EdgeBinding> Edges => edges;
 

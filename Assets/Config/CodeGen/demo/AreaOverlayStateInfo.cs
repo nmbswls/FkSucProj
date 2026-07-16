@@ -34,6 +34,16 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
         { if(!_buf["procedural_def_id"].IsString) { throw new SerializationException(); }  ProceduralDefId = _buf["procedural_def_id"]; }
         { if(!_buf["peace_zone_mark"].IsBoolean) { throw new SerializationException(); }  PeaceZoneMark = _buf["peace_zone_mark"]; }
+        { if(!_buf["walker_limit"].IsNumber) { throw new SerializationException(); }  WalkerLimit = _buf["walker_limit"]; }
+        { if(!_buf["walker_spawn_interval"].IsNumber) { throw new SerializationException(); }  WalkerSpawnInterval = _buf["walker_spawn_interval"]; }
+        { if(!_buf["walker_hot_radius"].IsNumber) { throw new SerializationException(); }  WalkerHotRadius = _buf["walker_hot_radius"]; }
+        { if(!_buf["walker_hidden_radius"].IsNumber) { throw new SerializationException(); }  WalkerHiddenRadius = _buf["walker_hidden_radius"]; }
+        { if(!_buf["walker_normal_weight"].IsNumber) { throw new SerializationException(); }  WalkerNormalWeight = _buf["walker_normal_weight"]; }
+        { if(!_buf["walker_advanced_weight"].IsNumber) { throw new SerializationException(); }  WalkerAdvancedWeight = _buf["walker_advanced_weight"]; }
+        { if(!_buf["walker_elite_weight"].IsNumber) { throw new SerializationException(); }  WalkerEliteWeight = _buf["walker_elite_weight"]; }
+        { if(!_buf["walker_normal_cfg_id"].IsString) { throw new SerializationException(); }  WalkerNormalCfgId = _buf["walker_normal_cfg_id"]; }
+        { if(!_buf["walker_advanced_cfg_id"].IsString) { throw new SerializationException(); }  WalkerAdvancedCfgId = _buf["walker_advanced_cfg_id"]; }
+        { if(!_buf["walker_elite_cfg_id"].IsString) { throw new SerializationException(); }  WalkerEliteCfgId = _buf["walker_elite_cfg_id"]; }
     }
 
     public static AreaOverlayStateInfo DeserializeAreaOverlayStateInfo(JSONNode _buf)
@@ -105,6 +115,46 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
     /// 全图安全区标记
     /// </summary>
     public bool PeaceZoneMark;
+    /// <summary>
+    /// 路人数量上限
+    /// </summary>
+    public int WalkerLimit;
+    /// <summary>
+    /// 刷新间隔
+    /// </summary>
+    public float WalkerSpawnInterval;
+    /// <summary>
+    /// 玩家热区半径
+    /// </summary>
+    public float WalkerHotRadius;
+    /// <summary>
+    /// 玩家近身不可见半径
+    /// </summary>
+    public float WalkerHiddenRadius;
+    /// <summary>
+    /// 普通权重
+    /// </summary>
+    public int WalkerNormalWeight;
+    /// <summary>
+    /// 高级权重
+    /// </summary>
+    public int WalkerAdvancedWeight;
+    /// <summary>
+    /// 精英权重
+    /// </summary>
+    public int WalkerEliteWeight;
+    /// <summary>
+    /// 普通市民CfgId
+    /// </summary>
+    public string WalkerNormalCfgId;
+    /// <summary>
+    /// 高级市民CfgId
+    /// </summary>
+    public string WalkerAdvancedCfgId;
+    /// <summary>
+    /// 精英市民CfgId
+    /// </summary>
+    public string WalkerEliteCfgId;
    
     public const int __ID__ = 928836711;
     public override int GetTypeId() => __ID__;
@@ -133,6 +183,16 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
         + "proceduralDefId:" + ProceduralDefId + ","
         + "peaceZoneMark:" + PeaceZoneMark + ","
+        + "walkerLimit:" + WalkerLimit + ","
+        + "walkerSpawnInterval:" + WalkerSpawnInterval + ","
+        + "walkerHotRadius:" + WalkerHotRadius + ","
+        + "walkerHiddenRadius:" + WalkerHiddenRadius + ","
+        + "walkerNormalWeight:" + WalkerNormalWeight + ","
+        + "walkerAdvancedWeight:" + WalkerAdvancedWeight + ","
+        + "walkerEliteWeight:" + WalkerEliteWeight + ","
+        + "walkerNormalCfgId:" + WalkerNormalCfgId + ","
+        + "walkerAdvancedCfgId:" + WalkerAdvancedCfgId + ","
+        + "walkerEliteCfgId:" + WalkerEliteCfgId + ","
         + "}";
     }
 }

@@ -508,7 +508,12 @@ namespace My.Map.Logic
                     }
 
                     var path = GetRuntimePath(npcRecord.MovePath);
-                    if(npcRecord.CurrPathIdx == path.PointList.Count - 1)
+                    if (path == null || path.PointList.Count < 2)
+                    {
+                        continue;
+                    }
+
+                    if(npcRecord.CurrPathIdx >= path.GetEndIndex())
                     {
                         continue;
                     }

@@ -1,0 +1,10 @@
+{
+    "area_id": "village_01_road",
+    "networks": [
+        {
+            "network_id": "PortalNetworks",
+            "nodes": [],
+            "edges": []
+        }
+    ]
+}

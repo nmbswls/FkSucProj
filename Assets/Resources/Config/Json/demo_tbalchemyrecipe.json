@@ -1,0 +1,430 @@
+[
+  {
+    "id": 1001,
+    "sort": 10,
+    "tier": 1,
+    "display_name": "清明滴剂",
+    "result_item_id": "mat_alchemical_gel",
+    "virtue_requirements": [
+      {
+        "virtue_id": 4,
+        "value": 4
+      },
+      {
+        "virtue_id": 8,
+        "value": 2
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 4,
+        "value": 2
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_forest_dew",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 1002,
+    "sort": 20,
+    "tier": 1,
+    "display_name": "醒神散",
+    "result_item_id": "mat_charcoal",
+    "virtue_requirements": [
+      {
+        "virtue_id": 1,
+        "value": 5
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 1,
+        "value": 2
+      },
+      {
+        "aspect_id": 3,
+        "value": 1
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_plant_fiber",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 1003,
+    "sort": 30,
+    "tier": 1,
+    "display_name": "稳土糊",
+    "result_item_id": "mat_clay",
+    "virtue_requirements": [
+      {
+        "virtue_id": 6,
+        "value": 4
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 5,
+        "value": 3
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_clay",
+        "count": 2
+      },
+      {
+        "item_id": "mat_resin",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 1004,
+    "sort": 40,
+    "tier": 1,
+    "display_name": "树脂活络膏",
+    "result_item_id": "mat_natural_latex",
+    "virtue_requirements": [
+      {
+        "virtue_id": 1,
+        "value": 4
+      },
+      {
+        "virtue_id": 7,
+        "value": 2
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 5,
+        "value": 2
+      },
+      {
+        "aspect_id": 1,
+        "value": 1
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_resin",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2001,
+    "sort": 110,
+    "tier": 2,
+    "display_name": "钢化凝胶",
+    "result_item_id": "mat_alchemical_gel",
+    "virtue_requirements": [
+      {
+        "virtue_id": 2,
+        "value": 8
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 2,
+        "value": 3
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_alchemical_gel",
+        "count": 1
+      },
+      {
+        "item_id": "mat_alchemical_rubber",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2002,
+    "sort": 120,
+    "tier": 2,
+    "display_name": "净火封瓶剂",
+    "result_item_id": "mat_alchemical_glass",
+    "virtue_requirements": [
+      {
+        "virtue_id": 4,
+        "value": 6
+      },
+      {
+        "virtue_id": 5,
+        "value": 2
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 3,
+        "value": 4
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_alchemical_glass",
+        "count": 1
+      },
+      {
+        "item_id": "mat_charcoal",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 2003,
+    "sort": 130,
+    "tier": 2,
+    "display_name": "缚咒胶浆",
+    "result_item_id": "mat_alchemical_rubber",
+    "virtue_requirements": [
+      {
+        "virtue_id": 6,
+        "value": 5
+      },
+      {
+        "virtue_id": 10,
+        "value": 2
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 8,
+        "value": 3
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_alchemical_rubber",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 2,
+    "unlock_param": "mat_alchemical_glass|1",
+    "unlock_item_min_count": 1
+  },
+  {
+    "id": 2004,
+    "sort": 140,
+    "tier": 2,
+    "display_name": "蜜蜡宁神锭",
+    "result_item_id": "mat_beeswax",
+    "virtue_requirements": [
+      {
+        "virtue_id": 3,
+        "value": 5
+      },
+      {
+        "virtue_id": 8,
+        "value": 3
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 9,
+        "value": 2
+      },
+      {
+        "aspect_id": 10,
+        "value": 1
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_beeswax",
+        "count": 2
+      },
+      {
+        "item_id": "mat_forest_dew",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 3001,
+    "sort": 210,
+    "tier": 3,
+    "display_name": "暗血凝剂",
+    "result_item_id": "mat_alchemical_gel",
+    "virtue_requirements": [
+      {
+        "virtue_id": 9,
+        "value": 6
+      },
+      {
+        "virtue_id": 5,
+        "value": 3
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 6,
+        "value": 4
+      },
+      {
+        "aspect_id": 7,
+        "value": 3
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_obsidian",
+        "count": 1
+      },
+      {
+        "item_id": "mat_alchemical_gel",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 2,
+    "unlock_param": "mat_alchemical_rubber|2",
+    "unlock_item_min_count": 2
+  },
+  {
+    "id": 3002,
+    "sort": 220,
+    "tier": 3,
+    "display_name": "灵纹催化泉",
+    "result_item_id": "mat_alchemical_glass",
+    "virtue_requirements": [
+      {
+        "virtue_id": 10,
+        "value": 5
+      },
+      {
+        "virtue_id": 4,
+        "value": 4
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 10,
+        "value": 5
+      },
+      {
+        "aspect_id": 8,
+        "value": 2
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_runed_stone",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 2,
+    "unlock_param": "mat_alchemical_glass|2",
+    "unlock_item_min_count": 2
+  },
+  {
+    "id": 3003,
+    "sort": 230,
+    "tier": 3,
+    "display_name": "月华宁神剂",
+    "result_item_id": "mat_alchemical_gel",
+    "virtue_requirements": [
+      {
+        "virtue_id": 8,
+        "value": 7
+      },
+      {
+        "virtue_id": 3,
+        "value": 4
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 9,
+        "value": 3
+      },
+      {
+        "aspect_id": 1,
+        "value": 3
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_moonwood",
+        "count": 1
+      },
+      {
+        "item_id": "mat_forest_dew",
+        "count": 2
+      }
+    ],
+    "unlock_mode": 0,
+    "unlock_param": "",
+    "unlock_item_min_count": 0
+  },
+  {
+    "id": 3004,
+    "sort": 240,
+    "tier": 3,
+    "display_name": "镇祟护蜡",
+    "result_item_id": "mat_warding_wax",
+    "virtue_requirements": [
+      {
+        "virtue_id": 6,
+        "value": 6
+      },
+      {
+        "virtue_id": 4,
+        "value": 5
+      }
+    ],
+    "aspect_requirements": [
+      {
+        "aspect_id": 8,
+        "value": 4
+      },
+      {
+        "aspect_id": 7,
+        "value": 2
+      }
+    ],
+    "fixed_materials": [
+      {
+        "item_id": "mat_warding_wax",
+        "count": 1
+      },
+      {
+        "item_id": "mat_spiritwood",
+        "count": 1
+      }
+    ],
+    "unlock_mode": 2,
+    "unlock_param": "mat_runed_stone|1",
+    "unlock_item_min_count": 1
+  }
+]

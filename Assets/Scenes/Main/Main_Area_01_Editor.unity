@@ -631,7 +631,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Info:
     Name: walker_born_01
-    PointType: 4
+    PointType: 5
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
@@ -2236,6 +2236,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -2492,6 +2496,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -2876,6 +2884,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -5082,6 +5094,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -5290,6 +5306,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -22429,6 +22449,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -27057,6 +27081,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -27473,6 +27501,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -27712,6 +27744,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -27900,6 +27936,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -28239,7 +28279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e8c2a91b5d4e6f807192a3b4c5d6e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkId: 
+  networkId: walker_main
   nodes:
   - {fileID: 1992042318}
   - {fileID: 1889585191}
@@ -28250,6 +28290,25 @@ MonoBehaviour:
   - {fileID: 636471717}
   - {fileID: 1024874568}
   - {fileID: 804855850}
+  nodeTypes:
+  - node: {fileID: 1992042318}
+    pointType: 5
+  - node: {fileID: 1889585191}
+    pointType: 6
+  - node: {fileID: 1692677382}
+    pointType: 6
+  - node: {fileID: 1067280828}
+    pointType: 6
+  - node: {fileID: 818338693}
+    pointType: 6
+  - node: {fileID: 1457017119}
+    pointType: 6
+  - node: {fileID: 636471717}
+    pointType: 6
+  - node: {fileID: 1024874568}
+    pointType: 6
+  - node: {fileID: 804855850}
+    pointType: 7
   edges:
   - a: {fileID: 1992042318}
     b: {fileID: 1889585191}
@@ -28377,6 +28436,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -31067,6 +31130,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -31956,6 +32023,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -32040,6 +32111,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -32219,6 +32294,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -38138,7 +38217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Info:
     Name: walker_born_02
-    PointType: 4
+    PointType: 5
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
@@ -38582,6 +38661,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Key: 1/Room01
   AppearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
+  DisappearCond:
     Type: 0
     Param1: 0
     Param2: 0
@@ -39105,7 +39192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Info:
     Name: walker_born_03
-    PointType: 4
+    PointType: 5
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0, w: 0}
     Scale: {x: 0, y: 0, z: 0}
@@ -39346,6 +39433,7 @@ Transform:
   - {fileID: 377818216}
   - {fileID: 819227194}
   - {fileID: 2037182166}
+  - {fileID: 1781176769}
   m_Father: {fileID: 1784646540}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &990001025
@@ -40026,6 +40114,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -40476,6 +40568,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -40650,6 +40746,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -40856,6 +40956,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -41009,6 +41113,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -41092,6 +41200,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -44888,6 +45000,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -57673,6 +57789,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -57966,6 +58086,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -58263,6 +58387,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -58931,6 +59059,92 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4150969654887993043, guid: 49284b055f0fd1b4ca118eb392967051, type: 3}
   m_PrefabInstance: {fileID: 1775767014}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1781176768
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1781176769}
+  - component: {fileID: 1781176770}
+  m_Layer: 0
+  m_Name: teleporter_to_village_01_road
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1781176769
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781176768}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 46.45, y: 37.23, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 990001024}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1781176770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781176768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 0
+    UniqName: teleporter_to_village_01_road
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876947955351602
+  references:
+    version: 2
+    RefIds:
+    - rid: 4481876947955351602
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 46.45, y: 37.23}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: village_01_road
+        TargetNamedPoint: village_01_road_to_town
 --- !u!1 &1784646539
 GameObject:
   m_ObjectHideFlags: 0
@@ -59032,6 +59246,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -60601,6 +60819,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -60683,6 +60905,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -93935,6 +94161,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -94539,6 +94769,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -95273,6 +95507,14 @@ MonoBehaviour:
     Param4: 0
     Param5: 
     Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1001 &2073849276
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -95401,6 +95643,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -95644,6 +95890,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -95733,6 +95983,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -96118,6 +96372,14 @@ MonoBehaviour:
     Param4: 0
     Param5: 
     Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1001 &2274183380621246139
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -96416,6 +96678,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
@@ -115383,6 +115649,14 @@ MonoBehaviour:
     Param4: 0
     Param5: 
     Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!4 &7569726660480094680
 Transform:
   m_ObjectHideFlags: 0
@@ -115447,6 +115721,10 @@ MonoBehaviour:
       Param6: 
     WillRespawn: 0
     RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:

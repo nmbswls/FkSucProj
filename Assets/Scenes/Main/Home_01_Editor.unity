@@ -19359,8 +19359,8 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-        TargetMapName: village_01
-        TargetNamedPoint: entry_bottom
+        TargetMapName: village_01_road
+        TargetNamedPoint: village_01_road_from_home
 --- !u!1001 &1285981379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25886,6 +25886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkId: 
   nodes: []
+  nodeTypes: []
   edges: []
 --- !u!1 &9900030015
 GameObject:

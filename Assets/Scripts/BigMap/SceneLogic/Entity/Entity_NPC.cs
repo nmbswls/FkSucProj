@@ -880,7 +880,21 @@ namespace My.Map
         }
 
 
-        public void OnNpcBlurt(float sjAmount, float sjDamage)
+        public void OnNpcBlurt(float sjAmount, float sjDamage, long? srcEntityId = null)
+        {
+            ForceSetResource(AttrIdConsts.NPCSJProgress, 0); // 清空射精条
+
+            var totalDamage = (long)(sjAmount * sjDamage * 1000);
+            if (totalDamage <= 0 || IsDead)
+            {
+                return;
+            }
+
+            var sourceId = srcEntityId ?? LogicManager.playerLogicEntity?.Id;
+            ApplyResourceChange(AttrIdConsts.HP, -totalDamage, false,
+                Fight.FightStruct.EDmgFlag.None, sourceId);
+        }
+/* Legacy disabled formal-blurt body retained only for source compatibility.
         {
             ForceSetResource(AttrIdConsts.NPCSJProgress, 0); // 清空射精条
             var totalDamage = (long)(sjAmount * sjDamage * 1000);
@@ -889,6 +903,7 @@ namespace My.Map
         }
 
         // debuff 小射精：不清空射精条
+*/
         public void OnNpcMiniBlurt(float sjAmount, float sjDamage, long? srcEntityId)
         {
             var totalDamage = (long)(sjAmount * sjDamage * 1000);

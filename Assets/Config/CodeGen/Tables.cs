@@ -181,6 +181,17 @@ public partial class Tables
     public demo.TbNamedNpcJingYuanType TbNamedNpcJingYuanType {get; }
     public demo.TbJingYuanTuneRule TbJingYuanTuneRule {get; }
     public demo.TbJingYuanRenewalRule TbJingYuanRenewalRule {get; }
+    public demo.TbAlchemyMaterial TbAlchemyMaterial {get; }
+    public demo.TbAlchemyFurnace TbAlchemyFurnace {get; }
+    public demo.TbAlchemyTool TbAlchemyTool {get; }
+    public demo.TbAlchemyRecipe TbAlchemyRecipe {get; }
+    public demo.TbAlchemyProgress TbAlchemyProgress {get; }
+    /// <summary>
+    /// 城镇路人数量阶段配置，按 Prosperity 选择最高可用阶段
+    /// </summary>
+    public demo.TbTownWalkerPopulation TbTownWalkerPopulation {get; }
+    public demo.TbAlchemyVirtueDef TbAlchemyVirtueDef {get; }
+    public demo.TbAlchemyAspectDef TbAlchemyAspectDef {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -309,6 +320,14 @@ public partial class Tables
         TbNamedNpcJingYuanType = new demo.TbNamedNpcJingYuanType(loader("demo_tbnamednpcjingyuantype"));
         TbJingYuanTuneRule = new demo.TbJingYuanTuneRule(loader("demo_tbjingyuantunerule"));
         TbJingYuanRenewalRule = new demo.TbJingYuanRenewalRule(loader("demo_tbjingyuanrenewalrule"));
+        TbAlchemyMaterial = new demo.TbAlchemyMaterial(loader("demo_tbalchemymaterial"));
+        TbAlchemyFurnace = new demo.TbAlchemyFurnace(loader("demo_tbalchemyfurnace"));
+        TbAlchemyTool = new demo.TbAlchemyTool(loader("demo_tbalchemytool"));
+        TbAlchemyRecipe = new demo.TbAlchemyRecipe(loader("demo_tbalchemyrecipe"));
+        TbAlchemyProgress = new demo.TbAlchemyProgress(loader("demo_tbalchemyprogress"));
+        TbTownWalkerPopulation = new demo.TbTownWalkerPopulation(loader("demo_tbtownwalkerpopulation"));
+        TbAlchemyVirtueDef = new demo.TbAlchemyVirtueDef(loader("demo_tbalchemyvirtuedef"));
+        TbAlchemyAspectDef = new demo.TbAlchemyAspectDef(loader("demo_tbalchemyaspectdef"));
         ResolveRef();
     }
     
@@ -439,6 +458,14 @@ public partial class Tables
         TbNamedNpcJingYuanType.ResolveRef(this);
         TbJingYuanTuneRule.ResolveRef(this);
         TbJingYuanRenewalRule.ResolveRef(this);
+        TbAlchemyMaterial.ResolveRef(this);
+        TbAlchemyFurnace.ResolveRef(this);
+        TbAlchemyTool.ResolveRef(this);
+        TbAlchemyRecipe.ResolveRef(this);
+        TbAlchemyProgress.ResolveRef(this);
+        TbTownWalkerPopulation.ResolveRef(this);
+        TbAlchemyVirtueDef.ResolveRef(this);
+        TbAlchemyAspectDef.ResolveRef(this);
     }
 }
 

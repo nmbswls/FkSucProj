@@ -28,5 +28,10 @@
     "map_id": "test_link_b",
     "name": "Home East Outskirts",
     "can_annex_homestead": false
+  },
+  {
+    "map_id": "village_01_road",
+    "name": "晨钟镇南北道",
+    "can_annex_homestead": false
   }
 ]
