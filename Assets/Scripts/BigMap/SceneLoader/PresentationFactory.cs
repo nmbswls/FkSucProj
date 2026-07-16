@@ -29,7 +29,7 @@ namespace My
 
     public static class PresentationConfig
     {
-        public static string GetPrefabKey(EEntityType type, string cfgId)
+        public static string GetPrefabKey(EEntityType type, string cfgId, long entityId = 0)
         {
             // 映射逻辑类型到表现Prefab地址（Addressables key/Resources路径）
             switch (type)
@@ -69,7 +69,7 @@ namespace My
                 case EEntityType.Npc:
                     {
                         var npcCfg = CfgMgr.Cfgs.TbUnitNpc.Get(cfgId);
-                        string prefabName = npcCfg.PrefabName;
+                        string prefabName = NpcViewRandomizationCatalog.ResolvePrefabName(cfgId, entityId);
                         if (string.IsNullOrEmpty(prefabName))
                         {
                             prefabName = cfgId;
@@ -180,6 +180,7 @@ namespace My
         private IAssetProviderAsync _assetAsync;
         private IAssetProvider _asset;
         private readonly Dictionary<string, Stack<GameObject>> _pool = new();
+        private readonly Dictionary<GameObject, string> _activePrefabKeys = new();
 
         private void Awake()
         {
@@ -189,12 +190,13 @@ namespace My
 
         public IScenePresentation Spawn(ILogicEntity logic, Transform parent)
         {
-            var prefabKey = PresentationConfig.GetPrefabKey(logic.Type, logic.CfgId);
+            var prefabKey = PresentationConfig.GetPrefabKey(logic.Type, logic.CfgId, logic.Id);
             if (string.IsNullOrEmpty(prefabKey))
             {
                 return null;
             }
             var go = TryGet(prefabKey) ?? _asset.Instantiate(prefabKey);
+            _activePrefabKeys[go] = prefabKey;
             go.transform.SetParent(parent);
             var pres = go.GetComponent<IScenePresentation>();
             //if (pres == null)
@@ -209,7 +211,10 @@ namespace My
                 return;
             }
             var go = (presentation as Component).gameObject;
-            var prefabKey = PresentationConfig.ResolveKey(go);
+            var prefabKey = _activePrefabKeys.TryGetValue(go, out var trackedKey)
+                ? trackedKey
+                : PresentationConfig.ResolveKey(go);
+            _activePrefabKeys.Remove(go);
             go.SetActive(false);
             if (!_pool.TryGetValue(prefabKey, out var stack))
             {
@@ -221,7 +226,7 @@ namespace My
 
         public async Task<IScenePresentation> SpawnAsync(ILogicEntity logic)
         {
-            string key = PresentationConfig.GetPrefabKey(logic.Type, logic.CfgId);
+            string key = PresentationConfig.GetPrefabKey(logic.Type, logic.CfgId, logic.Id);
             if (string.IsNullOrEmpty(key))
             {
                 return null;

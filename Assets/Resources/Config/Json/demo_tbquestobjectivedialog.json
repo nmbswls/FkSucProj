@@ -167,5 +167,31 @@
     "success_dialog_id": "vera_dream_complete",
     "fail_dialog_id": "",
     "show_cond": []
+  },
+  {
+    "id": 148,
+    "quest_id": 214,
+    "obj_id": "214_s1_Main",
+    "character_key": "home_merchant",
+    "entry_dialog_id": "sahel_kitchen_request",
+    "option_text": "和萨赫尔谈谈。",
+    "priority": 20,
+    "once": true,
+    "success_dialog_id": "",
+    "fail_dialog_id": "",
+    "show_cond": []
+  },
+  {
+    "id": 149,
+    "quest_id": 214,
+    "obj_id": "214_s3_Main",
+    "character_key": "home_merchant",
+    "entry_dialog_id": "sahel_kitchen_return",
+    "option_text": "把厨具交还给萨赫尔。",
+    "priority": 20,
+    "once": true,
+    "success_dialog_id": "",
+    "fail_dialog_id": "",
+    "show_cond": []
   }
 ]

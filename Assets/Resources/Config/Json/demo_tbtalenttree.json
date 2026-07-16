@@ -10,5 +10,17 @@
     "display_name": "卡莱尔的生存心得",
     "layout_prefab_path": "UI/Prefabs/TalentTreeLayouts/CarlisleTalentTreeLayout",
     "owner_character_key": "carlisle"
+  },
+  {
+    "tree_id": "fei_tree",
+    "display_name": "菲的估值与撬锁心得",
+    "layout_prefab_path": "UI/Prefabs/TalentTreeLayouts/FeiTalentTreeLayout",
+    "owner_character_key": "fei_thief"
+  },
+  {
+    "tree_id": "mei_merchant_tree",
+    "display_name": "商人梅的商贸心得",
+    "layout_prefab_path": "UI/Prefabs/TalentTreeLayouts/MeiMerchantTalentTreeLayout",
+    "owner_character_key": "merchant_mei"
   }
 ]

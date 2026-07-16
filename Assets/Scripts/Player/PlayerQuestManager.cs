@@ -549,7 +549,14 @@ namespace My.Player
                     continue;
                 }
 
-                playerData.SetVariable(variable.Trim());
+                var value = variable.Trim();
+                if (TryApplyNpcLocalSwitch(value, playerData))
+                {
+                    changed = true;
+                    continue;
+                }
+
+                playerData.SetVariable(value);
                 changed = true;
             }
 
@@ -557,6 +564,25 @@ namespace My.Player
             {
                 ctx.Ctx.AreaManager?.ForceCheckAllRefreshInfos();
             }
+        }
+
+        static bool TryApplyNpcLocalSwitch(string value, PlayerSystemManager playerData)
+        {
+            const string prefix = "npc_local_switch:";
+            if (playerData == null || !value.StartsWith(prefix, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var payload = value.Substring(prefix.Length).Split(':');
+            if (payload.Length != 2 || string.IsNullOrWhiteSpace(payload[0]) || string.IsNullOrWhiteSpace(payload[1]))
+            {
+                Debug.LogWarning($"Invalid NPC local switch outcome: {value}");
+                return true;
+            }
+
+            playerData.SetNamedNpcLocalSwitch(payload[0], payload[1], true);
+            return true;
         }
 
         // 任务终局奖励（QuestData.FinishReward）。与 Outcome.FinishReward（步骤出口时机）是两个发放点。

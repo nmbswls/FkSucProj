@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using My;
 using TMPro;
 using UnityEngine;
@@ -79,7 +80,29 @@ namespace My.UI
             }
 
             RefreshSummary(info);
-            outputGrid?.Refresh(info.TownFacilityOutputs);
+            var mergedOutputs = new Dictionary<string, long>();
+            if (info.TownFacilityOutputs != null)
+            {
+                foreach (var kv in info.TownFacilityOutputs)
+                {
+                    mergedOutputs[kv.Key] = kv.Value;
+                }
+            }
+
+            if (info.TransportRecoveredOutputs != null)
+            {
+                foreach (var kv in info.TransportRecoveredOutputs)
+                {
+                    if (!mergedOutputs.ContainsKey(kv.Key))
+                    {
+                        mergedOutputs[kv.Key] = 0;
+                    }
+
+                    mergedOutputs[kv.Key] += kv.Value;
+                }
+            }
+
+            outputGrid?.Refresh(mergedOutputs);
         }
 
         void RefreshSummary(GameLogicManager.OneDayBalanceInfo info)
@@ -92,8 +115,9 @@ namespace My.UI
             long afterFallen = info.FromFallenAmount + info.AddFallenAmount;
             summaryText.text =
                 $"沉沦人数：{info.FromFallenAmount} → {afterFallen}（+{info.AddFallenAmount}）\n" +
-                $"\u83b7\u5f97\u6b32\u671b\u788e\u7247?{info.DesireShardAdded}\n" +
-                $"\u6559\u56e2\u4fe1\u4ef0?+{info.CultFaithAdded}?{info.CultControlledTownCount} \u4e2a\u53d7\u63a7\u57ce\u9547 ? {info.CultTownDailyFaith}?";
+                $"获得欲望碎片：{info.DesireShardAdded}\n" +
+                $"教团信仰：+{info.CultFaithAdded}（{info.CultControlledTownCount} 个受控城镇 × {info.CultTownDailyFaith}）\n" +
+                $"运输队运回：{info.TransportRecoveredStackCount} 堆（遗失 {info.TransportLostStackCount} 堆）";
         }
 
         void OnEnable()

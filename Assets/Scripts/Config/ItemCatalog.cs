@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using cfg.demo;
@@ -231,6 +232,17 @@ namespace My.Config
             if (ItemTagCatalog.HasTag(def, EItemTag.HumanWeapon))
             {
                 item.InstanceInfo.GetOrAdd<ItemInstance4HumanWeapon>();
+                if (HumanWeaponCatalog.IsHumanWeapon(item.ItemID))
+                {
+                    HumanWeaponCatalog.TryEnsureSeed(item);
+                }
+            }
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.HumanArmar))
+            {
+                item.InstanceInfo.GetOrAdd<ItemInstance4HumanArmar>();
+                HumanArmarCatalog.TryEnsureSeed(item);
+                HumanArmarCatalog.TryGenerateAffixes(item);
             }
 
             if (ItemTagCatalog.HasTag(def, EItemTag.Charge))
@@ -362,6 +374,44 @@ namespace My.Config
                 case EItemStackProfile.Custom:
                 default:
                     return def.StackCount > 0 ? def.StackCount : 10;
+            }
+        }
+
+        // 负重：单件物品基础重量（按 stack_profile 档位估算，后续可改为独立配表字段）。
+        public static long GetItemUnitWeight(string itemId)
+        {
+            var def = GetItemDef(itemId);
+            if (def == null)
+            {
+                return 0;
+            }
+
+            if (ItemTagCatalog.HasTag(def, EItemTag.Big))
+            {
+                return 50;
+            }
+
+            switch (def.StackProfile)
+            {
+                case EItemStackProfile.Single:
+                    return 1;
+                case EItemStackProfile.Tiny:
+                    return 1;
+                case EItemStackProfile.Small:
+                    return 2;
+                case EItemStackProfile.Normal:
+                    return 5;
+                case EItemStackProfile.Bulk:
+                    return 10;
+                case EItemStackProfile.Large:
+                    return 20;
+                case EItemStackProfile.Massive:
+                    return 40;
+                case EItemStackProfile.Unlimited:
+                    return 1;
+                case EItemStackProfile.Custom:
+                default:
+                    return def.StackCount > 0 ? Math.Max(1, def.StackCount / 10) : 5;
             }
         }
 

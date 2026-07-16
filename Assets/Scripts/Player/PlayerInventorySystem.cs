@@ -36,7 +36,10 @@ namespace My.Player.Bag
         public PlayerBag WarehouseBag;
         public PlayerBag FurnitureWarehouseBag;
         public PlayerBag PlantBag;
+        public PlayerBag BigBag;
         public Dictionary<EPlayerBagId, PlayerBag> SpeBags = new Dictionary<EPlayerBagId, PlayerBag>();
+
+        readonly PlayerCarryWeightMonitor _carryWeightMonitor = new();
 
 
         public PlayerBag ImportantItemBag; // 仅用来存放珍贵物品 极少量
@@ -80,10 +83,53 @@ namespace My.Player.Bag
                 owner.ProgressionSystem.ProgressionRoot.OnStatsChanged += delegate
                 {
                     RefreshSpecialBagsFromProgression();
+                    SyncCarryWeightState();
                 };
             }
 
             RefreshSpecialBagsFromProgression();
+            BindCarryWeightBagListeners();
+            SyncCarryWeightState();
+        }
+
+        void BindCarryWeightBagListeners()
+        {
+            BindBagCarryWeightListener(MainBag);
+            BindBagCarryWeightListener(MindFacetBag);
+            BindBagCarryWeightListener(ImportantItemBag);
+            BindBagCarryWeightListener(WarehouseBag);
+            BindBagCarryWeightListener(FurnitureWarehouseBag);
+
+            if (SpeBags == null)
+            {
+                return;
+            }
+
+            foreach (var pair in SpeBags)
+            {
+                BindBagCarryWeightListener(pair.Value);
+            }
+        }
+
+        void BindBagCarryWeightListener(PlayerBag bag)
+        {
+            if (bag == null)
+            {
+                return;
+            }
+
+            bag.EvOnBagUpdate -= OnCarryWeightBagUpdated;
+            bag.EvOnBagUpdate += OnCarryWeightBagUpdated;
+        }
+
+        void OnCarryWeightBagUpdated()
+        {
+            SyncCarryWeightState();
+        }
+
+        void SyncCarryWeightState()
+        {
+            _carryWeightMonitor.Sync(LogicManager, LogicManager?.playerDataManager, this);
         }
 
         static ItemStack HydratePersistedStack(string itemId, long count, long itemInstanceId, ItemInstanceInfo instanceInfo = null)
@@ -106,6 +152,7 @@ namespace My.Player.Bag
 
             bag.InitBag(bagId, capacity, extraCapacity, layout);
             PlayerBagCatalog.ApplyAcceptedTags(bag, def);
+            BindBagCarryWeightListener(bag);
             return bag;
         }
 
@@ -194,6 +241,7 @@ namespace My.Player.Bag
 
             PlayerBagCatalog.ApplyAcceptedTags(bag, def);
             AssignKnownSpecialBagField(bagId, bag);
+            BindBagCarryWeightListener(bag);
         }
 
         void AssignKnownSpecialBagField(EPlayerBagId bagId, PlayerBag bag)
@@ -201,6 +249,10 @@ namespace My.Player.Bag
             if (bagId == EPlayerBagId.Plant)
             {
                 PlantBag = bag;
+            }
+            else if (bagId == EPlayerBagId.Big)
+            {
+                BigBag = bag;
             }
         }
 
@@ -1144,6 +1196,66 @@ namespace My.Player.Bag
             return put;
         }
 
+        // 运输队日结运回：直接送入 secretbase 通用仓库，不进玩家随身包。
+        public long GiveItemToWarehouse(string itemId, long amount)
+        {
+            var itemConf = ItemCatalog.GetItemDef(itemId);
+            if (itemConf == null || WarehouseBag == null || amount <= 0)
+            {
+                return 0;
+            }
+
+            if (itemConf.ItemType == EItemType.Currency)
+            {
+                return GiveItemToPlayer(itemId, amount);
+            }
+
+            if (ItemCatalog.RequiresInstance(itemConf))
+            {
+                long total = 0;
+                long batch = Math.Min(amount, MaxInstanceGrantBatch);
+                for (long i = 0; i < batch; i++)
+                {
+                    var stack = ItemCatalog.CreateItemStack(itemId, 1);
+                    if (stack == null || !WarehouseBag.TryPlaceStackWithoutMerge(stack))
+                    {
+                        break;
+                    }
+
+                    total++;
+                }
+
+                if (total > 0)
+                {
+                    EventOnGainItem?.Invoke(EPlayerBagId.Storage, itemId, total);
+                }
+
+                return total;
+            }
+
+            long remaining = amount;
+            remaining -= WarehouseBag.TryGiveItem(itemId, remaining);
+            var put = amount - remaining;
+            if (put > 0)
+            {
+                EventOnGainItem?.Invoke(EPlayerBagId.Storage, itemId, put);
+            }
+
+            return put;
+        }
+
+        // 负重：当前随身背包总有效重量。
+        public long GetTotalCarryWeight()
+        {
+            return PlayerCarryWeightCalculator.CalculateTotalCarryWeight(this, LogicManager?.playerDataManager);
+        }
+
+        // 负重：当前养成合成后的负重上限。
+        public long GetCarryWeightLimit()
+        {
+            return PlayerCarryWeightCalculator.CalculateCarryWeightLimit(LogicManager?.playerDataManager);
+        }
+
         /// <summary>
         /// 跨背包移动、合并或交换（同包同槽无操作）
         /// </summary>
@@ -1411,6 +1523,10 @@ namespace My.Player.Bag
             if (TryGetTagSpecialBagForItem(itemConf, out var tagBag))
             {
                 AddDistinctBag(result, tagBag);
+                if (ItemTagCatalog.HasTag(itemConf, EItemTag.Big))
+                {
+                    return result;
+                }
             }
 
             AddDistinctBag(result, GetBagById(0));

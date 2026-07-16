@@ -22,7 +22,7 @@ namespace cfg.demo
         FuncOpen = 7,
         CharacterFavorLevel = 8,
         HumanTechUnlockedCount = 9,
-        ControlledTownCount = 10,
+        NamedNpcLocalSwitch = 11,
     }
 
 } 

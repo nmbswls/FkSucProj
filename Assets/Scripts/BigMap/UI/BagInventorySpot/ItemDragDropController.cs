@@ -273,6 +273,16 @@ namespace My.UI
                     continue;
                 }
 
+                var marketPanel = hit.gameObject.GetComponentInParent<My.UI.Market.MarketPanel>();
+                if (marketPanel != null)
+                {
+                    marketPanel.OnDrop(pointerData);
+                    if (_dropHandledThisDrag)
+                    {
+                        return;
+                    }
+                }
+
                 var cell = hit.gameObject.GetComponentInParent<ItemCellBase>();
                 if (cell == null)
                 {

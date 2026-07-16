@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using My.Config;
 using TMPro;
 using UnityEngine;
 
@@ -18,5 +19,8 @@ namespace Config.Unit
 
         public bool IsPrecious; // 破坏珍贵物会引发通缉
         public bool HasOwner; // 是否有主
+
+        [Tooltip("破坏完成后由逻辑层执行的配置化效果")]
+        public List<LogicInteractOutput> BreakOutputs = new();
     }
 }

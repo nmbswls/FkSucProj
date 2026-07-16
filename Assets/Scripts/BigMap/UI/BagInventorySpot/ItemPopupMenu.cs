@@ -125,6 +125,22 @@ namespace My.UI
                 {
                     UseBtnGo.SetActive(true);
                 }
+
+                var armar = My.Player.HumanArmarCatalog.GetInstance(stack);
+                if (false && armar != null && !armar.IsIdentified && My.Player.HumanArmarCatalog.CanAppraise)
+                {
+                    UseBtn2Go.SetActive(true);
+                    var identifyLabel = UseBtn2Go.GetComponentInChildren<TextMeshProUGUI>();
+                    if (identifyLabel != null) identifyLabel.text = "鉴定";
+                }
+
+                var weapon = My.Player.HumanWeaponCatalog.GetInstance(stack);
+                if (weapon != null && !weapon.IsIdentified)
+                {
+                    UseBtn2Go.SetActive(true);
+                    var identifyLabel = UseBtn2Go.GetComponentInChildren<TextMeshProUGUI>();
+                    if (identifyLabel != null) identifyLabel.text = "鉴定";
+                }
             }
         }
 
@@ -162,6 +178,18 @@ namespace My.UI
 
         private void OnClickUse2()
         {
+            var weapon = My.Player.HumanWeaponCatalog.GetInstance(currentStack);
+            if (weapon != null && !weapon.IsIdentified)
+            {
+                if (My.Player.HumanWeaponCatalog.TryIdentify(currentStack))
+                {
+                    PlayerBagUIPanel.Instance?.RefreshContent();
+                    WarehouseUIPanel.Instance?.RefreshContent();
+                }
+                Close();
+                return;
+            }
+
             if (currentCell.ContainerType == EContainerType.Inventory)
             {
                 PlayerBagUIPanel.Instance?.UseItem(0, currentIndex);

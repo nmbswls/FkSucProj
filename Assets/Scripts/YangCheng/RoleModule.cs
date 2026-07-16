@@ -25,6 +25,21 @@ namespace My.Player
             targetMap.Add((int)EYCAttribute.SecretSlot, 3);
 
             targetMap.Add((int)EYCAttribute.FixDmgReduceFinal, 5_000);
+
+            // 负重：各随身特殊背包重量折算率初始值 10000 = 100%
+            targetMap.Add((int)EYCAttribute.MainBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.SecretBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.PlantBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.KeyBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.PotionBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.BigBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.MindBagWeightRatio, 10_000);
+            targetMap.Add((int)EYCAttribute.ImportantBagWeightRatio, 10_000);
+
+            // 负重：基础负重与加成初始值
+            targetMap.Add((int)EYCAttribute.CarryWeightBase, 300);
+            targetMap.Add((int)EYCAttribute.CarryWeightExtraFlat, 0);
+            targetMap.Add((int)EYCAttribute.CarryWeightExtraPercent, 0);
         }
     }
 

@@ -13,36 +13,33 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
-/// <summary>
-/// 家园建筑升级项
-/// </summary>
 public partial class TbFacilityDevelopmentLevel
 {
-    private readonly System.Collections.Generic.List<demo.FacilityDevelopmentLevelConfig> _dataList;
+    private readonly System.Collections.Generic.List<demo.FacilityDevelopmentLevel> _dataList;
 
-    private System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevelConfig> _dataMapUnion;
+    private System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevel> _dataMapUnion;
 
     public TbFacilityDevelopmentLevel(JSONNode _buf)
     {
         int count = _buf.Count;
-        _dataList = new System.Collections.Generic.List<demo.FacilityDevelopmentLevelConfig>(count);
+        _dataList = new System.Collections.Generic.List<demo.FacilityDevelopmentLevel>(count);
         
         foreach(JSONNode _ele in _buf.Children)
         {
-            demo.FacilityDevelopmentLevelConfig _v;
-            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentLevelConfig.DeserializeFacilityDevelopmentLevelConfig(_ele);  }
+            demo.FacilityDevelopmentLevel _v;
+            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentLevel.DeserializeFacilityDevelopmentLevel(_ele);  }
             _dataList.Add(_v);
         }
-        _dataMapUnion = new System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevelConfig>();
+        _dataMapUnion = new System.Collections.Generic.Dictionary<(string, int), demo.FacilityDevelopmentLevel>();
         foreach(var _v in _dataList)
         {
             _dataMapUnion.Add((_v.FacilityId, _v.Level), _v);
         }
     }
 
-    public System.Collections.Generic.List<demo.FacilityDevelopmentLevelConfig> DataList => _dataList;
+    public System.Collections.Generic.List<demo.FacilityDevelopmentLevel> DataList => _dataList;
 
-    public demo.FacilityDevelopmentLevelConfig Get(string facility_id, int level) => _dataMapUnion.TryGetValue((facility_id, level), out demo.FacilityDevelopmentLevelConfig __v) ? __v : default;
+    public demo.FacilityDevelopmentLevel Get(string facility_id, int level) => _dataMapUnion.TryGetValue((facility_id, level), out demo.FacilityDevelopmentLevel __v) ? __v : default;
     
     public void ResolveRef(Tables tables)
     {

@@ -2,14 +2,14 @@
   "Steps": [
     {
       "Id": "begin",
-      "Note": "木匠和平对话",
+      "Note": "萨赫尔对话",
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
           "TextLines": [
             {
-              "Speaker": "木匠",
-              "Content": "手头缺些木材，有空帮我带一点回来。",
+              "Speaker": "萨赫尔",
+              "Content": "我的锅还在废墟民房里。没有它，我只能让大家继续啃冷粮。",
               "VoiceLine": null
             }
           ],

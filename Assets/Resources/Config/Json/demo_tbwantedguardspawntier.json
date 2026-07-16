@@ -20,7 +20,7 @@
     "spawn_radius_max": 12,
     "cull_distance": 36,
     "min_alert_tier": 999,
-    "pressure_behavior": 0,
+    "pressure_behavior": 1,
     "patrol_pick_n": 0
   },
   {
@@ -32,7 +32,7 @@
     "spawn_radius_max": 11,
     "cull_distance": 34,
     "min_alert_tier": 999,
-    "pressure_behavior": 0,
+    "pressure_behavior": 2,
     "patrol_pick_n": 0
   },
   {
@@ -44,7 +44,7 @@
     "spawn_radius_max": 10,
     "cull_distance": 32,
     "min_alert_tier": 999,
-    "pressure_behavior": 0,
+    "pressure_behavior": 2,
     "patrol_pick_n": 0
   },
   {
@@ -56,7 +56,7 @@
     "spawn_radius_max": 9,
     "cull_distance": 30,
     "min_alert_tier": 999,
-    "pressure_behavior": 0,
+    "pressure_behavior": 3,
     "patrol_pick_n": 0
   }
 ]

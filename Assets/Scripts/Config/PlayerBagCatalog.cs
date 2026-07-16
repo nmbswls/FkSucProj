@@ -61,12 +61,43 @@ namespace My.Config
                 attribute = player?.ProgressionSystem?.GetFinalAttribute((int)def.YcAttributeId) ?? 0;
             }
 
-            return Math.Max(0, def.BaseCapacity + (int)attribute);
+            int capacity = Math.Max(0, def.BaseCapacity + (int)attribute);
+            if (def.BagId == (int)EPlayerBagId.Big)
+            {
+                capacity = Math.Min(3, capacity);
+            }
+
+            return capacity;
         }
 
         public static int ResolveExtraCapacity(PlayerBagDef def, int fallback)
         {
             return def != null ? Math.Max(0, def.ExtraCapacity) : fallback;
+        }
+
+        // 负重：背包配置的基础重量折算率，10000 = 100%。
+        public static int ResolveBagWeightRatio(PlayerBagDef def)
+        {
+            if (def == null)
+            {
+                return WeightRatioBasis;
+            }
+
+            return def.WeightRatio > 0 ? def.WeightRatio : 0;
+        }
+
+        public const int WeightRatioBasis = 10000;
+
+        // 负重：玩家养成属性对该背包重量折算率的修正，10000 = 100%。
+        public static int ResolveBagWeightRatioAttribute(PlayerBagDef def, PlayerSystemManager player, int fallback = WeightRatioBasis)
+        {
+            if (def == null || def.YcWeightRatioAttrId == EYCAttribute.None)
+            {
+                return fallback;
+            }
+
+            long value = player?.ProgressionSystem?.GetFinalAttribute((int)def.YcWeightRatioAttrId) ?? fallback;
+            return (int)Math.Max(0, value);
         }
 
         public static void ApplyAcceptedTags(PlayerBag bag, PlayerBagDef def)

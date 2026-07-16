@@ -566,6 +566,7 @@ namespace My
                         DevelopmentLevel = b.DevelopmentLevel,
                         RenovationId = b.RenovationId,
                         AssignedWorkforce = b.AssignedWorkforce,
+                        LastOutputSettlementDay = b.LastOutputSettlementDay,
                         SupervisorSlots = CloneSupervisorSlots(b.SupervisorSlots),
                     });
                 }

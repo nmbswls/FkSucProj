@@ -19,6 +19,7 @@ public sealed partial class TalentStatBonus : Luban.BeanBase
     public TalentStatBonus(JSONNode _buf) 
     {
         { if(!_buf["attr_id"].IsNumber) { throw new SerializationException(); }  AttrId = _buf["attr_id"]; }
+        { if(!_buf["human_attr_id"].IsNumber) { throw new SerializationException(); }  HumanAttrId = (demo.EHumanCivilizationAttribute)_buf["human_attr_id"].AsInt; }
         { if(!_buf["val"].IsNumber) { throw new SerializationException(); }  Val = _buf["val"]; }
     }
 
@@ -31,6 +32,10 @@ public sealed partial class TalentStatBonus : Luban.BeanBase
     /// EYCAttribute 枚举整型
     /// </summary>
     public int AttrId;
+    /// <summary>
+    /// 人类文明属性；无文明属性时填 None
+    /// </summary>
+    public demo.EHumanCivilizationAttribute HumanAttrId;
     /// <summary>
     /// 固定加成
     /// </summary>
@@ -47,6 +52,7 @@ public sealed partial class TalentStatBonus : Luban.BeanBase
     {
         return "{ "
         + "attrId:" + AttrId + ","
+        + "humanAttrId:" + HumanAttrId + ","
         + "val:" + Val + ","
         + "}";
     }

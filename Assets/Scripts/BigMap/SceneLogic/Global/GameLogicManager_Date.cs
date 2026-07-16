@@ -35,9 +35,15 @@ namespace My
             public long FromFallenAmount = 0;
             public long DesireShardAdded = 0;
             public Dictionary<string, long> TownFacilityOutputs = new();
+            public Dictionary<string, long> TransportRecoveredOutputs = new();
+            public int TransportRecoveredStackCount;
+            public int TransportLostStackCount;
             public int CultControlledTownCount;
             public long CultTownDailyFaith;
             public long CultFaithAdded;
+            public long MarketGoldEarned;
+            public int MarketSoldItemCount;
+            public int MarketUnsoldItemCount;
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -145,6 +151,7 @@ namespace My
         private void HandleOneDayBalance()
         {
             OneDayBalanceInfo balanceInfo = new OneDayBalanceInfo();
+            transportLootSystem?.DepositMarkerContentsToPending();
             //
             Debug.Log("Settlement day balance");
             //
@@ -180,6 +187,28 @@ namespace My
                 foreach (var kv in townOutputs.MergedOutputs)
                 {
                     balanceInfo.TownFacilityOutputs[kv.Key] = kv.Value;
+                }
+            }
+
+            var market = playerDataManager?.ProgressionSystem?.HumanCivilization?.SettleMarket();
+            if (market != null)
+            {
+                balanceInfo.MarketGoldEarned = market.GoldEarned;
+                balanceInfo.MarketSoldItemCount = market.SoldItemCount;
+                balanceInfo.MarketUnsoldItemCount = market.UnsoldItemCount;
+            }
+
+            var transport = playerDataManager?.ProgressionSystem?.HumanCivilization?.SettleTransportRecovery();
+            if (transport != null)
+            {
+                balanceInfo.TransportRecoveredStackCount = transport.RecoveredStackCount;
+                balanceInfo.TransportLostStackCount = transport.LostStackCount;
+                if (transport.RecoveredOutputs != null)
+                {
+                    foreach (var kv in transport.RecoveredOutputs)
+                    {
+                        balanceInfo.TransportRecoveredOutputs[kv.Key] = kv.Value;
+                    }
                 }
             }
 

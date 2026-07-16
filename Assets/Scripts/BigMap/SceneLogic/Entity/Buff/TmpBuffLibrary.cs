@@ -1987,6 +1987,17 @@ namespace My.Map.Entity
                         },
                     },
                 };
+
+                _library["player_overweight_debuff"] = new BuffDefinition()
+                {
+                    BuffId = "player_overweight_debuff",
+                    Desc = "负重超限：随身物品过重，请及时整理背包或存入运输标记。",
+                    Icon = "fallback",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = -1,
+                    ModifierAttrs = new(),
+                };
             }
 
 

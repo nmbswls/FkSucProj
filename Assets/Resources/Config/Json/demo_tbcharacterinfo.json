@@ -62,5 +62,21 @@
     "preferred_gift_tags": [],
     "disliked_gift_tags": [],
     "gifts_per_day": 0
+  },
+  {
+    "key": "fei_thief",
+    "name": "盗贼菲",
+    "supports_favor": true,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 1
+  },
+  {
+    "key": "merchant_mei",
+    "name": "商人梅",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   }
 ]

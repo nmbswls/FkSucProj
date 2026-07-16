@@ -15,6 +15,10 @@ namespace My
 
         public bool IsPeaceful = true;
 
+        // 潜入会话中玩家放置的运输标记实体（按当前 overlay 关联）
+        public long TransportMarkerEntityId;
+        public string TransportMarkerOverlayId = string.Empty;
+
         // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
         public bool PlayerHumanMode = true;
 
@@ -35,6 +39,8 @@ namespace My
         {
             GameSession.IsInfiltrationRun = true;
             GameSession.IsFreeBigMap = false;
+            GameSession.TransportMarkerEntityId = 0;
+            GameSession.TransportMarkerOverlayId = string.Empty;
         }
 
         public void BeginFreeBigMapSession()

@@ -1,6 +1,7 @@
 using cfg.demo;
 using My.Config;
 using My.Player;
+using My;
 
 namespace My.UI
 {
@@ -76,6 +77,65 @@ namespace My.UI
             }
 
             return lines.ToString().TrimEnd();
+        }
+
+        public static string BuildDetailText(ItemStack stack)
+        {
+            if (stack == null || stack.IsEmpty) return string.Empty;
+            var text = BuildDetailText(stack.ItemID, stack.Count);
+            var weapon = HumanWeaponCatalog.GetInstance(stack);
+            if (weapon != null)
+            {
+                var lines = new System.Text.StringBuilder(text);
+                lines.AppendLine();
+                lines.AppendLine(weapon.IsIdentified ? "鉴定状态：已鉴定" : "鉴定状态：未鉴定");
+                if (weapon.IsIdentified)
+                {
+                    foreach (var affix in HumanWeaponCatalog.GetAffixDisplayLines(stack))
+                        lines.AppendLine("词条：" + affix);
+                }
+                else
+                {
+                    lines.AppendLine("词条：鉴定后揭示");
+                }
+                return lines.ToString().TrimEnd();
+            }
+            var armar = HumanArmarCatalog.GetInstance(stack);
+            if (armar != null)
+            {
+                var lines = new System.Text.StringBuilder(text);
+                if (!armar.IsIdentified)
+                {
+                    lines.AppendLine(BuildHumanArmarValuePreview(stack));
+                }
+                lines.AppendLine();
+                lines.AppendLine(armar.IsIdentified ? "鉴定状态：已鉴定" : "鉴定状态：未鉴定");
+                if (armar.IsIdentified)
+                {
+                    foreach (var affix in HumanArmarCatalog.GetAffixDisplayLines(stack))
+                        lines.AppendLine("词条：" + affix);
+                }
+                else
+                {
+                    lines.AppendLine("词条：鉴定后揭示");
+                }
+                return lines.ToString().TrimEnd();
+            }
+            return text;
+        }
+
+        static string BuildHumanArmarValuePreview(ItemStack stack)
+        {
+            var progression = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.ProgressionSystem;
+            long preview = progression?.GetFinalAttribute((int)EYCAttribute.HumanArmarValuePreview) ?? 0;
+            if (preview <= 0) return "估值：需要学习模糊估值";
+            long value = HumanArmarCatalog.GetPotentialMarketValue(stack);
+            if (value <= 0) return "估值：暂时无法判断";
+            long precision = progression?.GetFinalAttribute((int)EYCAttribute.HumanArmarValuePrecision) ?? 0;
+            double error = precision > 0 ? .12 : .35;
+            long min = System.Math.Max(0, (long)System.Math.Floor(value * (1d - error)));
+            long max = (long)System.Math.Ceiling(value * (1d + error));
+            return $"估值范围：{min} - {max}";
         }
     }
 }

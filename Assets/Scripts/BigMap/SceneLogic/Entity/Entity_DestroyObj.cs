@@ -87,6 +87,8 @@ namespace My.Map.Entity
 
             _brackTimer = LogicTime.time + 3.0f;
 
+            ApplyBreakOutputs();
+
             //DoEntityDestroyed("destroyobj");
             CreateDrop();
 
@@ -109,6 +111,35 @@ namespace My.Map.Entity
             }
 
             EventOnBrack?.Invoke(this.Id);
+        }
+
+        void ApplyBreakOutputs()
+        {
+            if (cacheConfig?.BreakOutputs == null)
+            {
+                return;
+            }
+
+            foreach (var output in cacheConfig.BreakOutputs)
+            {
+                if (output == null)
+                {
+                    continue;
+                }
+
+                switch (output.OutputType)
+                {
+                    case My.Config.LogicInteractOutput.EOutputType.SetGlobalSwitch:
+                        if (!string.IsNullOrEmpty(output.Param3))
+                        {
+                            LogicManager.playerDataManager?.SetVariable(output.Param3);
+                        }
+                        break;
+                    default:
+                        Debug.LogWarning($"DestroyObj break output {output.OutputType} is not supported yet, cfg={CfgId}.");
+                        break;
+                }
+            }
         }
 
         public override void OnResourceAttriChanged(string attrId, long before, long after, ResourceDeltaIntent intent)

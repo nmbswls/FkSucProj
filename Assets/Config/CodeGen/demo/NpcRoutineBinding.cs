@@ -47,7 +47,7 @@ public sealed partial class NpcRoutineBinding : Luban.BeanBase
     /// </summary>
     public string RoutineProfileId;
     /// <summary>
-    /// unit_npc cfg id used when routine creates the NPC record
+    /// NPC unit_npc cfg id
     /// </summary>
     public string NpcCfgId;
    

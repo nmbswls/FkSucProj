@@ -60,6 +60,10 @@ namespace cfg.demo
         /// Town facility gold output bonus tier
         /// </summary>
         TownFacilityGoldOutput = 10,
+        /// <summary>
+        /// Market sale price bonus percent
+        /// </summary>
+        MarketSalePriceBonus = 11,
     }
 
 } 

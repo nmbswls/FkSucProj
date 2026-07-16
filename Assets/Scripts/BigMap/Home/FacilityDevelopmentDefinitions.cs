@@ -21,7 +21,9 @@ namespace My.Home
         public string Desc;
         public List<CommonCheckCond> UnlockConds;
         public List<TalentUnlockCost> UnlockCosts;
-        public List<TalentUnlockCost> DailyOutputs;
+        public int OutputInterval = 1;
+        public List<TalentUnlockCost> OutputItems;
+        public List<FacilityEffect> Effects;
     }
 
     public static class FacilityDevelopmentCatalog
@@ -60,7 +62,9 @@ namespace My.Home
                 Desc = row.Desc,
                 UnlockConds = row.UnlockConds,
                 UnlockCosts = row.UnlockCosts,
-                DailyOutputs = row.DailyOutputs,
+                OutputInterval = row.OutputInterval > 0 ? row.OutputInterval : 1,
+                OutputItems = row.OutputItems,
+                Effects = TownFacilityEffectCatalog.MapList(row.Effects),
             };
         }
 

@@ -19,6 +19,7 @@ namespace cfg.demo
         OpenPanel = 3,
         OpenOptionGroup = 4,
         GivePremiumEssence = 5,
+        AppraiseHumanArmar = 6,
     }
 
 } 

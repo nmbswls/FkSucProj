@@ -464,9 +464,44 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class TransportPendingItemPersist
+    {
+        public string RegionKey;
+        public string HomeLogicAreaId;
+        public string SourceOverlayId;
+        public int DepositedSettlementDay = -1;
+        public string ItemId;
+        public long Count;
+        public long ItemInstanceId;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public ItemInstanceInfo InstanceInfo;
+    }
+
+    [Serializable]
     public class HumanCivilizationPersist
     {
         public List<HumanTechNodeLevelPersist> TechNodes = new();
+        public List<MarketListingPersist> MarketListings = new();
+        public int LastMarketSettlementDay = -1;
+        public long LastMarketGoldEarned;
+        public int LastMarketSoldItemCount;
+        public List<TransportPendingItemPersist> TransportPendingItems = new();
+        public int LastTransportSettlementDay = -1;
+        public int LastTransportRecoveredStackCount;
+        public int LastTransportLostStackCount;
+    }
+
+    [Serializable]
+    public class MarketListingPersist
+    {
+        public string BuildingId;
+        public string LogicAreaId;
+        public string ItemId;
+        public long Count;
+        public long ItemInstanceId;
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+        public ItemInstanceInfo InstanceInfo;
+        public int ListedSettlementDay;
     }
 
     [Serializable]
@@ -545,6 +580,7 @@ namespace My.Saving
         public int DevelopmentLevel;
         public string RenovationId;
         public int AssignedWorkforce;
+        public int LastOutputSettlementDay;
         public List<FacilitySupervisorSlotPersist> SupervisorSlots = new();
 
         // 旧档 beacon_id 兼容
@@ -631,6 +667,8 @@ namespace My.Saving
             data.PlayerData ??= new PlayerData();
             data.HumanCivilization ??= new HumanCivilizationPersist();
             data.HumanCivilization.TechNodes ??= new List<HumanTechNodeLevelPersist>();
+            data.HumanCivilization.MarketListings ??= new List<MarketListingPersist>();
+            data.HumanCivilization.TransportPendingItems ??= new List<TransportPendingItemPersist>();
             data.DemonCult ??= new DemonCultPersist();
             data.DemonCult.TechNodes ??= new List<CultTechNodeLevelPersist>();
             data.DemonCult.AncientSeats ??= new List<CultAncientSeatPersist>();

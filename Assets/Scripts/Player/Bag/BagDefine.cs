@@ -72,12 +72,22 @@ namespace My.Player
 
         public bool CanAcceptItem(string itemId)
         {
-            if (AcceptedAnyTags == null || AcceptedAnyTags.Count == 0)
+            var itemDef = ItemCatalog.GetItemDef(itemId);
+            bool isBig = ItemTagCatalog.HasTag(itemDef, EItemTag.Big);
+
+            if (isBig)
             {
-                return true;
+                return AcceptedAnyTags != null
+                       && AcceptedAnyTags.Count > 0
+                       && ItemTagCatalog.HasAnyTag(itemDef, AcceptedAnyTags);
             }
 
-            return ItemTagCatalog.HasAnyTag(ItemCatalog.GetItemDef(itemId), AcceptedAnyTags);
+            if (AcceptedAnyTags != null && AcceptedAnyTags.Count > 0)
+            {
+                return ItemTagCatalog.HasAnyTag(itemDef, AcceptedAnyTags);
+            }
+
+            return true;
         }
 
         public long GetItemCount(string itemId)
@@ -675,6 +685,7 @@ namespace My.Player
         Plant = 5,
         Key = 6,
         Potion = 7,
+        Big = 8,
         Storage = 100,
         FurnitureStorage = 101,
     }

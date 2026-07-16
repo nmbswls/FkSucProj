@@ -128,6 +128,62 @@ namespace cfg.demo
         /// 皮肤装备点
         /// </summary>
         PartGearPoint_Skin = 105,
+        /// <summary>
+        /// 大件背包槽位
+        /// </summary>
+        BigBagSlots = 22,
+        /// <summary>
+        /// 主背包负重折算率
+        /// </summary>
+        MainBagWeightRatio = 23,
+        /// <summary>
+        /// 秘密背包负重折算率
+        /// </summary>
+        SecretBagWeightRatio = 24,
+        /// <summary>
+        /// 植物背包负重折算率
+        /// </summary>
+        PlantBagWeightRatio = 25,
+        /// <summary>
+        /// 钥匙背包负重折算率
+        /// </summary>
+        KeyBagWeightRatio = 26,
+        /// <summary>
+        /// 药水背包负重折算率
+        /// </summary>
+        PotionBagWeightRatio = 27,
+        /// <summary>
+        /// 大件背包负重折算率
+        /// </summary>
+        BigBagWeightRatio = 28,
+        /// <summary>
+        /// 精神背包负重折算率
+        /// </summary>
+        MindBagWeightRatio = 29,
+        /// <summary>
+        /// 重要物品背包负重折算率
+        /// </summary>
+        ImportantBagWeightRatio = 30,
+        /// <summary>
+        /// ????????
+        /// </summary>
+        HumanArmarValuePreview = 31,
+        /// <summary>
+        /// ????????
+        /// </summary>
+        HumanArmarValuePrecision = 32,
+        /// <summary>
+        /// CarryWeightBase
+        /// </summary>
+        CarryWeightBase = 33,
+        /// <summary>
+        /// CarryWeightExtraFlat
+        /// </summary>
+        CarryWeightExtraFlat = 34,
+        /// <summary>
+        /// CarryWeightExtraPercent
+        /// </summary>
+        CarryWeightExtraPercent = 35,
     }
 
 } 

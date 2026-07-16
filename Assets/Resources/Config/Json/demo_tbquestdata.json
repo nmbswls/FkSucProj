@@ -445,5 +445,30 @@
       }
     ],
     "start_npc_id": "home_vera"
+  },
+  {
+    "quest_id": 214,
+    "name": "萨赫尔的锅与刀",
+    "desc": "穿过被残骸堵死的废墟民房，找回萨赫尔赖以谋生的厨具。",
+    "init_step_id": "214_s1",
+    "finish_reward": [
+      [
+        "gold",
+        25
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 205,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_merchant"
   }
 ]

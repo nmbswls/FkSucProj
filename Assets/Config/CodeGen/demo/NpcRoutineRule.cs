@@ -30,6 +30,7 @@ public sealed partial class NpcRoutineRule : Luban.BeanBase
         { if(!_buf["face_dir"].IsObject) { throw new SerializationException(); }  FaceDir = global::cfg.vector2.Deserializevector2(_buf["face_dir"]);  }
         { if(!_buf["relocate_policy"].IsNumber) { throw new SerializationException(); }  RelocatePolicy = (demo.ENpcRoutineRelocatePolicy)_buf["relocate_policy"].AsInt; }
         { if(!_buf["presentation_tag"].IsString) { throw new SerializationException(); }  PresentationTag = _buf["presentation_tag"]; }
+        { if(!_buf["locomotion_profile_id"].IsString) { throw new SerializationException(); }  LocomotionProfileId = _buf["locomotion_profile_id"]; }
     }
 
     public static NpcRoutineRule DeserializeNpcRoutineRule(JSONNode _buf)
@@ -76,7 +77,7 @@ public sealed partial class NpcRoutineRule : Luban.BeanBase
     /// <summary>
     /// optional face dir; 0,0 = none
     /// </summary>
-    public global::cfg.vector2 FaceDir;
+    public vector2 FaceDir;
     /// <summary>
     /// Move or Snap
     /// </summary>
@@ -85,6 +86,10 @@ public sealed partial class NpcRoutineRule : Luban.BeanBase
     /// presentation tag
     /// </summary>
     public string PresentationTag;
+    /// <summary>
+    /// locomotion preference profile
+    /// </summary>
+    public string LocomotionProfileId;
    
     public const int __ID__ = 989299658;
     public override int GetTypeId() => __ID__;
@@ -109,7 +114,9 @@ public sealed partial class NpcRoutineRule : Luban.BeanBase
         + "faceDir:" + FaceDir + ","
         + "relocatePolicy:" + RelocatePolicy + ","
         + "presentationTag:" + PresentationTag + ","
+        + "locomotionProfileId:" + LocomotionProfileId + ","
         + "}";
     }
 }
 }
+

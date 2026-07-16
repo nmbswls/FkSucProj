@@ -7,7 +7,6 @@ using My.Config;
 using My.Player.Bag;
 using UnityEngine.UI;
 using TMPro;
-using static UnityEditor.Progress;
 using My.Map;
 using System;
 using My.Player;
@@ -53,6 +52,15 @@ namespace My.UI.Bag
 
         public Button CloseButton;
         public Button JingYuanButton;
+
+        // 大件背包：常驻悬浮于主背包右下角
+        public GameObject BigBagDockRoot;
+        public LoopGridView BigBagGridView;
+        public TextMeshProUGUI BigBagTitleText;
+        public EPlayerBagId BigBagId = EPlayerBagId.Big;
+        [Range(1, 3)]
+        public int BigBagColumns = 3;
+        public string BigBagItemPrefabName = "OneItem";
 
         public class InnerMainBagTabItem
         {
@@ -106,6 +114,7 @@ namespace My.UI.Bag
         {
             GridView.InitGridView(0, OnMainGetItemByIndex);
             SpeGridView.InitGridView(0, OnSpeGetItemByIndex);
+            InitBigBagView();
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
 
@@ -174,6 +183,44 @@ namespace My.UI.Bag
             //gameObject.SetActive(false);
         }
 
+        void InitBigBagView()
+        {
+            if (BigBagGridView != null)
+            {
+                BigBagGridView.InitGridView(0, OnBigGetItemByIndex);
+                BigBagGridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, BigBagColumns);
+            }
+
+            if (BigBagTitleText != null)
+            {
+                BigBagTitleText.text = "大件";
+            }
+        }
+
+        void RefreshBigBag()
+        {
+            if (BigBagGridView == null)
+            {
+                return;
+            }
+
+            var bag = BindingInventory.GetBagById((int)BigBagId);
+            bool visible = bag != null && bag.BasicCapacity > 0;
+            if (BigBagDockRoot != null)
+            {
+                BigBagDockRoot.SetActive(visible);
+            }
+
+            if (!visible)
+            {
+                BigBagGridView.SetListItemCount(0);
+                return;
+            }
+
+            BigBagGridView.SetListItemCount(bag.BasicCapacity);
+            BigBagGridView.RefreshAllShownItem();
+        }
+
         void BindMainBagTabs()
         {
             MainBagTabs.Clear();
@@ -232,6 +279,7 @@ namespace My.UI.Bag
 
             SwitchMainBagTab(EPlayerBagId.Default, force: true);
             CloseSpeBag();
+            RefreshBigBag();
 
             PlayerHumanItemBarPanel.ShowCompanionForBagIfNeeded();
             PlayerHumanItemBarPanel.RefreshFromGame();
@@ -239,6 +287,7 @@ namespace My.UI.Bag
 
         public override void Hide()
         {
+            HumanArmarCatalog.EndAppraisalSession();
             PlayerHumanItemBarPanel.HideCompanionForBagIfNeeded();
             PlayerHumanItemBarPanel.RefreshFromGame();
 
@@ -322,6 +371,8 @@ namespace My.UI.Bag
                 SpeGridView.RefreshAllShownItem();
             }
 
+            RefreshBigBag();
+
             PlayerHumanItemBarPanel.RefreshFromGame();
         }
 
@@ -366,6 +417,23 @@ namespace My.UI.Bag
             {
                 cell.ClearEmpty();
             }
+            return item;
+        }
+
+        LoopGridViewItem OnBigGetItemByIndex(LoopGridView grid, int itemIndex, int row, int column)
+        {
+            var item = grid.NewListViewItem(BigBagItemPrefabName);
+            var cell = item.GetComponent<AnyContainerItemCell>();
+            var bigBag = BindingInventory.GetBagById((int)BigBagId);
+            if (bigBag == null || itemIndex >= bigBag.BasicCapacity)
+            {
+                cell.ClearEmpty();
+                return item;
+            }
+
+            var stack = bigBag.GetItemByIdx(itemIndex);
+            item.gameObject.SetActive(true);
+            cell.Bind(stack, itemIndex, EContainerType.SpecialInventory, (int)BigBagId, null);
             return item;
         }
 

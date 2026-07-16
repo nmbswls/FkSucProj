@@ -1,14 +1,75 @@
 [
   {
     "key": "smith_wang",
-    "name": "老铁匠"
+    "name": "老铁匠",
+    "supports_favor": true,
+    "preferred_gift_tags": [
+      2
+    ],
+    "disliked_gift_tags": [
+      1
+    ],
+    "gifts_per_day": 1
   },
   {
     "key": "home_elder",
-    "name": "镇长"
+    "name": "埃蒙",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   },
   {
     "key": "home_merchant",
-    "name": "木匠"
+    "name": "萨赫尔",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0,
+    "desc": "来自赤沙沿岸的流浪厨师，肤色深棕，习惯用旅行炊具为陌生人煮饭。"
+  },
+  {
+    "key": "carlisle",
+    "name": "卡莱尔",
+    "supports_favor": true,
+    "preferred_gift_tags": [
+      1
+    ],
+    "disliked_gift_tags": [
+      2
+    ],
+    "gifts_per_day": 1
+  },
+  {
+    "key": "home_vera",
+    "name": "薇拉",
+    "supports_favor": true,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 1
+  },
+  {
+    "key": "home_evan",
+    "name": "艾文",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
+  },
+  {
+    "key": "home_hearn",
+    "name": "赫恩",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
+  },
+  {
+    "key": "fei_thief",
+    "name": "盗贼菲",
+    "supports_favor": true,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 1
   }
 ]

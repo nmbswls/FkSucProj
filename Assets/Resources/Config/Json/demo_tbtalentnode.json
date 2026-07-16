@@ -110,5 +110,29 @@
     "max_level": 1,
     "icon_path": "default",
     "description": "没有训练场的流浪者，就拿路边和废墟当老师。用铁锭与亚麻布做成简陋负具，反复锤炼肉体。"
+  },
+  {
+    "talent_tree_id": "fei_tree",
+    "node_id": 201,
+    "display_name": "模糊估值",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "菲能看出护具大致的价值区间。"
+  },
+  {
+    "talent_tree_id": "fei_tree",
+    "node_id": 202,
+    "display_name": "精细估值",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "菲会进一步缩小护具的价值区间。"
+  },
+  {
+    "talent_tree_id": "mei_merchant_tree",
+    "node_id": 301,
+    "display_name": "商会议价",
+    "max_level": 1,
+    "icon_path": "default",
+    "description": "所有商铺的售价提高了5%。"
   }
 ]

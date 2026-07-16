@@ -8,6 +8,7 @@ using My.Map.Entity;
 using My.Map.Logic;
 using My.MapExport;
 using My.Player;
+using My.Player.Bag;
 using My.Quest;
 using My.Saving;
 using My.UI;
@@ -108,6 +109,7 @@ namespace My
         public GameWorldPersistStateManager worldPersistState;
         public HomeDataManager homeDataManager;
         public TownFacilityDevelopmentManager townFacilityDevelopmentSystem;
+        public TransportLootSystem transportLootSystem;
         public ShopDataManager shopDataManager;
 
 
@@ -169,6 +171,7 @@ namespace My
             };
 
             townFacilityDevelopmentSystem = new TownFacilityDevelopmentManager(this);
+            transportLootSystem = new TransportLootSystem(this);
             PeaceCombatBuffRefresh.BindRefreshEvents(this);
 
             factionRelationManager = new();
@@ -387,20 +390,27 @@ namespace My
                 
                 case EEntityType.LootPoint:
                     {
-                        var newLoot = new LootPointLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                        LootPointLogicEntity newLoot;
+                        if (record is LogicEntityRecord4LootPoint lootRec
+                            && (lootRec.IsTransportMarker
+                                || record.CfgId == TransportLootPointLogicEntity.MarkerCfgId))
+                        {
+                            newLoot = new TransportLootPointLogicEntity(
+                                this, record.Id, record.CfgId, record.Position, record);
+                        }
+                        else
+                        {
+                            newLoot = new LootPointLogicEntity(
+                                this, record.Id, record.CfgId, record.Position, record);
+                        }
+
                         newLoot.EventOnLootPointUnlock += (lootPoint) =>
                         {
-                            //// 是否进入模式
-                            //if (MainGameManager.Instance.interactSystem.currnteractObj != null && MainGameManager.Instance.interactSystem.currnteractObj.GetLogicEntity() == newLoot)
-                            //{
-                            //    MainUIManager.Instance.TryEnterLootDetailMode(newLoot);
-                            //}
                         };
 
                         newLoot.EventOnLootPointUsed += (lootPoint) =>
                         {
-                            // 是否进入模式
-                            UIOrchestrator.Instance.TryEnterLootDetailMode(newLoot);
+                            UIOrchestrator.Instance.TryEnterLootDetailMode(lootPoint);
                         };
 
                         newEntity = newLoot;
@@ -607,6 +617,8 @@ namespace My
                         unit.ForceDie();
                     }
                 }
+
+                TryCompleteHome01FightSettlement();
             }
             else
             {
@@ -614,6 +626,35 @@ namespace My
                 // 死亡
                 RevivePlayerToResolvedDestination(EReviveReason.EncounterDefeat);
             }
+        }
+
+        const string Home01FightOverlayId = "homestead_01_fight";
+        const string Home01OverlayId = "homestead_01";
+        const string Home01ReturnPoint = "entry_bottom";
+
+        void TryCompleteHome01FightSettlement()
+        {
+            if (AreaManager == null
+                || !string.Equals(AreaManager.AreaOverlayId, Home01FightOverlayId, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            var playerSystem = playerDataManager;
+            if (playerSystem?.QuestSystem == null || !playerSystem.QuestSystem.CheckQuestFinish(200))
+            {
+                Debug.LogWarning("[Home01] Fight ended in victory before quest 200 was completed; keeping the fight map active.");
+                return;
+            }
+
+            // The quest outcome normally writes this switch. Keep the settlement
+            // idempotent so a restored/completed quest still selects the rebuilt map.
+            if (!playerSystem.CheckHasParam("home_01.reclaimed"))
+            {
+                playerSystem.SetVariable("home_01.reclaimed");
+            }
+
+            PreparePlayerSwitchArea(Home01OverlayId, reset: true, targetPoint: Home01ReturnPoint, silent: true);
         }
 
         #endregion
@@ -827,6 +868,7 @@ namespace My
         public void OnBigMapRetreatSuccess()
         {
             NeedBalancing = true;
+            transportLootSystem?.DepositMarkerContentsToPending();
         }
 
 

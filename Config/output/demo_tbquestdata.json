@@ -87,40 +87,6 @@
     "start_npc_id": ""
   },
   {
-    "quest_id": 200,
-    "name": "采集草药",
-    "desc": "为镇长搜集草药并递交",
-    "init_step_id": "200_s1",
-    "finish_reward": [
-      [
-        "gold",
-        20
-      ],
-      [
-        "quest_control_village01",
-        1
-      ]
-    ],
-    "is_auto_accept": true,
-    "acceept_cond": [],
-    "start_npc_id": "home_elder"
-  },
-  {
-    "quest_id": 201,
-    "name": "采集木材",
-    "desc": "为木匠搜集木材并递交",
-    "init_step_id": "201_s1",
-    "finish_reward": [
-      [
-        "gold",
-        15
-      ]
-    ],
-    "is_auto_accept": false,
-    "acceept_cond": [],
-    "start_npc_id": "home_merchant"
-  },
-  {
     "quest_id": 300,
     "name": "临时包扎",
     "desc": "检查并稳定昏迷的卡莱尔",
@@ -179,5 +145,330 @@
       }
     ],
     "start_npc_id": "carlisle"
+  },
+  {
+    "quest_id": 200,
+    "name": "收复拼合村",
+    "desc": "击退占据 home_01 的流匪冒险者。",
+    "init_step_id": "200_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 302,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 201,
+    "name": "火堆盟约",
+    "desc": "在火堆边确认村民与莉莉丝之间的最初信任。",
+    "init_step_id": "201_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 202,
+    "name": "清点活人",
+    "desc": "埃蒙组织幸存者重新清点人手。",
+    "init_step_id": "202_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 201,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 203,
+    "name": "锅不能灭",
+    "desc": "给负责食物与火堆的人补上燃料。",
+    "init_step_id": "203_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 202,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_merchant"
+  },
+  {
+    "quest_id": 204,
+    "name": "保住灰露草",
+    "desc": "抢救灰露草棚里还能预处理的材料。",
+    "init_step_id": "204_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 203,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_merchant"
+  },
+  {
+    "quest_id": 205,
+    "name": "干净一点再见人",
+    "desc": "整理临时住处、衣物和伤员清洁。",
+    "init_step_id": "205_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 204,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 206,
+    "name": "夜路要有人看",
+    "desc": "补上村外路标与巡夜讯号。",
+    "init_step_id": "206_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 205,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 207,
+    "name": "村东林缘调查",
+    "desc": "确认村东临时通路可以开放。",
+    "init_step_id": "207_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 206,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 208,
+    "name": "带回雾线样本",
+    "desc": "从村东雾线边带回样本，确认继续深入森林的条件。",
+    "init_step_id": "208_s1",
+    "finish_reward": [],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 207,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 209,
+    "name": "林缘立足",
+    "desc": "清理森林入口附近的魔物，确认一条可靠的退路。",
+    "init_step_id": "209_s1",
+    "finish_reward": [
+      [
+        "berry",
+        2
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 208,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 210,
+    "name": "不属于森林的脚印",
+    "desc": "调查林中的人类活动痕迹，并击退盘踞在中段的偷猎者。",
+    "init_step_id": "210_s1",
+    "finish_reward": [
+      [
+        "gold",
+        20
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 209,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": ""
+  },
+  {
+    "quest_id": 211,
+    "name": "北路花露",
+    "desc": "从森林北路取得两份森林花露，并带回村庄交给埃蒙判断。",
+    "init_step_id": "211_s1",
+    "finish_reward": [
+      [
+        "gold",
+        15
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 210,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 212,
+    "name": "心木回声",
+    "desc": "触碰森林之心，确认它对主角的反应后向埃蒙汇报。",
+    "init_step_id": "212_s1",
+    "finish_reward": [
+      [
+        "gold",
+        30
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 211,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_elder"
+  },
+  {
+    "quest_id": 213,
+    "name": "水盆里的旧影",
+    "desc": "返回秘密基地，从入梦设施进入薇拉的梦境，并把结果告诉她。",
+    "init_step_id": "213_s1",
+    "finish_reward": [],
+    "is_auto_accept": false,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 205,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_vera"
+  },
+  {
+    "quest_id": 214,
+    "name": "萨赫尔的锅与刀",
+    "desc": "穿过被残骸堵死的废墟民房，找回萨赫尔赖以谋生的厨具。",
+    "init_step_id": "214_s1",
+    "finish_reward": [
+      [
+        "gold",
+        25
+      ]
+    ],
+    "is_auto_accept": true,
+    "acceept_cond": [
+      {
+        "type": 1,
+        "param1": 205,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "start_npc_id": "home_merchant"
   }
 ]

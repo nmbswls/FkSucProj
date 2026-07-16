@@ -853,7 +853,10 @@ namespace My.Map.Logic
                     {
                         return true;
                     }
-                    break;
+                case EEntityType.LootPoint:
+                    {
+                        return rec is LogicEntityRecord4LootPoint lootRec && lootRec.IsTransportMarker;
+                    }
                 case EEntityType.InteractPoint:
                     {
                         var cfg = MapInteractPointLoader.Get(rec.CfgId);

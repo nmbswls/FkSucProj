@@ -29,67 +29,6 @@
         <var name="Daily" value="4"/>
     </enum>
 
-    <enum name="EItemTag">
-        <var name="None" value="0"/>
-        <var name="Gift" value="1"/>
-        <var name="PartGear" value="3"/>
-        <var name="HumanWeapon" value="4"/>
-        <var name="HumanTool" value="5"/>
-        <var name="Pocket" value="6"/>
-        <var name="Insertion" value="7"/>
-        <var name="Plant" value="8"/>
-        <var name="Key" value="9"/>
-        <var name="Potion" value="10"/>
-        <var name="Furniture" value="11"/>
-        <var name="Dismantleable" value="12"/>
-        <var name="Jingyuan" value="13"/>
-        <var name="Small" value="14"/>
-        <var name="Big" value="15"/>
-        <var name="Material" value="16"/>
-        <var name="Wood" value="17"/>
-        <var name="Magic" value="18"/>
-        <var name="Alchemy" value="19"/>
-        <var name="Fuel" value="20"/>
-        <var name="Fiber" value="21"/>
-        <var name="Stone" value="22"/>
-        <var name="Glass" value="23"/>
-        <var name="Clay" value="24"/>
-        <var name="Ceramic" value="25"/>
-        <var name="Luxury" value="26"/>
-        <var name="Craft" value="27"/>
-        <var name="Ore" value="28"/>
-        <var name="Metal" value="29"/>
-        <var name="Precious" value="30"/>
-        <var name="Textile" value="31"/>
-        <var name="Leather" value="32"/>
-        <var name="Bone" value="33"/>
-        <var name="Dye" value="34"/>
-        <var name="Glue" value="35"/>
-        <var name="Latex" value="36"/>
-        <var name="Exotic" value="37"/>
-        <var name="Loot" value="38"/>
-        <var name="Paper" value="39"/>
-        <var name="Food" value="40"/>
-        <var name="Gel" value="41"/>
-        <var name="Crystal" value="42"/>
-        <var name="Wax" value="43"/>
-        <var name="Toy" value="44"/>
-        <var name="Decor" value="45"/>
-        <var name="Home" value="46"/>
-        <var name="Study" value="47"/>
-        <var name="Church" value="48"/>
-        <var name="Light" value="49"/>
-        <var name="Forest" value="50"/>
-        <var name="Storage" value="51"/>
-        <var name="Facility" value="52"/>
-        <var name="Basic" value="53"/>
-        <var name="Salvage" value="54"/>
-        <var name="Dew" value="55"/>
-        <var name="Fairy" value="56"/>
-        <var name="Charge" value="57"/>
-        <var name="PremiumEssenceDrop" value="58"/>
-    </enum>
-
     <enum name="EJingYuanType">
         <var name="None" value="0"/>
         <var name="OrcI" value="1"/>
@@ -121,6 +60,16 @@
         <var name="CostClothes" value="2"/>
     </enum>
 
+    <!-- 市集结算读取的建筑属性；每级按百分比档位解释。 -->
+    <enum name="EBuildingAttribute">
+        <var name="None" value="0"/>
+        <var name="GoldOutputBonus" value="1"/>
+        <var name="OutputEfficiency" value="2"/>
+        <var name="MarketSaleChanceBonus" value="3"/>
+        <var name="MarketPriceBonus" value="4"/>
+        <var name="MarketSlotCount" value="5"/>
+    </enum>
+
     <!-- AddHunger: p1=饥饿增量(逻辑内再乘系数); GiveDrop: p1=drop_bundle_id; UseSkill: s1=技能/能力名; UnlockRuneUpgrade: s1=upgrade_id; AddMapControl: p1=控制度增量; s1=logic_area map_id; AddJingYuanCodexProgress: s1=codex_id; p1=榨取次数; p2=amount(x1000); AddJingYuanCodexBlurtDrop: s1=codex_id; p1=榨取次数; cnt=amount(x1000) -->
     <enum name="EItemUseType">
         <var name="None" value="0"/>
@@ -146,6 +95,12 @@
         <var name="Ranged" value="1"/>
     </enum>
 
+    <enum name="EFacilityEffectType">
+        <var name="None" value="0"/>
+        <var name="AddBuildingAttribute" value="1"/>
+        <var name="AddHumanCivilizationAttribute" value="2"/>
+    </enum>
+
     <enum name="ECommonCheckType">
 		<var name="None" value="0"/>
         <var name="TaskFinish" value="1"/>
@@ -156,6 +111,7 @@
 		<var name="FuncOpen" value="7"/>
 		<var name="CharacterFavorLevel" value="8"/>
 		<var name="HumanTechUnlockedCount" value="9"/>
+		<var name="NamedNpcLocalSwitch" value="11"/>
     </enum>
 
     <enum name="ESecretBaseCharacterOptionAction">
@@ -164,7 +120,8 @@
 		<var name="OpenTalentTree" value="2"/>
 		<var name="OpenPanel" value="3"/>
 		<var name="OpenOptionGroup" value="4"/>
-		<var name="GivePremiumEssence" value="5"/>
+        <var name="GivePremiumEssence" value="5"/>
+        <var name="AppraiseHumanArmar" value="6"/>
     </enum>
 
     <!-- Statistic / EventGrant：共性计数与通用授予 -->
@@ -253,6 +210,7 @@
 
     <bean name="TalentStatBonus" tags="sep=,">
         <var name="attr_id" type="int" comment="EYCAttribute 枚举整型"/>
+        <var name="human_attr_id" type="EHumanCivilizationAttribute" comment="人类文明属性；无文明属性时填 None"/>
         <var name="val" type="long" comment="固定加成"/>
     </bean>
 
@@ -381,6 +339,14 @@
     <bean name="ItemAmount" tags="sep=,">
         <var name="item_id" type="string"/>
         <var name="count" type="long"/>
+    </bean>
+
+    <bean name="FacilityEffect" tags="sep=,">
+        <var name="effect_type" type="EFacilityEffectType"/>
+        <var name="target_facility_id" type="string"/>
+        <var name="building_attr" type="EBuildingAttribute"/>
+        <var name="human_attr" type="EHumanCivilizationAttribute"/>
+        <var name="value" type="int"/>
     </bean>
 
     <bean name="ForgeMaterialCost" tags="sep=,">

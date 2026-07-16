@@ -4,6 +4,7 @@ using cfg.demo;
 using My.Config;
 using My.Map;
 using My.Player;
+using My.Saving;
 using UnityEngine;
 
 namespace My.Home
@@ -192,6 +193,10 @@ namespace My.Home
 
             var nextLevel = current + 1;
             _logic.worldPersistState.SetInstanceFacilityDevelopmentLevel(logicAreaId, instanceId, facilityId, nextLevel);
+            if (facilityId == "transport_camp" && nextLevel >= 1)
+            {
+                _logic.transportLootSystem?.UnlockMarkerPlacement();
+            }
             EvOnFacilityDevelopmentLevelChanged?.Invoke(logicAreaId, facilityId, nextLevel);
             _logic.AreaManager?.ReevaluateTownFacilityVisibility(logicAreaId, facilityId);
             SceneAOIManager.Instance?.RequestVisibleChunkRefresh();
@@ -267,7 +272,33 @@ namespace My.Home
             return true;
         }
 
-        // 对已控制城镇内已升级建筑，按当前等级配置汇总每日产出并发放
+        public long GetBuildingAttribute(string logicAreaId, string facilityId, EBuildingAttribute attribute)
+        {
+            return TownFacilityEffectCatalog.GetBuildingAttribute(_logic, logicAreaId, facilityId, attribute);
+        }
+
+        public long GetHumanCivilizationBonusFromFacilities(EHumanCivilizationAttribute attribute)
+        {
+            if (attribute == EHumanCivilizationAttribute.None || _logic == null)
+            {
+                return 0;
+            }
+
+            long total = 0;
+            foreach (var logicAreaId in TownFacilityUtil.GetDistinctLogicAreaIdsWithDevelopableFacilities())
+            {
+                if (!IsAreaUnderPlayerControl(logicAreaId))
+                {
+                    continue;
+                }
+
+                total += TownFacilityEffectCatalog.GetHumanCivilizationBonus(_logic, logicAreaId, attribute);
+            }
+
+            return total;
+        }
+
+        // 对已控制城镇内已升级建筑，按产出间隔结算物资产出并发放
         public HomesteadDailySettlementResult ApplyDailySettlement(PlayerSystemManager pdm)
         {
             var result = new HomesteadDailySettlementResult();
@@ -316,6 +347,7 @@ namespace My.Home
                     site.FacilityCfgId,
                     level,
                     facilityRow?.RenovationId,
+                    facilityRow,
                     mergedOutputs);
             }
 
@@ -361,6 +393,7 @@ namespace My.Home
                     facilityRow.FacilityId,
                     level,
                     facilityRow.RenovationId,
+                    facilityRow,
                     mergedOutputs);
             }
         }
@@ -380,7 +413,7 @@ namespace My.Home
                     continue;
                 }
 
-                CollectSingleFacilityOutputs(logicAreaId, facilityDef.FacilityId, level, null, mergedOutputs);
+                CollectSingleFacilityOutputs(logicAreaId, facilityDef.FacilityId, level, null, null, mergedOutputs);
             }
         }
 
@@ -389,13 +422,21 @@ namespace My.Home
             string facilityId,
             int level,
             string renovationId,
+            TownFacilityPersist facilityRow,
             Dictionary<string, long> mergedOutputs)
         {
+            int settlementDay = _logic.SettlementDayIndex;
             var upgradeDef = FacilityDevelopmentCatalog.GetLevel(facilityId, level);
-            if (upgradeDef?.DailyOutputs != null && upgradeDef.DailyOutputs.Count > 0)
+            if (upgradeDef != null)
             {
-                var tech = _logic.playerDataManager?.ProgressionSystem?.HumanCivilization;
-                MergeOutputs(upgradeDef.DailyOutputs, tech, facilityId, mergedOutputs);
+                TryMergeOutputBundle(
+                    logicAreaId,
+                    facilityId,
+                    upgradeDef.OutputInterval,
+                    upgradeDef.OutputItems,
+                    facilityRow,
+                    settlementDay,
+                    mergedOutputs);
             }
 
             if (string.IsNullOrEmpty(renovationId))
@@ -404,37 +445,66 @@ namespace My.Home
             }
 
             var renovation = FacilityRenovationCatalog.Get(facilityId, renovationId);
-            if (renovation?.DailyOutputs == null || renovation.DailyOutputs.Count == 0)
+            if (renovation == null)
             {
                 return;
             }
 
-            var civilization = _logic.playerDataManager?.ProgressionSystem?.HumanCivilization;
-            MergeOutputs(renovation.DailyOutputs, civilization, facilityId, mergedOutputs);
+            TryMergeOutputBundle(
+                logicAreaId,
+                facilityId,
+                renovation.OutputInterval,
+                renovation.OutputItems,
+                facilityRow,
+                settlementDay,
+                mergedOutputs);
         }
 
-        static double ResolveOutputMultiplier(Player.HumanCivilizationSystem tech, string facilityId, string itemId)
+        void TryMergeOutputBundle(
+            string logicAreaId,
+            string facilityId,
+            int outputInterval,
+            System.Collections.Generic.List<TalentUnlockCost> outputItems,
+            TownFacilityPersist facilityRow,
+            int settlementDay,
+            Dictionary<string, long> mergedOutputs)
+        {
+            if (outputItems == null || outputItems.Count == 0)
+            {
+                return;
+            }
+
+            int interval = Math.Max(1, outputInterval);
+            int lastDay = facilityRow?.LastOutputSettlementDay ?? 0;
+            if (settlementDay > 0 && settlementDay - lastDay < interval)
+            {
+                return;
+            }
+
+            var tech = _logic.playerDataManager?.ProgressionSystem?.HumanCivilization;
+            MergeOutputs(logicAreaId, outputItems, tech, facilityId, mergedOutputs);
+            if (facilityRow != null)
+            {
+                facilityRow.LastOutputSettlementDay = settlementDay;
+            }
+        }
+
+        double ResolveOutputMultiplier(string logicAreaId, Player.HumanCivilizationSystem tech, string facilityId, string itemId)
         {
             var outputMultiplier = 1d;
+            outputMultiplier += Math.Max(0, GetBuildingAttribute(logicAreaId, facilityId, EBuildingAttribute.OutputEfficiency)) * 0.1d;
+
             if (string.Equals(itemId, "gold", StringComparison.Ordinal))
             {
                 outputMultiplier += Math.Max(0, tech?.GetTechEffectValue(EHumanCivilizationAttribute.TownFacilityGoldOutput) ?? 0) * 0.1d;
-            }
-
-            if (string.Equals(facilityId, "tavern", StringComparison.Ordinal))
-            {
-                outputMultiplier += Math.Max(0, tech?.GetTechEffectValue(EHumanCivilizationAttribute.TavernHumanKnowledgeOutput) ?? 0) * 0.1d;
-            }
-
-            if (string.Equals(facilityId, "workshop", StringComparison.Ordinal))
-            {
-                outputMultiplier += Math.Max(0, tech?.GetTechEffectValue(EHumanCivilizationAttribute.WorkshopOperationEfficiency) ?? 0) * 0.1d;
+                outputMultiplier += Math.Max(0, GetBuildingAttribute(logicAreaId, facilityId, EBuildingAttribute.GoldOutputBonus)) * 0.1d;
             }
 
             return outputMultiplier;
         }
 
-        static void MergeOutputs(
+        void MergeOutputs(
+            string logicAreaId,
             System.Collections.Generic.List<TalentUnlockCost> outputs,
             Player.HumanCivilizationSystem tech,
             string facilityId,
@@ -452,7 +522,7 @@ namespace My.Home
                     continue;
                 }
 
-                var multiplier = ResolveOutputMultiplier(tech, facilityId, output.ItemId);
+                var multiplier = ResolveOutputMultiplier(logicAreaId, tech, facilityId, output.ItemId);
                 var amount = (long)Math.Floor(output.Count * multiplier);
                 if (mergedOutputs.TryGetValue(output.ItemId, out var existing))
                 {

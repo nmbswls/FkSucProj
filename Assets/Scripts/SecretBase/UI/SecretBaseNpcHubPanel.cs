@@ -4,6 +4,7 @@ using cfg.demo;
 using My;
 using My.Config;
 using My.SecretBase;
+using My.Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -312,6 +313,10 @@ namespace My.UI
                     break;
                 case ESecretBaseCharacterOptionAction.GivePremiumEssence:
                     SecretBaseNpcSocialService.TryTalkAndGivePremiumEssence(_row, option.ActionParam);
+                    break;
+                case ESecretBaseCharacterOptionAction.AppraiseHumanArmar:
+                    CloseSelf();
+                    UIManager.Instance.ShowPanel(HumanArmarAppraisalPanel.PanelIdConst);
                     break;
                 case ESecretBaseCharacterOptionAction.OpenPanel:
                     if (!string.IsNullOrEmpty(option.ActionParam))

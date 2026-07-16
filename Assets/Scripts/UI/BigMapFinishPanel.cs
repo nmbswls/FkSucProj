@@ -32,6 +32,7 @@ namespace My.UI
         private void DoConfirm()
         {
             var glm = MainGameManager.Instance.gameLogicManager;
+            glm.transportLootSystem?.DepositMarkerContentsToPending();
             glm.RevivePlayerToResolvedDestination(EReviveReason.BigMapFinish, beginFreeSession: true);
         }
     }

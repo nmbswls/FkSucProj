@@ -1,0 +1,35 @@
+{
+  "DialogId": "sahel_kitchen_request",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "sahel_kitchen_request",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "萨赫尔",
+              "Content": "我的名字是萨赫尔，来自赤沙沿岸。以前我靠这套旅行厨具给商队和村民煮饭。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "萨赫尔",
+              "Content": "前些天撤离时，厨具被落在东边那栋废墟民房里。前门被残骸堵死了，只能从后门进去。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "萨赫尔",
+              "Content": "帮我把锅和刀找回来，我就能重新让镇上的人吃上一口热饭。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

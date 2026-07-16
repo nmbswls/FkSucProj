@@ -1036,8 +1036,8 @@
   },
   {
     "id": "homestead_merchant",
-    "name": "木匠",
-    "desc": "CharacterKey=home_merchant",
+    "name": "萨赫尔",
+    "desc": "来自炎热南方的流浪厨师，带着一套能在荒野开火的旅行厨具。",
     "prefab_name": "civil",
     "attr_template_id": 10000,
     "emnity_cfg_id": "default_peace",

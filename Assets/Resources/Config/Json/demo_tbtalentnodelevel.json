@@ -23,6 +23,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 5000
       }
     ],
@@ -52,6 +53,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 10000
       }
     ],
@@ -81,6 +83,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 15000
       }
     ],
@@ -110,6 +113,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 20000
       }
     ],
@@ -139,6 +143,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 25000
       }
     ],
@@ -170,6 +175,7 @@
     "stat_bonuses": [
       {
         "attr_id": 4,
+        "human_attr_id": 0,
         "val": 800
       }
     ],
@@ -201,6 +207,7 @@
     "stat_bonuses": [
       {
         "attr_id": 3,
+        "human_attr_id": 0,
         "val": 600
       }
     ],
@@ -236,10 +243,12 @@
     "stat_bonuses": [
       {
         "attr_id": 5,
+        "human_attr_id": 0,
         "val": 700
       },
       {
         "attr_id": 4,
+        "human_attr_id": 0,
         "val": 400
       }
     ],
@@ -272,10 +281,12 @@
     "stat_bonuses": [
       {
         "attr_id": 2,
+        "human_attr_id": 0,
         "val": 500
       },
       {
         "attr_id": 5,
+        "human_attr_id": 0,
         "val": 300
       }
     ],
@@ -327,6 +338,7 @@
     "stat_bonuses": [
       {
         "attr_id": 12,
+        "human_attr_id": 0,
         "val": 100
       }
     ],
@@ -353,6 +365,7 @@
     "stat_bonuses": [
       {
         "attr_id": 11,
+        "human_attr_id": 0,
         "val": 100
       }
     ],
@@ -379,6 +392,7 @@
     "stat_bonuses": [
       {
         "attr_id": 13,
+        "human_attr_id": 0,
         "val": 2
       }
     ],
@@ -402,6 +416,7 @@
     "stat_bonuses": [
       {
         "attr_id": 13,
+        "human_attr_id": 0,
         "val": 1
       }
     ],
@@ -425,6 +440,7 @@
     "stat_bonuses": [
       {
         "attr_id": 21,
+        "human_attr_id": 0,
         "val": 500
       }
     ],
@@ -448,7 +464,70 @@
     "stat_bonuses": [
       {
         "attr_id": 20,
+        "human_attr_id": 0,
         "val": 500
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 201,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 300
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 31,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 202,
+    "level": 1,
+    "prereq_node_ids": [
+      201
+    ],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 800
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 32,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 301,
+    "level": 1,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 500
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 0,
+        "human_attr_id": 11,
+        "val": 5
       }
     ],
     "passive_skill_id": ""

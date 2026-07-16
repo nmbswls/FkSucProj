@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using cfg.demo;
@@ -24,6 +25,17 @@ namespace My.UI.Home
             }
 
             return string.IsNullOrEmpty(itemId) ? "道具" : itemId;
+        }
+
+        public static string FormatOutputItems(IReadOnlyList<TalentUnlockCost> outputs)
+        {
+            return FormatDailyOutputs(outputs);
+        }
+
+        public static string FormatOutputInterval(int intervalDays)
+        {
+            int days = Math.Max(1, intervalDays);
+            return days <= 1 ? "每 1 天" : $"每 {days} 天";
         }
 
         public static string FormatDailyOutputs(IReadOnlyList<TalentUnlockCost> outputs)

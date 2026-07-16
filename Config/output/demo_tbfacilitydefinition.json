@@ -46,5 +46,14 @@
     "max_workforce": 3,
     "presentation_prefab": "",
     "interaction_handler_id": ""
+  },
+  {
+    "facility_id": "market",
+    "display_name": "市集",
+    "capabilities": 12,
+    "max_workforce": 2,
+    "max_supervisor_slots": 1,
+    "presentation_prefab": "",
+    "interaction_handler_id": "market"
   }
 ]

@@ -44,11 +44,11 @@ namespace My.Player
             _boundRuneProvider = null;
             _boundJingYuanEssenceProvider = null;
 
-            TalentManager = new PlayerTalentManager();
-            TalentManager.Initialize(ctx, savingData);
-
             HumanCivilization = new HumanCivilizationSystem();
             HumanCivilization.Initialize(ctx, savingData);
+
+            TalentManager = new PlayerTalentManager();
+            TalentManager.Initialize(ctx, savingData);
 
             DemonCult = new DemonCultSystem();
             DemonCult.Initialize(ctx, savingData);
@@ -547,6 +547,7 @@ namespace My.Player
 
             _activeProviders.Clear();
             TalentNodeDict.Clear();
+            var humanCivilizationBonuses = new Dictionary<EHumanCivilizationAttribute, long>();
 
             var levelTable = CfgMgr.Cfgs?.TbTalentNodeLevel;
             if (levelTable == null)
@@ -579,7 +580,15 @@ namespace My.Player
                             continue;
                         }
 
-                        pairs.Add(new StatPair(b.AttrId, b.Val));
+                        if (b.HumanAttrId != EHumanCivilizationAttribute.None)
+                        {
+                            humanCivilizationBonuses.TryGetValue(b.HumanAttrId, out var currentBonus);
+                            humanCivilizationBonuses[b.HumanAttrId] = currentBonus + b.Val;
+                        }
+                        else if (b.AttrId != 0)
+                        {
+                            pairs.Add(new StatPair(b.AttrId, b.Val));
+                        }
                     }
                 }
 
@@ -599,6 +608,7 @@ namespace My.Player
             }
 
             TalentAggregator.ForceDirty();
+            _logic?.playerDataManager?.ProgressionSystem?.HumanCivilization?.SetTalentBonuses(humanCivilizationBonuses);
         }
     }
 

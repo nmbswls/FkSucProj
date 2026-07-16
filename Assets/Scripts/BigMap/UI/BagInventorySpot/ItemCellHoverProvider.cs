@@ -66,7 +66,7 @@ namespace My.UI
                 return string.Empty;
             }
 
-            return ItemHoverDetailUtil.BuildDetailText(stack.ItemID, stack.Count);
+            return ItemHoverDetailUtil.BuildDetailText(stack);
         }
     }
 }

@@ -13,37 +13,33 @@ using SimpleJSON;
 
 namespace cfg.demo
 {
-/// <summary>
-/// 逻辑区域可管理建筑
-/// </summary>
 public partial class TbFacilityDevelopmentDefinition
 {
-    private readonly System.Collections.Generic.List<demo.FacilityDevelopmentDefinitionConfig> _dataList;
-
-    private System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinitionConfig> _dataMapUnion;
-
+    private readonly System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinition> _dataMap;
+    private readonly System.Collections.Generic.List<demo.FacilityDevelopmentDefinition> _dataList;
+    
     public TbFacilityDevelopmentDefinition(JSONNode _buf)
     {
         int count = _buf.Count;
-        _dataList = new System.Collections.Generic.List<demo.FacilityDevelopmentDefinitionConfig>(count);
+        _dataMap = new System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinition>(count);
+        _dataList = new System.Collections.Generic.List<demo.FacilityDevelopmentDefinition>(count);
         
         foreach(JSONNode _ele in _buf.Children)
         {
-            demo.FacilityDevelopmentDefinitionConfig _v;
-            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentDefinitionConfig.DeserializeFacilityDevelopmentDefinitionConfig(_ele);  }
+            demo.FacilityDevelopmentDefinition _v;
+            { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::cfg.demo.FacilityDevelopmentDefinition.DeserializeFacilityDevelopmentDefinition(_ele);  }
             _dataList.Add(_v);
-        }
-        _dataMapUnion = new System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinitionConfig>();
-        foreach(var _v in _dataList)
-        {
-            _dataMapUnion.Add(_v.FacilityId, _v);
+            _dataMap.Add(_v.FacilityId, _v);
         }
     }
 
-    public System.Collections.Generic.List<demo.FacilityDevelopmentDefinitionConfig> DataList => _dataList;
+    public System.Collections.Generic.Dictionary<string, demo.FacilityDevelopmentDefinition> DataMap => _dataMap;
+    public System.Collections.Generic.List<demo.FacilityDevelopmentDefinition> DataList => _dataList;
 
-    public demo.FacilityDevelopmentDefinitionConfig Get(string facility_id) => _dataMapUnion.TryGetValue(facility_id, out demo.FacilityDevelopmentDefinitionConfig __v) ? __v : default;
-    
+    public demo.FacilityDevelopmentDefinition GetOrDefault(string key) => _dataMap.TryGetValue(key, out var v) ? v : default;
+    public demo.FacilityDevelopmentDefinition Get(string key) => _dataMap[key];
+    public demo.FacilityDevelopmentDefinition this[string key] => _dataMap[key];
+
     public void ResolveRef(Tables tables)
     {
         foreach(var _v in _dataList)
@@ -51,6 +47,7 @@ public partial class TbFacilityDevelopmentDefinition
             _v.ResolveRef(tables);
         }
     }
+
 }
 
 }

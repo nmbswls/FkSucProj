@@ -18,8 +18,7 @@ public sealed partial class CultTechNode : Luban.BeanBase
 {
     public CultTechNode(JSONNode _buf) 
     {
-        { if(!_buf["node_id"].IsNumber) { throw new SerializationException(); }  NodeId = _buf["node_id"];
-        { SeatId = _buf["seat_id"]; } }
+        { if(!_buf["node_id"].IsNumber) { throw new SerializationException(); }  NodeId = _buf["node_id"]; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { if(!_buf["max_level"].IsNumber) { throw new SerializationException(); }  MaxLevel = _buf["max_level"]; }
@@ -37,7 +36,6 @@ public sealed partial class CultTechNode : Luban.BeanBase
     /// id
     /// </summary>
     public int NodeId;
-    public int SeatId;
     /// <summary>
     /// 名称
     /// </summary>

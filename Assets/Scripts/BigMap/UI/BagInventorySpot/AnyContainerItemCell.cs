@@ -73,5 +73,10 @@ namespace My.UI
 
             SetIndexAndContainer(-1, 0, 0);
         }
+
+        public void SetDisplayOnly()
+        {
+            SetItemCellInteractions(null, null, null);
+        }
     }
 }

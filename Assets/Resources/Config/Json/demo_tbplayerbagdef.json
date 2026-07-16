@@ -8,7 +8,9 @@
     "yc_attribute_id": 13,
     "accepted_tags": [],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 23
   },
   {
     "bag_id": 1,
@@ -19,7 +21,9 @@
     "yc_attribute_id": 14,
     "accepted_tags": [],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 24
   },
   {
     "bag_id": 3,
@@ -30,7 +34,9 @@
     "yc_attribute_id": 16,
     "accepted_tags": [],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 29
   },
   {
     "bag_id": 4,
@@ -41,7 +47,9 @@
     "yc_attribute_id": 17,
     "accepted_tags": [],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 30
   },
   {
     "bag_id": 5,
@@ -54,7 +62,9 @@
       8
     ],
     "auto_create": false,
-    "gain_priority": 10
+    "gain_priority": 10,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 25
   },
   {
     "bag_id": 6,
@@ -67,7 +77,9 @@
       9
     ],
     "auto_create": false,
-    "gain_priority": 20
+    "gain_priority": 20,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 26
   },
   {
     "bag_id": 7,
@@ -80,7 +92,9 @@
       10
     ],
     "auto_create": false,
-    "gain_priority": 30
+    "gain_priority": 30,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 27
   },
   {
     "bag_id": 100,
@@ -91,7 +105,9 @@
     "yc_attribute_id": 18,
     "accepted_tags": [],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 0,
+    "yc_weight_ratio_attr_id": 0
   },
   {
     "bag_id": 101,
@@ -104,6 +120,23 @@
       11
     ],
     "auto_create": true,
-    "gain_priority": 0
+    "gain_priority": 0,
+    "weight_ratio": 0,
+    "yc_weight_ratio_attr_id": 0
+  },
+  {
+    "bag_id": 8,
+    "display_name": "大件包",
+    "base_capacity": 1,
+    "extra_capacity": 0,
+    "layout": "Grid",
+    "yc_attribute_id": 22,
+    "accepted_tags": [
+      15
+    ],
+    "auto_create": false,
+    "gain_priority": 5,
+    "weight_ratio": 10000,
+    "yc_weight_ratio_attr_id": 28
   }
 ]

@@ -15,7 +15,9 @@ namespace My.Home
         public int SortOrder;
         public List<CommonCheckCond> UnlockConds;
         public List<TalentUnlockCost> LearnCosts;
-        public List<TalentUnlockCost> DailyOutputs;
+        public int OutputInterval = 1;
+        public List<TalentUnlockCost> OutputItems;
+        public List<FacilityEffect> Effects;
     }
 
     public static class FacilityRenovationCatalog
@@ -108,7 +110,9 @@ namespace My.Home
                 SortOrder = row.SortOrder,
                 UnlockConds = row.UnlockConds,
                 LearnCosts = row.LearnCosts,
-                DailyOutputs = row.DailyOutputs,
+                OutputInterval = row.OutputInterval > 0 ? row.OutputInterval : 1,
+                OutputItems = row.OutputItems,
+                Effects = TownFacilityEffectCatalog.MapList(row.Effects),
             };
         }
     }

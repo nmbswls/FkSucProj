@@ -56,7 +56,9 @@ namespace My.UI
             var def = buff.Def;
             if (TitleText != null)
             {
-                TitleText.text = string.IsNullOrEmpty(def?.BuffId) ? "Buff" : def.BuffId;
+                TitleText.text = !string.IsNullOrEmpty(def?.Desc)
+                    ? def.Desc
+                    : (string.IsNullOrEmpty(def?.BuffId) ? "Buff" : def.BuffId);
             }
 
             if (ValueText != null)

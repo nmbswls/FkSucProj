@@ -27,6 +27,10 @@ public sealed partial class HumanWeapon : Luban.BeanBase
         { if(!_buf["weapon_level"].IsNumber) { throw new SerializationException(); }  WeaponLevel = _buf["weapon_level"]; }
         { if(!_buf["stun_value"].IsNumber) { throw new SerializationException(); }  StunValue = _buf["stun_value"]; }
         { if(!_buf["bullet_id"].IsString) { throw new SerializationException(); }  BulletId = _buf["bullet_id"]; }
+        { if(!_buf["weapon_subtype"].IsString) { throw new SerializationException(); }  WeaponSubtype = _buf["weapon_subtype"]; }
+        { if(!_buf["affix_pool_id"].IsString) { throw new SerializationException(); }  AffixPoolId = _buf["affix_pool_id"]; }
+        { if(!_buf["affix_min_count"].IsNumber) { throw new SerializationException(); }  AffixMinCount = _buf["affix_min_count"]; }
+        { if(!_buf["affix_max_count"].IsNumber) { throw new SerializationException(); }  AffixMaxCount = _buf["affix_max_count"]; }
     }
 
     public static HumanWeapon DeserializeHumanWeapon(JSONNode _buf)
@@ -70,6 +74,22 @@ public sealed partial class HumanWeapon : Luban.BeanBase
     /// bullet_id
     /// </summary>
     public string BulletId;
+    /// <summary>
+    /// 武器子类型
+    /// </summary>
+    public string WeaponSubtype;
+    /// <summary>
+    /// 词条池
+    /// </summary>
+    public string AffixPoolId;
+    /// <summary>
+    /// 最少词条数量
+    /// </summary>
+    public int AffixMinCount;
+    /// <summary>
+    /// 最多词条数量
+    /// </summary>
+    public int AffixMaxCount;
    
     public const int __ID__ = -517056002;
     public override int GetTypeId() => __ID__;
@@ -90,6 +110,10 @@ public sealed partial class HumanWeapon : Luban.BeanBase
         + "weaponLevel:" + WeaponLevel + ","
         + "stunValue:" + StunValue + ","
         + "bulletId:" + BulletId + ","
+        + "weaponSubtype:" + WeaponSubtype + ","
+        + "affixPoolId:" + AffixPoolId + ","
+        + "affixMinCount:" + AffixMinCount + ","
+        + "affixMaxCount:" + AffixMaxCount + ","
         + "}";
     }
 }

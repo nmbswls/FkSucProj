@@ -79,6 +79,8 @@ namespace My.Map.Logic
         public bool ItemInitialized = false;
         public int DynamicDropId;
         public List<ItemStack> InnerItems = new();
+        // 玩家放置的运输标记容器
+        public bool IsTransportMarker;
     }
 
     // 逻辑实体的轻量描述（可存持久化）

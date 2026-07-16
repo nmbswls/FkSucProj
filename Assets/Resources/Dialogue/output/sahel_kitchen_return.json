@@ -1,0 +1,35 @@
+{
+  "DialogId": "sahel_kitchen_return",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "sahel_kitchen_return",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "萨赫尔",
+              "Content": "你真的把它们找回来了……看这口锅，锅底都还留着赤沙沿岸的烟灰。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "萨赫尔",
+              "Content": "有了它们，我就能重新开火。萨赫尔欠你一顿真正像样的热饭。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "萨赫尔",
+              "Content": "等秩序稳定下来，我会把家乡的香料炖菜做给大家尝尝。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

@@ -178,5 +178,65 @@
     "base_blurt_amount": 0,
     "base_blurt_dmg": 0,
     "default_h_shield": 0
+  },
+  {
+    "id": 12000,
+    "level": 1,
+    "hp": 70,
+    "move_speed": 1.8,
+    "base_atk": 2,
+    "physical_power": 6,
+    "h_power": 0,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 20,
+    "default_h_shield": 0
+  },
+  {
+    "id": 12001,
+    "level": 1,
+    "hp": 65,
+    "move_speed": 1.9,
+    "base_atk": 2,
+    "physical_power": 5,
+    "h_power": 0,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 20,
+    "default_h_shield": 0
+  },
+  {
+    "id": 12002,
+    "level": 1,
+    "hp": 75,
+    "move_speed": 1.7,
+    "base_atk": 2.5,
+    "physical_power": 6,
+    "h_power": 0,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 20,
+    "default_h_shield": 0
+  },
+  {
+    "id": 12003,
+    "level": 1,
+    "hp": 55,
+    "move_speed": 1.4,
+    "base_atk": 1.5,
+    "physical_power": 4,
+    "h_power": 0,
+    "base_blurt_amount": 1,
+    "base_blurt_dmg": 15,
+    "default_h_shield": 0
+  },
+  {
+    "id": 12004,
+    "level": 1,
+    "hp": 95,
+    "move_speed": 1.6,
+    "base_atk": 3,
+    "physical_power": 8,
+    "h_power": 0,
+    "base_blurt_amount": 3,
+    "base_blurt_dmg": 30,
+    "default_h_shield": 0
   }
 ]

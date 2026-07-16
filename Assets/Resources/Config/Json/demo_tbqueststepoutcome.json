@@ -96,7 +96,9 @@
     "is_fail": false,
     "next_step_id": "",
     "finish_reward": [],
-    "set_variables": []
+    "set_variables": [
+      "npc_local_switch:carlisle:secret_base_joined"
+    ]
   },
   {
     "outcome_id": "200_s1_Main",
@@ -355,6 +357,41 @@
     "finish_reward": [],
     "set_variables": [
       "home_01.vera_dream_done"
+    ]
+  },
+  {
+    "outcome_id": "214_s1_Main",
+    "need_objective_ids": [
+      "214_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "214_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "214_s2_Main",
+    "need_objective_ids": [
+      "214_s2_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "214_s3",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "214_s3_Main",
+    "need_objective_ids": [
+      "214_s3_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.kitchen_tools_recovered"
     ]
   }
 ]

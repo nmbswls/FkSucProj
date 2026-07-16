@@ -234,6 +234,8 @@ namespace My
                 RumorIntelSpawn?.ApplyPurchasedRumorsOnMapLoaded();
             }
 
+            transportLootSystem?.BindSessionMarkerIfNeeded();
+
             var overlayId = AreaManager?.AreaOverlayId;
             if (!string.IsNullOrEmpty(overlayId))
             {

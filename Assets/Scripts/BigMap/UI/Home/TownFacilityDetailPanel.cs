@@ -318,9 +318,16 @@ namespace My.UI.Home
 
             if (txtDailyOutput != null)
             {
-                txtDailyOutput.text = _facilityLevel > 0
-                    ? $"每日产出  {TownFacilityDetailUiFormatter.FormatDailyOutputs(levelDef?.DailyOutputs)}"
-                    : "每日产出  <color=#9AA8B8>建造后解锁</color>";
+                if (_facilityLevel > 0)
+                {
+                    string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(levelDef?.OutputInterval ?? 1);
+                    string items = TownFacilityDetailUiFormatter.FormatOutputItems(levelDef?.OutputItems);
+                    txtDailyOutput.text = $"产出  {interval}  {items}";
+                }
+                else
+                {
+                    txtDailyOutput.text = "产出  <color=#9AA8B8>建造后解锁</color>";
+                }
             }
 
             bool showNext = nextLevelDef != null;
@@ -359,7 +366,9 @@ namespace My.UI.Home
 
             if (txtNextDailyOutput != null)
             {
-                txtNextDailyOutput.text = $"升级后产出  {TownFacilityDetailUiFormatter.FormatDailyOutputs(nextLevelDef.DailyOutputs)}";
+                string interval = TownFacilityDetailUiFormatter.FormatOutputInterval(nextLevelDef.OutputInterval);
+                string items = TownFacilityDetailUiFormatter.FormatOutputItems(nextLevelDef.OutputItems);
+                txtNextDailyOutput.text = $"升级后产出  {interval}  {items}";
             }
 
             string failReason = null;
@@ -565,12 +574,12 @@ namespace My.UI.Home
 
         static string FormatGoldOutputPreview(FacilityRenovationDefinition renovation)
         {
-            if (renovation?.DailyOutputs == null)
+            if (renovation?.OutputItems == null)
             {
                 return null;
             }
 
-            foreach (var output in renovation.DailyOutputs)
+            foreach (var output in renovation.OutputItems)
             {
                 if (output != null && output.ItemId == "gold" && output.Count > 0)
                 {

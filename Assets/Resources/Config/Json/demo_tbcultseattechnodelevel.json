@@ -1,7 +1,0 @@
-﻿[
-  {"node_id":20,"level":1,"prereq_node_ids":[],"faith_cost":20,"effect_desc":"淑女残座共鸣：往去回忆事件占位。"},
-  {"node_id":21,"level":1,"prereq_node_ids":[],"faith_cost":15,"effect_desc":"镜中微光占位效果。"},
-  {"node_id":22,"level":1,"prereq_node_ids":[],"faith_cost":15,"effect_desc":"晚钟回声占位效果。"},
-  {"node_id":23,"level":1,"prereq_node_ids":[],"faith_cost":20,"effect_desc":"白绸誓约占位效果。"},
-  {"node_id":24,"level":1,"prereq_node_ids":[],"faith_cost":25,"effect_desc":"远行灯盏占位效果。"}
-]

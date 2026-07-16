@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using My.Config;
 using My.Player;
 using Newtonsoft.Json;
@@ -87,9 +88,42 @@ namespace My
     [Serializable]
     public class ItemInstance4HumanWeapon : ItemInstanceComponent
     {
+        public long IdentificationSeed;
+        public bool IsIdentified;
+        public List<string> AffixIds = new();
+        public List<int> AffixTiers = new();
+
         public override ItemInstanceComponent Clone()
         {
-            return new ItemInstance4HumanWeapon();
+            return new ItemInstance4HumanWeapon
+            {
+                IdentificationSeed = IdentificationSeed,
+                IsIdentified = IsIdentified,
+                AffixIds = AffixIds == null ? new List<string>() : AffixIds.ToList(),
+                AffixTiers = AffixTiers == null ? new List<int>() : AffixTiers.ToList(),
+            };
+        }
+    }
+
+    [Serializable]
+    public sealed class ItemInstance4HumanArmar : ItemInstanceComponent
+    {
+        public long IdentificationSeed;
+        public bool IsIdentified;
+        public bool AffixesGenerated;
+        public List<string> AffixIds = new();
+        public List<int> AffixTiers = new();
+
+        public override ItemInstanceComponent Clone()
+        {
+            return new ItemInstance4HumanArmar
+            {
+                IdentificationSeed = IdentificationSeed,
+                IsIdentified = IsIdentified,
+                AffixesGenerated = AffixesGenerated,
+                AffixIds = AffixIds == null ? new List<string>() : AffixIds.ToList(),
+                AffixTiers = AffixTiers == null ? new List<int>() : AffixTiers.ToList(),
+            };
         }
     }
 

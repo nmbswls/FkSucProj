@@ -38,6 +38,8 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["auto_pick"].IsBoolean) { throw new SerializationException(); }  AutoPick = _buf["auto_pick"]; }
         { if(!_buf["is_auto_use"].IsBoolean) { throw new SerializationException(); }  IsAutoUse = _buf["is_auto_use"]; }
         { if(!_buf["can_dismantle"].IsBoolean) { throw new SerializationException(); }  CanDismantle = _buf["can_dismantle"]; }
+        { if(!_buf["market_sellable"].IsBoolean) { throw new SerializationException(); }  MarketSellable = _buf["market_sellable"]; }
+        { if(!_buf["market_base_price"].IsNumber) { throw new SerializationException(); }  MarketBasePrice = _buf["market_base_price"]; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -125,6 +127,14 @@ public sealed partial class ItemData : Luban.BeanBase
     /// 是否允许进入分解系统；仍需item_dismantle存在对应规则
     /// </summary>
     public bool CanDismantle;
+    /// <summary>
+    /// 是否允许进入市集售卖
+    /// </summary>
+    public bool MarketSellable;
+    /// <summary>
+    /// 市集基础售价（金币/个）
+    /// </summary>
+    public long MarketBasePrice;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -156,6 +166,8 @@ public sealed partial class ItemData : Luban.BeanBase
         + "autoPick:" + AutoPick + ","
         + "isAutoUse:" + IsAutoUse + ","
         + "canDismantle:" + CanDismantle + ","
+        + "marketSellable:" + MarketSellable + ","
+        + "marketBasePrice:" + MarketBasePrice + ","
         + "}";
     }
 }

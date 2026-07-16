@@ -1,1 +1,197 @@
-[{"codex_id":"orc_i","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"orc_i","level":2,"need_extract_count":5,"need_total_amount":10000,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"orc_i","level":3,"need_extract_count":15,"need_total_amount":50000,"stat_bonuses":[{"attr_id":7,"val":2}]},{"codex_id":"orc_ii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"orc_ii","level":2,"need_extract_count":3,"need_total_amount":20000,"stat_bonuses":[{"attr_id":7,"val":2}]},{"codex_id":"human_i","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_ii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_iii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_iv","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_v","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_vi","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"human_vii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"monster_i","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"monster_ii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]},{"codex_id":"monster_iii","level":1,"need_extract_count":1,"need_total_amount":0,"stat_bonuses":[{"attr_id":7,"val":1}]}]
+[
+  {
+    "codex_id": "orc_i",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "orc_i",
+    "level": 2,
+    "need_extract_count": 5,
+    "need_total_amount": 10000,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "orc_i",
+    "level": 3,
+    "need_extract_count": 15,
+    "need_total_amount": 50000,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ]
+  },
+  {
+    "codex_id": "orc_ii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "orc_ii",
+    "level": 2,
+    "need_extract_count": 3,
+    "need_total_amount": 20000,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ]
+  },
+  {
+    "codex_id": "human_i",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_ii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_iii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_iv",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_v",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_vi",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "human_vii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "monster_i",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "monster_ii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  },
+  {
+    "codex_id": "monster_iii",
+    "level": 1,
+    "need_extract_count": 1,
+    "need_total_amount": 0,
+    "stat_bonuses": [
+      {
+        "attr_id": 7,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ]
+  }
+]

@@ -1,5 +1,12 @@
 [
   {
+    "facility_id": "market",
+    "display_name": "市集",
+    "sort_order": 80,
+    "max_level": 5,
+    "icon": "market"
+  },
+  {
     "facility_id": "elder_hall",
     "display_name": "长老厅",
     "sort_order": 1,

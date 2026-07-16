@@ -28,7 +28,13 @@ namespace My.Map
             cacheConfig = MapLootPointConfigLoader.Get(cfgId);
 
             var realRec = (LogicEntityRecord4LootPoint)bindingRecord;
-            if(!realRec.ItemInitialized)
+            if (realRec.IsTransportMarker || cfgId == TransportLootPointLogicEntity.MarkerCfgId)
+            {
+                lootContainer = new LootContainer(logicManager, MaxSlots);
+                lootContainer.InitByItems(realRec.InnerItems ?? new List<ItemStack>());
+                realRec.ItemInitialized = true;
+            }
+            else if(!realRec.ItemInitialized)
             {
                 int dropId = realRec.DynamicDropId;
                 if (dropId == 0)
@@ -405,6 +411,35 @@ namespace My.Map
         public IItemContainer GetLootItemContainer()
         {
             return lootContainer;
+        }
+
+        protected override void RefreshEntityRecordInfo(LogicEntityRecord input)
+        {
+            base.RefreshEntityRecordInfo(input);
+            if (input is not LogicEntityRecord4LootPoint lootRec)
+            {
+                return;
+            }
+
+            if (!lootRec.IsTransportMarker && CfgId != TransportLootPointLogicEntity.MarkerCfgId)
+            {
+                return;
+            }
+
+            lootRec.ItemInitialized = true;
+            lootRec.InnerItems ??= new List<ItemStack>();
+            lootRec.InnerItems.Clear();
+            foreach (var stack in lootContainer.LootItems)
+            {
+                if (stack == null || stack.Count <= 0)
+                {
+                    lootRec.InnerItems.Add(null);
+                    continue;
+                }
+
+                lootRec.InnerItems.Add(ItemCatalog.HydrateItemStackFromPersist(
+                    stack.ItemID, stack.Count, stack.ItemInstanceId, stack.InstanceInfo));
+            }
         }
     }
 

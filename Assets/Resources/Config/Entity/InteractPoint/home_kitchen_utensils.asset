@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2943ff4e2db45a34bae7fcf653f35f26, type: 3}
+  m_Name: home_kitchen_utensils
+  m_EditorClassIdentifier: 
+  CfgId: home_kitchen_utensils
+  ShowName: "\u53A8\u5177"
+  PrefabName: empty
+  NameOffset: 40
+  IsAlwaysActive: 0
+  PersistByUniqName: 1
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel: 
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u88AB\u5012\u584C\u7684\u53A8\u623F\u6B8B\u9AB8\u91CC\uFF0C\u8FD8\u80FD\u7528\u7684\u9505\u548C\u5200\u3002"
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u53D6\u56DE\u53A8\u5177"
+      UnLabel: "\u53D6\u56DE\u53A8\u5177"
+      HideWhenFail: 0
+      NeedDist: 0.8
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs: []
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos: []
+  InitState: 0
+  StateChangeRules: []

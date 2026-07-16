@@ -24,7 +24,7 @@
     "trigger_cond": [
       {
         "type": 1,
-        "param1": 101,
+        "param1": 200,
         "param2": 0,
         "param3": 0,
         "param4": 0,
@@ -970,6 +970,34 @@
     "is_auto_trigger": false,
     "only_once": false,
     "json_data_name": "vera_dream_complete",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "sahel_kitchen_request",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "sahel_kitchen_request",
+    "need_map": "",
+    "trigger_cond": [],
+    "active_trigger_npc": "",
+    "lock_global_time": false,
+    "controlled_entity_list": [],
+    "show_priority": 0,
+    "custom_variables": [],
+    "cutscene_id": ""
+  },
+  {
+    "dialog_id": "sahel_kitchen_return",
+    "is_auto_trigger": false,
+    "only_once": false,
+    "json_data_name": "sahel_kitchen_return",
     "need_map": "",
     "trigger_cond": [],
     "active_trigger_npc": "",

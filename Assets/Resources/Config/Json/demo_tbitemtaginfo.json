@@ -346,5 +346,47 @@
     "display_name": "Premium Essence Drop",
     "hidden": true,
     "requires_instance": true
+  },
+  {
+    "tag": 59,
+    "display_name": "人类护具载体",
+    "hidden": true,
+    "requires_instance": true
+  },
+  {
+    "tag": 60,
+    "display_name": "护具：头部",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 61,
+    "display_name": "护具：胸部",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 62,
+    "display_name": "护具：手部",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 63,
+    "display_name": "护具：腿部",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 64,
+    "display_name": "护具：脚部",
+    "hidden": false,
+    "requires_instance": false
+  },
+  {
+    "tag": 65,
+    "display_name": "护具：饰品",
+    "hidden": false,
+    "requires_instance": false
   }
 ]

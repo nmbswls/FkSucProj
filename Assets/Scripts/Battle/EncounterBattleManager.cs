@@ -39,13 +39,21 @@ namespace My.Encounter
 
         public void FinishBattle()
         {
-            EncounterBattleService.Instance.LastResult.IsWin = false;
-            EncounterBattleService.Instance.LastResult.InvolvedEntites.AddRange(CurContext.InvolvedEntites);
-
             if (CurContext != null && CurContext.IsDefeatMode)
             {
+                EncounterBattleService.Instance.LastResult.IsWin = false;
                 MainGameManager.Instance.QuitEncounterByDefeat();
                 return;
+            }
+
+            // The normal encounter HUD is the victory settlement path. Defeat mode
+            // is handled explicitly above and never reaches this branch.
+            var result = EncounterBattleService.Instance.LastResult;
+            result.IsWin = true;
+            result.InvolvedEntites.Clear();
+            if (CurContext != null)
+            {
+                result.InvolvedEntites.AddRange(CurContext.InvolvedEntites);
             }
 
             MainGameManager.Instance.QuitEncounter();

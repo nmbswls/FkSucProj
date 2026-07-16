@@ -25,7 +25,7 @@ MonoBehaviour:
   PaintExportPPU: 16
   SlicePixelSize: 512
   MaskColor: {r: 1, g: 0, b: 1, a: 1}
-  ExportRevision: 16
+  ExportRevision: 22
   ContextExpandRatio: 0.25
   Chunks:
   - X: 0

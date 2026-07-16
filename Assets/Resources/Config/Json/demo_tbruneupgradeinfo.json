@@ -69,6 +69,7 @@
     "stat_bonuses": [
       {
         "attr_id": 8,
+        "human_attr_id": 0,
         "val": 8
       }
     ]

@@ -143,6 +143,16 @@ namespace My
                         return registry != null
                                && registry.GetFavorLevel(cond.Param5, this) >= cond.Param1;
                     }
+                case cfg.demo.ECommonCheckType.NamedNpcLocalSwitch:
+                    {
+                        if (string.IsNullOrEmpty(cond.Param5) || string.IsNullOrEmpty(cond.Param6))
+                        {
+                            return false;
+                        }
+
+                        bool hasSwitch = playerSystem?.NamedNpcHasLocalSwitch(cond.Param5, cond.Param6) == true;
+                        return cond.Param1 != 0 ? hasSwitch : !hasSwitch;
+                    }
                 case cfg.demo.ECommonCheckType.HumanTechUnlockedCount:
                     {
                         return playerSystem?.ProgressionSystem?.HumanCivilization != null

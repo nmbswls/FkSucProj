@@ -345,6 +345,16 @@ namespace My.Map.Scene
                 PlayerEntity.EndStealth();
                 return true;
             }
+
+            if (selectionId == 2)
+            {
+                var glm = MainGameManager.Instance?.gameLogicManager;
+                if (glm?.transportLootSystem?.TryPlaceMarkerAtPlayerFeet(out _) == true)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -368,6 +378,21 @@ namespace My.Map.Scene
                 {
                     SelectId = 1,
                     SelectContent = "Leave",
+                    Selectable = true,
+                });
+            }
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm?.transportLootSystem != null
+                && glm.transportLootSystem.CanPlaceMarkerOnCurrentMap(out _))
+            {
+                var label = glm.transportLootSystem.HasActiveMarkerOnCurrentMap()
+                    ? "重新放置物资堆"
+                    : "放置运输标记";
+                ret.Add(new SceneInteractSelection()
+                {
+                    SelectId = 2,
+                    SelectContent = label,
                     Selectable = true,
                 });
             }

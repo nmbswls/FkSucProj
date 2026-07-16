@@ -375,10 +375,32 @@ namespace My.UI.Talent
                 return string.Empty;
             }
 
+            if (bonus.HumanAttrId != EHumanCivilizationAttribute.None)
+            {
+                return $"人类文明属性 {bonus.HumanAttrId} +{bonus.Val}%";
+            }
+
             switch ((EYCAttribute)bonus.AttrId)
             {
                 case EYCAttribute.MainBagSlots:
                     return $"主背包槽位 +{bonus.Val}";
+                case EYCAttribute.BigBagSlots:
+                    return $"大件背包槽位 +{bonus.Val}";
+                case EYCAttribute.CarryWeightBase:
+                    return $"基础负重 +{bonus.Val}";
+                case EYCAttribute.CarryWeightExtraFlat:
+                    return $"额外负重 +{bonus.Val}";
+                case EYCAttribute.CarryWeightExtraPercent:
+                    return $"额外负重 +{bonus.Val / 100f:0.#}%";
+                case EYCAttribute.MainBagWeightRatio:
+                case EYCAttribute.SecretBagWeightRatio:
+                case EYCAttribute.PlantBagWeightRatio:
+                case EYCAttribute.KeyBagWeightRatio:
+                case EYCAttribute.PotionBagWeightRatio:
+                case EYCAttribute.BigBagWeightRatio:
+                case EYCAttribute.MindBagWeightRatio:
+                case EYCAttribute.ImportantBagWeightRatio:
+                    return $"负重折算 {bonus.AttrId} {(bonus.Val >= 0 ? "+" : "")}{bonus.Val / 100f:0.#}%";
                 case EYCAttribute.PhysicalPower:
                     return $"肉体强度 +{bonus.Val / 1000f:0.#}";
                 case EYCAttribute.PhysicalResist:

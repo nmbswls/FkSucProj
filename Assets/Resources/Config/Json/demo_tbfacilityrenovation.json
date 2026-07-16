@@ -1,22 +1,6 @@
 [
   {
-    "facility_id": "elder_hall",
-    "renovation_id": "council_basic",
-    "display_name": "基础议事",
-    "desc": "维持聚落秩序",
-    "min_level": 1,
-    "sort_order": 1,
-    "unlock_conds": [],
-    "learn_costs": [],
-    "daily_outputs": [
-      {
-        "item_id": "influence",
-        "count": 2
-      }
-    ]
-  },
-  {
-    "facility_id": "merchant_stall",
+    "facility_cfg_id": "merchant_stall",
     "renovation_id": "general_trade",
     "display_name": "通识贸易",
     "desc": "偏重人类通识与稳定收入",
@@ -29,10 +13,11 @@
         "item_id": "gold",
         "count": 8
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "merchant_stall",
+    "facility_cfg_id": "merchant_stall",
     "renovation_id": "scrap_focus",
     "display_name": "搜刮周转",
     "desc": "快速消化搜刮物换钱",
@@ -45,10 +30,45 @@
         "item_id": "gold",
         "count": 15
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "tavern",
+    "facility_cfg_id": "elder_hall",
+    "renovation_id": "council_basic",
+    "display_name": "基础议事",
+    "desc": "维持聚落秩序",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "influence",
+        "count": 2
+      }
+    ],
+    "effects": []
+  },
+  {
+    "facility_cfg_id": "village_hall",
+    "renovation_id": "patrol_support",
+    "display_name": "巡防支援",
+    "desc": "为周边探索提供安定",
+    "min_level": 1,
+    "sort_order": 1,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [
+      {
+        "item_id": "stability",
+        "count": 1
+      }
+    ],
+    "effects": []
+  },
+  {
+    "facility_cfg_id": "tavern",
     "renovation_id": "gold_signboard",
     "display_name": "酒招挂牌",
     "desc": "门外酒招吸引过客，提升金币收入",
@@ -61,10 +81,11 @@
         "item_id": "gold",
         "count": 12
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "tavern",
+    "facility_cfg_id": "tavern",
     "renovation_id": "ledger_counter",
     "display_name": "柜台账册",
     "desc": "账房规范收银，稳定提升金币产出",
@@ -77,10 +98,11 @@
         "item_id": "gold",
         "count": 20
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "tavern",
+    "facility_cfg_id": "tavern",
     "renovation_id": "brew_cellar",
     "display_name": "醇酿窖藏",
     "desc": "窖藏烈酿抬升客单，大幅增加金币收入",
@@ -98,10 +120,11 @@
         "item_id": "gold",
         "count": 32
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "transport_camp",
+    "facility_cfg_id": "transport_camp",
     "renovation_id": "local_haul",
     "display_name": "短途驮运",
     "desc": "服务聚落周边运输",
@@ -114,21 +137,113 @@
         "item_id": "gold",
         "count": 10
       }
-    ]
+    ],
+    "effects": []
   },
   {
-    "facility_id": "village_hall",
-    "renovation_id": "patrol_support",
-    "display_name": "巡防支援",
-    "desc": "为周边探索提供安定",
+    "facility_cfg_id": "market",
+    "renovation_id": "market_shelf_1",
+    "display_name": "扩建货架 I",
+    "desc": "增加一个销售格。",
     "min_level": 1,
     "sort_order": 1,
     "unlock_conds": [],
     "learn_costs": [],
-    "daily_outputs": [
+    "daily_outputs": [],
+    "effects": [
       {
-        "item_id": "stability",
-        "count": 1
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 5,
+        "human_attr": 0,
+        "value": 1
+      }
+    ]
+  },
+  {
+    "facility_cfg_id": "market",
+    "renovation_id": "market_shelf_2",
+    "display_name": "扩建货架 II",
+    "desc": "再增加一个销售格。",
+    "min_level": 2,
+    "sort_order": 2,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [],
+    "effects": [
+      {
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 5,
+        "human_attr": 0,
+        "value": 1
+      }
+    ]
+  },
+  {
+    "facility_cfg_id": "market",
+    "renovation_id": "market_bidding",
+    "display_name": "公开竞价",
+    "desc": "提高商品被买走的概率。",
+    "min_level": 2,
+    "sort_order": 3,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [],
+    "effects": [
+      {
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 3,
+        "human_attr": 0,
+        "value": 1
+      }
+    ]
+  },
+  {
+    "facility_cfg_id": "market",
+    "renovation_id": "market_appraisal",
+    "display_name": "鉴定柜台",
+    "desc": "提高售出商品的成交价格。",
+    "min_level": 3,
+    "sort_order": 4,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [],
+    "effects": [
+      {
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 4,
+        "human_attr": 0,
+        "value": 1
+      }
+    ]
+  },
+  {
+    "facility_cfg_id": "market",
+    "renovation_id": "market_guild_ledger",
+    "display_name": "商会账房",
+    "desc": "增加销售格，并提高成交概率。",
+    "min_level": 4,
+    "sort_order": 5,
+    "unlock_conds": [],
+    "learn_costs": [],
+    "daily_outputs": [],
+    "effects": [
+      {
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 5,
+        "human_attr": 0,
+        "value": 1
+      },
+      {
+        "effect_type": 1,
+        "target_facility_id": "-",
+        "building_attr": 3,
+        "human_attr": 0,
+        "value": 1
       }
     ]
   }

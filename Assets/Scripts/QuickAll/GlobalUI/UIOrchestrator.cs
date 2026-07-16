@@ -428,6 +428,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = My.UI.Market.MarketPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/MarketPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = My.UI.KnowledgeClipboardPanel.Pid,
                 resourcePath = "UI/Prefabs/KnowledgeClipboardPanel",
                 defaultLayer = UILayer.Popup,
@@ -438,6 +446,14 @@ namespace My.UI
             {
                 panelId = My.UI.SecretBaseNpcHubPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/SecretBaseNpcHubPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = My.UI.HumanArmarAppraisalPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/HumanArmarAppraisalPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

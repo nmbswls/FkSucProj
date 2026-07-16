@@ -1,5 +1,14 @@
 [
   {
+    "facility_id": "market",
+    "level": 1,
+    "display_name": "市集 1级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
     "facility_id": "elder_hall",
     "level": 1,
     "display_name": "初建",
@@ -217,118 +226,39 @@
     ]
   },
   {
-    "facility_id": "tavern",
-    "level": 1,
-    "display_name": "起建",
-    "desc": "搭建边境酒馆",
-    "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 25
-      },
-      {
-        "item_id": "gold",
-        "count": 80
-      }
-    ],
-    "daily_outputs": [
-      {
-        "item_id": "gold",
-        "count": 6
-      }
-    ]
-  },
-  {
-    "facility_id": "tavern",
+    "facility_id": "market",
     "level": 2,
-    "display_name": "扩建",
-    "desc": "增加情报与通识产出",
+    "display_name": "市集 2级",
+    "desc": "提升市集经营能力",
     "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 40
-      },
-      {
-        "item_id": "gold",
-        "count": 150
-      }
-    ],
-    "daily_outputs": [
-      {
-        "item_id": "gold",
-        "count": 12
-      }
-    ]
+    "unlock_costs": [],
+    "daily_outputs": []
   },
   {
-    "facility_id": "tavern",
+    "facility_id": "market",
     "level": 3,
-    "display_name": "完善",
-    "desc": "成为聚落情报枢纽",
+    "display_name": "市集 3级",
+    "desc": "提升市集经营能力",
     "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 60
-      },
-      {
-        "item_id": "gold",
-        "count": 250
-      }
-    ],
-    "daily_outputs": [
-      {
-        "item_id": "gold",
-        "count": 20
-      }
-    ]
+    "unlock_costs": [],
+    "daily_outputs": []
   },
   {
-    "facility_id": "transport_camp",
-    "level": 1,
-    "display_name": "起建",
-    "desc": "搭建运输队营地",
+    "facility_id": "market",
+    "level": 4,
+    "display_name": "市集 4级",
+    "desc": "提升市集经营能力",
     "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 30
-      },
-      {
-        "item_id": "stone",
-        "count": 15
-      }
-    ],
-    "daily_outputs": [
-      {
-        "item_id": "gold",
-        "count": 8
-      }
-    ]
+    "unlock_costs": [],
+    "daily_outputs": []
   },
   {
-    "facility_id": "transport_camp",
-    "level": 2,
-    "display_name": "扩建",
-    "desc": "扩大商队周转能力",
+    "facility_id": "market",
+    "level": 5,
+    "display_name": "市集 5级",
+    "desc": "提升市集经营能力",
     "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 50
-      },
-      {
-        "item_id": "gold",
-        "count": 120
-      }
-    ],
-    "daily_outputs": [
-      {
-        "item_id": "gold",
-        "count": 18
-      }
-    ]
+    "unlock_costs": [],
+    "daily_outputs": []
   }
 ]

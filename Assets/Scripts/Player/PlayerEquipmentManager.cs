@@ -13,7 +13,9 @@ namespace My.Player
     {
         public static bool IsGearItem(ItemData def)
         {
-            return def != null && PartGearCatalog.HasDetail(def.ItemId);
+            return def != null
+                && !ItemTagCatalog.HasTag(def, EItemTag.HumanArmar)
+                && PartGearCatalog.HasDetail(def.ItemId);
         }
 
         public static bool MatchesPart(ItemData def, EBodyPart part)

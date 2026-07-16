@@ -2,6 +2,13 @@
   {
     "map_variant": "Home_01",
     "overlay_id": "homestead_01",
+    "character_key": "home_vera",
+    "routine_profile_id": "home01_vera",
+    "npc_cfg_id": ""
+  },
+  {
+    "map_variant": "Home_01",
+    "overlay_id": "homestead_01",
     "character_key": "home_elder",
     "routine_profile_id": "home01_emon",
     "npc_cfg_id": "homestead_elder"
@@ -26,12 +33,5 @@
     "character_key": "home_hearn",
     "routine_profile_id": "home01_hearn",
     "npc_cfg_id": "home_hearn"
-  },
-  {
-    "map_variant": "Home_01",
-    "overlay_id": "homestead_01",
-    "character_key": "home_vera",
-    "routine_profile_id": "home01_vera",
-    "npc_cfg_id": "home_vera"
   }
 ]

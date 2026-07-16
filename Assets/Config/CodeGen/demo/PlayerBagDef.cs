@@ -27,6 +27,8 @@ public sealed partial class PlayerBagDef : Luban.BeanBase
         { var __json0 = _buf["accepted_tags"]; if(!__json0.IsArray) { throw new SerializationException(); } AcceptedTags = new System.Collections.Generic.List<demo.EItemTag>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.EItemTag __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = (demo.EItemTag)__e0.AsInt; }  AcceptedTags.Add(__v0); }   }
         { if(!_buf["auto_create"].IsBoolean) { throw new SerializationException(); }  AutoCreate = _buf["auto_create"]; }
         { if(!_buf["gain_priority"].IsNumber) { throw new SerializationException(); }  GainPriority = _buf["gain_priority"]; }
+        { if(!_buf["weight_ratio"].IsNumber) { throw new SerializationException(); }  WeightRatio = _buf["weight_ratio"]; }
+        { if(!_buf["yc_weight_ratio_attr_id"].IsNumber) { throw new SerializationException(); }  YcWeightRatioAttrId = (demo.EYCAttribute)_buf["yc_weight_ratio_attr_id"].AsInt; }
     }
 
     public static PlayerBagDef DeserializePlayerBagDef(JSONNode _buf)
@@ -70,6 +72,14 @@ public sealed partial class PlayerBagDef : Luban.BeanBase
     /// 获得物品时的特殊包优先级；&lt;=0 不参与自动入包
     /// </summary>
     public int GainPriority;
+    /// <summary>
+    /// 负重折算
+    /// </summary>
+    public int WeightRatio;
+    /// <summary>
+    /// 负重属性
+    /// </summary>
+    public demo.EYCAttribute YcWeightRatioAttrId;
    
     public const int __ID__ = 1790457705;
     public override int GetTypeId() => __ID__;
@@ -90,6 +100,8 @@ public sealed partial class PlayerBagDef : Luban.BeanBase
         + "acceptedTags:" + Luban.StringUtil.CollectionToString(AcceptedTags) + ","
         + "autoCreate:" + AutoCreate + ","
         + "gainPriority:" + GainPriority + ","
+        + "weightRatio:" + WeightRatio + ","
+        + "ycWeightRatioAttrId:" + YcWeightRatioAttrId + ","
         + "}";
     }
 }
