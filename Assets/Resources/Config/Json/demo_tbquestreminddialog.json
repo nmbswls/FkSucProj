@@ -108,5 +108,16 @@
     "priority": 10,
     "require_objective_dialog_id": 0,
     "show_cond": []
+  },
+  {
+    "id": 2151,
+    "quest_id": 215,
+    "step_id": "215_s2",
+    "character_key": "village_herbalist",
+    "dialog_id": "village_herbalist_remind",
+    "option_text": "该买哪种药？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
   }
 ]

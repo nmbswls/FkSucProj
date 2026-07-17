@@ -78,5 +78,13 @@
     "preferred_gift_tags": [],
     "disliked_gift_tags": [],
     "gifts_per_day": 0
+  },
+  {
+    "key": "village_herbalist",
+    "name": "药草商人",
+    "supports_favor": false,
+    "preferred_gift_tags": [],
+    "disliked_gift_tags": [],
+    "gifts_per_day": 0
   }
 ]

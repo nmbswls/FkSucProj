@@ -111,11 +111,5 @@ namespace My.Config
 
             return result;
         }
-
-        public static AlchemyProgress GetProgressLevel(int level)
-            => CfgMgr.Cfgs?.TbAlchemyProgress?.GetOrDefault(level);
-
-        public static IReadOnlyList<AlchemyProgress> GetAllProgressLevels()
-            => CfgMgr.Cfgs?.TbAlchemyProgress?.DataList;
     }
 }

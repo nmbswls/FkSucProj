@@ -334,6 +334,12 @@ namespace My.UI
                 return player.ablilityManager.TryUseSkillFromConfig(skillId, inputVec, castVec, target, castOverrides);
             }
 
+            // 道具 UseSkill、未注册到 SkillRuntimes 的配置技能：走脱手施法
+            if (!player.ablilityManager.SkillRuntimes.ContainsKey(skillId))
+            {
+                return player.ablilityManager.TryUseSkillFromConfig(skillId, inputVec, castVec, target, castOverrides);
+            }
+
             return player.ablilityManager.UseSkill(skillId, inputVec, castVec, target, castOverrides);
         }
 

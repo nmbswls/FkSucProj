@@ -15,7 +15,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "homestead_01",
@@ -33,7 +43,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": true
+    "peace_zone_mark": true,
+    "walker_limit": 12,
+    "walker_spawn_interval": 1,
+    "walker_hot_radius": 16,
+    "walker_hidden_radius": 3,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "walker_normal_cfg_id": "civil",
+    "walker_advanced_cfg_id": "civil_advanced",
+    "walker_elite_cfg_id": "civil_elite"
   },
   {
     "id": "village_01_d",
@@ -51,7 +71,17 @@
     "hunting_target": true,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 18,
+    "walker_spawn_interval": 1,
+    "walker_hot_radius": 16,
+    "walker_hidden_radius": 3,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "walker_normal_cfg_id": "civil",
+    "walker_advanced_cfg_id": "civil_advanced",
+    "walker_elite_cfg_id": "civil_elite"
   },
   {
     "id": "village_01_n",
@@ -69,7 +99,17 @@
     "hunting_target": true,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 22,
+    "walker_spawn_interval": 0.8,
+    "walker_hot_radius": 18,
+    "walker_hidden_radius": 3,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "walker_normal_cfg_id": "civil",
+    "walker_advanced_cfg_id": "civil_advanced",
+    "walker_elite_cfg_id": "civil_elite"
   },
   {
     "id": "village_02",
@@ -87,7 +127,17 @@
     "hunting_target": true,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 18,
+    "walker_spawn_interval": 1,
+    "walker_hot_radius": 16,
+    "walker_hidden_radius": 3,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "walker_normal_cfg_id": "civil",
+    "walker_advanced_cfg_id": "civil_advanced",
+    "walker_elite_cfg_id": "civil_elite"
   },
   {
     "id": "game_init",
@@ -105,7 +155,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "homestead_01_fight",
@@ -123,7 +183,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "dungeon_test_cave",
@@ -141,7 +211,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "test_cave",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "test_link_a",
@@ -159,16 +239,26 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": true
+    "peace_zone_mark": true,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "test_link_b",
-    "name": "测试连通B",
-    "desc": "测试连通B",
+    "name": "Home East Outskirts",
+    "desc": "Transition area east of home_01 leading to forest_01",
     "var_id": "test_link_b",
     "day_period_limit": 0,
     "map_data_name": "test_link_b",
-    "can_teleport": true,
+    "can_teleport": false,
     "is_home": false,
     "is_secret_base": false,
     "always_alert": false,
@@ -177,7 +267,17 @@
     "hunting_target": false,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": true
+    "peace_zone_mark": true,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "forest_01",
@@ -195,7 +295,17 @@
     "hunting_target": true,
     "hunting_unlock_conds": [],
     "procedural_def_id": "",
-    "peace_zone_mark": false
+    "peace_zone_mark": false,
+    "walker_limit": 0,
+    "walker_spawn_interval": 0,
+    "walker_hot_radius": 0,
+    "walker_hidden_radius": 0,
+    "walker_normal_weight": 0,
+    "walker_advanced_weight": 0,
+    "walker_elite_weight": 0,
+    "walker_normal_cfg_id": "",
+    "walker_advanced_cfg_id": "",
+    "walker_elite_cfg_id": ""
   },
   {
     "id": "village_01_road",

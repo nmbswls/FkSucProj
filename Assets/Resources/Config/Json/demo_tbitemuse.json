@@ -107,7 +107,7 @@
     "p2": 0,
     "p3": 0,
     "p4": 0,
-    "s1": "item_throw_smoke_grenade",
+    "s1": "item_throw_sound_ball",
     "s2": "",
     "initial_charges": 0
   },
@@ -1372,6 +1372,38 @@
     "p3": 1,
     "p4": 0,
     "s1": "",
+    "s2": "",
+    "initial_charges": 0
+  },
+  {
+    "id": 8,
+    "item_id": "flash_grenade",
+    "slot": 0,
+    "consume_policy": 1,
+    "use_cd": 5,
+    "use_time": 0,
+    "use_type": 3,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "item_throw_flash_grenade",
+    "s2": "",
+    "initial_charges": 0
+  },
+  {
+    "id": 9,
+    "item_id": "caltrop_bundle",
+    "slot": 0,
+    "consume_policy": 1,
+    "use_cd": 5,
+    "use_time": 0,
+    "use_type": 3,
+    "p1": 0,
+    "p2": 0,
+    "p3": 0,
+    "p4": 0,
+    "s1": "item_throw_caltrop",
     "s2": "",
     "initial_charges": 0
   }

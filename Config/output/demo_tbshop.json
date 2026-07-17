@@ -18,5 +18,10 @@
     "id": 6,
     "name": "TestShop_BigOrc",
     "bind_npc_id": "initial_orc_big"
+  },
+  {
+    "id": 7,
+    "name": "VillageHerbalistShop",
+    "bind_npc_id": "village_herbalist"
   }
 ]

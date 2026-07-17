@@ -327,6 +327,21 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateItemThrowSoundBallAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateItemThrowFlashGrenadeAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateItemThrowCaltropAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreateOrbSkillCastAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -2961,6 +2976,169 @@ namespace My.Map.Entity
                     {
                         CfgId = "smoke_grenade_area",
                         LifeTime = 8f,
+                    },
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = spawnBullet, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateItemThrowSoundBallAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "item_throw_sound_ball";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 8f;
+            spec.AdjustFaceDir = true;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "smoke_grenade",
+                MotionData = new ParabolaMotionData()
+                {
+                    horizontalSpeed = 10f,
+                    arcHeight = 3.5f,
+                    gravity = 24f,
+                    hitRadius = 0f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                lifeTime = 12f,
+                bulletMaxPenetration = 0,
+                TriggerOnCollide = false,
+                ExplodeEffects = new List<MapFightEffectCfg>
+                {
+                    new MapAbilityEffectSpawnEntityCfg()
+                    {
+                        EntityType = EEntityType.AttractPoint,
+                        CfgId = "attract_01",
+                        LifeTime = 10f,
+                    },
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = spawnBullet, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateItemThrowFlashGrenadeAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "item_throw_flash_grenade";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 8f;
+            spec.AdjustFaceDir = true;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "smoke_grenade",
+                MotionData = new ParabolaMotionData()
+                {
+                    horizontalSpeed = 10f,
+                    arcHeight = 3.5f,
+                    gravity = 24f,
+                    hitRadius = 0f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                lifeTime = 12f,
+                bulletMaxPenetration = 0,
+                TriggerOnCollide = false,
+                ExplodeEffects = new List<MapFightEffectCfg>
+                {
+                    new MapFightEffectCreateAreaEffectCfg()
+                    {
+                        CfgId = "flash_stun_area",
+                        LifeTime = 2f,
+                    },
+                },
+            };
+
+            mainPhase.Events.Add(new PhaseEffectEvent() { Effect = spawnBullet, Kind = PhaseEventKind.OnExit });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateItemThrowCaltropAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+
+            spec.Id = "item_throw_caltrop";
+            spec.TypeTag = AbilityTypeTag.Utility;
+            spec.CastType = ECastType.Point;
+            spec.Range1 = 6f;
+            spec.AdjustFaceDir = true;
+
+            var mainPhase = new MapAbilityPhase()
+            {
+                PhaseName = "Main",
+                LockMovement = true,
+                LockRotation = true,
+                DurationValue = new()
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.2"
+                },
+            };
+
+            var spawnBullet = new MapAbilityEffectSpawnBulletCfg()
+            {
+                BulletId = "smoke_grenade",
+                MotionData = new ParabolaMotionData()
+                {
+                    horizontalSpeed = 8f,
+                    arcHeight = 2.5f,
+                    gravity = 24f,
+                    hitRadius = 0f,
+                },
+                SpawnPos = MapAbilityEffectSpawnBulletCfg.ESpawnPos.TriggerPos,
+                SpawnDir = MapAbilityEffectSpawnBulletCfg.ESpawnDir.ToCastPos,
+                isHoming = true,
+                homingSelectPolicy = ETargetSelectPolicy.CastPoint,
+                lifeTime = 12f,
+                bulletMaxPenetration = 0,
+                TriggerOnCollide = false,
+                ExplodeEffects = new List<MapFightEffectCfg>
+                {
+                    new MapFightEffectCreateAreaEffectCfg()
+                    {
+                        CfgId = "caltrop_snare_area",
+                        LifeTime = 20f,
                     },
                 },
             };

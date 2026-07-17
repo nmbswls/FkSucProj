@@ -27,6 +27,7 @@ public sealed partial class AlchemyFurnace : Luban.BeanBase
         { if(!_buf["amplify_virtue_id"].IsNumber) { throw new SerializationException(); }  AmplifyVirtueId = _buf["amplify_virtue_id"]; }
         { if(!_buf["amplify_percent"].IsNumber) { throw new SerializationException(); }  AmplifyPercent = _buf["amplify_percent"]; }
         { var __json0 = _buf["required_tools"]; if(!__json0.IsArray) { throw new SerializationException(); } RequiredTools = new System.Collections.Generic.List<string>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { string __v0;  { if(!__e0.IsString) { throw new SerializationException(); }  __v0 = __e0; }  RequiredTools.Add(__v0); }   }
+        { if(!_buf["owner_item_id"].IsString) { throw new SerializationException(); }  OwnerItemId = _buf["owner_item_id"]; }
     }
 
     public static AlchemyFurnace DeserializeAlchemyFurnace(JSONNode _buf)
@@ -58,6 +59,10 @@ public sealed partial class AlchemyFurnace : Luban.BeanBase
     /// 必须持有的工具 item_id
     /// </summary>
     public System.Collections.Generic.List<string> RequiredTools;
+    /// <summary>
+    /// 对应道具 item_id，空=不可作为持有物
+    /// </summary>
+    public string OwnerItemId;
    
     public const int __ID__ = 2146367650;
     public override int GetTypeId() => __ID__;
@@ -80,6 +85,7 @@ public sealed partial class AlchemyFurnace : Luban.BeanBase
         + "amplifyVirtueId:" + AmplifyVirtueId + ","
         + "amplifyPercent:" + AmplifyPercent + ","
         + "requiredTools:" + Luban.StringUtil.CollectionToString(RequiredTools) + ","
+        + "ownerItemId:" + OwnerItemId + ","
         + "}";
     }
 }

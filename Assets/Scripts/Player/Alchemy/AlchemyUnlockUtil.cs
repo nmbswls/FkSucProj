@@ -10,49 +10,20 @@ namespace My.Player.Alchemy
         public static bool IsRecipeUnlocked(AlchemyRecipe recipe) => CheckUnlock(recipe?.UnlockMode ?? EForgeUnlockMode.None,
             recipe?.UnlockParam, recipe?.UnlockItemMinCount ?? 0);
 
-        public static bool IsProgressUnlocked(AlchemyProgress progress) => CheckUnlock(progress?.UnlockMode ?? EForgeUnlockMode.None,
-            progress?.UnlockParam, progress?.UnlockItemMinCount ?? 0);
-
-        // 返回当前已解锁的最高炼金进度等级。
-        public static int ResolveProgressLevel()
-        {
-            var rows = AlchemyCatalog.GetAllProgressLevels();
-            if (rows == null)
-            {
-                return 0;
-            }
-
-            int best = 0;
-            for (int i = 0; i < rows.Count; i++)
-            {
-                var row = rows[i];
-                if (row != null && row.Level >= best && IsProgressUnlocked(row))
-                {
-                    best = row.Level;
-                }
-            }
-
-            return best;
-        }
-
-        public static int ResolveExtraMaterialSlots(int progressLevel, IReadOnlyList<string> activeToolIds)
+        public static int ResolveToolExtraMaterialSlots(IReadOnlyList<string> activeToolIds)
         {
             int extra = 0;
-            var progress = AlchemyCatalog.GetProgressLevel(progressLevel);
-            if (progress != null)
+            if (activeToolIds == null)
             {
-                extra += progress.ExtraMaterialSlots;
+                return extra;
             }
 
-            if (activeToolIds != null)
+            for (int i = 0; i < activeToolIds.Count; i++)
             {
-                for (int i = 0; i < activeToolIds.Count; i++)
+                var tool = AlchemyCatalog.GetTool(activeToolIds[i]);
+                if (tool != null)
                 {
-                    var tool = AlchemyCatalog.GetTool(activeToolIds[i]);
-                    if (tool != null)
-                    {
-                        extra += tool.ExtraMaterialSlots;
-                    }
+                    extra += tool.ExtraMaterialSlots;
                 }
             }
 

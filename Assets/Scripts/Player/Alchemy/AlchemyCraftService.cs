@@ -17,10 +17,9 @@ namespace My.Player.Alchemy
             string furnaceId,
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
-            AlchemyRecipe recipe,
-            int progressLevel = -1)
+            AlchemyRecipe recipe)
         {
-            return TryCraftDryRun(inv, furnaceId, activeToolIds, materialSlots, recipe, progressLevel, out _, out _);
+            return TryCraftDryRun(inv, furnaceId, activeToolIds, materialSlots, recipe, out _, out _);
         }
 
         public static bool TryResolveMix(
@@ -28,11 +27,123 @@ namespace My.Player.Alchemy
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
             out AlchemyMixState mixState,
-            out string failReasonEn,
-            int progressLevel = -1)
+            out string failReasonEn)
         {
-            int level = progressLevel >= 0 ? progressLevel : AlchemyUnlockUtil.ResolveProgressLevel();
-            return AlchemyMixResolver.TryResolve(furnaceId, activeToolIds, materialSlots, level, out mixState, out failReasonEn);
+            return AlchemyMixResolver.TryResolve(
+                furnaceId, activeToolIds, materialSlots, out mixState, out failReasonEn);
+        }
+
+        public static int ResolveMaxMaterialSlots(string furnaceId)
+        {
+            return AlchemyMixResolver.ResolveMaxMaterialSlots(furnaceId);
+        }
+
+        public static bool CanCraftBestMatchingRecipe(
+            PlayerInventorySystem inv,
+            string furnaceId,
+            IReadOnlyList<string> activeToolIds,
+            IReadOnlyList<AlchemyInputSlot> materialSlots,
+            out AlchemyRecipe matchedRecipe)
+        {
+            return TryCraftBestMatchingRecipeDryRun(
+                inv, furnaceId, activeToolIds, materialSlots, out matchedRecipe, out _);
+        }
+
+        public static bool TryCraftBestMatchingRecipe(
+            PlayerInventorySystem inv,
+            string furnaceId,
+            IReadOnlyList<string> activeToolIds,
+            IReadOnlyList<AlchemyInputSlot> materialSlots,
+            out AlchemyRecipe craftedRecipe,
+            out string failReasonEn)
+        {
+            craftedRecipe = null;
+            if (!TryCraftBestMatchingRecipeDryRun(
+                inv, furnaceId, activeToolIds, materialSlots, out craftedRecipe, out failReasonEn))
+            {
+                return false;
+            }
+
+            return TryCraft(inv, furnaceId, activeToolIds, materialSlots, craftedRecipe, out failReasonEn);
+        }
+
+        public static bool TryCraftBestMatchingRecipeDryRun(
+            PlayerInventorySystem inv,
+            string furnaceId,
+            IReadOnlyList<string> activeToolIds,
+            IReadOnlyList<AlchemyInputSlot> materialSlots,
+            out AlchemyRecipe matchedRecipe,
+            out string failReasonEn)
+        {
+            matchedRecipe = null;
+            failReasonEn = "";
+
+            if (inv == null)
+            {
+                failReasonEn = "Invalid recipe or inventory.";
+                return false;
+            }
+
+            if (furnaceId != AlchemyConstants.HandCraftFurnaceId
+                && !AlchemyOwnershipUtil.IsFurnaceOwned(inv, furnaceId))
+            {
+                failReasonEn = "Furnace not owned.";
+                return false;
+            }
+
+            if (activeToolIds != null)
+            {
+                for (int i = 0; i < activeToolIds.Count; i++)
+                {
+                    var toolId = activeToolIds[i];
+                    if (!string.IsNullOrEmpty(toolId) && !AlchemyOwnershipUtil.IsToolOwned(inv, toolId))
+                    {
+                        failReasonEn = "Tool not owned.";
+                        return false;
+                    }
+                }
+            }
+
+            if (!TryResolveMix(furnaceId, activeToolIds, materialSlots, out var mixState, out failReasonEn))
+            {
+                return false;
+            }
+
+            var recipes = AlchemyMixResolver.FindMatchingRecipes(mixState, onlyUnlocked: true);
+            if (recipes == null || recipes.Count == 0)
+            {
+                failReasonEn = "No matching alchemy recipe.";
+                return false;
+            }
+
+            recipes.Sort(static (a, b) =>
+            {
+                int c = a.Sort.CompareTo(b.Sort);
+                return c != 0 ? c : a.Id.CompareTo(b.Id);
+            });
+
+            for (int i = 0; i < recipes.Count; i++)
+            {
+                var recipe = recipes[i];
+                if (recipe == null)
+                {
+                    continue;
+                }
+
+                if (TryCraftDryRun(inv, furnaceId, activeToolIds, materialSlots, recipe, out _, out failReasonEn))
+                {
+                    matchedRecipe = recipe;
+                    failReasonEn = "";
+                    return true;
+                }
+            }
+
+            if (string.IsNullOrEmpty(failReasonEn))
+            {
+                failReasonEn = "No craftable alchemy recipe.";
+            }
+
+            return false;
         }
 
         public static bool TryCraft(
@@ -40,11 +151,10 @@ namespace My.Player.Alchemy
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
             AlchemyRecipe recipe,
-            out string failReasonEn,
-            int progressLevel = -1)
+            out string failReasonEn)
         {
             var inv = MainGameManager.Instance?.gameLogicManager?.playerDataManager?.InventorySystem;
-            return TryCraft(inv, furnaceId, activeToolIds, materialSlots, recipe, out failReasonEn, progressLevel);
+            return TryCraft(inv, furnaceId, activeToolIds, materialSlots, recipe, out failReasonEn);
         }
 
         public static bool TryCraft(
@@ -53,10 +163,9 @@ namespace My.Player.Alchemy
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
             AlchemyRecipe recipe,
-            out string failReasonEn,
-            int progressLevel = -1)
+            out string failReasonEn)
         {
-            if (!TryCraftDryRun(inv, furnaceId, activeToolIds, materialSlots, recipe, progressLevel, out var mixState, out failReasonEn))
+            if (!TryCraftDryRun(inv, furnaceId, activeToolIds, materialSlots, recipe, out _, out failReasonEn))
             {
                 return false;
             }
@@ -86,7 +195,6 @@ namespace My.Player.Alchemy
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
             AlchemyRecipe recipe,
-            int progressLevel,
             out AlchemyMixState mixState,
             out string failReasonEn)
         {
@@ -105,8 +213,8 @@ namespace My.Player.Alchemy
                 return false;
             }
 
-            int level = progressLevel >= 0 ? progressLevel : AlchemyUnlockUtil.ResolveProgressLevel();
-            if (!AlchemyMixResolver.TryResolve(furnaceId, activeToolIds, materialSlots, level, out mixState, out failReasonEn))
+            if (!AlchemyMixResolver.TryResolve(
+                furnaceId, activeToolIds, materialSlots, out mixState, out failReasonEn))
             {
                 return false;
             }

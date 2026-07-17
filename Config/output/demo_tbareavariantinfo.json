@@ -78,8 +78,8 @@
   },
   {
     "var_id": "test_link_b",
-    "name": "测试连通B",
-    "desc": "测试连通B",
+    "name": "Home East Outskirts",
+    "desc": "Transition area east of home_01 leading to forest_01",
     "logic_area_id": "test_link_b",
     "show_in_map": false,
     "show_conds": [],

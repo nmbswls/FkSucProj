@@ -522,7 +522,23 @@
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_quick_poke",
+    "skill_id": "human_unarmed_attack",
+    "level": 1,
+    "cool_down": 0.5,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "hit_attach",
+    "level": 1,
+    "cool_down": 0.2,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "forest_fly_attach",
     "level": 1,
     "cool_down": 1.5,
     "ability_extra": [],
@@ -530,33 +546,49 @@
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_slam",
+    "skill_id": "treant_summon_root_nodes",
     "level": 1,
-    "cool_down": 4,
+    "cool_down": 25,
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_spit",
+    "skill_id": "treant_summon_thorn_vines",
     "level": 1,
-    "cool_down": 2.5,
+    "cool_down": 20,
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_magic_aoe",
+    "skill_id": "treant_corrosive_barrage",
     "level": 1,
-    "cool_down": 5,
+    "cool_down": 8,
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
   },
   {
-    "skill_id": "slime_magic_bolt",
+    "skill_id": "item_throw_sound_ball",
     "level": 1,
-    "cool_down": 2,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "item_throw_flash_grenade",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "item_throw_caltrop",
+    "level": 1,
+    "cool_down": 0,
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []

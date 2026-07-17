@@ -27,6 +27,7 @@ namespace My.MapExport
         WalkerSpawn,
         WalkerTransit,
         WalkerDespawn,
+        ResidentIdle,
 
         PatrolPoint, // 路点类型
 

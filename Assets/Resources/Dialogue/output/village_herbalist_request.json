@@ -1,0 +1,30 @@
+{
+  "DialogId": "village_herbalist_request",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "village_herbalist_request",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "????",
+              "Content": "??????????????????????????",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "????",
+              "Content": "???????????????????????????????????",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

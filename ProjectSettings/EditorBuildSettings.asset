@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Main/Forest_01.unity
     guid: b2a3afe74d7c8074a8fae7ff6e8afbf7
+  - enabled: 1
+    path: Assets/Scenes/Main/Village01_HerbShop.unity
+    guid: 515b11c87e9bc7b4aa4c9bb424610501
   m_configObjects: {}

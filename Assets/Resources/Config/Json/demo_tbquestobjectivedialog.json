@@ -193,5 +193,31 @@
     "success_dialog_id": "",
     "fail_dialog_id": "",
     "show_cond": []
+  },
+  {
+    "id": 2152,
+    "quest_id": 215,
+    "obj_id": "215_s1_Main",
+    "character_key": "village_herbalist",
+    "entry_dialog_id": "village_herbalist_request",
+    "option_text": "和他谈谈",
+    "priority": 20,
+    "once": true,
+    "success_dialog_id": "",
+    "fail_dialog_id": "",
+    "show_cond": []
+  },
+  {
+    "id": 2153,
+    "quest_id": 215,
+    "obj_id": "215_s3_Main",
+    "character_key": "village_herbalist",
+    "entry_dialog_id": "village_herbalist_return",
+    "option_text": "交出草药敷剂",
+    "priority": 20,
+    "once": true,
+    "success_dialog_id": "",
+    "fail_dialog_id": "",
+    "show_cond": []
   }
 ]

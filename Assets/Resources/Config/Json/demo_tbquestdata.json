@@ -470,5 +470,20 @@
       }
     ],
     "start_npc_id": "home_merchant"
+  },
+  {
+    "quest_id": 215,
+    "name": "买药救急",
+    "desc": "为村中伤员买一份草药敷剂。",
+    "init_step_id": "215_s1",
+    "finish_reward": [
+      [
+        "gold",
+        20
+      ]
+    ],
+    "is_auto_accept": false,
+    "acceept_cond": [],
+    "start_npc_id": "village_herbalist"
   }
 ]

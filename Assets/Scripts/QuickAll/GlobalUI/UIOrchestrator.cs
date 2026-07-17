@@ -502,6 +502,14 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = Alchemy.AlchemyPanel.Pid,
+                resourcePath = "UI/Prefabs/AlchemyPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = Dismantle.ItemDismantlePanel.Pid,
                 resourcePath = "UI/Prefabs/ItemDismantlePanel",
                 defaultLayer = UILayer.Popup,

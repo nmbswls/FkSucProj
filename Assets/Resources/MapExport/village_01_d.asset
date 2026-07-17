@@ -15,10 +15,36 @@ MonoBehaviour:
   AreaId: village_01_d
   Buckets:
   - Chunk:
+      X: 3
+      Y: 2
+    StaticItems:
+    - ItemId: 101
+      Key: house_village_01
+      Position: {x: 103.92, y: 87.71, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    FovStaticSegments: []
+  - Chunk:
       X: 1
       Y: 0
     StaticItems:
-    - ItemId: 101
+    - ItemId: 102
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
         (3)
       Position: {x: 45.704, y: 17.274, z: -0.005412549}
@@ -40,7 +66,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 102
+    - ItemId: 103
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
         (2)
       Position: {x: 45.600574, y: 17.305, z: -0.005412549}
@@ -62,7 +88,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 103
+    - ItemId: 104
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
         (1)
       Position: {x: 45.767, y: 17.331001, z: -0.005412549}
@@ -84,7 +110,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 104
+    - ItemId: 105
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_nongtians_tall_grass_single
       Position: {x: 45.600574, y: 17.365303, z: -0.005412549}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -105,7 +131,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 106
+    - ItemId: 107
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_yellow
         (1)
       Position: {x: 61.72, y: 13.67, z: 0}
@@ -127,7 +153,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 107
+    - ItemId: 108
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_yellow
       Position: {x: 57.26, y: 26.82, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -148,7 +174,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 109
+    - ItemId: 110
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_wood
       Position: {x: 49.35, y: 20.24, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -169,7 +195,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 110
+    - ItemId: 111
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guoshu_01
         (4)
       Position: {x: 32.94, y: 20.47, z: 0}
@@ -191,7 +217,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 112
+    - ItemId: 113
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guoshu_01
         (2)
       Position: {x: 51.81, y: 7.24, z: 0}
@@ -213,7 +239,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 113
+    - ItemId: 114
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guoshu_01
         (1)
       Position: {x: 52.31, y: 9.92, z: 0}
@@ -235,7 +261,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 114
+    - ItemId: 115
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guoshu_01
       Position: {x: 49.84, y: 10.13, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -256,7 +282,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 115
+    - ItemId: 116
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu_tall
       Position: {x: 49.9, y: 3.31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -277,7 +303,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 116
+    - ItemId: 117
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu
         (1)
       Position: {x: 57.32, y: 4.18, z: 0}
@@ -299,7 +325,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 117
+    - ItemId: 118
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu
         (4)
       Position: {x: 45.11, y: 22, z: 0}
@@ -321,7 +347,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 118
+    - ItemId: 119
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu
         (3)
       Position: {x: 32.76, y: 7.9, z: 0}
@@ -343,7 +369,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 119
+    - ItemId: 120
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu
         (2)
       Position: {x: 56.36, y: 14.88, z: 0}
@@ -365,7 +391,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 120
+    - ItemId: 121
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guanmu
       Position: {x: 48.92, y: 4.18, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -386,7 +412,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 121
+    - ItemId: 122
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (3)
       Position: {x: 51.36, y: 4.07, z: 0}
@@ -408,7 +434,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 122
+    - ItemId: 123
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (2)
       Position: {x: 51.36, y: 2.91, z: 0}
@@ -430,7 +456,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 123
+    - ItemId: 124
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (1)
       Position: {x: 51.36, y: 1.79, z: 0}
@@ -452,7 +478,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 124
+    - ItemId: 125
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (7)
       Position: {x: 55.77, y: 4.05, z: 0}
@@ -474,7 +500,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 125
+    - ItemId: 126
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (6)
       Position: {x: 55.77, y: 2.91, z: 0}
@@ -496,7 +522,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 126
+    - ItemId: 127
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (5)
       Position: {x: 55.77, y: 1.82, z: 0}
@@ -518,7 +544,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 127
+    - ItemId: 128
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
         (4)
       Position: {x: 55.77, y: 0.54, z: 0}
@@ -540,7 +566,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 128
+    - ItemId: 129
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_fence_vertical
       Position: {x: 51.36, y: 0.54, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -561,7 +587,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 129
+    - ItemId: 130
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_daocaoren
       Position: {x: 47.95, y: 17.89, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -582,7 +608,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 130
+    - ItemId: 131
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_shuijing
         (3)
       Position: {x: 49.12, y: 27.38, z: 0}
@@ -604,7 +630,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 132
+    - ItemId: 133
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_shuijing
         (1)
       Position: {x: 54.41, y: 12.97, z: 0}
@@ -626,7 +652,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 133
+    - ItemId: 134
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_shuijing
       Position: {x: 41.61, y: 8.91, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -647,7 +673,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 134
+    - ItemId: 135
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_village_01
       Position: {x: 49.11, y: 22.8, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -668,7 +694,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 139
+    - ItemId: 140
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (4)
       Position: {x: 59.41, y: 13.26, z: 0}
@@ -690,7 +716,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 141
+    - ItemId: 142
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (2)
       Position: {x: 52.61, y: 19.82, z: 0}
@@ -712,7 +738,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 142
+    - ItemId: 143
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (1)
       Position: {x: 42.96, y: 7.97, z: 0}
@@ -734,7 +760,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 143
+    - ItemId: 144
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
       Position: {x: 43.98, y: 2.22, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -755,7 +781,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 144
+    - ItemId: 145
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (10)
       Position: {x: 47.09, y: 1.7, z: 0}
@@ -777,7 +803,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 145
+    - ItemId: 146
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (9)
       Position: {x: 57.38, y: 2.35, z: 0}
@@ -799,7 +825,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 147
+    - ItemId: 148
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (7)
       Position: {x: 56.02, y: 7.61, z: 0}
@@ -821,7 +847,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 148
+    - ItemId: 149
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (6)
       Position: {x: 46.01, y: 4.29, z: 0}
@@ -843,7 +869,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 149
+    - ItemId: 150
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (5)
       Position: {x: 45.59, y: 29.34, z: 0}
@@ -865,7 +891,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 150
+    - ItemId: 151
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (4)
       Position: {x: 59.77, y: 22.9, z: 0}
@@ -887,7 +913,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 151
+    - ItemId: 152
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (3)
       Position: {x: 45.6, y: 14.6, z: 0}
@@ -909,7 +935,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 152
+    - ItemId: 153
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (2)
       Position: {x: 53.21, y: 21.51, z: 0}
@@ -931,7 +957,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 153
+    - ItemId: 154
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (1)
       Position: {x: 39.6, y: 14.4, z: 0}
@@ -953,7 +979,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 154
+    - ItemId: 155
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
       Position: {x: 33.1, y: 13.41, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -974,7 +1000,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 155
+    - ItemId: 156
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Stone1_grass_shadow
         (1)
       Position: {x: 46.12, y: 31.75, z: 0}
@@ -996,7 +1022,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 156
+    - ItemId: 157
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Stone1_grass_shadow
       Position: {x: 32.17, y: 3.43, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1022,7 +1048,7 @@ MonoBehaviour:
       X: 2
       Y: 0
     StaticItems:
-    - ItemId: 105
+    - ItemId: 106
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_yellow_big
       Position: {x: 69.79, y: 9.61, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1043,7 +1069,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 108
+    - ItemId: 109
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_wood
         (1)
       Position: {x: 69.46, y: 22.01, z: 0}
@@ -1065,7 +1091,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 111
+    - ItemId: 112
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_guoshu_01
         (3)
       Position: {x: 64.82, y: 22.57, z: 0}
@@ -1087,7 +1113,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 131
+    - ItemId: 132
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_shuijing
         (2)
       Position: {x: 65.09, y: 7.39, z: 0}
@@ -1109,7 +1135,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 146
+    - ItemId: 147
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_Flower1
         (8)
       Position: {x: 73.77, y: 19.25, z: 0}
@@ -1136,27 +1162,6 @@ MonoBehaviour:
       X: 0
       Y: 0
     StaticItems:
-    - ItemId: 135
-      Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_tree
-      Position: {x: 0, y: 0, z: 0}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-      DisappearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
     - ItemId: 136
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_tree
       Position: {x: 0, y: 0, z: 0}
@@ -1178,7 +1183,28 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 138
+    - ItemId: 137
+      Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_tree
+      Position: {x: 0, y: 0, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    - ItemId: 139
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_zhuangjia
       Position: {x: 0, y: 0, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1199,7 +1225,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 140
+    - ItemId: 141
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_StaticDecorateLayer_ground_element20
         (3)
       Position: {x: 31.74, y: 17.73, z: 0}
@@ -1226,7 +1252,7 @@ MonoBehaviour:
       X: -1
       Y: 0
     StaticItems:
-    - ItemId: 137
+    - ItemId: 138
       Key: MapChunk/Main_Area_01/SceneBake/village_01_d/AreaRoot_MapVariantRoot_Decorate_house_01_Square
       Position: {x: -10.41, y: 3.72, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1252,7 +1278,7 @@ MonoBehaviour:
       X: 1
       Y: 1
     StaticItems:
-    - ItemId: 157
+    - ItemId: 158
       Key: 1/P1
       Position: {x: 35.51, y: 38.13, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1273,7 +1299,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 158
+    - ItemId: 159
       Key: 1/P1
       Position: {x: 43.789997, y: 38.72, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -1295,296 +1321,529 @@ MonoBehaviour:
         Param5: 
         Param6: 
     FovStaticSegments:
-    - segmentId: 1
+    - segmentId: 25
       a: {x: 45.44, y: 44.030003}
       b: {x: 45.306023, y: 44.530003}
       bounds:
         m_Center: {x: 45.37301, y: 44.280003, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 2
+    - segmentId: 26
       a: {x: 45.306023, y: 44.530003}
       b: {x: 44.94, y: 44.896027}
       bounds:
         m_Center: {x: 45.12301, y: 44.713013, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 3
+    - segmentId: 27
       a: {x: 44.94, y: 44.896027}
       b: {x: 44.44, y: 45.030003}
       bounds:
         m_Center: {x: 44.69, y: 44.963013, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 4
+    - segmentId: 28
       a: {x: 44.44, y: 45.030003}
       b: {x: 43.94, y: 44.896027}
       bounds:
         m_Center: {x: 44.19, y: 44.963013, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 5
+    - segmentId: 29
       a: {x: 43.94, y: 44.896027}
       b: {x: 43.573975, y: 44.530003}
       bounds:
         m_Center: {x: 43.75699, y: 44.713013, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 6
+    - segmentId: 30
       a: {x: 43.573975, y: 44.530003}
       b: {x: 43.44, y: 44.030003}
       bounds:
         m_Center: {x: 43.50699, y: 44.280003, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 7
+    - segmentId: 31
       a: {x: 43.44, y: 44.030003}
       b: {x: 43.573975, y: 43.530003}
       bounds:
         m_Center: {x: 43.50699, y: 43.780003, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 8
+    - segmentId: 32
       a: {x: 43.573975, y: 43.530003}
       b: {x: 43.94, y: 43.16398}
       bounds:
         m_Center: {x: 43.75699, y: 43.346992, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 9
+    - segmentId: 33
       a: {x: 43.94, y: 43.16398}
       b: {x: 44.44, y: 43.030003}
       bounds:
         m_Center: {x: 44.19, y: 43.096992, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 10
+    - segmentId: 34
       a: {x: 44.44, y: 43.030003}
       b: {x: 44.94, y: 43.16398}
       bounds:
         m_Center: {x: 44.69, y: 43.096992, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 11
+    - segmentId: 35
       a: {x: 44.94, y: 43.16398}
       b: {x: 45.306023, y: 43.530003}
       bounds:
         m_Center: {x: 45.12301, y: 43.346992, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 12
+    - segmentId: 36
       a: {x: 45.306023, y: 43.530003}
       b: {x: 45.44, y: 44.030003}
       bounds:
         m_Center: {x: 45.37301, y: 43.780003, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 13
+    - segmentId: 37
       a: {x: 45.409996, y: 44.020004}
       b: {x: 45.27602, y: 44.520004}
       bounds:
         m_Center: {x: 45.34301, y: 44.270004, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 14
+    - segmentId: 38
       a: {x: 45.27602, y: 44.520004}
       b: {x: 44.909996, y: 44.88603}
       bounds:
         m_Center: {x: 45.09301, y: 44.70302, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 15
+    - segmentId: 39
       a: {x: 44.909996, y: 44.88603}
       b: {x: 44.409996, y: 45.020004}
       bounds:
         m_Center: {x: 44.659996, y: 44.95302, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 16
+    - segmentId: 40
       a: {x: 44.409996, y: 45.020004}
       b: {x: 43.909996, y: 44.88603}
       bounds:
         m_Center: {x: 44.159996, y: 44.95302, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 17
+    - segmentId: 41
       a: {x: 43.909996, y: 44.88603}
       b: {x: 43.543972, y: 44.520004}
       bounds:
         m_Center: {x: 43.726982, y: 44.70302, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 18
+    - segmentId: 42
       a: {x: 43.543972, y: 44.520004}
       b: {x: 43.409996, y: 44.020004}
       bounds:
         m_Center: {x: 43.476982, y: 44.270004, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 19
+    - segmentId: 43
       a: {x: 43.409996, y: 44.020004}
       b: {x: 43.543972, y: 43.520004}
       bounds:
         m_Center: {x: 43.476982, y: 43.770004, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 20
+    - segmentId: 44
       a: {x: 43.543972, y: 43.520004}
       b: {x: 43.909996, y: 43.15398}
       bounds:
         m_Center: {x: 43.726982, y: 43.33699, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 21
+    - segmentId: 45
       a: {x: 43.909996, y: 43.15398}
       b: {x: 44.409996, y: 43.020004}
       bounds:
         m_Center: {x: 44.159996, y: 43.08699, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 22
+    - segmentId: 46
       a: {x: 44.409996, y: 43.020004}
       b: {x: 44.909996, y: 43.15398}
       bounds:
         m_Center: {x: 44.659996, y: 43.08699, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 23
+    - segmentId: 47
       a: {x: 44.909996, y: 43.15398}
       b: {x: 45.27602, y: 43.520004}
       bounds:
         m_Center: {x: 45.09301, y: 43.33699, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 24
+    - segmentId: 48
       a: {x: 45.27602, y: 43.520004}
       b: {x: 45.409996, y: 44.020004}
       bounds:
         m_Center: {x: 45.34301, y: 43.770004, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 25
+    - segmentId: 49
       a: {x: 37.859997, y: 44.170002}
       b: {x: 37.72602, y: 44.670002}
       bounds:
         m_Center: {x: 37.793007, y: 44.420002, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 26
+    - segmentId: 50
       a: {x: 37.72602, y: 44.670002}
       b: {x: 37.359997, y: 45.036026}
       bounds:
         m_Center: {x: 37.543007, y: 44.853012, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 27
+    - segmentId: 51
       a: {x: 37.359997, y: 45.036026}
       b: {x: 36.859997, y: 45.170002}
       bounds:
         m_Center: {x: 37.109997, y: 45.103012, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 28
+    - segmentId: 52
       a: {x: 36.859997, y: 45.170002}
       b: {x: 36.359997, y: 45.036026}
       bounds:
         m_Center: {x: 36.609997, y: 45.103012, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 29
+    - segmentId: 53
       a: {x: 36.359997, y: 45.036026}
       b: {x: 35.993973, y: 44.670002}
       bounds:
         m_Center: {x: 36.176987, y: 44.853012, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 30
+    - segmentId: 54
       a: {x: 35.993973, y: 44.670002}
       b: {x: 35.859997, y: 44.170002}
       bounds:
         m_Center: {x: 35.926987, y: 44.420002, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 31
+    - segmentId: 55
       a: {x: 35.859997, y: 44.170002}
       b: {x: 35.993973, y: 43.670002}
       bounds:
         m_Center: {x: 35.926987, y: 43.920002, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 32
+    - segmentId: 56
       a: {x: 35.993973, y: 43.670002}
       b: {x: 36.359997, y: 43.303978}
       bounds:
         m_Center: {x: 36.176987, y: 43.48699, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 33
+    - segmentId: 57
       a: {x: 36.359997, y: 43.303978}
       b: {x: 36.859997, y: 43.170002}
       bounds:
         m_Center: {x: 36.609997, y: 43.23699, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 34
+    - segmentId: 58
       a: {x: 36.859997, y: 43.170002}
       b: {x: 37.359997, y: 43.303978}
       bounds:
         m_Center: {x: 37.109997, y: 43.23699, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 35
+    - segmentId: 59
       a: {x: 37.359997, y: 43.303978}
       b: {x: 37.72602, y: 43.670002}
       bounds:
         m_Center: {x: 37.543007, y: 43.48699, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 36
+    - segmentId: 60
       a: {x: 37.72602, y: 43.670002}
       b: {x: 37.859997, y: 44.170002}
       bounds:
         m_Center: {x: 37.793007, y: 43.920002, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 37
+    - segmentId: 61
       a: {x: 37.859997, y: 44.17}
       b: {x: 37.72602, y: 44.67}
       bounds:
         m_Center: {x: 37.793007, y: 44.42, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 38
+    - segmentId: 62
       a: {x: 37.72602, y: 44.67}
       b: {x: 37.359997, y: 45.036022}
       bounds:
         m_Center: {x: 37.543007, y: 44.853012, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 39
+    - segmentId: 63
       a: {x: 37.359997, y: 45.036022}
       b: {x: 36.859997, y: 45.17}
       bounds:
         m_Center: {x: 37.109997, y: 45.103012, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 40
+    - segmentId: 64
       a: {x: 36.859997, y: 45.17}
       b: {x: 36.359997, y: 45.036022}
       bounds:
         m_Center: {x: 36.609997, y: 45.103012, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 41
+    - segmentId: 65
       a: {x: 36.359997, y: 45.036022}
       b: {x: 35.993973, y: 44.67}
       bounds:
         m_Center: {x: 36.176987, y: 44.853012, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 42
+    - segmentId: 66
       a: {x: 35.993973, y: 44.67}
       b: {x: 35.859997, y: 44.17}
       bounds:
         m_Center: {x: 35.926987, y: 44.42, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 43
+    - segmentId: 67
       a: {x: 35.859997, y: 44.17}
       b: {x: 35.993973, y: 43.67}
       bounds:
         m_Center: {x: 35.926987, y: 43.92, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
-    - segmentId: 44
+    - segmentId: 68
       a: {x: 35.993973, y: 43.67}
       b: {x: 36.359997, y: 43.303974}
       bounds:
         m_Center: {x: 36.176987, y: 43.486984, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 45
+    - segmentId: 69
       a: {x: 36.359997, y: 43.303974}
       b: {x: 36.859997, y: 43.17}
       bounds:
         m_Center: {x: 36.609997, y: 43.236984, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 46
+    - segmentId: 70
       a: {x: 36.859997, y: 43.17}
       b: {x: 37.359997, y: 43.303974}
       bounds:
         m_Center: {x: 37.109997, y: 43.236984, z: 0}
         m_Extent: {x: 0.25, y: 0.06698799, z: 0}
-    - segmentId: 47
+    - segmentId: 71
       a: {x: 37.359997, y: 43.303974}
       b: {x: 37.72602, y: 43.67}
       bounds:
         m_Center: {x: 37.543007, y: 43.486984, z: 0}
         m_Extent: {x: 0.18301201, y: 0.18301201, z: 0}
-    - segmentId: 48
+    - segmentId: 72
       a: {x: 37.72602, y: 43.67}
       b: {x: 37.859997, y: 44.17}
       bounds:
         m_Center: {x: 37.793007, y: 43.92, z: 0}
         m_Extent: {x: 0.06698799, y: 0.25, z: 0}
+  - Chunk:
+      X: 4
+      Y: 1
+    StaticItems: []
+    FovStaticSegments:
+    - segmentId: 1
+      a: {x: 137.86, y: 44.170002}
+      b: {x: 137.72603, y: 44.670002}
+      bounds:
+        m_Center: {x: 137.79301, y: 44.420002, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 2
+      a: {x: 137.72603, y: 44.670002}
+      b: {x: 137.36, y: 45.036026}
+      bounds:
+        m_Center: {x: 137.54301, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 3
+      a: {x: 137.36, y: 45.036026}
+      b: {x: 136.86, y: 45.170002}
+      bounds:
+        m_Center: {x: 137.11, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 4
+      a: {x: 136.86, y: 45.170002}
+      b: {x: 136.36, y: 45.036026}
+      bounds:
+        m_Center: {x: 136.61, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 5
+      a: {x: 136.36, y: 45.036026}
+      b: {x: 135.99397, y: 44.670002}
+      bounds:
+        m_Center: {x: 136.17699, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 6
+      a: {x: 135.99397, y: 44.670002}
+      b: {x: 135.86, y: 44.170002}
+      bounds:
+        m_Center: {x: 135.92699, y: 44.420002, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 7
+      a: {x: 135.86, y: 44.170002}
+      b: {x: 135.99397, y: 43.670002}
+      bounds:
+        m_Center: {x: 135.92699, y: 43.920002, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 8
+      a: {x: 135.99397, y: 43.670002}
+      b: {x: 136.36, y: 43.303978}
+      bounds:
+        m_Center: {x: 136.17699, y: 43.48699, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 9
+      a: {x: 136.36, y: 43.303978}
+      b: {x: 136.86, y: 43.170002}
+      bounds:
+        m_Center: {x: 136.61, y: 43.23699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 10
+      a: {x: 136.86, y: 43.170002}
+      b: {x: 137.36, y: 43.303978}
+      bounds:
+        m_Center: {x: 137.11, y: 43.23699, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 11
+      a: {x: 137.36, y: 43.303978}
+      b: {x: 137.72603, y: 43.670002}
+      bounds:
+        m_Center: {x: 137.54301, y: 43.48699, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 12
+      a: {x: 137.72603, y: 43.670002}
+      b: {x: 137.86, y: 44.170002}
+      bounds:
+        m_Center: {x: 137.79301, y: 43.920002, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 13
+      a: {x: 137.86, y: 44.17}
+      b: {x: 137.72603, y: 44.67}
+      bounds:
+        m_Center: {x: 137.79301, y: 44.42, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 14
+      a: {x: 137.72603, y: 44.67}
+      b: {x: 137.36, y: 45.036022}
+      bounds:
+        m_Center: {x: 137.54301, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 15
+      a: {x: 137.36, y: 45.036022}
+      b: {x: 136.86, y: 45.17}
+      bounds:
+        m_Center: {x: 137.11, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 16
+      a: {x: 136.86, y: 45.17}
+      b: {x: 136.36, y: 45.036022}
+      bounds:
+        m_Center: {x: 136.61, y: 45.103012, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 17
+      a: {x: 136.36, y: 45.036022}
+      b: {x: 135.99397, y: 44.67}
+      bounds:
+        m_Center: {x: 136.17699, y: 44.853012, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 18
+      a: {x: 135.99397, y: 44.67}
+      b: {x: 135.86, y: 44.17}
+      bounds:
+        m_Center: {x: 135.92699, y: 44.42, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 19
+      a: {x: 135.86, y: 44.17}
+      b: {x: 135.99397, y: 43.67}
+      bounds:
+        m_Center: {x: 135.92699, y: 43.92, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
+    - segmentId: 20
+      a: {x: 135.99397, y: 43.67}
+      b: {x: 136.36, y: 43.303974}
+      bounds:
+        m_Center: {x: 136.17699, y: 43.486984, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 21
+      a: {x: 136.36, y: 43.303974}
+      b: {x: 136.86, y: 43.17}
+      bounds:
+        m_Center: {x: 136.61, y: 43.236984, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 22
+      a: {x: 136.86, y: 43.17}
+      b: {x: 137.36, y: 43.303974}
+      bounds:
+        m_Center: {x: 137.11, y: 43.236984, z: 0}
+        m_Extent: {x: 0.25, y: 0.06698799, z: 0}
+    - segmentId: 23
+      a: {x: 137.36, y: 43.303974}
+      b: {x: 137.72603, y: 43.67}
+      bounds:
+        m_Center: {x: 137.54301, y: 43.486984, z: 0}
+        m_Extent: {x: 0.18301392, y: 0.18301201, z: 0}
+    - segmentId: 24
+      a: {x: 137.72603, y: 43.67}
+      b: {x: 137.86, y: 44.17}
+      bounds:
+        m_Center: {x: 137.79301, y: 43.92, z: 0}
+        m_Extent: {x: 0.066986084, y: 0.25, z: 0}
   EntityRefreshInfo:
   - StaticId: 100
+    UniqName: village_herbalist
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946507
+  - StaticId: 101
+    UniqName: teleporter_from_herb_shop
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946508
+  - StaticId: 102
+    UniqName: teleporter_to_village_herb_shop
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946509
+  - StaticId: 103
     UniqName: teleporter_to_village_01_road
     AppearCond:
       Type: 0
@@ -1611,91 +1870,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351640
-  - StaticId: 101
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351641
-  - StaticId: 102
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351642
-  - StaticId: 103
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351643
+      rid: 4481876951502946510
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -1723,7 +1898,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351644
+      rid: 4481876951502946511
   - StaticId: 105
     UniqName: 
     AppearCond:
@@ -1751,7 +1926,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351645
+      rid: 4481876951502946512
   - StaticId: 106
     UniqName: 
     AppearCond:
@@ -1779,7 +1954,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351646
+      rid: 4481876951502946513
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -1807,7 +1982,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351647
+      rid: 4481876951502946514
   - StaticId: 108
     UniqName: 
     AppearCond:
@@ -1835,8 +2010,92 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351648
+      rid: 4481876951502946515
   - StaticId: 109
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946516
+  - StaticId: 110
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946517
+  - StaticId: 111
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946518
+  - StaticId: 112
     UniqName: gp_03
     AppearCond:
       Type: 0
@@ -1863,8 +2122,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351649
-  - StaticId: 110
+      rid: 4481876951502946519
+  - StaticId: 113
     UniqName: gp_02
     AppearCond:
       Type: 0
@@ -1891,8 +2150,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351650
-  - StaticId: 111
+      rid: 4481876951502946520
+  - StaticId: 114
     UniqName: gp_01
     AppearCond:
       Type: 0
@@ -1919,95 +2178,11 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351651
-  - StaticId: 112
-    UniqName: 
-    AppearCond:
-      Type: 1
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351652
-  - StaticId: 113
-    UniqName: 
-    AppearCond:
-      Type: 1
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351653
-  - StaticId: 114
-    UniqName: 
-    AppearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    DisappearCond:
-      Type: 0
-      Param1: 0
-      Param2: 0
-      Param3: 0
-      Param4: 0
-      Param5: 
-      Param6: 
-    WillRespawn: 0
-    RespawnInterval: 0
-    RefreshGroupKey: 
-    RefreshGroupPriority: 0
-    RefreshGroupHandoffPolicy: 1
-    RefreshTransitionMode: 1
-    DungeonNodeId: -1
-    SpawnPolicy: 0
-    InitInfo:
-      rid: 4481876947955351654
+      rid: 4481876951502946521
   - StaticId: 115
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 1
       Param1: 0
       Param2: 0
       Param3: 0
@@ -2031,11 +2206,11 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351655
+      rid: 4481876951502946522
   - StaticId: 116
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 1
       Param1: 0
       Param2: 0
       Param3: 0
@@ -2059,7 +2234,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351656
+      rid: 4481876951502946523
   - StaticId: 117
     UniqName: 
     AppearCond:
@@ -2087,7 +2262,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351657
+      rid: 4481876951502946524
   - StaticId: 118
     UniqName: 
     AppearCond:
@@ -2115,7 +2290,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351658
+      rid: 4481876951502946525
   - StaticId: 119
     UniqName: 
     AppearCond:
@@ -2143,7 +2318,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351659
+      rid: 4481876951502946526
   - StaticId: 120
     UniqName: 
     AppearCond:
@@ -2171,7 +2346,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351660
+      rid: 4481876951502946527
   - StaticId: 121
     UniqName: 
     AppearCond:
@@ -2199,7 +2374,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351661
+      rid: 4481876951502946528
   - StaticId: 122
     UniqName: 
     AppearCond:
@@ -2227,7 +2402,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351662
+      rid: 4481876951502946529
   - StaticId: 123
     UniqName: 
     AppearCond:
@@ -2255,7 +2430,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351663
+      rid: 4481876951502946530
   - StaticId: 124
     UniqName: 
     AppearCond:
@@ -2283,7 +2458,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351664
+      rid: 4481876951502946531
   - StaticId: 125
     UniqName: 
     AppearCond:
@@ -2311,9 +2486,9 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351665
+      rid: 4481876951502946532
   - StaticId: 126
-    UniqName: cornor_01_b
+    UniqName: 
     AppearCond:
       Type: 0
       Param1: 0
@@ -2339,9 +2514,9 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351666
+      rid: 4481876951502946533
   - StaticId: 127
-    UniqName: cornor_01_a
+    UniqName: 
     AppearCond:
       Type: 0
       Param1: 0
@@ -2367,7 +2542,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351667
+      rid: 4481876951502946534
   - StaticId: 128
     UniqName: 
     AppearCond:
@@ -2395,9 +2570,9 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351668
+      rid: 4481876951502946535
   - StaticId: 129
-    UniqName: 
+    UniqName: cornor_01_b
     AppearCond:
       Type: 0
       Param1: 0
@@ -2423,9 +2598,9 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351669
+      rid: 4481876951502946536
   - StaticId: 130
-    UniqName: 
+    UniqName: cornor_01_a
     AppearCond:
       Type: 0
       Param1: 0
@@ -2451,7 +2626,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351670
+      rid: 4481876951502946537
   - StaticId: 131
     UniqName: 
     AppearCond:
@@ -2479,7 +2654,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351671
+      rid: 4481876951502946538
   - StaticId: 132
     UniqName: 
     AppearCond:
@@ -2507,7 +2682,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351672
+      rid: 4481876951502946539
   - StaticId: 133
     UniqName: 
     AppearCond:
@@ -2535,7 +2710,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351673
+      rid: 4481876951502946540
   - StaticId: 134
     UniqName: 
     AppearCond:
@@ -2563,8 +2738,132 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351674
+      rid: 4481876951502946541
+  - StaticId: 135
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946542
+  - StaticId: 136
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946543
+  - StaticId: 137
+    UniqName: 
+    AppearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481876951502946544
   NamedPoints:
+  - Name: village_01_herb_shop_entry
+    PointType: 0
+    Position: {x: 103.92, y: 85.71, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_06
+    PointType: 8
+    Position: {x: 42, y: 25, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_05
+    PointType: 8
+    Position: {x: 75, y: 42, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_04
+    PointType: 8
+    Position: {x: 60, y: 45, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_03
+    PointType: 8
+    Position: {x: 66, y: 30, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_02
+    PointType: 8
+    Position: {x: 55, y: 28, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: resident_idle_01
+    PointType: 8
+    Position: {x: 45, y: 38, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
+  - Name: village_01_herb_shop_return
+    PointType: 0
+    Position: {x: 47.5, y: 37.2, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
   - Name: control_gan_look
     PointType: 0
     Position: {x: 45.81, y: 5.22, z: 0}
@@ -2817,7 +3116,43 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4481876947955351640
+    - rid: 4481876951502946507
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: village_herbalist
+        Position: {x: 103.92, y: 88.71}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: default_npc
+        IsPeace: 1
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: village_herbalist
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 4481876951502946508
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 103.92, y: 85.71}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: village_01_herb_shop_return
+    - rid: 4481876951502946509
+      type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: 
+        Position: {x: 47.5, y: 37.2}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        TargetMapName: 
+        TargetNamedPoint: village_01_herb_shop_entry
+    - rid: 4481876951502946510
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -2827,7 +3162,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: village_01_road
         TargetNamedPoint: village_01_road_to_town
-    - rid: 4481876947955351641
+    - rid: 4481876951502946511
       type: {class: EntityInitInfo4RemovableObstacle, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: removable_test_01
@@ -2838,7 +3173,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351642
+    - rid: 4481876951502946512
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: control_gan_01
@@ -2849,7 +3184,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351643
+    - rid: 4481876951502946513
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: area_cannon_01
@@ -2865,7 +3200,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351644
+    - rid: 4481876951502946514
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: memory_point
@@ -2876,7 +3211,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351645
+    - rid: 4481876951502946515
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_top
@@ -2887,7 +3222,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351646
+    - rid: 4481876951502946516
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: vine_01_seed
@@ -2900,7 +3235,7 @@ MonoBehaviour:
           - VineGrowLength
           values:
           - 3.7
-    - rid: 4481876947955351647
+    - rid: 4481876951502946517
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_inn_01
@@ -2908,7 +3243,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351648
+    - rid: 4481876951502946518
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: v1_entry_01
@@ -2916,7 +3251,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351649
+    - rid: 4481876951502946519
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2924,7 +3259,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351650
+    - rid: 4481876951502946520
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2932,7 +3267,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351651
+    - rid: 4481876951502946521
       type: {class: EntityInitInfo4GatherPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: gather_grass
@@ -2940,7 +3275,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351652
+    - rid: 4481876951502946522
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2950,7 +3285,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_out
-    - rid: 4481876947955351653
+    - rid: 4481876951502946523
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 0
@@ -2960,7 +3295,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: building_01_in
-    - rid: 4481876947955351654
+    - rid: 4481876951502946524
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2971,7 +3306,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351655
+    - rid: 4481876951502946525
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hide_point_01
@@ -2982,7 +3317,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351656
+    - rid: 4481876951502946526
       type: {class: EntityInitInfo4EventGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_insult_girl
@@ -2993,7 +3328,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351657
+    - rid: 4481876951502946527
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: poison_p_clothes
@@ -3004,7 +3339,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351658
+    - rid: 4481876951502946528
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -3015,7 +3350,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351659
+    - rid: 4481876951502946529
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: retreat_point
@@ -3026,7 +3361,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481876947955351660
+    - rid: 4481876951502946530
       type: {class: EntityInitInfo4PatrolGroup, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -3048,11 +3383,11 @@ MonoBehaviour:
         GroupUnits:
         - GroupIdx: 0
           InitInfo:
-            rid: 4481876947955351675
+            rid: 4481876951502946545
         - GroupIdx: 1
           InitInfo:
-            rid: 4481876947955351676
-    - rid: 4481876947955351661
+            rid: 4481876951502946546
+    - rid: 4481876951502946531
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: good_obj_01
@@ -3060,7 +3395,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351662
+    - rid: 4481876951502946532
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -3068,7 +3403,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351663
+    - rid: 4481876951502946533
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -3076,7 +3411,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351664
+    - rid: 4481876951502946534
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_01
@@ -3084,7 +3419,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351665
+    - rid: 4481876951502946535
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: city_watcher_01
@@ -3100,7 +3435,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351666
+    - rid: 4481876951502946536
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -3116,7 +3451,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351667
+    - rid: 4481876951502946537
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: civil
@@ -3132,7 +3467,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351668
+    - rid: 4481876951502946538
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -3148,7 +3483,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351669
+    - rid: 4481876951502946539
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_red
@@ -3164,7 +3499,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351670
+    - rid: 4481876951502946540
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hunhun
@@ -3180,7 +3515,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351671
+    - rid: 4481876951502946541
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: qigai_default
@@ -3196,7 +3531,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351672
+    - rid: 4481876951502946542
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: dig_01
@@ -3204,7 +3539,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351673
+    - rid: 4481876951502946543
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -3212,7 +3547,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351674
+    - rid: 4481876951502946544
       type: {class: EntityInitInfo4LootPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: box_01
@@ -3220,7 +3555,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481876947955351675
+    - rid: 4481876951502946545
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01
@@ -3236,7 +3571,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 4481876947955351676
+    - rid: 4481876951502946546
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: default_guard_01

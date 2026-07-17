@@ -33,12 +33,5 @@
     "slot": "teleport_gate",
     "facility_cfg_id": "teleport_gate",
     "sort_order": 3
-  },
-  {
-    "id": 10,
-    "map_id": "village_01",
-    "slot": "village_hall",
-    "facility_cfg_id": "village_hall",
-    "sort_order": 1
   }
 ]

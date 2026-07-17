@@ -393,5 +393,40 @@
     "set_variables": [
       "home_01.kitchen_tools_recovered"
     ]
+  },
+  {
+    "outcome_id": "215_s1_Main",
+    "need_objective_ids": [
+      "215_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "215_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "215_s2_Main",
+    "need_objective_ids": [
+      "215_s2_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "215_s3",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "215_s3_Main",
+    "need_objective_ids": [
+      "215_s3_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "village_01.herb_shop_task_done"
+    ]
   }
 ]

@@ -33,6 +33,8 @@ namespace My.Map.Logic
 
         public Dictionary<string, RuntimePathInfo> walkerPathDict = new();
         private List<long> SpawnedWalkerRecords = new();
+        private List<long> SpawnedResidentIdleRecords = new();
+        private List<NamedPoint> residentIdlePoints = new();
         TownWalkerPopulation WalkerPopulationConfig
         {
             get
@@ -77,6 +79,16 @@ namespace My.Map.Logic
         int WalkerNormalWeight => Mathf.Max(0, WalkerPopulationConfig?.WalkerNormalWeight ?? cacheMapOverlayCfg?.WalkerNormalWeight ?? 6);
         int WalkerAdvancedWeight => Mathf.Max(0, WalkerPopulationConfig?.WalkerAdvancedWeight ?? cacheMapOverlayCfg?.WalkerAdvancedWeight ?? 3);
         int WalkerEliteWeight => Mathf.Max(0, WalkerPopulationConfig?.WalkerEliteWeight ?? cacheMapOverlayCfg?.WalkerEliteWeight ?? 1);
+        int ResidentIdleLimit => Mathf.Max(0, WalkerPopulationConfig?.ResidentIdleLimit ?? 0);
+        float ResidentIdleSpawnInterval => Mathf.Max(0.25f, WalkerPopulationConfig?.ResidentIdleSpawnInterval ?? 2.5f);
+        string ResidentIdleCfgId => string.IsNullOrEmpty(WalkerPopulationConfig?.ResidentIdleCfgId)
+            ? "civil" : WalkerPopulationConfig.ResidentIdleCfgId;
+
+        const float ResidentIdleHotRadius = 18f;
+        const float ResidentIdleHiddenRadius = 4f;
+        const float ResidentIdleRecycleRadius = 28f;
+        const float ResidentIdleOccupancyRadius = 2.5f;
+        const float ResidentIdleWanderRadius = 2f;
 
         public void InitWalkerPath()
         {
@@ -86,6 +98,32 @@ namespace My.Map.Logic
                 RequestEntityDestroy(one, "walker_remove"); 
             } 
             SpawnedWalkerRecords.Clear();
+
+            foreach (var one in SpawnedResidentIdleRecords)
+            {
+                RequestEntityDestroy(one, "resident_idle_remove");
+            }
+            SpawnedResidentIdleRecords.Clear();
+            residentIdlePoints.Clear();
+
+            foreach (var point in cacheDatabase.NamedPoints)
+            {
+                if (point.PointType == ENamedPointType.ResidentIdle)
+                {
+                    residentIdlePoints.Add(point);
+                }
+            }
+
+            foreach (var pair in Repo.Records)
+            {
+                if (pair.Value is LogicEntityRecord4Npc npc
+                    && !npc.MarkDestroyed
+                    && !string.IsNullOrEmpty(npc.SrcUniqName)
+                    && npc.SrcUniqName.StartsWith("resident_idle:", System.StringComparison.Ordinal))
+                {
+                    SpawnedResidentIdleRecords.Add(pair.Key);
+                }
+            }
 
             foreach (var path in cacheDatabase.NamedPaths)
             {
@@ -228,11 +266,13 @@ namespace My.Map.Logic
 
         private float _cleanWalkerTimer = 0;
         private float _refreshWalkerTimer = 0;
+        private float _refreshResidentIdleTimer = 0;
         public void TickRefreshWalker()
         {
             TickCleanWalker();
 
             TickRefreshWalkerSpawn();
+            TickRefreshResidentIdle();
         }
 
         // 仅记录、尚未 Spawn 的行人：用路径索引判断是否走完；与 TickLowFreqTickRecord 里推进 CurrPathIdx 配合
@@ -262,12 +302,6 @@ namespace My.Map.Logic
             }
 
             _cleanWalkerTimer = LogicTime.time;
-
-            int walkerLimit = WalkerLimit;
-            for (int i = SpawnedWalkerRecords.Count - 1; i >= walkerLimit; i--)
-            {
-                RemoveSpawnedWalkerSlot(i, SpawnedWalkerRecords[i], "walker_population_limit");
-            }
 
             for (int i = SpawnedWalkerRecords.Count - 1; i >= 0; i--)
             {
@@ -362,6 +396,72 @@ namespace My.Map.Logic
                     continue;
                 }
             }
+
+            for (int i = SpawnedResidentIdleRecords.Count - 1; i >= 0; i--)
+            {
+                long recId = SpawnedResidentIdleRecords[i];
+                if (!Repo.IsLoaded(recId))
+                {
+                    if (!Repo.Records.TryGetValue(recId, out var rec)
+                        || rec is not LogicEntityRecord4Npc resident
+                        || resident.MarkDestroyed)
+                    {
+                        SpawnedResidentIdleRecords.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (!string.IsNullOrEmpty(resident.CharacterKey))
+                    {
+                        SpawnedResidentIdleRecords.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (IsResidentIdleFarFromPlayer(resident.Position))
+                    {
+                        RemoveResidentIdleSlot(i, recId, "resident_idle_remote");
+                    }
+
+                    continue;
+                }
+
+                Repo.Loaded.TryGetValue(recId, out var entity);
+                if (entity is not NpcUnitLogicEntity residentEntity
+                    || residentEntity.MarkDestroyed
+                    || residentEntity.IsDead)
+                {
+                    SpawnedResidentIdleRecords.RemoveAt(i);
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(residentEntity.NpcRecord.CharacterKey))
+                {
+                    SpawnedResidentIdleRecords.RemoveAt(i);
+                    continue;
+                }
+
+                if (residentEntity.IsInCombat)
+                {
+                    continue;
+                }
+
+                if (IsResidentIdleFarFromPlayer(residentEntity.Pos))
+                {
+                    RemoveResidentIdleSlot(i, recId, "resident_idle_remote");
+                }
+            }
+        }
+
+        bool IsResidentIdleFarFromPlayer(Vector2 position)
+        {
+            var player = logicManager?.playerLogicEntity;
+            return player != null
+                && Vector2.Distance(player.Pos, position) > ResidentIdleRecycleRadius;
+        }
+
+        void RemoveResidentIdleSlot(int listIndex, long recId, string reason)
+        {
+            SpawnedResidentIdleRecords.RemoveAt(listIndex);
+            RequestEntityDestroy(recId, reason);
         }
     
         private void TickRefreshWalkerSpawn()
@@ -413,6 +513,112 @@ namespace My.Map.Logic
             logicManager.AddNewEntityRecord(rec);
 
             SpawnedWalkerRecords.Add(rec.Id);
+        }
+
+        private void TickRefreshResidentIdle()
+        {
+            if (LogicTime.time < _refreshResidentIdleTimer + ResidentIdleSpawnInterval)
+            {
+                return;
+            }
+
+            _refreshResidentIdleTimer = LogicTime.time;
+            if (ResidentIdleLimit <= 0
+                || SpawnedResidentIdleRecords.Count >= ResidentIdleLimit
+                || residentIdlePoints.Count == 0
+                || logicManager?.playerLogicEntity == null)
+            {
+                return;
+            }
+
+            if (!TryPickResidentIdlePoint(out var point))
+            {
+                return;
+            }
+
+            var rec = new LogicEntityRecord4Npc
+            {
+                Id = GameLogicManager.LogicEntityIdInst++,
+                EntityType = EEntityType.Npc,
+                CfgId = ResidentIdleCfgId,
+                Position = point.Position,
+                FactionId = EFactionId.Citizen,
+                IsPeace = true,
+                MoveBehaveType = EMoveBehaveType.WanderAroundPoint,
+                MoveToTarget = point.Position,
+                WanderRadius = ResidentIdleWanderRadius,
+                EnmityConfId = "default_npc",
+                IsForeigner = true,
+                SrcUniqName = $"resident_idle:{point.Name}",
+            };
+
+            logicManager.AddNewEntityRecord(rec);
+            SpawnedResidentIdleRecords.Add(rec.Id);
+        }
+
+        private bool TryPickResidentIdlePoint(out NamedPoint selected)
+        {
+            selected = default;
+            var player = logicManager.playerLogicEntity;
+            var view = player.GetViewRangeAndAngle();
+            var candidates = new List<(NamedPoint point, float weight)>();
+
+            foreach (var point in residentIdlePoints)
+            {
+                var distance = Vector2.Distance(player.Pos, point.Position);
+                if (distance > ResidentIdleHotRadius || distance < ResidentIdleHiddenRadius)
+                {
+                    continue;
+                }
+
+                if (logicManager.visionSenser != null
+                    && logicManager.visionSenser.SimpleCanSee(
+                        player.Pos, player.CurrentLook, point.Position, view.Item1, view.Item2))
+                {
+                    continue;
+                }
+
+                bool occupied = false;
+                foreach (var recId in SpawnedResidentIdleRecords)
+                {
+                    if (!Repo.Records.TryGetValue(recId, out var record)
+                        || record is not LogicEntityRecord4Npc resident)
+                    {
+                        continue;
+                    }
+
+                    if (Vector2.Distance(resident.Position, point.Position) < ResidentIdleOccupancyRadius)
+                    {
+                        occupied = true;
+                        break;
+                    }
+                }
+
+                if (!occupied)
+                {
+                    candidates.Add((point, 1f / (1f + distance)));
+                }
+            }
+
+            if (candidates.Count == 0)
+            {
+                return false;
+            }
+
+            float totalWeight = candidates.Sum(c => c.weight);
+            float roll = UnityEngine.Random.value * totalWeight;
+            foreach (var candidate in candidates)
+            {
+                roll -= candidate.weight;
+                if (roll <= 0f)
+                {
+                    selected = candidate.point;
+                    return true;
+                }
+            }
+
+            selected = candidates[candidates.Count - 1].point;
+            return true;
         }
 
         private string PickWalkerNpcCfgId()

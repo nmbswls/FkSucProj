@@ -64,5 +64,13 @@
     "priority": 10,
     "show_cond": [],
     "need_npc_val": ""
+  },
+  {
+    "id": 900,
+    "npc_id": "village_herbalist",
+    "dialog_id": "village_herbalist_01",
+    "priority": 10,
+    "show_cond": [],
+    "need_npc_val": ""
   }
 ]

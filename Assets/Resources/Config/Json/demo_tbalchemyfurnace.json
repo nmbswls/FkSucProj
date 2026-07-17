@@ -13,7 +13,8 @@
     "base_aspects": [],
     "amplify_virtue_id": 1,
     "amplify_percent": 25,
-    "required_tools": []
+    "required_tools": [],
+    "owner_item_id": "furn_basic_cauldron"
   },
   {
     "furnace_id": "furn_stone_retort",
@@ -40,7 +41,8 @@
     "amplify_percent": 30,
     "required_tools": [
       "tool_mortar"
-    ]
+    ],
+    "owner_item_id": "furn_stone_retort"
   },
   {
     "furnace_id": "furn_arcane_crucible",
@@ -73,6 +75,19 @@
       "tool_mortar",
       "tool_glass_rod",
       "tool_alchemy_kit"
-    ]
+    ],
+    "owner_item_id": "furn_arcane_crucible"
+  },
+  {
+    "furnace_id": "furn_hand_craft",
+    "display_name": "手搓",
+    "tier": 0,
+    "max_material_slots": 1,
+    "base_virtues": [],
+    "base_aspects": [],
+    "amplify_virtue_id": 0,
+    "amplify_percent": 0,
+    "required_tools": [],
+    "owner_item_id": ""
   }
 ]

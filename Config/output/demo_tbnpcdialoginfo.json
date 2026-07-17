@@ -22,5 +22,55 @@
     "priority": 3,
     "show_cond": [],
     "need_npc_val": ""
+  },
+  {
+    "id": 100,
+    "npc_id": "game_init_luca_injured",
+    "dialog_id": "carlisle_unconscious_entry",
+    "priority": 10,
+    "show_cond": [],
+    "need_npc_val": ""
+  },
+  {
+    "id": 101,
+    "npc_id": "game_init_carlisle_unconscious",
+    "dialog_id": "carlisle_unconscious_entry",
+    "priority": 10,
+    "show_cond": [],
+    "need_npc_val": ""
+  },
+  {
+    "id": 102,
+    "npc_id": "game_init_carlisle_awake",
+    "dialog_id": "carlisle_awake_first_talk",
+    "priority": 100,
+    "show_cond": [
+      {
+        "type": 1,
+        "param1": 302,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "need_npc_val": ""
+  },
+  {
+    "id": 103,
+    "npc_id": "game_init_carlisle_awake",
+    "dialog_id": "carlisle_awake_entry",
+    "priority": 10,
+    "show_cond": [],
+    "need_npc_val": ""
+  },
+  {
+    "id": 900,
+    "npc_id": "village_herbalist",
+    "dialog_id": "village_herbalist_01",
+    "priority": 10,
+    "show_cond": [],
+    "need_npc_val": ""
   }
 ]

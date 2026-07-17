@@ -185,7 +185,6 @@ public partial class Tables
     public demo.TbAlchemyFurnace TbAlchemyFurnace {get; }
     public demo.TbAlchemyTool TbAlchemyTool {get; }
     public demo.TbAlchemyRecipe TbAlchemyRecipe {get; }
-    public demo.TbAlchemyProgress TbAlchemyProgress {get; }
     /// <summary>
     /// 城镇路人数量阶段配置，按 Prosperity 选择最高可用阶段
     /// </summary>
@@ -324,7 +323,6 @@ public partial class Tables
         TbAlchemyFurnace = new demo.TbAlchemyFurnace(loader("demo_tbalchemyfurnace"));
         TbAlchemyTool = new demo.TbAlchemyTool(loader("demo_tbalchemytool"));
         TbAlchemyRecipe = new demo.TbAlchemyRecipe(loader("demo_tbalchemyrecipe"));
-        TbAlchemyProgress = new demo.TbAlchemyProgress(loader("demo_tbalchemyprogress"));
         TbTownWalkerPopulation = new demo.TbTownWalkerPopulation(loader("demo_tbtownwalkerpopulation"));
         TbAlchemyVirtueDef = new demo.TbAlchemyVirtueDef(loader("demo_tbalchemyvirtuedef"));
         TbAlchemyAspectDef = new demo.TbAlchemyAspectDef(loader("demo_tbalchemyaspectdef"));
@@ -462,7 +460,6 @@ public partial class Tables
         TbAlchemyFurnace.ResolveRef(this);
         TbAlchemyTool.ResolveRef(this);
         TbAlchemyRecipe.ResolveRef(this);
-        TbAlchemyProgress.ResolveRef(this);
         TbTownWalkerPopulation.ResolveRef(this);
         TbAlchemyVirtueDef.ResolveRef(this);
         TbAlchemyAspectDef.ResolveRef(this);

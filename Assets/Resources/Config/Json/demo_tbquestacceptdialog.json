@@ -72,5 +72,16 @@
     "success_dialog_id": "vera_dream_accept_ok",
     "fail_dialog_id": "vera_dream_accept_fail",
     "open_cond": []
+  },
+  {
+    "id": 2150,
+    "quest_id": 215,
+    "character_key": "village_herbalist",
+    "entry_dialog_id": "village_herbalist_request",
+    "option_text": "买一份草药敗剂",
+    "priority": 10,
+    "success_dialog_id": "village_herbalist_request",
+    "fail_dialog_id": "",
+    "open_cond": []
   }
 ]

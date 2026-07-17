@@ -10,7 +10,6 @@ namespace My.Player.Alchemy
             string furnaceId,
             IReadOnlyList<string> activeToolIds,
             IReadOnlyList<AlchemyInputSlot> materialSlots,
-            int progressLevel,
             out AlchemyMixState mixState,
             out string failReasonEn)
         {
@@ -29,7 +28,7 @@ namespace My.Player.Alchemy
                 return false;
             }
 
-            int maxSlots = furnace.MaxMaterialSlots + AlchemyUnlockUtil.ResolveExtraMaterialSlots(progressLevel, activeToolIds);
+            int maxSlots = ResolveMaxMaterialSlots(furnaceId);
             if (!ValidateMaterialSlots(materialSlots, maxSlots, out failReasonEn))
             {
                 return false;
@@ -37,6 +36,17 @@ namespace My.Player.Alchemy
 
             mixState = BuildMixState(furnace, activeToolIds, materialSlots);
             return true;
+        }
+
+        public static int ResolveMaxMaterialSlots(string furnaceId)
+        {
+            var furnace = AlchemyCatalog.GetFurnace(furnaceId);
+            if (furnace == null)
+            {
+                return 0;
+            }
+
+            return furnace.MaxMaterialSlots < 0 ? 0 : furnace.MaxMaterialSlots;
         }
 
         public static bool MatchesRecipe(AlchemyMixState mixState, AlchemyRecipe recipe)

@@ -26,6 +26,9 @@ public sealed partial class TownWalkerPopulation : Luban.BeanBase
         { if(!_buf["walker_normal_weight"].IsNumber) { throw new SerializationException(); }  WalkerNormalWeight = _buf["walker_normal_weight"]; }
         { if(!_buf["walker_advanced_weight"].IsNumber) { throw new SerializationException(); }  WalkerAdvancedWeight = _buf["walker_advanced_weight"]; }
         { if(!_buf["walker_elite_weight"].IsNumber) { throw new SerializationException(); }  WalkerEliteWeight = _buf["walker_elite_weight"]; }
+        { if(!_buf["resident_idle_limit"].IsNumber) { throw new SerializationException(); }  ResidentIdleLimit = _buf["resident_idle_limit"]; }
+        { if(!_buf["resident_idle_spawn_interval"].IsNumber) { throw new SerializationException(); }  ResidentIdleSpawnInterval = _buf["resident_idle_spawn_interval"]; }
+        { if(!_buf["resident_idle_cfg_id"].IsString) { throw new SerializationException(); }  ResidentIdleCfgId = _buf["resident_idle_cfg_id"]; }
     }
 
     public static TownWalkerPopulation DeserializeTownWalkerPopulation(JSONNode _buf)
@@ -65,6 +68,18 @@ public sealed partial class TownWalkerPopulation : Luban.BeanBase
     /// 精英权重
     /// </summary>
     public int WalkerEliteWeight;
+    /// <summary>
+    /// 固定村民数量上限
+    /// </summary>
+    public int ResidentIdleLimit;
+    /// <summary>
+    /// 固定村民刷新间隔
+    /// </summary>
+    public float ResidentIdleSpawnInterval;
+    /// <summary>
+    /// 固定村民单位配置
+    /// </summary>
+    public string ResidentIdleCfgId;
    
     public const int __ID__ = 2030505504;
     public override int GetTypeId() => __ID__;
@@ -84,6 +99,9 @@ public sealed partial class TownWalkerPopulation : Luban.BeanBase
         + "walkerNormalWeight:" + WalkerNormalWeight + ","
         + "walkerAdvancedWeight:" + WalkerAdvancedWeight + ","
         + "walkerEliteWeight:" + WalkerEliteWeight + ","
+        + "residentIdleLimit:" + ResidentIdleLimit + ","
+        + "residentIdleSpawnInterval:" + ResidentIdleSpawnInterval + ","
+        + "residentIdleCfgId:" + ResidentIdleCfgId + ","
         + "}";
     }
 }

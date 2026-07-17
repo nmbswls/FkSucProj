@@ -11,25 +11,115 @@
       "base_clear": true
     },
     "BodyParts": [
-      { "PartId": 1, "Level": 3, "Exp": 250 },
-      { "PartId": 2, "Level": 2, "Exp": 150 },
-      { "PartId": 3, "Level": 2, "Exp": 130 },
-      { "PartId": 4, "Level": 1, "Exp": 0 }
+      {
+        "PartId": 1,
+        "Level": 3,
+        "Exp": 250
+      },
+      {
+        "PartId": 2,
+        "Level": 2,
+        "Exp": 150
+      },
+      {
+        "PartId": 3,
+        "Level": 2,
+        "Exp": 130
+      },
+      {
+        "PartId": 4,
+        "Level": 1,
+        "Exp": 0
+      }
     ],
     "EquippedGear": [
-      { "PartId": 1, "EquippedIndex": 0, "ItemId": "part_mouth_lollipop", "ItemInstanceId": 201, "EquipAuxData": 0 },
-      { "PartId": 2, "EquippedIndex": 0, "ItemId": "part_breast_brooch", "ItemInstanceId": 202, "EquipAuxData": 0 },
-      { "PartId": 3, "EquippedIndex": 0, "ItemId": "part_womb_bead", "ItemInstanceId": 203, "EquipAuxData": 0 }
+      {
+        "PartId": 1,
+        "EquippedIndex": 0,
+        "ItemId": "part_mouth_lollipop",
+        "ItemInstanceId": 201,
+        "EquipAuxData": 0
+      },
+      {
+        "PartId": 2,
+        "EquippedIndex": 0,
+        "ItemId": "part_breast_brooch",
+        "ItemInstanceId": 202,
+        "EquipAuxData": 0
+      },
+      {
+        "PartId": 3,
+        "EquippedIndex": 0,
+        "ItemId": "part_womb_bead",
+        "ItemInstanceId": 203,
+        "EquipAuxData": 0
+      }
     ],
-	"OwnedRuneIds" :["rune_lady"],
+    "OwnedRuneIds": [
+      "rune_lady"
+    ]
   },
   "MainInventorySlots": [
-    { "SlotIndex": 0, "ItemId": "banana", "Count": 1, "ItemInstanceId": 0 },
-    { "SlotIndex": 1, "ItemId": "human_sword_lv1", "Count": 1, "ItemInstanceId": 100 },
-    { "SlotIndex": 2, "ItemId": "human_lancer_lv1", "Count": 1, "ItemInstanceId": 101 },
-    { "SlotIndex": 3, "ItemId": "smoke_grenade", "Count": 5, "ItemInstanceId": 0 },
-    { "SlotIndex": 4, "ItemId": "part_tail_bell", "Count": 1, "ItemInstanceId": 204 },
-    { "SlotIndex": 7, "ItemId": "gold", "Count": 50, "ItemInstanceId": 0 }
+    {
+      "SlotIndex": 0,
+      "ItemId": "banana",
+      "Count": 1,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 1,
+      "ItemId": "human_sword_lv1",
+      "Count": 1,
+      "ItemInstanceId": 100
+    },
+    {
+      "SlotIndex": 2,
+      "ItemId": "human_lancer_lv1",
+      "Count": 1,
+      "ItemInstanceId": 101
+    },
+    {
+      "SlotIndex": 3,
+      "ItemId": "smoke_grenade",
+      "Count": 5,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 4,
+      "ItemId": "part_tail_bell",
+      "Count": 1,
+      "ItemInstanceId": 204
+    },
+    {
+      "SlotIndex": 7,
+      "ItemId": "gold",
+      "Count": 50,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 8,
+      "ItemId": "sound_ball",
+      "Count": 8,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 9,
+      "ItemId": "flash_grenade",
+      "Count": 5,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 10,
+      "ItemId": "caltrop_bundle",
+      "Count": 5,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 11,
+      "ItemId": "small_knife",
+      "Count": 10,
+      "ItemInstanceId": 0
+    }
   ],
   "CurrentMapId": "secret_base_hub",
   "CurrentPos": {
@@ -51,6 +141,113 @@
   },
   "MapRuntimeByMapId": {},
   "NextLogicEntityIdHint": 0,
-  "NextItemInstanceIdHint": 205,
-  "FuncOpenList": [1, 2, 3, 4, 10]
+  "NextItemInstanceIdHint": 307,
+  "FuncOpenList": [
+    1,
+    2,
+    3,
+    4,
+    10
+  ],
+  "SecretBaseStorage": {
+    "CommonWarehouse": {
+      "BagId": 0,
+      "Slots": [
+        {
+          "SlotIndex": 0,
+          "ItemId": "furn_basic_cauldron",
+          "Count": 1,
+          "ItemInstanceId": 301
+        },
+        {
+          "SlotIndex": 1,
+          "ItemId": "furn_stone_retort",
+          "Count": 1,
+          "ItemInstanceId": 302
+        },
+        {
+          "SlotIndex": 2,
+          "ItemId": "furn_arcane_crucible",
+          "Count": 1,
+          "ItemInstanceId": 303
+        },
+        {
+          "SlotIndex": 3,
+          "ItemId": "tool_mortar",
+          "Count": 1,
+          "ItemInstanceId": 304
+        },
+        {
+          "SlotIndex": 4,
+          "ItemId": "tool_glass_rod",
+          "Count": 1,
+          "ItemInstanceId": 305
+        },
+        {
+          "SlotIndex": 5,
+          "ItemId": "tool_alchemy_kit",
+          "Count": 1,
+          "ItemInstanceId": 306
+        },
+        {
+          "SlotIndex": 6,
+          "ItemId": "mat_plant_fiber",
+          "Count": 20,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 7,
+          "ItemId": "mat_resin",
+          "Count": 20,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 8,
+          "ItemId": "mat_charcoal",
+          "Count": 20,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 9,
+          "ItemId": "mat_forest_dew",
+          "Count": 10,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 10,
+          "ItemId": "mat_clay",
+          "Count": 10,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 11,
+          "ItemId": "sound_ball",
+          "Count": 8,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 12,
+          "ItemId": "flash_grenade",
+          "Count": 5,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 13,
+          "ItemId": "caltrop_bundle",
+          "Count": 5,
+          "ItemInstanceId": 0
+        },
+        {
+          "SlotIndex": 14,
+          "ItemId": "small_knife",
+          "Count": 10,
+          "ItemInstanceId": 0
+        }
+      ]
+    },
+    "FurnitureWarehouse": {
+      "BagId": 0,
+      "Slots": []
+    }
+  }
 }

@@ -46,5 +46,41 @@
     "camp_filter": 1,
     "default_lifetime": 3,
     "refresh_buff_duration": true
+  },
+  {
+    "id": "smoke_grenade_area",
+    "shape_type": 2,
+    "shape_length": 0,
+    "shape_width": 0,
+    "shape_radius": 3.5,
+    "shape_angle": 0,
+    "area_buff_id": "smoke_vision_debuff",
+    "camp_filter": 1,
+    "default_lifetime": 8,
+    "refresh_buff_duration": true
+  },
+  {
+    "id": "flash_stun_area",
+    "shape_type": 2,
+    "shape_length": 0,
+    "shape_width": 0,
+    "shape_radius": 2.5,
+    "shape_angle": 0,
+    "area_buff_id": "unit_stagger",
+    "camp_filter": 1,
+    "default_lifetime": 2,
+    "refresh_buff_duration": true
+  },
+  {
+    "id": "caltrop_snare_area",
+    "shape_type": 2,
+    "shape_length": 0,
+    "shape_width": 0,
+    "shape_radius": 2.0,
+    "shape_angle": 0,
+    "area_buff_id": "unit_stagger",
+    "camp_filter": 1,
+    "default_lifetime": 20,
+    "refresh_buff_duration": true
   }
 ]

@@ -68,6 +68,7 @@ namespace My
 
                     var efCtx = new GameLogicManager.LogicFightEffectContext(MainGameManager.Instance.gameLogicManager, EFightCtxType.Bullet, srcInfo);
                     efCtx.TriggerPos = explodePos;
+                    efCtx.CastVec1 = explodePos;
 
                     MainGameManager.Instance.gameLogicManager.HandleLogicFightEffect(ef, efCtx);
                 }
