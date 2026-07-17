@@ -29,6 +29,7 @@ public sealed partial class RumorIntel : Luban.BeanBase
         { if(!_buf["npc_cfg_id"].IsString) { throw new SerializationException(); }  NpcCfgId = _buf["npc_cfg_id"]; }
         { if(!_buf["intel_kind"].IsNumber) { throw new SerializationException(); }  IntelKind = (demo.ERumorIntelKind)_buf["intel_kind"].AsInt; }
         { var __json0 = _buf["appear_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } AppearConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  AppearConds.Add(__v0); }   }
+        { if(!_buf["interact_point_cfg_id"].IsString) { throw new SerializationException(); }  InteractPointCfgId = _buf["interact_point_cfg_id"]; }
     }
 
     public static RumorIntel DeserializeRumorIntel(JSONNode _buf)
@@ -80,6 +81,10 @@ public sealed partial class RumorIntel : Luban.BeanBase
     /// appear_conds
     /// </summary>
     public System.Collections.Generic.List<demo.CommonCheckCond> AppearConds;
+    /// <summary>
+    /// interact_point_cfg_id
+    /// </summary>
+    public string InteractPointCfgId;
    
     public const int __ID__ = -815770636;
     public override int GetTypeId() => __ID__;
@@ -103,6 +108,7 @@ public sealed partial class RumorIntel : Luban.BeanBase
         + "npcCfgId:" + NpcCfgId + ","
         + "intelKind:" + IntelKind + ","
         + "appearConds:" + Luban.StringUtil.CollectionToString(AppearConds) + ","
+        + "interactPointCfgId:" + InteractPointCfgId + ","
         + "}";
     }
 }

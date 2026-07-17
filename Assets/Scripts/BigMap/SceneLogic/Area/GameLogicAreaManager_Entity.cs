@@ -954,29 +954,5 @@ namespace My.Map.Logic
             return _cacheEntityList;
         }
 
-        public void ReevaluateTownFacilityVisibility(string logicAreaId, string facilityId)
-        {
-            if (string.IsNullOrEmpty(facilityId) || EntityRefreshInfo == null)
-            {
-                return;
-            }
-
-            foreach (var refreshInfo in EntityRefreshInfo)
-            {
-                if (refreshInfo == null)
-                {
-                    continue;
-                }
-
-                bool related = TownFacilityCondKeys.CondReferencesFacility(refreshInfo.AppearCond, logicAreaId, facilityId)
-                               || TownFacilityCondKeys.CondReferencesFacility(refreshInfo.DisappearCond, logicAreaId, facilityId);
-                if (!related)
-                {
-                    continue;
-                }
-
-                HandleOneRefreshInfo(refreshInfo);
-            }
-        }
     }
 }

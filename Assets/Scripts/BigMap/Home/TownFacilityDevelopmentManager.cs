@@ -198,7 +198,6 @@ namespace My.Home
                 _logic.transportLootSystem?.UnlockMarkerPlacement();
             }
             EvOnFacilityDevelopmentLevelChanged?.Invoke(logicAreaId, facilityId, nextLevel);
-            _logic.AreaManager?.ReevaluateTownFacilityVisibility(logicAreaId, facilityId);
             SceneAOIManager.Instance?.RequestVisibleChunkRefresh();
             return true;
         }

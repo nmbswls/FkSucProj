@@ -15,6 +15,7 @@ namespace cfg.demo
     {
         Chest = 0,
         Npc = 1,
+        CultInfluence = 2,
     }
 
 } 

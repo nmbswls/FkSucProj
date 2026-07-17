@@ -563,6 +563,20 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class CultInfluenceApplicationPersist
+    {
+        public string InfluenceId = string.Empty;
+        public string SourceRumorId = string.Empty;
+        public int AppliedSettlementDay;
+    }
+
+    [Serializable]
+    public class CultInfluenceAreaPersist
+    {
+        public List<CultInfluenceApplicationPersist> Applications = new();
+    }
+
+    [Serializable]
     public class DemonCultPersist
     {
         public long Faith;
@@ -571,6 +585,7 @@ namespace My.Saving
         public List<CultSeatTechNodeLevelPersist> SeatTechNodes = new();
         public Dictionary<string, long> LinkerCountByRegionKey = new();
         public List<CultSecretUnitPersist> SecretUnits = new();
+        public Dictionary<string, CultInfluenceAreaPersist> InfluenceByLogicAreaId = new();
     }
 
     [Serializable]
@@ -697,6 +712,7 @@ namespace My.Saving
             data.DemonCult.SeatTechNodes ??= new List<CultSeatTechNodeLevelPersist>();
             data.DemonCult.LinkerCountByRegionKey ??= new Dictionary<string, long>();
             data.DemonCult.SecretUnits ??= new List<CultSecretUnitPersist>();
+            data.DemonCult.InfluenceByLogicAreaId ??= new Dictionary<string, CultInfluenceAreaPersist>();
             data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
             foreach (var town in data.TownDevelopmentById.Values)
             {

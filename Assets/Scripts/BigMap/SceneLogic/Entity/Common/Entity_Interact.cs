@@ -1057,6 +1057,34 @@ namespace My.Map
                         }
                         break;
 
+                    case LogicInteractOutput.EOutputType.ApplyDemonCultInfluence:
+                        {
+                            var playerSystem = GetInteractingPlayerSystem();
+                            var cult = playerSystem?.ProgressionSystem?.DemonCult;
+                            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(Owner.LogicManager.AreaManager);
+                            var sourceRumorId = Owner.GetRuntimeVariable("rumor_id");
+                            if (cult == null || string.IsNullOrEmpty(logicAreaId)
+                                || !cult.TryApplyInfluence(
+                                    logicAreaId,
+                                    output.Param3,
+                                    sourceRumorId,
+                                    Owner.LogicManager.SettlementDayIndex))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            if (!string.IsNullOrEmpty(sourceRumorId))
+                            {
+                                playerSystem.RumorIntel?.ConsumeActiveForMap(
+                                    Owner.LogicManager.AreaManager.AreaOverlayId,
+                                    new[] { sourceRumorId });
+                            }
+
+                            OwnerEntity?.DoEntityDestroyed("cult_influence_applied");
+                        }
+                        break;
+
                     #endregion
 
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Config;
 using cfg.demo;
 using My.Config;
 using My.Map;
@@ -124,6 +125,40 @@ namespace My
                         });
                         appliedRumorIds.Add(a.RumorId);
                         break;
+                    case ERumorEffectType.CultInfluence:
+                        if (string.IsNullOrEmpty(def.InteractPointCfgId))
+                        {
+                            Debug.LogWarning($"[RumorIntel] Rumor {a.RumorId} has no interact point config.");
+                            continue;
+                        }
+
+                        if (MapInteractPointLoader.Get(def.InteractPointCfgId) == null)
+                        {
+                            Debug.LogWarning(
+                                $"[RumorIntel] Rumor {a.RumorId} references unknown interact point {def.InteractPointCfgId}.");
+                            continue;
+                        }
+
+                        var uniqName = $"rumor_cult_influence:{a.RumorId}";
+                        if (HasActiveRecord(uniqName))
+                        {
+                            continue;
+                        }
+
+                        var record = new LogicEntityRecord4InteractPoint
+                        {
+                            Id = GameLogicManager.LogicEntityIdInst++,
+                            EntityType = EEntityType.InteractPoint,
+                            CfgId = def.InteractPointCfgId,
+                            Position = pos,
+                            SrcUniqName = uniqName,
+                            DynamicVariables = new Dictionary<string, string>
+                            {
+                                ["rumor_id"] = a.RumorId,
+                            },
+                        };
+                        _glm.AddNewEntityRecord(record);
+                        break;
                     default:
                         Debug.LogWarning(
                             $"[RumorIntel] Rumor {a.RumorId} has unsupported effect type {def.EffectType}.");
@@ -132,6 +167,25 @@ namespace My
             }
 
             rumor.ConsumeActiveForMap(mapId, appliedRumorIds);
+        }
+
+        bool HasActiveRecord(string uniqName)
+        {
+            var records = _glm?.AreaManager?.Repo?.Records;
+            if (records == null || string.IsNullOrEmpty(uniqName))
+            {
+                return false;
+            }
+
+            foreach (var record in records.Values)
+            {
+                if (record != null && !record.MarkDestroyed && record.SrcUniqName == uniqName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         Vector2 PickPos(List<NamedPoint> rumorPoints)

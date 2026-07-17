@@ -77,6 +77,8 @@ namespace My.Config
             ModifyLocalIntValue = 110,
             // Records the current settlement day in the target's timed refresh state.
             RecordRefreshSettlementDay = 111,
+            // Param3 = influence id; the current logic area is resolved at interaction time.
+            ApplyDemonCultInfluence = 112,
         }
 
         public EOutputType OutputType;

@@ -38,6 +38,7 @@ namespace My.Player
         readonly Dictionary<ECultAttribute, long> _cultAttributes = new();
         readonly Dictionary<string, long> _linkerCountByRegionKey = new(StringComparer.Ordinal);
         readonly Dictionary<string, CultSecretUnitInfo> _secretUnits = new(StringComparer.Ordinal);
+        readonly Dictionary<string, List<CultInfluenceApplicationPersist>> _influenceByLogicAreaId = new(StringComparer.Ordinal);
         long _faith;
         GameLogicManager _logic;
 
@@ -133,6 +134,7 @@ namespace My.Player
             _seatTechLevels.Clear();
             _linkerCountByRegionKey.Clear();
             _secretUnits.Clear();
+            _influenceByLogicAreaId.Clear();
             _faith = 0;
 
             var persist = savingData?.DemonCult;
@@ -194,6 +196,37 @@ namespace My.Player
                             AssignedRegionKey = entry.AssignedRegionKey ?? string.Empty,
                             MissionId = entry.MissionId ?? string.Empty,
                         };
+                    }
+                }
+                if (persist.InfluenceByLogicAreaId != null)
+                {
+                    foreach (var pair in persist.InfluenceByLogicAreaId)
+                    {
+                        if (string.IsNullOrEmpty(pair.Key) || pair.Value?.Applications == null)
+                        {
+                            continue;
+                        }
+
+                        var applications = new List<CultInfluenceApplicationPersist>();
+                        foreach (var entry in pair.Value.Applications)
+                        {
+                            if (entry == null || string.IsNullOrEmpty(entry.InfluenceId))
+                            {
+                                continue;
+                            }
+
+                            applications.Add(new CultInfluenceApplicationPersist
+                            {
+                                InfluenceId = entry.InfluenceId,
+                                SourceRumorId = entry.SourceRumorId ?? string.Empty,
+                                AppliedSettlementDay = entry.AppliedSettlementDay,
+                            });
+                        }
+
+                        if (applications.Count > 0)
+                        {
+                            _influenceByLogicAreaId[pair.Key] = applications;
+                        }
                     }
                 }
             }
@@ -293,6 +326,95 @@ namespace My.Player
                     MissionId = unit.MissionId,
                 });
             }
+
+            savingData.DemonCult.InfluenceByLogicAreaId ??= new Dictionary<string, CultInfluenceAreaPersist>();
+            savingData.DemonCult.InfluenceByLogicAreaId.Clear();
+            foreach (var pair in _influenceByLogicAreaId)
+            {
+                if (string.IsNullOrEmpty(pair.Key) || pair.Value == null || pair.Value.Count == 0)
+                {
+                    continue;
+                }
+
+                var area = new CultInfluenceAreaPersist();
+                foreach (var entry in pair.Value)
+                {
+                    if (entry == null || string.IsNullOrEmpty(entry.InfluenceId))
+                    {
+                        continue;
+                    }
+
+                    area.Applications.Add(new CultInfluenceApplicationPersist
+                    {
+                        InfluenceId = entry.InfluenceId,
+                        SourceRumorId = entry.SourceRumorId ?? string.Empty,
+                        AppliedSettlementDay = entry.AppliedSettlementDay,
+                    });
+                }
+
+                if (area.Applications.Count > 0)
+                {
+                    savingData.DemonCult.InfluenceByLogicAreaId[pair.Key] = area;
+                }
+            }
+        }
+
+        public IReadOnlyList<CultInfluenceApplicationPersist> GetInfluenceApplications(string logicAreaId)
+        {
+            if (string.IsNullOrEmpty(logicAreaId)
+                || !_influenceByLogicAreaId.TryGetValue(logicAreaId, out var applications))
+            {
+                return Array.Empty<CultInfluenceApplicationPersist>();
+            }
+
+            return applications;
+        }
+
+        public bool HasAppliedInfluence(string logicAreaId, string influenceId, string sourceRumorId = null)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(influenceId)
+                || !_influenceByLogicAreaId.TryGetValue(logicAreaId, out var applications))
+            {
+                return false;
+            }
+
+            foreach (var entry in applications)
+            {
+                if (entry != null && entry.InfluenceId == influenceId
+                    && (string.IsNullOrEmpty(sourceRumorId) || entry.SourceRumorId == sourceRumorId))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryApplyInfluence(
+            string logicAreaId,
+            string influenceId,
+            string sourceRumorId,
+            int appliedSettlementDay)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || string.IsNullOrEmpty(influenceId))
+            {
+                return false;
+            }
+
+            if (!_influenceByLogicAreaId.TryGetValue(logicAreaId, out var applications))
+            {
+                applications = new List<CultInfluenceApplicationPersist>();
+                _influenceByLogicAreaId[logicAreaId] = applications;
+            }
+
+            applications.Add(new CultInfluenceApplicationPersist
+            {
+                InfluenceId = influenceId,
+                SourceRumorId = sourceRumorId ?? string.Empty,
+                AppliedSettlementDay = appliedSettlementDay,
+            });
+            OnCultChanged?.Invoke();
+            return true;
         }
 
         static ECultSecretUnitState NormalizeSecretUnitState(ECultSecretUnitState state)
