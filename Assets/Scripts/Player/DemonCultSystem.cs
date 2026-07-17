@@ -20,6 +20,15 @@ namespace My.Player
         Unlocked,
     }
 
+    public sealed class CultSecretUnitInfo
+    {
+        public string UnitId { get; internal set; } = string.Empty;
+        public string SourceId { get; internal set; } = string.Empty;
+        public ECultSecretUnitState State { get; internal set; }
+        public string AssignedRegionKey { get; internal set; } = string.Empty;
+        public string MissionId { get; internal set; } = string.Empty;
+    }
+
     // 教团：信仰账户 + 布道/教义节点（首期仅解锁与占位效果描述）
     public sealed class DemonCultSystem
     {
@@ -27,13 +36,78 @@ namespace My.Player
         readonly HashSet<int> _unlockedSeats = new();
         readonly Dictionary<(int seatId, int nodeId), int> _seatTechLevels = new();
         readonly Dictionary<ECultAttribute, long> _cultAttributes = new();
+        readonly Dictionary<string, long> _linkerCountByRegionKey = new(StringComparer.Ordinal);
+        readonly Dictionary<string, CultSecretUnitInfo> _secretUnits = new(StringComparer.Ordinal);
         long _faith;
         GameLogicManager _logic;
+
+        const int BasicCultTechNodeId = 1;
 
         public event Action OnCultChanged;
 
         public long Faith => _faith;
         public int UnlockedSeatCount => _unlockedSeats.Count;
+        public int SecretUnitCount => _secretUnits.Count;
+        public int AvailableSecretUnitCount
+        {
+            get
+            {
+                var count = 0;
+                foreach (var unit in _secretUnits.Values)
+                {
+                    if (unit.State == ECultSecretUnitState.Available) count++;
+                }
+
+                return count;
+            }
+        }
+
+        public IReadOnlyCollection<CultSecretUnitInfo> SecretUnits => _secretUnits.Values;
+
+        public long GetLinkerCount(string regionKey)
+        {
+            return !string.IsNullOrEmpty(regionKey)
+                && _linkerCountByRegionKey.TryGetValue(regionKey, out var count)
+                ? count : 0;
+        }
+
+        public long GetTotalLinkerCount()
+        {
+            long total = 0;
+            foreach (var count in _linkerCountByRegionKey.Values)
+            {
+                total += count;
+            }
+
+            return total;
+        }
+
+        public long AddLinkers(string regionKey, long amount)
+        {
+            if (string.IsNullOrEmpty(regionKey) || amount == 0)
+            {
+                return GetLinkerCount(regionKey);
+            }
+
+            var next = Math.Max(0, GetLinkerCount(regionKey) + amount);
+            if (next == 0)
+            {
+                _linkerCountByRegionKey.Remove(regionKey);
+            }
+            else
+            {
+                _linkerCountByRegionKey[regionKey] = next;
+            }
+
+            OnCultChanged?.Invoke();
+            return next;
+        }
+
+        public long SetLinkerCount(string regionKey, long amount)
+        {
+            var current = GetLinkerCount(regionKey);
+            return AddLinkers(regionKey, Math.Max(0, amount) - current);
+        }
 
         public long GetCultAttributeValue(ECultAttribute attribute)
             => _cultAttributes.TryGetValue(attribute, out var value) ? value : 0;
@@ -57,6 +131,8 @@ namespace My.Player
             _techLevels.Clear();
             _unlockedSeats.Clear();
             _seatTechLevels.Clear();
+            _linkerCountByRegionKey.Clear();
+            _secretUnits.Clear();
             _faith = 0;
 
             var persist = savingData?.DemonCult;
@@ -95,6 +171,31 @@ namespace My.Player
                             _seatTechLevels[(entry.SeatId, entry.NodeId)] = entry.Level;
                     }
                 }
+                if (persist.LinkerCountByRegionKey != null)
+                {
+                    foreach (var pair in persist.LinkerCountByRegionKey)
+                    {
+                        if (!string.IsNullOrEmpty(pair.Key) && pair.Value > 0)
+                        {
+                            _linkerCountByRegionKey[pair.Key] = pair.Value;
+                        }
+                    }
+                }
+                if (persist.SecretUnits != null)
+                {
+                    foreach (var entry in persist.SecretUnits)
+                    {
+                        if (entry == null || string.IsNullOrEmpty(entry.UnitId)) continue;
+                        _secretUnits[entry.UnitId] = new CultSecretUnitInfo
+                        {
+                            UnitId = entry.UnitId,
+                            SourceId = entry.SourceId ?? string.Empty,
+                            State = NormalizeSecretUnitState(entry.State),
+                            AssignedRegionKey = entry.AssignedRegionKey ?? string.Empty,
+                            MissionId = entry.MissionId ?? string.Empty,
+                        };
+                    }
+                }
             }
 
             var seats = CfgMgr.Cfgs?.TbCultAncientSeat?.DataList;
@@ -110,10 +211,12 @@ namespace My.Player
             }
 
             // 教座之心默认点亮；新档给少量信仰便于调试布道树
-            if (GetTechNodeLevel(1) <= 0)
+            if (GetTechNodeLevel(BasicCultTechNodeId) <= 0)
             {
-                _techLevels[1] = 1;
+                _techLevels[BasicCultTechNodeId] = 1;
             }
+
+            EnsureInitialSecretUnitFromBasicTech();
 
             if (isFresh)
             {
@@ -166,6 +269,112 @@ namespace My.Player
                     Level = pair.Value,
                 });
             }
+
+            savingData.DemonCult.LinkerCountByRegionKey ??= new Dictionary<string, long>();
+            savingData.DemonCult.LinkerCountByRegionKey.Clear();
+            foreach (var pair in _linkerCountByRegionKey)
+            {
+                if (!string.IsNullOrEmpty(pair.Key) && pair.Value > 0)
+                {
+                    savingData.DemonCult.LinkerCountByRegionKey[pair.Key] = pair.Value;
+                }
+            }
+
+            savingData.DemonCult.SecretUnits ??= new List<CultSecretUnitPersist>();
+            savingData.DemonCult.SecretUnits.Clear();
+            foreach (var unit in _secretUnits.Values)
+            {
+                savingData.DemonCult.SecretUnits.Add(new CultSecretUnitPersist
+                {
+                    UnitId = unit.UnitId,
+                    SourceId = unit.SourceId,
+                    State = unit.State,
+                    AssignedRegionKey = unit.AssignedRegionKey,
+                    MissionId = unit.MissionId,
+                });
+            }
+        }
+
+        static ECultSecretUnitState NormalizeSecretUnitState(ECultSecretUnitState state)
+        {
+            return Enum.IsDefined(typeof(ECultSecretUnitState), state)
+                ? state : ECultSecretUnitState.Available;
+        }
+
+        void EnsureInitialSecretUnitFromBasicTech()
+        {
+            if (GetTechNodeLevel(BasicCultTechNodeId) <= 0 || _secretUnits.Count > 0)
+            {
+                return;
+            }
+
+            TryAcquireSecretUnit("basic_cult_tech", out _);
+        }
+
+        public bool TryAcquireSecretUnit(string sourceId, out string unitId)
+        {
+            unitId = string.Empty;
+            for (var index = 1; index < int.MaxValue; index++)
+            {
+                var candidate = $"secret_unit_{index}";
+                if (_secretUnits.ContainsKey(candidate)) continue;
+
+                _secretUnits[candidate] = new CultSecretUnitInfo
+                {
+                    UnitId = candidate,
+                    SourceId = sourceId ?? string.Empty,
+                    State = ECultSecretUnitState.Available,
+                };
+                unitId = candidate;
+                OnCultChanged?.Invoke();
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryAssignSecretUnit(string unitId, string missionId, string regionKey, out string failReason)
+        {
+            failReason = null;
+            if (!_secretUnits.TryGetValue(unitId ?? string.Empty, out var unit))
+            {
+                failReason = "unit_not_found";
+                return false;
+            }
+            if (unit.State != ECultSecretUnitState.Available)
+            {
+                failReason = "unit_unavailable";
+                return false;
+            }
+            if (string.IsNullOrEmpty(missionId))
+            {
+                failReason = "mission_required";
+                return false;
+            }
+
+            unit.State = ECultSecretUnitState.OnMission;
+            unit.MissionId = missionId;
+            unit.AssignedRegionKey = regionKey ?? string.Empty;
+            OnCultChanged?.Invoke();
+            return true;
+        }
+
+        public bool TryReleaseSecretUnit(string unitId, ECultSecretUnitState nextState = ECultSecretUnitState.Available)
+        {
+            if (!_secretUnits.TryGetValue(unitId ?? string.Empty, out var unit)
+                || nextState == ECultSecretUnitState.OnMission
+                || nextState == ECultSecretUnitState.Assigned)
+            {
+                return false;
+            }
+
+            unit.State = NormalizeSecretUnitState(nextState);
+            if (unit.State == ECultSecretUnitState.Available || unit.State == ECultSecretUnitState.Recovering)
+            {
+                unit.MissionId = string.Empty;
+            }
+            OnCultChanged?.Invoke();
+            return true;
         }
 
         public bool IsSeatUnlocked(int seatId) => seatId <= 0 || _unlockedSeats.Contains(seatId);

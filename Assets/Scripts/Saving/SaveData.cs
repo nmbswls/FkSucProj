@@ -543,12 +543,34 @@ namespace My.Saving
     }
 
     [Serializable]
+    public enum ECultSecretUnitState
+    {
+        Available = 0,
+        Assigned = 1,
+        OnMission = 2,
+        Recovering = 3,
+        Lost = 4,
+    }
+
+    [Serializable]
+    public class CultSecretUnitPersist
+    {
+        public string UnitId = string.Empty;
+        public string SourceId = string.Empty;
+        public ECultSecretUnitState State;
+        public string AssignedRegionKey = string.Empty;
+        public string MissionId = string.Empty;
+    }
+
+    [Serializable]
     public class DemonCultPersist
     {
         public long Faith;
         public List<CultTechNodeLevelPersist> TechNodes = new();
         public List<CultAncientSeatPersist> AncientSeats = new();
         public List<CultSeatTechNodeLevelPersist> SeatTechNodes = new();
+        public Dictionary<string, long> LinkerCountByRegionKey = new();
+        public List<CultSecretUnitPersist> SecretUnits = new();
     }
 
     [Serializable]
@@ -673,6 +695,8 @@ namespace My.Saving
             data.DemonCult.TechNodes ??= new List<CultTechNodeLevelPersist>();
             data.DemonCult.AncientSeats ??= new List<CultAncientSeatPersist>();
             data.DemonCult.SeatTechNodes ??= new List<CultSeatTechNodeLevelPersist>();
+            data.DemonCult.LinkerCountByRegionKey ??= new Dictionary<string, long>();
+            data.DemonCult.SecretUnits ??= new List<CultSecretUnitPersist>();
             data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
             foreach (var town in data.TownDevelopmentById.Values)
             {
