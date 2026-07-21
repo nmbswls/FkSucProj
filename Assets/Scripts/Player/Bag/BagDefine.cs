@@ -688,5 +688,7 @@ namespace My.Player
         Big = 8,
         Storage = 100,
         FurnitureStorage = 101,
+        TownSeedBasket = 200,
+        FarmProduceWarehouse = 201,
     }
 }

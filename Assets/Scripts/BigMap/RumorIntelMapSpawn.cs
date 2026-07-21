@@ -14,11 +14,17 @@ namespace My
     // 与 AreaManager 平级挂在 GameLogicManager 上：非文明区加载完成后刷秘闻实体
     public sealed class RumorIntelMapSpawn
     {
+        const string RumorEventPrefix = "rumor_event:";
+        const string RumorIdVariable = "rumor_id";
+        const string EventExpireDayVariable = "event_expire_settlement_day";
+        const string CultAnchorOutcomeKind = "rumor_cult_anchor";
+
         readonly GameLogicManager _glm;
 
         public RumorIntelMapSpawn(GameLogicManager glm)
         {
             _glm = glm;
+            _glm?.EventGroupOutcomes?.Register(CultAnchorOutcomeKind, TryResolveCultAnchorOutcome);
         }
 
         public void ApplyPurchasedRumorsOnMapLoaded()
@@ -41,6 +47,8 @@ namespace My
             }
 
             var rumor = _glm.playerDataManager.RumorIntel;
+            rumor.PruneExpiredRumors(_glm.SettlementDayIndex);
+            PruneExpiredEventsForCurrentMap();
             var actives = rumor.GetActiveSnapshot(mapId);
             if (actives == null || actives.Count == 0)
             {
@@ -126,38 +134,64 @@ namespace My
                         appliedRumorIds.Add(a.RumorId);
                         break;
                     case ERumorEffectType.CultInfluence:
-                        if (string.IsNullOrEmpty(def.InteractPointCfgId))
-                        {
-                            Debug.LogWarning($"[RumorIntel] Rumor {a.RumorId} has no interact point config.");
-                            continue;
-                        }
-
-                        if (MapInteractPointLoader.Get(def.InteractPointCfgId) == null)
+                        if (!RumorIntelSystem.MatchesTargetMap(def, mapId))
                         {
                             Debug.LogWarning(
-                                $"[RumorIntel] Rumor {a.RumorId} references unknown interact point {def.InteractPointCfgId}.");
+                                $"[RumorIntel] Rumor {a.RumorId} targets {def.TargetOverlayId}, not {mapId}.");
                             continue;
                         }
 
-                        var uniqName = $"rumor_cult_influence:{a.RumorId}";
-                        if (HasActiveRecord(uniqName))
+                        if (string.IsNullOrEmpty(def.EventGroupCfgId)
+                            || MapEventGroupCfgLoader.Get(def.EventGroupCfgId) == null)
                         {
+                            Debug.LogWarning(
+                                $"[RumorIntel] Rumor {a.RumorId} references unknown event group {def.EventGroupCfgId}.");
                             continue;
                         }
 
-                        var record = new LogicEntityRecord4InteractPoint
+                        if (string.IsNullOrEmpty(def.CultActionId))
                         {
-                            Id = GameLogicManager.LogicEntityIdInst++,
-                            EntityType = EEntityType.InteractPoint,
-                            CfgId = def.InteractPointCfgId,
+                            Debug.LogWarning($"[RumorIntel] Rumor {a.RumorId} has no cult action id.");
+                            continue;
+                        }
+
+                        var uniqName = $"{RumorEventPrefix}{a.RumorId}";
+                        if (TryGetActiveRecord(uniqName, out var existingRecord))
+                        {
+                            var existingExpireDay = rumor.MarkSpawned(mapId, a.RumorId, def.EventExpireDays);
+                            existingRecord.DynamicVariables[RumorIdVariable] = a.RumorId;
+                            existingRecord.DynamicVariables[EventExpireDayVariable] = existingExpireDay.ToString();
+                            continue;
+                        }
+
+                        // A spawned entry without its unique record belongs to a previous exploration.
+                        if (a.Spawned)
+                        {
+                            appliedRumorIds.Add(a.RumorId);
+                            continue;
+                        }
+
+                        var eventExpireDay = _glm.SettlementDayIndex + Mathf.Max(1, def.EventExpireDays);
+                        var initInfo = new EntityInitInfo4EventGroup
+                        {
+                            CfgId = def.EventGroupCfgId,
                             Position = pos,
-                            SrcUniqName = uniqName,
-                            DynamicVariables = new Dictionary<string, string>
-                            {
-                                ["rumor_id"] = a.RumorId,
-                            },
                         };
+                        initInfo.Variables.Add(RumorIdVariable, a.RumorId);
+                        initInfo.Variables.Add("cult_action_id", def.CultActionId);
+                        initInfo.Variables.Add("target_overlay_id", mapId);
+                        initInfo.Variables.Add(EventExpireDayVariable, eventExpireDay.ToString());
+
+                        var record = _glm.AreaManager.CreateEntityRecordFromInitInfo(initInfo);
+                        if (record == null)
+                        {
+                            Debug.LogWarning($"[RumorIntel] Failed to create event group for rumor {a.RumorId}.");
+                            continue;
+                        }
+
+                        record.SrcUniqName = uniqName;
                         _glm.AddNewEntityRecord(record);
+                        rumor.MarkSpawned(mapId, a.RumorId, def.EventExpireDays);
                         break;
                     default:
                         Debug.LogWarning(
@@ -169,8 +203,104 @@ namespace My
             rumor.ConsumeActiveForMap(mapId, appliedRumorIds);
         }
 
-        bool HasActiveRecord(string uniqName)
+        bool TryResolveCultAnchorOutcome(EventGroupOutcomeContext context, out string failReason)
         {
+            failReason = null;
+            var owner = context?.Owner;
+            var playerSystem = _glm?.GetPlayerSystem(context?.PlayerId ?? GamePlayerIds.Local);
+            var rumorSystem = playerSystem?.RumorIntel;
+            var cult = playerSystem?.ProgressionSystem?.DemonCult;
+            var mapId = _glm?.AreaManager?.AreaOverlayId;
+            var targetMapId = owner?.GetRuntimeVariable("target_overlay_id");
+            var rumorId = owner?.GetRuntimeVariable(RumorIdVariable);
+            var actionId = context?.ActionId;
+            if (string.IsNullOrEmpty(actionId))
+            {
+                actionId = owner?.GetRuntimeVariable("cult_action_id");
+            }
+
+            if (string.IsNullOrEmpty(mapId)
+                || (!string.IsNullOrEmpty(targetMapId) && targetMapId != mapId)
+                || string.IsNullOrEmpty(rumorId)
+                || rumorSystem == null
+                || !rumorSystem.IsRumorActive(mapId, rumorId, _glm.SettlementDayIndex))
+            {
+                failReason = "rumor_event_context_invalid";
+                return false;
+            }
+
+            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(_glm.AreaManager);
+            if (cult == null || string.IsNullOrEmpty(logicAreaId))
+            {
+                failReason = "cult_context_invalid";
+                return false;
+            }
+
+            if (!cult.TryApplyAnchorAction(
+                    logicAreaId,
+                    actionId,
+                    _glm.SettlementDayIndex,
+                    out failReason))
+            {
+                return false;
+            }
+
+            rumorSystem.ConsumeActiveForMap(mapId, new[] { rumorId });
+            return true;
+        }
+
+        public void PruneExpiredEventsForCurrentMap()
+        {
+            var rumor = _glm?.playerDataManager?.RumorIntel;
+            var records = _glm?.AreaManager?.Repo?.Records;
+            var mapId = _glm?.AreaManager?.AreaOverlayId;
+            if (rumor == null || records == null || string.IsNullOrEmpty(mapId))
+            {
+                return;
+            }
+
+            var day = _glm.SettlementDayIndex;
+            foreach (var record in records.Values)
+            {
+                if (record is not LogicEntityRecord4EventGroup eventRecord
+                    || eventRecord.MarkDestroyed
+                    || string.IsNullOrEmpty(eventRecord.SrcUniqName)
+                    || !eventRecord.SrcUniqName.StartsWith(RumorEventPrefix))
+                {
+                    continue;
+                }
+
+                eventRecord.DynamicVariables.TryGetValue(RumorIdVariable, out var rumorId);
+                eventRecord.DynamicVariables.TryGetValue(EventExpireDayVariable, out var expireText);
+                var hasExpireDay = int.TryParse(expireText, out var expireDay);
+                if ((hasExpireDay && day < expireDay)
+                    || (!hasExpireDay && rumor.IsRumorActive(mapId, rumorId, day)))
+                {
+                    continue;
+                }
+
+                var entity = _glm.GetLogicEntity(eventRecord.Id, false) as LogicEntityBase;
+                if (entity != null)
+                {
+                    entity.DoEntityDestroyed("rumor_event_expired");
+                }
+                else
+                {
+                    foreach (var memberEntityId in eventRecord.MemberId2EntityMap.Values)
+                    {
+                        if (records.TryGetValue(memberEntityId, out var memberRecord))
+                        {
+                            memberRecord.MarkDestroyed = true;
+                        }
+                    }
+                    eventRecord.MarkDestroyed = true;
+                }
+            }
+        }
+
+        bool TryGetActiveRecord(string uniqName, out LogicEntityRecord4EventGroup eventRecord)
+        {
+            eventRecord = null;
             var records = _glm?.AreaManager?.Repo?.Records;
             if (records == null || string.IsNullOrEmpty(uniqName))
             {
@@ -179,8 +309,11 @@ namespace My
 
             foreach (var record in records.Values)
             {
-                if (record != null && !record.MarkDestroyed && record.SrcUniqName == uniqName)
+                if (record is LogicEntityRecord4EventGroup candidate
+                    && !candidate.MarkDestroyed
+                    && candidate.SrcUniqName == uniqName)
                 {
+                    eventRecord = candidate;
                     return true;
                 }
             }

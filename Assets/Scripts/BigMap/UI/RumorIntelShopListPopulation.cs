@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using My.Config;
 using My.Player;
 using UnityEngine;
@@ -92,6 +93,69 @@ namespace My.UI
             if (actives.Count == 0)
             {
                 AddHint("暂无待生效秘闻。");
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(listHost);
+        }
+
+        public void ClearAndPopulateAll(Action<string, string> tryBuy, string feedback = null)
+        {
+            if (listHost == null || CfgMgr.Cfgs?.TbAreaOverlayStateInfo?.DataList == null)
+                return;
+
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (glm?.playerDataManager == null)
+                return;
+
+            for (var i = listHost.childCount - 1; i >= 0; i--)
+                Destroy(listHost.GetChild(i).gameObject);
+
+            if (!string.IsNullOrEmpty(feedback))
+                AddHint(feedback);
+
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var map in CfgMgr.Cfgs.TbAreaOverlayStateInfo.DataList)
+            {
+                var areaKey = map == null || string.IsNullOrEmpty(map.VarId) ? map?.Id : map.VarId;
+                if (map == null || map.IsSecretBase || string.IsNullOrEmpty(map.Id) || !seen.Add(areaKey))
+                    continue;
+
+                AddSection(string.IsNullOrEmpty(map.Desc) ? map.Id : map.Desc);
+                var mapId = map.Id;
+                var rumor = glm.playerDataManager.RumorIntel;
+                var fixedList = rumor.ListPurchasableFixed(mapId);
+                foreach (var def in fixedList)
+                {
+                    AddBuyRow(def.ThumbName, def.CostItemId, def.CostCount, def.RumorId,
+                        rumorId => tryBuy?.Invoke(mapId, rumorId));
+                }
+
+                if (fixedList.Count == 0)
+                    AddHint("No purchasable fixed intel.");
+
+                AddSection("Random intel");
+                if (rumor.HasActiveRandomIntel(mapId))
+                {
+                    AddHint("A random intel entry is already active.");
+                }
+                else
+                {
+                    rumor.EnsureRandomOffersForShop(mapId);
+                    foreach (var rumorId in rumor.GetRandomOfferIds(mapId))
+                    {
+                        var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(rumorId);
+                        if (def == null) continue;
+                        AddBuyRow(def.ThumbName, def.CostItemId, def.CostCount, def.RumorId,
+                            id => tryBuy?.Invoke(mapId, id));
+                    }
+                }
+
+                var actives = rumor.GetActiveSnapshot(mapId);
+                foreach (var active in actives)
+                {
+                    var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(active.RumorId);
+                    AddHint(def != null ? def.FullText : active.RumorId);
+                }
             }
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(listHost);

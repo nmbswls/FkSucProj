@@ -1706,13 +1706,20 @@ namespace My.Map
                     return 0;
                 }
 
+                // HAct 派生 H 伤害：纯数值扣血，跳过威仪/最终固定减伤
+                if (intent.DmgCategory == EDmgCategory.H)
+                {
+                    var hDmg = Math.Abs(delta);
+                    OnDamageBeforeFinalReduce(hDmg, intent);
+                    return -hDmg;
+                }
+
                 var dmg = DamagePipeline.ResolveHpDeltaCore(
                     delta,
                     intent.DmgCategory,
                     intent,
                     () => attributeStore.GetAttr(AttrIdConsts.Basic_ExtraDmg),
                     GetFinalArm,
-                    GetFinalHPower,
                     () => attributeStore.GetAttr(AttrIdConsts.Basic_JianShang),
                     () => attributeStore.GetAttr(AttrIdConsts.NonH_JianShang_Rate));
 
@@ -1789,9 +1796,9 @@ namespace My.Map
             //return (long)(armWhite * (10000 + armPercent) * 0.0001 + armExtra1);
         }
 
-        public long GetFinalHPower()
+        public long GetFinalHTechnique()
         {
-            return GetAttr(AttrIdConsts.HPower);
+            return GetAttr(AttrIdConsts.HTechnique);
         }
 
         #region alert

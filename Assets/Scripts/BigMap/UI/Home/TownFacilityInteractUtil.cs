@@ -1,6 +1,8 @@
 using My.Config;
+using My.Farm;
 using My.Home;
 using My.Map;
+using My.UI;
 using Config;
 
 namespace My.UI.Home
@@ -35,6 +37,17 @@ namespace My.UI.Home
                 FacilityId = site.FacilityCfgId,
                 LogicAreaId = logicAreaId,
             });
+
+            if (site.FacilityCfgId == FarmCatalog.FarmStationFacilityId
+                && (glm?.farmSystem?.IsFarmStationBuilt(logicAreaId) ?? false))
+            {
+                FarmStationPanel.Open(logicAreaId);
+            }
+
+            if (FacilityFunctionTypeResolver.Resolve(site.FacilityCfgId) == FacilityFunctionType.Tavern)
+            {
+                TavernFoodPanel.Open();
+            }
         }
 
         public static void OpenDetail(string facilityId, long instanceId = 0)
@@ -73,6 +86,11 @@ namespace My.UI.Home
                 FacilityId = facilityId,
                 LogicAreaId = logicAreaId,
             });
+
+            if (FacilityFunctionTypeResolver.Resolve(facilityId) == FacilityFunctionType.Tavern)
+            {
+                TavernFoodPanel.Open();
+            }
         }
 
         public static string ResolveFacilityIdFromRuin(string ruinCfgId)

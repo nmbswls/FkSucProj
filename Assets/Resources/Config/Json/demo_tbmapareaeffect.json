@@ -66,7 +66,7 @@
     "shape_width": 0,
     "shape_radius": 2.5,
     "shape_angle": 0,
-    "area_buff_id": "unit_stagger",
+    "area_buff_id": "force_stun",
     "camp_filter": 1,
     "default_lifetime": 2,
     "refresh_buff_duration": true
@@ -76,7 +76,7 @@
     "shape_type": 2,
     "shape_length": 0,
     "shape_width": 0,
-    "shape_radius": 2.0,
+    "shape_radius": 2,
     "shape_angle": 0,
     "area_buff_id": "unit_stagger",
     "camp_filter": 1,

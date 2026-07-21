@@ -1,7 +1,9 @@
 using Animancer;
+using cfg.demo;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
+using My.Player;
 using My.UI;
 using TMPro;
 using UnityEngine;
@@ -9,7 +11,7 @@ using UnityEngine.UI;
 
 namespace My.Map.View
 {
-    // ������ͣ�� H ���ര�ڣ�5�C8s��ʱͣ���ȶ� + ����˫�ᣩ
+    // ������ͣ�� H ���ര�ڣ�5�C8s��ʱͣ���ȶ� + ����˫�ᣩ
     public class PauseCloseupHTangleWindow : PanelBase, IInputConsumer
     {
         public const string ID = "PauseCloseupHTangleWindow";
@@ -44,7 +46,7 @@ namespace My.Map.View
 
         [Header("HTangle Timing")]
         const float CfgDuration = 5f;
-        const float CfgActPulseInterval = 1f; // ��������
+        const float CfgActPulseInterval = 1f; // ��������
 
         [Header("HTangle Heat")]
         const float heatNaturalRate = 0.13f;
@@ -193,21 +195,16 @@ namespace My.Map.View
 
             var player = glm.playerLogicEntity;
             var npc = glm.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
-            long hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
-            long hPowerEnemy = npc != null ? npc.GetAttr(AttrIdConsts.HPower) : 5000;
-            int enemyLevel = npc != null ? npc.GetUnitLevel() : 1;
-
-            if (!PlayerGamePlayRule.ResolveHActParams(
-                    _currentActId, hPowerPlayer, hPowerEnemy, enemyLevel,
-                    out var hImpulseEnemy, out var hImpulsePlayer))
+            float intensity = 1f + _heat;
+            if (!HActResolver.TryResolve(_currentActId, player, npc, intensity, out var resolved))
             {
                 Debug.LogWarning("[PauseCloseupHTangleWindow] ResolveHActParams failed for act " + _currentActId);
                 return;
             }
 
-            var mult = 1f + _heat;
-            _accEnemyImpulse += (long)(hImpulseEnemy * mult);
-            _accPlayerImpulse += (long)(hImpulsePlayer * mult);
+            _accEnemyImpulse += resolved.ImpulseOnEnemy;
+            _accPlayerImpulse += resolved.ImpulseOnPlayer;
+            glm.playerDataManager?.HInteraction?.NoteActSettlement(SrcEntityId, _currentActId);
         }
 
         void Update()
@@ -280,7 +277,14 @@ namespace My.Map.View
                 return;
             }
 
-            glm.globalBuffManager.AddBuff(SrcEntityId, "fcked_marked", 1, overrideDuration: 0.5f);
+            // 缠绵默认接触「穴」；fcked 拉长到会话窗口，便于射精条满时内射
+            glm.playerDataManager?.HInteraction?.Begin(
+                SrcEntityId,
+                EBodyPart.Womb,
+                EHInteractionSource.CloseupHTangle,
+                _currentActId);
+            glm.globalBuffManager.AddBuff(
+                SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionTracker.DefaultHoldSeconds);
             glm.globalBuffManager.AddBuff(glm.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
         }
 
@@ -316,12 +320,23 @@ namespace My.Map.View
 
             if (settlement.PlayerImpulseApply > 0)
             {
-                player.ApplyHImpulseDirectly(settlement.PlayerImpulseApply, null);
+                // 缠绵结束一次落地冲击；高潮权重取最后一次脉冲对应的 HAct
+                float climaxWeight = 1f;
+                var act = My.Config.CfgMgr.Cfgs?.TbHActInfo?.GetOrDefault(_currentActId);
+                if (act != null && act.PlayerClimaxWeight > 0f)
+                {
+                    climaxWeight = act.PlayerClimaxWeight;
+                }
+
+                player.ApplyHImpulseDirectly(settlement.PlayerImpulseApply, null, climaxWeight);
             }
 
             if (npc != null && settlement.EnemyImpulseApply > 0)
             {
                 npc.ApplyNpcHImpulse(settlement.EnemyImpulseApply);
+                glm.playerDataManager?.HInteraction?.NoteActSettlement(SrcEntityId, _currentActId);
+                glm.globalBuffManager?.AddBuff(
+                    SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionTracker.DefaultHoldSeconds);
             }
 
             if (npc != null && settlement.DeeperLayers > 0)

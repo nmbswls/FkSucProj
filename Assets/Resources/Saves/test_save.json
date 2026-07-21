@@ -8,7 +8,8 @@
     "CurrentHP": 100.0,
     "MaxHP": 100.0,
     "GlobalSwitchMap": {
-      "base_clear": true
+      "base_clear": true,
+      "home_01.reclaimed": true
     },
     "BodyParts": [
       {
@@ -91,6 +92,18 @@
       "ItemInstanceId": 204
     },
     {
+      "SlotIndex": 5,
+      "ItemId": "seed_wheat",
+      "Count": 8,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 6,
+      "ItemId": "seed_cabbage",
+      "Count": 6,
+      "ItemInstanceId": 0
+    },
+    {
       "SlotIndex": 7,
       "ItemId": "gold",
       "Count": 50,
@@ -117,6 +130,30 @@
     {
       "SlotIndex": 11,
       "ItemId": "small_knife",
+      "Count": 10,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 12,
+      "ItemId": "seed_herb",
+      "Count": 6,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 13,
+      "ItemId": "seed_potato",
+      "Count": 4,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 14,
+      "ItemId": "seed_berry",
+      "Count": 4,
+      "ItemInstanceId": 0
+    },
+    {
+      "SlotIndex": 15,
+      "ItemId": "item_fertilizer_basic",
       "Count": 10,
       "ItemInstanceId": 0
     }
@@ -248,6 +285,54 @@
     "FurnitureWarehouse": {
       "BagId": 0,
       "Slots": []
+    }
+  },
+  "TownFarmByLogicAreaId": {
+    "homestead_01": {
+      "LogicAreaId": "homestead_01",
+      "Plots": [],
+      "SeedBasket": {
+        "BagId": 200,
+        "Slots": [
+          {
+            "SlotIndex": 0,
+            "ItemId": "seed_wheat",
+            "Count": 12,
+            "ItemInstanceId": 0
+          },
+          {
+            "SlotIndex": 1,
+            "ItemId": "seed_cabbage",
+            "Count": 8,
+            "ItemInstanceId": 0
+          },
+          {
+            "SlotIndex": 2,
+            "ItemId": "seed_herb",
+            "Count": 6,
+            "ItemInstanceId": 0
+          },
+          {
+            "SlotIndex": 3,
+            "ItemId": "seed_potato",
+            "Count": 4,
+            "ItemInstanceId": 0
+          },
+          {
+            "SlotIndex": 4,
+            "ItemId": "seed_berry",
+            "Count": 4,
+            "ItemInstanceId": 0
+          }
+        ]
+      },
+      "ProduceWarehouse": {
+        "BagId": 201,
+        "Slots": []
+      },
+      "AutoPlantPlan": [],
+      "HarvestWorkforce": 0,
+      "LastSettledDay": -1
     }
   }
 }

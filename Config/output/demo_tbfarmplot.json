@@ -1,0 +1,11 @@
+[
+  {
+    "plot_id": "home01_field_a",
+    "logic_area_id": "homestead_01",
+    "display_name": "村东复耕田",
+    "cell_size": 1.0,
+    "cells": "0,0|1,0|2,0|0,1|1,1|2,1|0,2|1,2|2,2|0,4|1,4|2,4|0,5|1,5|2,5",
+    "show_var": "home_01.reclaimed",
+    "sort_order": 10
+  }
+]

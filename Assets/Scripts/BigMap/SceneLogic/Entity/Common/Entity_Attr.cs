@@ -66,7 +66,8 @@ namespace My.Map
                 case AttrIdConsts.AmmoMax:
 
                 case AttrIdConsts.PhysicalPower:
-                case AttrIdConsts.HPower:
+                case AttrIdConsts.HTechnique:
+                case AttrIdConsts.HStrength:
                 case AttrIdConsts.Will:
                 case AttrIdConsts.Arm_Base:
                 case AttrIdConsts.Arm_Inner:

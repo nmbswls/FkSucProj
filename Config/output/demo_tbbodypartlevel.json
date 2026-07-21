@@ -5,12 +5,16 @@
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 4,
     "local_bonuses": [
       {
         "attr_id": 1,
         "val": 100
+      },
+      {
+        "attr_id": 3,
+        "val": 30
       }
     ]
   },
@@ -20,12 +24,16 @@
     "need_exp": 100,
     "global_bonuses": [],
     "hp": 60000,
-    "h_power": 60000,
+    "h_technique": 60000,
     "absorb_rate": 5,
     "local_bonuses": [
       {
         "attr_id": 1,
         "val": 150
+      },
+      {
+        "attr_id": 3,
+        "val": 50
       }
     ]
   },
@@ -35,12 +43,16 @@
     "need_exp": 300,
     "global_bonuses": [],
     "hp": 70000,
-    "h_power": 70000,
-    "absorb_rate": 5,
+    "h_technique": 70000,
+    "absorb_rate": 6,
     "local_bonuses": [
       {
         "attr_id": 2,
         "val": 50
+      },
+      {
+        "attr_id": 3,
+        "val": 70
       }
     ]
   },
@@ -50,8 +62,8 @@
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 3,
     "local_bonuses": [
       {
         "attr_id": 1,
@@ -65,8 +77,8 @@
     "need_exp": 100,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 4,
     "local_bonuses": [
       {
         "attr_id": 1,
@@ -80,7 +92,7 @@
     "need_exp": 300,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
+    "h_technique": 50000,
     "absorb_rate": 5,
     "local_bonuses": [
       {
@@ -95,12 +107,16 @@
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 8,
     "local_bonuses": [
       {
         "attr_id": 1,
         "val": 60
+      },
+      {
+        "attr_id": 3,
+        "val": 80
       }
     ]
   },
@@ -110,12 +126,16 @@
     "need_exp": 120,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 9,
     "local_bonuses": [
       {
         "attr_id": 2,
         "val": 40
+      },
+      {
+        "attr_id": 3,
+        "val": 120
       }
     ]
   },
@@ -125,12 +145,16 @@
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 6,
     "local_bonuses": [
       {
         "attr_id": 1,
         "val": 60
+      },
+      {
+        "attr_id": 3,
+        "val": 50
       }
     ]
   },
@@ -140,12 +164,16 @@
     "need_exp": 50,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 7,
     "local_bonuses": [
       {
         "attr_id": 2,
         "val": 40
+      },
+      {
+        "attr_id": 3,
+        "val": 80
       }
     ]
   },
@@ -155,8 +183,8 @@
     "need_exp": 0,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 2,
     "local_bonuses": [
       {
         "attr_id": 1,
@@ -170,8 +198,8 @@
     "need_exp": 50,
     "global_bonuses": [],
     "hp": 50000,
-    "h_power": 50000,
-    "absorb_rate": 5,
+    "h_technique": 50000,
+    "absorb_rate": 3,
     "local_bonuses": [
       {
         "attr_id": 2,

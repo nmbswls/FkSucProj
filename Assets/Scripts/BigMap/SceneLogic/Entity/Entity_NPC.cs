@@ -378,8 +378,10 @@ namespace My.Map
 
             var bodyPower = attrCfg.PhysicalPower;
             attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, (long)(bodyPower * 1000));
-            var hPower = attrCfg.HPower;
-            attributeStore.RegisterNumeric(AttrIdConsts.HPower, (long)(hPower * 1000));
+            var hTechnique = attrCfg.HTechnique > 0 ? attrCfg.HTechnique : 1f;
+            attributeStore.RegisterNumeric(AttrIdConsts.HTechnique, (long)(hTechnique * 1000));
+            var hStrength = attrCfg.HStrength > 0 ? attrCfg.HStrength : hTechnique;
+            attributeStore.RegisterNumeric(AttrIdConsts.HStrength, (long)(hStrength * 1000));
 
             attributeStore.RegisterNumeric(AttrIdConsts.Will, 10_000);
             attributeStore.RegisterNumeric(AttrIdConsts.DesireDensityAmplify, 0);

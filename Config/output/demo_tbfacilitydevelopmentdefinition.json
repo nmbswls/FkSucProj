@@ -1,1 +1,58 @@
-[{"facility_id":"elder_hall","display_name":"长老厅","sort_order":1,"max_level":3,"icon":""},{"facility_id":"merchant_stall","display_name":"商摊","sort_order":2,"max_level":2,"icon":""},{"facility_id":"teleport_gate","display_name":"传送门","sort_order":3,"max_level":2,"icon":""},{"facility_id":"village_hall","display_name":"村政厅","sort_order":1,"max_level":2,"icon":""},{"facility_id":"tavern","display_name":"酒馆","sort_order":4,"max_level":3,"icon":""},{"facility_id":"transport_camp","display_name":"运输队营地","sort_order":5,"max_level":2,"icon":""},{"facility_id":"market","display_name":"市集","sort_order":80,"max_level":5,"icon":"market"}]
+[
+  {
+    "facility_id": "elder_hall",
+    "display_name": "长老厅",
+    "sort_order": 1,
+    "max_level": 3,
+    "icon": ""
+  },
+  {
+    "facility_id": "merchant_stall",
+    "display_name": "商摊",
+    "sort_order": 2,
+    "max_level": 2,
+    "icon": ""
+  },
+  {
+    "facility_id": "teleport_gate",
+    "display_name": "传送门",
+    "sort_order": 3,
+    "max_level": 2,
+    "icon": ""
+  },
+  {
+    "facility_id": "village_hall",
+    "display_name": "村政厅",
+    "sort_order": 1,
+    "max_level": 2,
+    "icon": ""
+  },
+  {
+    "facility_id": "tavern",
+    "display_name": "酒馆",
+    "sort_order": 4,
+    "max_level": 3,
+    "icon": ""
+  },
+  {
+    "facility_id": "transport_camp",
+    "display_name": "运输队营地",
+    "sort_order": 5,
+    "max_level": 2,
+    "icon": ""
+  },
+  {
+    "facility_id": "market",
+    "display_name": "市集",
+    "sort_order": 80,
+    "max_level": 5,
+    "icon": "market"
+  },
+  {
+    "facility_id": "farm_station",
+    "display_name": "农业小站",
+    "sort_order": 6,
+    "max_level": 2,
+    "icon": ""
+  }
+]

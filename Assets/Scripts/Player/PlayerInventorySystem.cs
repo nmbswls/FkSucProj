@@ -686,49 +686,42 @@ namespace My.Player.Bag
 
         public bool CheckHaveItem(string itemId, long count)
         {
-            long totalNum = 0;
+            return count <= 0 || GetItemTotal(itemId, includeWarehouse: true) >= count;
+        }
 
+        public long GetItemTotal(string itemId, bool includeWarehouse)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return 0;
+            }
+
+            long total = 0;
+            var visited = new HashSet<PlayerBag>();
             void Acc(PlayerBag bag)
             {
-                if (bag == null)
+                if (bag != null && visited.Add(bag))
                 {
-                    return;
+                    total += bag.GetItemCount(itemId);
                 }
-                totalNum += bag.GetItemCount(itemId);
             }
 
             Acc(MainBag);
-            if (totalNum >= count)
-            {
-                return true;
-            }
-            Acc(WarehouseBag);
-            if (totalNum >= count)
-            {
-                return true;
-            }
-            Acc(FurnitureWarehouseBag);
-            if (totalNum >= count)
-            {
-                return true;
-            }
+            Acc(MindFacetBag);
+            Acc(ImportantItemBag);
             foreach (var bag in SpeBags.Values)
             {
                 Acc(bag);
-                if (totalNum >= count)
-                {
-                    return true;
-                }
             }
 
-            CurrencyBag.TryGetValue(itemId, out var currencyVal);
-            totalNum += currencyVal;
-
-            if (totalNum >= count)
+            if (includeWarehouse)
             {
-                return true;
+                Acc(WarehouseBag);
+                Acc(FurnitureWarehouseBag);
             }
-            return false;
+
+            CurrencyBag.TryGetValue(itemId, out long currency);
+            return total + currency;
         }
 
         public bool CheckQuickSlotBindingAvailable(QuickSlotBinding binding)
@@ -1074,26 +1067,24 @@ namespace My.Player.Bag
                 }
             }
 
-            leftCount = MainBag.TryCostItem(itemId, leftCount);
-            if (leftCount > 0)
+            var visited = new HashSet<PlayerBag>();
+            void CostFrom(PlayerBag bag)
             {
-                foreach (var bag in SpeBags.Values)
+                if (leftCount > 0 && bag != null && visited.Add(bag))
                 {
                     leftCount = bag.TryCostItem(itemId, leftCount);
-                    if (leftCount <= 0)
-                    {
-                        break;
-                    }
                 }
             }
-            if (leftCount > 0 && WarehouseBag != null)
+
+            CostFrom(MainBag);
+            CostFrom(MindFacetBag);
+            CostFrom(ImportantItemBag);
+            foreach (var bag in SpeBags.Values)
             {
-                leftCount = WarehouseBag.TryCostItem(itemId, leftCount);
+                CostFrom(bag);
             }
-            if (leftCount > 0 && FurnitureWarehouseBag != null)
-            {
-                leftCount = FurnitureWarehouseBag.TryCostItem(itemId, leftCount);
-            }
+            CostFrom(WarehouseBag);
+            CostFrom(FurnitureWarehouseBag);
 
             return leftCount;
         }

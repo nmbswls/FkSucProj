@@ -85,6 +85,11 @@ namespace My.Config
             return CfgMgr.Cfgs.TbItemData.GetOrDefault(itemId);
         }
 
+        public static bool IsCookingIngredient(string itemId)
+        {
+            return GetItemDef(itemId)?.CookingIngredient == true;
+        }
+
         public static ItemUse GetUseSlot(string itemId, int slot)
         {
             EnsureUseCache();

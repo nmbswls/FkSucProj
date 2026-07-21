@@ -1796,13 +1796,11 @@ namespace My.Map.Entity
                 {
                     OnHitEffects = new()
                     {
-                        new MapFightEffectApplyDamageCfg()
+                        new MapFightEffectApplyHActCfg()
                         {
-                            DamageCategory = EDmgCategory.H,
-                            ExtraDamageRate = new()
-                            {
-                                new AttrKvPair(){AttrId = AttrIdConsts.Attack, Val = 10000}
-                            },
+                            ActId = HActResolver.DefaultHAttackActId,
+                            Intensity = 1f,
+                            ApplyHpDamage = true,
                             KnockBackForce = 0.4f,
                         },
                     }

@@ -83,6 +83,10 @@ namespace My.Map.Logic
                 {
                     entityInstIdPersist = 0;
                 }
+                else if (IsSeedBasketRefreshRuntime(kv.Key, rt))
+                {
+                    entityInstIdPersist = 0;
+                }
 
                 d.RefreshStates.Add(new RefreshRuntimePersist
                 {
@@ -97,14 +101,17 @@ namespace My.Map.Logic
             foreach (var kv in Record2RefreshInfo)
             {
                 if (Repo.Records.TryGetValue(kv.Key, out var linkRec) &&
-                    (linkRec.EntityType == EEntityType.SavePoint || linkRec.EntityType == EEntityType.FishingSpot))
+                    (linkRec.EntityType == EEntityType.SavePoint
+                     || linkRec.EntityType == EEntityType.FishingSpot
+                     || linkRec.EntityType == EEntityType.SeedBasket))
                 {
                     continue;
                 }
 
                 if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
                     (IsSavePointRefreshInfo(refreshDef) ||
-                     (refreshDef.InitInfo != null && refreshDef.InitInfo.EntityType == EEntityType.FishingSpot)))
+                     IsFishingSpotRefreshInfo(refreshDef) ||
+                     IsSeedBasketRefreshInfo(refreshDef)))
                 {
                     continue;
                 }
@@ -143,6 +150,11 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (rec.EntityType == EEntityType.SeedBasket)
+                {
+                    continue;
+                }
+
                 if (MapInteractPointPersistUtil.ShouldSkipMapRuntimeEntityRecord(rec))
                 {
                     continue;
@@ -177,6 +189,11 @@ namespace My.Map.Logic
                 {
                     entityInstId = 0;
                 }
+                else if (TryGetRefreshInfoByStaticId(r.StaticId, out var seedDef) &&
+                         IsSeedBasketRefreshInfo(seedDef))
+                {
+                    entityInstId = 0;
+                }
 
                 var rt = new SceneRefreshInfoRuntime
                 {
@@ -193,7 +210,9 @@ namespace My.Map.Logic
             foreach (var kv in data.RecordToRefreshStaticId)
             {
                 if (TryGetRefreshInfoByStaticId(kv.Value, out var refreshDef) &&
-                    (IsSavePointRefreshInfo(refreshDef) || IsFishingSpotRefreshInfo(refreshDef)))
+                    (IsSavePointRefreshInfo(refreshDef)
+                     || IsFishingSpotRefreshInfo(refreshDef)
+                     || IsSeedBasketRefreshInfo(refreshDef)))
                 {
                     continue;
                 }
@@ -221,6 +240,11 @@ namespace My.Map.Logic
                     }
 
                     if (rec.EntityType == EEntityType.FishingSpot)
+                    {
+                        continue;
+                    }
+
+                    if (rec.EntityType == EEntityType.SeedBasket)
                     {
                         continue;
                     }

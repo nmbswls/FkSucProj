@@ -83,6 +83,8 @@ namespace My.Map
         private bool _pendingNotified;
         private bool _interactFailed;
 
+        public event System.Action<int, bool> EventOnInteractEnded;
+
         public EntityInteractComp(IEntityInteractable owner)
         {
             this.Owner = owner;
@@ -835,6 +837,22 @@ namespace My.Map
 
                     #region group相关
 
+                    case Config.LogicInteractOutput.EOutputType.EGMemberChangeState:
+                        {
+                            var targetEntityId = GetInteractTarget(output, forceSpawnIfMissing: true);
+                            var member = Owner.LogicManager.GetLogicEntity(targetEntityId, false)
+                                as LogicEntityInteractPoint;
+                            if (member == null)
+                            {
+                                Debug.LogError("EGMemberChangeState target is not an interact point.");
+                                errOccur = true;
+                                break;
+                            }
+
+                            member.ChangeSelfStatus((int)output.Param1);
+                        }
+                        break;
+
                     case Config.LogicInteractOutput.EOutputType.EGMemberActivate:
                         {
 
@@ -1038,6 +1056,35 @@ namespace My.Map
                         }
                         break;
 
+                    case Config.LogicInteractOutput.EOutputType.EGAdvanceStage:
+                        {
+                            if (Owner is not EventGroupLogicEntity eventGroup
+                                || !eventGroup.TryAdvanceToStage((int)output.Param1))
+                            {
+                                errOccur = true;
+                            }
+                        }
+                        break;
+
+                    case Config.LogicInteractOutput.EOutputType.ResolveEventGroupOutcome:
+                        {
+                            var router = Owner.LogicManager?.EventGroupOutcomes;
+                            string failReason = null;
+                            if (router == null
+                                || !router.TryResolve(new EventGroupOutcomeContext
+                                {
+                                    Owner = Owner,
+                                    PlayerId = _interactingPlayerId,
+                                    OutcomeKind = output.Param3,
+                                    ActionId = output.Param4,
+                                }, out failReason))
+                            {
+                                Debug.LogWarning($"EventGroup outcome failed: {failReason}");
+                                errOccur = true;
+                            }
+                        }
+                        break;
+
                     case LogicInteractOutput.EOutputType.RecordRefreshSettlementDay:
                         {
                             long targetEntityId = GetInteractTarget(output, forceSpawnIfMissing: true);
@@ -1063,12 +1110,14 @@ namespace My.Map
                             var cult = playerSystem?.ProgressionSystem?.DemonCult;
                             var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(Owner.LogicManager.AreaManager);
                             var sourceRumorId = Owner.GetRuntimeVariable("rumor_id");
-                            if (cult == null || string.IsNullOrEmpty(logicAreaId)
-                                || !cult.TryApplyInfluence(
+                            var appliedLegacyInfluence = cult != null
+                                && !string.IsNullOrEmpty(logicAreaId)
+                                && cult.TryApplyInfluence(
                                     logicAreaId,
                                     output.Param3,
                                     sourceRumorId,
-                                    Owner.LogicManager.SettlementDayIndex))
+                                    Owner.LogicManager.SettlementDayIndex);
+                            if (!appliedLegacyInfluence)
                             {
                                 errOccur = true;
                                 break;
@@ -1082,6 +1131,73 @@ namespace My.Map
                             }
 
                             OwnerEntity?.DoEntityDestroyed("cult_influence_applied");
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.ApplyDemonCultAnchorAction:
+                        {
+                            var playerSystem = GetInteractingPlayerSystem();
+                            var rumorSystem = playerSystem?.RumorIntel;
+                            var cult = playerSystem?.ProgressionSystem?.DemonCult;
+                            var mapId = Owner.LogicManager.AreaManager?.AreaOverlayId;
+                            var targetMapId = Owner.GetRuntimeVariable("target_overlay_id");
+                            var rumorId = Owner.GetRuntimeVariable("rumor_id");
+                            var actionId = Owner.GetRuntimeVariable("cult_action_id");
+                            if (string.IsNullOrEmpty(actionId))
+                            {
+                                actionId = output.Param3;
+                            }
+
+                            if (string.IsNullOrEmpty(mapId)
+                                || (!string.IsNullOrEmpty(targetMapId) && targetMapId != mapId)
+                                || string.IsNullOrEmpty(rumorId)
+                                || rumorSystem == null
+                                || !rumorSystem.IsRumorActive(mapId, rumorId, Owner.LogicManager.SettlementDayIndex))
+                            {
+                                Debug.LogWarning($"[RumorIntel] Cult event context is invalid for rumor {rumorId} on {mapId}.");
+                                errOccur = true;
+                                break;
+                            }
+
+                            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(Owner.LogicManager.AreaManager);
+                            string failReason = null;
+                            if (cult == null
+                                || string.IsNullOrEmpty(logicAreaId)
+                                || !cult.TryApplyAnchorAction(
+                                    logicAreaId,
+                                    actionId,
+                                    Owner.LogicManager.SettlementDayIndex,
+                                    out failReason))
+                            {
+                                Debug.LogWarning(
+                                    $"[RumorIntel] Cult anchor action {actionId} failed in {logicAreaId}: {failReason}");
+                                errOccur = true;
+                                break;
+                            }
+
+                            rumorSystem.ConsumeActiveForMap(mapId, new[] { rumorId });
+                            OwnerEntity?.DoEntityDestroyed("cult_anchor_event_resolved");
+                            Debug.Log($"[RumorIntel] Resolved cult event {rumorId}; applied {actionId} in {logicAreaId}.");
+                        }
+                        break;
+
+                    case LogicInteractOutput.EOutputType.ApplyDemonCultCountermeasure:
+                        {
+                            var cult = GetInteractingPlayerSystem()?.ProgressionSystem?.DemonCult;
+                            var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(Owner.LogicManager.AreaManager);
+                            if (cult == null || string.IsNullOrEmpty(logicAreaId)
+                                || !cult.TryApplyAnchorCountermeasure(
+                                    logicAreaId,
+                                    output.Param4,
+                                    output.Param3,
+                                    Owner.LogicManager.SettlementDayIndex,
+                                    out _))
+                            {
+                                errOccur = true;
+                                break;
+                            }
+
+                            OwnerEntity?.DoEntityDestroyed("cult_countermeasure_applied");
                         }
                         break;
 
@@ -1127,7 +1243,10 @@ namespace My.Map
             if (_currInteract == null) return;
             Debug.Log($"DoInteractEnd. {_currInteract?.InteractId}");
 
-            if (!_interactFailed)
+            var completedInteractId = _currInteract.InteractId;
+            var succeeded = !_interactFailed;
+
+            if (succeeded)
             {
                 PlayerEventBus.Publish(new PlayerEntityInteractionCompletedEvent
                 {
@@ -1143,6 +1262,7 @@ namespace My.Map
             _interactFailed = false;
 
             ResetInteractPending();
+            EventOnInteractEnded?.Invoke(completedInteractId, succeeded);
         }
     }
 

@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "logic_area_id": "homestead_01",
+    "crop_id": "crop_wheat",
+    "target_count": 6,
+    "priority": 10
+  },
+  {
+    "id": 2,
+    "logic_area_id": "homestead_01",
+    "crop_id": "crop_cabbage",
+    "target_count": 4,
+    "priority": 20
+  },
+  {
+    "id": 3,
+    "logic_area_id": "homestead_01",
+    "crop_id": "crop_herb",
+    "target_count": 3,
+    "priority": 30
+  }
+]

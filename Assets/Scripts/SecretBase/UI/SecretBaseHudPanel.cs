@@ -21,6 +21,7 @@ namespace My.UI
         [SerializeField] Button btnExit;
         [SerializeField] Button btnBuild;
         [SerializeField] Button btnJingYuanWarehouse;
+        [SerializeField] Button btnRumorIntel;
         [SerializeField] Button btnSwitch;
         [SerializeField] Button btnNextPeriod;
         [SerializeField] TextMeshProUGUI txtFakeState;
@@ -45,6 +46,11 @@ namespace My.UI
             {
                 btnJingYuanWarehouse.onClick.AddListener(() => UIManager.Instance.ShowPanel(JingYuanWarehousePanel.PanelIdConst));
             }
+
+            if (btnRumorIntel == null)
+                btnRumorIntel = transform.Find("TopRightBar/BtnRumorIntel")?.GetComponent<Button>();
+            if (btnRumorIntel != null)
+                btnRumorIntel.onClick.AddListener(RumorIntelShopPanel.Open);
 
             if (btnSwitch != null)
             {

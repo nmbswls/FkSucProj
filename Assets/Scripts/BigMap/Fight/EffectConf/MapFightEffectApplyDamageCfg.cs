@@ -15,6 +15,7 @@ namespace My.Map.Entity
         Physics,
 
         Magic,
+        // 仅表示 HAct 派生的纯扣血；禁止经 ApplyDamage 等外界效果直接创建
         H,
     }
 

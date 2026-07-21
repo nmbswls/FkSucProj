@@ -1,4 +1,5 @@
 using cfg.demo;
+using My.Config;
 
 namespace My.Player
 {
@@ -9,14 +10,14 @@ namespace My.Player
         public long Exp;
         public StatMap LocalStats = new StatMap();
 
-        public void RebuildLocalStats()
+        public void RebuildLocalStats(PlayerEquipmentManager equipment = null)
         {
-            LocalStats = My.Config.BodyPartCatalog.BuildLocalStats(PartId, Level);
+            LocalStats = BodyPartCatalog.BuildLocalStats(PartId, Level);
+            BodyPartCatalog.AccumulateEquippedGearLocalBonuses(PartId, equipment, LocalStats);
         }
 
         public void RebuildInnerInfo()
         {
-
         }
     }
 }

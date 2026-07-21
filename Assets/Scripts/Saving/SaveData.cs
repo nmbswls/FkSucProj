@@ -427,6 +427,8 @@ namespace My.Saving
         public int ExpireSettlementDay;
         public bool IsRandomKind;
         public bool Revealed;
+        public bool Spawned;
+        public int EventExpireSettlementDay;
     }
 
     [Serializable]
@@ -560,6 +562,8 @@ namespace My.Saving
         public ECultSecretUnitState State;
         public string AssignedRegionKey = string.Empty;
         public string MissionId = string.Empty;
+        public string AssignedLogicAreaId = string.Empty;
+        public string AssignedAnchorId = string.Empty;
     }
 
     [Serializable]
@@ -577,6 +581,21 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class CultAnchorPersist
+    {
+        public string LogicAreaId = string.Empty;
+        public string AnchorId = string.Empty;
+        public int Level = 1;
+        public long Progress;
+        public bool Established;
+        public int NextOutputSettlementDay;
+        public bool IsWatched;
+        public int WatchedSinceSettlementDay;
+        public int WatchedPressureLevel;
+        public int DisabledUntilSettlementDay;
+    }
+
+    [Serializable]
     public class DemonCultPersist
     {
         public long Faith;
@@ -586,6 +605,8 @@ namespace My.Saving
         public Dictionary<string, long> LinkerCountByRegionKey = new();
         public List<CultSecretUnitPersist> SecretUnits = new();
         public Dictionary<string, CultInfluenceAreaPersist> InfluenceByLogicAreaId = new();
+        public List<CultAnchorPersist> Anchors = new();
+        public Dictionary<string, long> ChurchPressureByRegionKey = new();
     }
 
     [Serializable]
@@ -634,6 +655,23 @@ namespace My.Saving
         }
     }
 
+    [Serializable]
+    public class TavernDishSlotPersist
+    {
+        public string ItemId = string.Empty;
+        public int Count;
+    }
+
+    [Serializable]
+    public class TavernTownPersist
+    {
+        public List<TavernDishSlotPersist> Slots = new();
+        public int LastSettlementDay = -1;
+        public long LastGoldEarned;
+        public int LastInfluenceEarned;
+        public int LastSoldCount;
+    }
+
     public class SaveData
     {
         public MetaData Meta;
@@ -672,6 +710,10 @@ namespace My.Saving
 
         // Per-town development state keyed by stable town or logic-area id.
         public Dictionary<string, TownDevelopmentPersist> TownDevelopmentById = new();
+        public Dictionary<string, TavernTownPersist> TavernByTownId = new();
+
+        // 种植：按逻辑地图存档（种子篮 / 农田格 / 小站规划）
+        public Dictionary<string, My.Farm.TownFarmPersist> TownFarmByLogicAreaId = new();
 
         public List<EFuncOpenType> FuncOpenList = new();
 
@@ -695,6 +737,7 @@ namespace My.Saving
             HumanCivilization = new HumanCivilizationPersist();
             DemonCult = new DemonCultPersist();
             TownDevelopmentById = new Dictionary<string, TownDevelopmentPersist>();
+            TownFarmByLogicAreaId = new Dictionary<string, My.Farm.TownFarmPersist>();
         }
 
         public static void EnsureHydrated(SaveData data)
@@ -714,6 +757,7 @@ namespace My.Saving
             data.DemonCult.SecretUnits ??= new List<CultSecretUnitPersist>();
             data.DemonCult.InfluenceByLogicAreaId ??= new Dictionary<string, CultInfluenceAreaPersist>();
             data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
+            data.TownFarmByLogicAreaId ??= new Dictionary<string, My.Farm.TownFarmPersist>();
             foreach (var town in data.TownDevelopmentById.Values)
             {
                 if (town?.Facilities == null) continue;

@@ -167,6 +167,11 @@ namespace My.Map
         public void OnRepairFinish()
         {
             // 标记
+            if (LogicManager.homeDataManager?.DoRepairFacility(CfgId, this.Pos) != true)
+            {
+                return;
+            }
+
             IsRepaired = true;
 
             SyncRuinStateToPersist();
@@ -175,7 +180,6 @@ namespace My.Map
             EventOnRepaired?.Invoke();
 
             // 
-            LogicManager.homeDataManager.DoRepairFacility(CfgId, this.Pos);
         }
     }
 }

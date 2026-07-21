@@ -70,17 +70,8 @@ namespace My.Map.View
                 return;
             }
 
-            if (PlayerGamePlayRule.ResolveHActParams(
-                    HActId,
-                    p.GetAttr(AttrIdConsts.HPower),
-                    target.GetAttr(AttrIdConsts.HPower),
-                    target.GetUnitLevel(),
-                    out var hImpulseEnemy,
-                    out var hImpulsePlayer))
-            {
-                p.ApplyHImpulseDirectly(hImpulsePlayer, null);
-                target.ApplyNpcHImpulse(hImpulseEnemy);
-            }
+            // Closeup 互动不派生 HP（表内 KnockDown 的 hp_from_impulse_coef 保持 0）
+            HActResolver.TryResolveAndApply(HActId, p, target, intensity: 1f, applyHpDamage: false);
 
             p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -4_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
 

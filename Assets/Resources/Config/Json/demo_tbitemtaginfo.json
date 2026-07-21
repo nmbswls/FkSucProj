@@ -388,5 +388,11 @@
     "display_name": "护具：饰品",
     "hidden": false,
     "requires_instance": false
+  },
+  {
+    "tag": 66,
+    "display_name": "种子",
+    "hidden": false,
+    "requires_instance": false
   }
 ]

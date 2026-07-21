@@ -361,6 +361,15 @@ namespace My.MapExport
     }
 
     [Serializable]
+    public class EntityInitInfo4SeedBasket : EntityInitInfo
+    {
+        public override EEntityType EntityType => EEntityType.SeedBasket;
+
+        // 空则运行时从当前逻辑地图解析
+        public string LogicAreaId;
+    }
+
+    [Serializable]
     public class EntityInitInfo4Trap : EntityInitInfo
     {
         public override EEntityType EntityType => EEntityType.Trap;

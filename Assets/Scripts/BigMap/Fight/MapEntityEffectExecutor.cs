@@ -1490,6 +1490,12 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (realCfg.DamageCategory == EDmgCategory.H)
+            {
+                Debug.LogError("EDmgCategory.H is HAct-only. Use MapFightEffectApplyHActCfg instead.");
+                return;
+            }
+
             long maxVal = target.GetResourceMax(realCfg.ResourceId);
             long delta = -(maxVal * realCfg.RateBp / 10000);
             delta = (long)(delta * ctx.EffectOutputScale);
@@ -1638,6 +1644,12 @@ namespace My.Map.Entity
                 return;
             }
 
+            if (realCfg.DamageCategory == EDmgCategory.H)
+            {
+                Debug.LogError("EDmgCategory.H damage is HAct-only. Use MapFightEffectApplyHActCfg instead. ability=" + ctx.SourceInfo?.SrcAbilityId);
+                return;
+            }
+
             var target = ctx.Env.GetLogicEntity(ctx.TargetId);
             if (target == null)
             {
@@ -1678,6 +1690,36 @@ namespace My.Map.Entity
                     unitEntity.ApplyKnockBack(diff, realCfg.KnockBackForce);
                 }
             }
+        }
+    }
+
+    public class AbilityEffectExecutor4ApplyHAct : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            var realCfg = effectConf as MapFightEffectApplyHActCfg;
+            if (realCfg == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ApplyHAct cfg error");
+                return;
+            }
+
+            var attacker = ctx.Env.GetLogicEntity(ctx.SourceInfo.SrcEntityId, false) as BaseUnitLogicEntity;
+            var defender = ctx.Env.GetLogicEntity(ctx.TargetId, false) as BaseUnitLogicEntity;
+            if (attacker == null || defender == null)
+            {
+                Debug.LogError("AbilityEffectExecutor4ApplyHAct missing attacker/defender");
+                return;
+            }
+
+            float intensity = realCfg.Intensity * Mathf.Max(0.01f, ctx.EffectOutputScale);
+            HActResolver.TryResolveAndApplyWithRoles(
+                realCfg.ActId,
+                attacker,
+                defender,
+                intensity,
+                realCfg.ApplyHpDamage,
+                realCfg.KnockBackForce);
         }
     }
 

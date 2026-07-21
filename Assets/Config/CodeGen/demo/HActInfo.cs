@@ -24,8 +24,9 @@ public sealed partial class HActInfo : Luban.BeanBase
         { if(!_buf["player_min_desire"].IsNumber) { throw new SerializationException(); }  PlayerMinDesire = _buf["player_min_desire"]; }
         { if(!_buf["is_player_passive"].IsBoolean) { throw new SerializationException(); }  IsPlayerPassive = _buf["is_player_passive"]; }
         { if(!_buf["h_impulse_base"].IsNumber) { throw new SerializationException(); }  HImpulseBase = _buf["h_impulse_base"]; }
-        { if(!_buf["coef_player"].IsNumber) { throw new SerializationException(); }  CoefPlayer = _buf["coef_player"]; }
-        { if(!_buf["coef_enemy"].IsNumber) { throw new SerializationException(); }  CoefEnemy = _buf["coef_enemy"]; }
+        { if(!_buf["self_coef"].IsNumber) { throw new SerializationException(); }  SelfCoef = _buf["self_coef"]; }
+        { if(!_buf["contest_coef"].IsNumber) { throw new SerializationException(); }  ContestCoef = _buf["contest_coef"]; }
+        { if(!_buf["hp_from_impulse_coef"].IsNumber) { throw new SerializationException(); }  HpFromImpulseCoef = _buf["hp_from_impulse_coef"]; }
         { if(!_buf["player_climax_weight"].IsNumber) { throw new SerializationException(); }  PlayerClimaxWeight = _buf["player_climax_weight"]; }
     }
 
@@ -39,7 +40,7 @@ public sealed partial class HActInfo : Luban.BeanBase
     /// </summary>
     public int Id;
     /// <summary>
-    /// id
+    /// 描述
     /// </summary>
     public string Desc;
     /// <summary>
@@ -47,27 +48,31 @@ public sealed partial class HActInfo : Luban.BeanBase
     /// </summary>
     public System.Collections.Generic.List<string> FilterTypes;
     /// <summary>
-    /// 玩家欲望要求
+    /// 欲望要求
     /// </summary>
     public int PlayerMinDesire;
     /// <summary>
-    /// 主角被动？
+    /// 主角被动
     /// </summary>
     public bool IsPlayerPassive;
     /// <summary>
-    /// h冲击力
+    /// 动作基础强度
     /// </summary>
     public float HImpulseBase;
     /// <summary>
-    /// h比例
+    /// 自反馈系数
     /// </summary>
-    public float CoefPlayer;
+    public float SelfCoef;
     /// <summary>
-    /// h比例
+    /// 对抗姿态
     /// </summary>
-    public float CoefEnemy;
+    public float ContestCoef;
     /// <summary>
-    /// 高潮比例
+    /// 冲击折血系数
+    /// </summary>
+    public float HpFromImpulseCoef;
+    /// <summary>
+    /// 高潮权重
     /// </summary>
     public float PlayerClimaxWeight;
    
@@ -87,8 +92,9 @@ public sealed partial class HActInfo : Luban.BeanBase
         + "playerMinDesire:" + PlayerMinDesire + ","
         + "isPlayerPassive:" + IsPlayerPassive + ","
         + "hImpulseBase:" + HImpulseBase + ","
-        + "coefPlayer:" + CoefPlayer + ","
-        + "coefEnemy:" + CoefEnemy + ","
+        + "selfCoef:" + SelfCoef + ","
+        + "contestCoef:" + ContestCoef + ","
+        + "hpFromImpulseCoef:" + HpFromImpulseCoef + ","
         + "playerClimaxWeight:" + PlayerClimaxWeight + ","
         + "}";
     }

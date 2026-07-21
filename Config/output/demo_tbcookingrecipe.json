@@ -1,0 +1,203 @@
+[
+  {
+    "id": 1001,
+    "sort": 10,
+    "display_name": "乡野杂蔬炖",
+    "description": "卷心菜与土豆慢炖出的家常汤菜，适合稳定量产。",
+    "result_item_id": "dish_country_stew",
+    "icon_sprite": "dish_country_stew",
+    "output_count": 1,
+    "level": 1,
+    "rarity": 0,
+    "primary_type": 2,
+    "style_tags": [
+      1,
+      2
+    ],
+    "ingredient_item_ids": [
+      "produce_cabbage",
+      "produce_potato",
+      "produce_herb"
+    ],
+    "ingredient_counts": [
+      1,
+      1,
+      1
+    ],
+    "unlock_key": "",
+    "unlock_hint": "",
+    "quality_result_item_id": "dish_country_stew_quality"
+  },
+  {
+    "id": 1002,
+    "sort": 20,
+    "display_name": "香草怪肉串",
+    "description": "将可食用的怪物嫩肉用香草压住异味后烤制。",
+    "result_item_id": "dish_herb_skewer",
+    "icon_sprite": "dish_herb_skewer",
+    "output_count": 1,
+    "level": 2,
+    "rarity": 1,
+    "primary_type": 1,
+    "style_tags": [
+      2,
+      7
+    ],
+    "ingredient_item_ids": [
+      "mat_monster_meat",
+      "produce_herb"
+    ],
+    "ingredient_counts": [
+      2,
+      1
+    ],
+    "unlock_key": "",
+    "unlock_hint": "",
+    "quality_result_item_id": "dish_herb_skewer_quality"
+  },
+  {
+    "id": 1003,
+    "sort": 30,
+    "display_name": "浆果麦饼",
+    "description": "带有微酸果香的粗麦薄饼，是常见的日常点心。",
+    "result_item_id": "dish_berry_flatbread",
+    "icon_sprite": "dish_berry_flatbread",
+    "output_count": 2,
+    "level": 1,
+    "rarity": 0,
+    "primary_type": 0,
+    "style_tags": [
+      1,
+      3
+    ],
+    "ingredient_item_ids": [
+      "produce_wheat",
+      "produce_berry"
+    ],
+    "ingredient_counts": [
+      2,
+      1
+    ],
+    "unlock_key": "",
+    "unlock_hint": "",
+    "quality_result_item_id": "dish_berry_flatbread_quality"
+  },
+  {
+    "id": 2001,
+    "sort": 40,
+    "display_name": "酣眠果羹",
+    "description": "少量酣眠心相融入浆果羹，使味道带上安静的余韵。",
+    "result_item_id": "dish_slumber_compote",
+    "icon_sprite": "dish_slumber_compote",
+    "output_count": 1,
+    "level": 2,
+    "rarity": 1,
+    "primary_type": 3,
+    "style_tags": [
+      3,
+      5
+    ],
+    "ingredient_item_ids": [
+      "produce_berry",
+      "mind_facet_01"
+    ],
+    "ingredient_counts": [
+      2,
+      1
+    ],
+    "unlock_key": "",
+    "unlock_hint": "",
+    "quality_result_item_id": "dish_slumber_compote_quality"
+  },
+  {
+    "id": 2002,
+    "sort": 50,
+    "display_name": "灯影薯汤",
+    "description": "灯影心相让朴素的薯汤呈现出温暖而模糊的旧日色泽。",
+    "result_item_id": "dish_lamplight_soup",
+    "icon_sprite": "dish_lamplight_soup",
+    "output_count": 1,
+    "level": 3,
+    "rarity": 2,
+    "primary_type": 2,
+    "style_tags": [
+      4,
+      5
+    ],
+    "ingredient_item_ids": [
+      "produce_potato",
+      "produce_herb",
+      "mind_facet_03"
+    ],
+    "ingredient_counts": [
+      2,
+      1,
+      1
+    ],
+    "unlock_key": "",
+    "unlock_hint": "",
+    "quality_result_item_id": "dish_lamplight_soup_quality"
+  },
+  {
+    "id": 3001,
+    "sort": 60,
+    "display_name": "夜色盛宴拼盘",
+    "description": "以怪物肉、农产和夜色心相组成的大型节庆拼盘。",
+    "result_item_id": "dish_night_banquet",
+    "icon_sprite": "dish_night_banquet",
+    "output_count": 1,
+    "level": 4,
+    "rarity": 3,
+    "primary_type": 5,
+    "style_tags": [
+      6,
+      7
+    ],
+    "ingredient_item_ids": [
+      "produce_wheat",
+      "produce_cabbage",
+      "mat_monster_meat",
+      "loot_spice_pinch",
+      "mind_facet_06"
+    ],
+    "ingredient_counts": [
+      2,
+      2,
+      2,
+      1,
+      2
+    ],
+    "unlock_key": "cooking.recipe.night_banquet",
+    "unlock_hint": "完成与城镇庆典有关的内容后解锁",
+    "quality_result_item_id": "dish_night_banquet_quality"
+  },
+  {
+    "id": 4001,
+    "sort": 70,
+    "display_name": "往日蜜露",
+    "description": "妖精蜜露与旧日心相调成的饮品，配方本身保存着久远记忆。",
+    "result_item_id": "dish_old_honeydew",
+    "icon_sprite": "dish_old_honeydew",
+    "output_count": 1,
+    "level": 5,
+    "rarity": 4,
+    "primary_type": 4,
+    "style_tags": [
+      5,
+      8
+    ],
+    "ingredient_item_ids": [
+      "mat_fairy_honeydew",
+      "produce_berry",
+      "mind_facet_02"
+    ],
+    "ingredient_counts": [
+      1,
+      2,
+      2
+    ],
+    "unlock_key": "cooking.recipe.old_honeydew",
+    "unlock_hint": "寻回与古老者有关的旧日记忆后解锁",
+    "quality_result_item_id": "dish_old_honeydew_quality"
+  }
+]

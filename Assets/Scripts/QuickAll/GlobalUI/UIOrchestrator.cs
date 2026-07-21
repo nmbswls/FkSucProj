@@ -80,6 +80,22 @@ namespace My.UI
 
             UIManager.Instance.RegisterPanel(new PanelResource()
             {
+                panelId = FarmSeedBarPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/FarmSeedBarPanel",
+                defaultLayer = UILayer.HUD,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = FarmStationPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/FarmStationPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
                 panelId = "LoadingOverlay",
                 resourcePath = "UI/Prefabs/LoadingOverlay",
                 defaultLayer = UILayer.System,
@@ -382,6 +398,14 @@ namespace My.UI
             {
                 panelId = Home.TownFacilityDetailPanel.PanelIdConst,
                 resourcePath = "UI/Prefabs/TownFacilityDetailPanel",
+                defaultLayer = UILayer.Popup,
+                pooled = false,
+            });
+
+            UIManager.Instance.RegisterPanel(new PanelResource()
+            {
+                panelId = Home.TavernFoodPanel.PanelIdConst,
+                resourcePath = "UI/Prefabs/TavernFoodPanel",
                 defaultLayer = UILayer.Popup,
                 pooled = false,
             });

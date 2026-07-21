@@ -6,10 +6,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
     "id": 10001,
@@ -18,10 +19,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
     "id": 10002,
@@ -30,10 +32,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
     "id": 10003,
@@ -42,10 +45,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
-    "default_h_shield": 10
+    "default_h_shield": 10,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
     "id": 10004,
@@ -54,10 +58,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
-    "default_h_shield": 10
+    "default_h_shield": 10,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
     "id": 300,
@@ -66,10 +71,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 10.0,
+    "h_technique": 10
   },
   {
     "id": 301,
@@ -78,10 +84,11 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 14.0,
+    "h_technique": 14
   },
   {
     "id": 302,
@@ -90,10 +97,11 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 18.0,
+    "h_technique": 18
   },
   {
     "id": 400,
@@ -102,10 +110,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 10.0,
+    "h_technique": 10
   },
   {
     "id": 401,
@@ -114,10 +123,11 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 14.0,
+    "h_technique": 14
   },
   {
     "id": 402,
@@ -126,10 +136,11 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 18.0,
+    "h_technique": 18
   },
   {
     "id": 500,
@@ -138,10 +149,11 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 10.0,
+    "h_technique": 10
   },
   {
     "id": 501,
@@ -150,10 +162,11 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 14.0,
+    "h_technique": 14
   },
   {
     "id": 502,
@@ -162,57 +175,114 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
-    "default_h_shield": 0
+    "default_h_shield": 0,
+    "h_strength": 18.0,
+    "h_technique": 18
   },
   {
-    "id": 10010,
+    "id": 10020,
+    "level": 1,
+    "hp": 45,
+    "move_speed": 2.8,
+    "base_atk": 4,
+    "physical_power": 8,
+    "base_blurt_amount": 0,
+    "base_blurt_dmg": 0,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12000,
     "level": 1,
     "hp": 70,
-    "move_speed": 3.5,
+    "move_speed": 1.8,
+    "base_atk": 2,
+    "physical_power": 6,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 40,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12001,
+    "level": 1,
+    "hp": 65,
+    "move_speed": 1.9,
+    "base_atk": 2,
+    "physical_power": 5,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 20,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12002,
+    "level": 1,
+    "hp": 75,
+    "move_speed": 1.7,
+    "base_atk": 2.5,
+    "physical_power": 6,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 20,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12003,
+    "level": 1,
+    "hp": 55,
+    "move_speed": 1.4,
+    "base_atk": 1.5,
+    "physical_power": 4,
+    "base_blurt_amount": 1,
+    "base_blurt_dmg": 15,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12004,
+    "level": 1,
+    "hp": 95,
+    "move_speed": 1.6,
     "base_atk": 3,
     "physical_power": 8,
-    "h_power": 0,
-    "base_blurt_amount": 5,
-    "base_blurt_dmg": 60,
-    "default_h_shield": 0
+    "base_blurt_amount": 3,
+    "base_blurt_dmg": 30,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   },
   {
-    "id": 10011,
+    "id": 12005,
     "level": 1,
-    "hp": 200,
-    "move_speed": 1.2,
-    "base_atk": 8,
-    "physical_power": 12,
-    "h_power": 0,
-    "base_blurt_amount": 5,
-    "base_blurt_dmg": 60,
-    "default_h_shield": 0
-  },
-  {
-    "id": 10012,
-    "level": 1,
-    "hp": 90,
-    "move_speed": 2,
-    "base_atk": 4,
-    "physical_power": 9,
-    "h_power": 0,
-    "base_blurt_amount": 5,
-    "base_blurt_dmg": 60,
-    "default_h_shield": 0
-  },
-  {
-    "id": 10013,
-    "level": 1,
-    "hp": 100,
+    "hp": 150,
     "move_speed": 1.8,
-    "base_atk": 5,
+    "base_atk": 4,
     "physical_power": 8,
-    "h_power": 0,
-    "base_blurt_amount": 5,
-    "base_blurt_dmg": 60,
-    "default_h_shield": 0
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 45,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
+  },
+  {
+    "id": 12006,
+    "level": 1,
+    "hp": 220,
+    "move_speed": 1.6,
+    "base_atk": 5,
+    "physical_power": 10,
+    "base_blurt_amount": 2,
+    "base_blurt_dmg": 40,
+    "default_h_shield": 0,
+    "h_strength": 1.0,
+    "h_technique": 1.0
   }
 ]

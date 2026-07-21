@@ -8,9 +8,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 2,
@@ -21,9 +22,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 3,
@@ -34,9 +36,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 4,
@@ -47,9 +50,10 @@
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 5,
@@ -60,9 +64,10 @@
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 6,
@@ -73,9 +78,10 @@
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.45,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 7,
@@ -86,9 +92,10 @@
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.45,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 10,
@@ -99,9 +106,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0.3,
-    "coef_enemy": 0.7,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.3,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.35
   },
   {
     "id": 11,
@@ -112,9 +120,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 18,
-    "coef_player": 0.3,
-    "coef_enemy": 0.7,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.3,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.35
   },
   {
     "id": 12,
@@ -125,9 +134,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 26,
-    "coef_player": 0.3,
-    "coef_enemy": 0.7,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.3,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.35
   },
   {
     "id": 13,
@@ -138,9 +148,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 34,
-    "coef_player": 0.3,
-    "coef_enemy": 0.7,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.3,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.35
   },
   {
     "id": 20,
@@ -151,9 +162,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 21,
@@ -164,9 +176,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 10,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 22,
@@ -177,9 +190,10 @@
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 23,
@@ -190,9 +204,10 @@
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 24,
@@ -203,9 +218,10 @@
     "player_min_desire": 1,
     "is_player_passive": false,
     "h_impulse_base": 20,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 25,
@@ -216,9 +232,10 @@
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 40,
-    "coef_player": 0.2,
-    "coef_enemy": 0.8,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.2,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 26,
@@ -229,9 +246,10 @@
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 40,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 27,
@@ -242,9 +260,10 @@
     "player_min_desire": 2,
     "is_player_passive": false,
     "h_impulse_base": 40,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 28,
@@ -255,9 +274,10 @@
     "player_min_desire": 3,
     "is_player_passive": false,
     "h_impulse_base": 60,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 29,
@@ -268,9 +288,10 @@
     "player_min_desire": 3,
     "is_player_passive": false,
     "h_impulse_base": 60,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 30,
@@ -279,11 +300,12 @@
       "KaiYou"
     ],
     "player_min_desire": 0,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 10,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 31,
@@ -292,11 +314,12 @@
       "KaiYou"
     ],
     "player_min_desire": 0,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 10,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 32,
@@ -305,11 +328,12 @@
       "KaiYou"
     ],
     "player_min_desire": 0,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 10,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 33,
@@ -318,11 +342,12 @@
       "KaiYou"
     ],
     "player_min_desire": 1,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 34,
@@ -331,11 +356,12 @@
       "KaiYou"
     ],
     "player_min_desire": 1,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 35,
@@ -344,11 +370,12 @@
       "KaiYou"
     ],
     "player_min_desire": 1,
-    "is_player_passive": false,
+    "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.9,
-    "coef_enemy": 0.1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.9,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 40,
@@ -359,9 +386,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 24,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 41,
@@ -372,9 +400,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 24,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 42,
@@ -385,9 +414,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 24,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 50,
@@ -398,9 +428,10 @@
     "player_min_desire": 0,
     "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 51,
@@ -411,9 +442,10 @@
     "player_min_desire": 0,
     "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 52,
@@ -424,9 +456,10 @@
     "player_min_desire": 0,
     "is_player_passive": true,
     "h_impulse_base": 20,
-    "coef_player": 0.5,
-    "coef_enemy": 0.5,
-    "player_climax_weight": 1
+    "player_climax_weight": 1,
+    "self_coef": 0.5,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0
   },
   {
     "id": 60,
@@ -437,9 +470,10 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 50,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
   },
   {
     "id": 61,
@@ -450,8 +484,23 @@
     "player_min_desire": 0,
     "is_player_passive": false,
     "h_impulse_base": 50,
-    "coef_player": 0,
-    "coef_enemy": 1,
-    "player_climax_weight": 0
+    "player_climax_weight": 0,
+    "self_coef": 0.0,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.0
+  },
+  {
+    "id": 100,
+    "desc": "默认H攻击",
+    "filter_types": [
+      "DefaultHAttack"
+    ],
+    "player_min_desire": 0,
+    "is_player_passive": true,
+    "h_impulse_base": 15.0,
+    "self_coef": 0.15,
+    "contest_coef": 1.0,
+    "hp_from_impulse_coef": 0.45,
+    "player_climax_weight": 1.0
   }
 ]

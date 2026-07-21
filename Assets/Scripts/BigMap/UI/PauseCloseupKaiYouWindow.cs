@@ -122,7 +122,7 @@ namespace My.Map.View
         }
 
         /// <summary>
-        /// ¼ÆËãÊÇ·ñÄÜ·´»÷ÏÌÖíÊÖ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ü·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private void CheckPlayerCanCounter()
         {
@@ -134,8 +134,8 @@ namespace My.Map.View
                 return;
             }
 
-            var hPowerPlayer = player.GetAttr(AttrIdConsts.HPower);
-            var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HPower);
+            var hPowerPlayer = player.GetAttr(AttrIdConsts.HTechnique);
+            var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HTechnique);
 
             if (hPowerPlayer < 5000) hPowerPlayer = 5000;
             if (hPowerSrc < 5000) hPowerSrc = 5000;
@@ -191,15 +191,10 @@ namespace My.Map.View
                 Debug.LogError("err ResolveHActParams 11");
                 return;
             }
-            // ¶ÔÓÚ¾²Ì¬µÐÈË Íæ¼ÒÄëÑ¹ 
-            if (!PlayerGamePlayRule.ResolveHActParams(HActId, p.GetAttr(AttrIdConsts.HPower), target.GetAttr(AttrIdConsts.HPower), target.GetUnitLevel(), out var hImpulseEnemy, out var hImpulsePlayer))
+            if (!HActResolver.TryResolveAndApply(HActId, p, target, intensity: 1f, applyHpDamage: false))
             {
                 Debug.LogError("err ResolveHActParams");
             }
-
-            // ¶ÔÍæ¼ÒÊ©¼Ó³å»÷Á¦
-            p.ApplyHImpulseDirectly(hImpulsePlayer, null);
-            target.ApplyNpcHImpulse(hImpulseEnemy);
 
 
             if (isCounterSuccess)

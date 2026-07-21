@@ -23,6 +23,7 @@ using UnityEngine;
 using static MapSceneEffectManager;
 using static My.Map.Fight.FightStruct;
 using static My.MapExport.MapExportDatabase;
+using My.Farm;
 using My.Home;
 
 namespace My
@@ -100,6 +101,7 @@ namespace My
         public LogicGroundLiquidFieldManager GroundLiquidFieldManager;
         public LogicGroundMistManager GroundMistManager;
 
+        public EventGroupOutcomeRouter EventGroupOutcomes;
         public RumorIntelMapSpawn RumorIntelSpawn;
         public MapMicroPlotManager MapMicroPlot;
         public AreaWantedManager WantedManager;
@@ -111,6 +113,8 @@ namespace My
         public TownFacilityDevelopmentManager townFacilityDevelopmentSystem;
         public TransportLootSystem transportLootSystem;
         public ShopDataManager shopDataManager;
+        public FarmSystem farmSystem;
+        public TavernSystem tavernSystem;
 
 
         public MapControlEventManager controlEventManager;
@@ -131,6 +135,7 @@ namespace My
             GroundLiquidFieldManager = new(this);
             GroundLiquidManager.BindFieldManager(GroundLiquidFieldManager);
             GroundMistManager = new(this);
+            EventGroupOutcomes = new EventGroupOutcomeRouter();
             RumorIntelSpawn = new RumorIntelMapSpawn(this);
             MapMicroPlot = new MapMicroPlotManager(this);
 
@@ -171,7 +176,11 @@ namespace My
             };
 
             townFacilityDevelopmentSystem = new TownFacilityDevelopmentManager(this);
+            tavernSystem = new TavernSystem(this);
+            tavernSystem.LoadFromSave(saveData);
             transportLootSystem = new TransportLootSystem(this);
+            farmSystem = new FarmSystem(this);
+            farmSystem.LoadFromSave(saveData);
             PeaceCombatBuffRefresh.BindRefreshEvents(this);
 
             factionRelationManager = new();
@@ -515,6 +524,11 @@ namespace My
                         newEntity = new FishingSpotLogicEntity(this, record.Id, record.CfgId, record.Position, record);
                     }
                     break;
+                case EEntityType.SeedBasket:
+                    {
+                        newEntity = new SeedBasketLogicEntity(this, record.Id, record.CfgId, record.Position, record);
+                    }
+                    break;
                 case EEntityType.Trap:
                     {
                         newEntity = new TrapLogicEntity(this, record.Id, record.CfgId, record.Position, record);
@@ -618,7 +632,8 @@ namespace My
                     }
                 }
 
-                TryCompleteHome01FightSettlement();
+                // home_01 收复闭合：任务 200 outcome 写 home_01.reclaimed；
+                // 对话 base_fight_end（quest 200 完成后自动触发）Teleport 回 homestead_01。
             }
             else
             {
@@ -626,35 +641,6 @@ namespace My
                 // 死亡
                 RevivePlayerToResolvedDestination(EReviveReason.EncounterDefeat);
             }
-        }
-
-        const string Home01FightOverlayId = "homestead_01_fight";
-        const string Home01OverlayId = "homestead_01";
-        const string Home01ReturnPoint = "entry_bottom";
-
-        void TryCompleteHome01FightSettlement()
-        {
-            if (AreaManager == null
-                || !string.Equals(AreaManager.AreaOverlayId, Home01FightOverlayId, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            var playerSystem = playerDataManager;
-            if (playerSystem?.QuestSystem == null || !playerSystem.QuestSystem.CheckQuestFinish(200))
-            {
-                Debug.LogWarning("[Home01] Fight ended in victory before quest 200 was completed; keeping the fight map active.");
-                return;
-            }
-
-            // The quest outcome normally writes this switch. Keep the settlement
-            // idempotent so a restored/completed quest still selects the rebuilt map.
-            if (!playerSystem.CheckHasParam("home_01.reclaimed"))
-            {
-                playerSystem.SetVariable("home_01.reclaimed");
-            }
-
-            PreparePlayerSwitchArea(Home01OverlayId, reset: true, targetPoint: Home01ReturnPoint, silent: true);
         }
 
         #endregion
@@ -1067,6 +1053,8 @@ namespace My
             worldPersistState?.ApplyRuntimeToSaveData(data);
             playerDataManager?.ApplyRuntimeToSaveData(data);
             homeDataManager?.ApplyToSaveData(data);
+            farmSystem?.ApplyToSave(data);
+            tavernSystem?.ApplyToSaveData(data);
             SaveData.WriteItemInstanceIdHintToSave(data);
 
             data.PlayerBuffs ??= new List<BuffPersistData>();

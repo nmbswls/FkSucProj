@@ -118,6 +118,7 @@ namespace My.UI
                 $"获得欲望碎片：{info.DesireShardAdded}\n" +
                 $"教团信仰：+{info.CultFaithAdded}（{info.CultControlledTownCount} 个受控城镇 × {info.CultTownDailyFaith}）\n" +
                 $"运输队运回：{info.TransportRecoveredStackCount} 堆（遗失 {info.TransportLostStackCount} 堆）";
+            summaryText.text += $"\nTavern sales: {info.TavernSoldCount}, gold +{info.TavernGoldEarned}, influence +{info.TavernInfluenceEarned}";
         }
 
         void OnEnable()

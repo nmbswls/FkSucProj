@@ -184,6 +184,14 @@ namespace cfg.demo
         /// CarryWeightExtraPercent
         /// </summary>
         CarryWeightExtraPercent = 35,
+        /// <summary>
+        /// H技巧
+        /// </summary>
+        HTechnique = 36,
+        /// <summary>
+        /// H强度
+        /// </summary>
+        HStrength = 37,
     }
 
 } 

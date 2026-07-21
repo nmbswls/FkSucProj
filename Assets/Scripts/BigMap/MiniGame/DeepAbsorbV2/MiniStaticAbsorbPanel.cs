@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using cfg.demo;
 using DG.Tweening;
 using My.Config;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
 using My.Map.View;
+using My.Player;
 using My.UI;
 using TMPro;
 using UnityEngine;
@@ -95,8 +97,14 @@ namespace My.MiniGame
             SetPrompt("按 Space 进行判定");
             SetPromptColor(normalTextColor);
 
-            // 随机一个静态动作
-            actId = PlayerGamePlayRule.RandomGetOneHAct("Unsensor", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
+            // 随机一个静态动作；默认接触「穴」
+            var glm = MainGameManager.Instance.gameLogicManager;
+            actId = PlayerGamePlayRule.RandomGetOneHAct("Unsensor", glm.playerLogicEntity.DesireLevel);
+            glm.playerDataManager?.HInteraction?.Begin(
+                targetEntityId,
+                EBodyPart.Womb,
+                EHInteractionSource.StaticAbsorb,
+                actId);
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 
@@ -188,14 +196,12 @@ namespace My.MiniGame
                 player.ApplyResourceChange(AttrIdConsts.PlayerSanity, -costSan, false, Map.Fight.FightStruct.EDmgFlag.None, null);
             }
 
-            // 对于静态敌人 玩家碾压 
-            if(!PlayerGamePlayRule.ResolveHActParams(actId, player.GetAttr(AttrIdConsts.HPower), 10, 1, out _, out var hImpulsePlayer))
+            // 静态榨取：只结算冲击，不派生 HP
+            var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(TargetEntityId, false) as NpcUnitLogicEntity;
+            if (!HActResolver.TryResolveAndApply(actId, player, npc, intensity: 1f, applyHpDamage: false))
             {
                 Debug.LogError("err ResolveHActParams");
             }
-
-            // 对玩家施加冲击力
-            player.ApplyHImpulseDirectly(hImpulsePlayer, null);
 
             int score = successCnt * 1 + perfectCnt * 2;
             int bundleId = PlayerGamePlayRule.GetDropBundleFromStaticZha(score);

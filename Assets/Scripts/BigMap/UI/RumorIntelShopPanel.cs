@@ -22,6 +22,7 @@ namespace My.UI
         RumorIntelShopListPopulation _listPopulation;
 
         string _mapId;
+        bool _allMaps;
         string _feedback;
 
         void Awake()
@@ -79,9 +80,10 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             base.Setup(data);
+            _allMaps = data == null;
             _mapId = data as string;
             _feedback = null;
-            if (string.IsNullOrEmpty(_mapId))
+            if (!_allMaps && string.IsNullOrEmpty(_mapId))
             {
                 Debug.LogWarning("[RumorIntelShop] Setup expects string mapId.");
             }
@@ -98,6 +100,26 @@ namespace My.UI
         public static void OpenForMap(string mapId)
         {
             UIManager.Instance?.ShowPanel(Pid, mapId, UILayer.Popup);
+        }
+
+        public static void OpenForArea(string logicAreaId)
+        {
+            if (string.IsNullOrEmpty(logicAreaId) || CfgMgr.Cfgs?.TbAreaOverlayStateInfo?.DataList == null)
+            {
+                OpenForMap(logicAreaId);
+                return;
+            }
+
+            foreach (var overlay in CfgMgr.Cfgs.TbAreaOverlayStateInfo.DataList)
+            {
+                if (overlay != null && overlay.VarId == logicAreaId && !string.IsNullOrEmpty(overlay.Id))
+                {
+                    OpenForMap(overlay.Id);
+                    return;
+                }
+            }
+
+            OpenForMap(logicAreaId);
         }
 
         void Refresh()
@@ -120,18 +142,29 @@ namespace My.UI
                 titleLabel.text = string.IsNullOrEmpty(mapName) ? "秘闻" : $"秘闻 - {mapName}";
             }
 
-            _listPopulation?.ClearAndPopulate(_mapId, TryBuy, _feedback);
+            if (_allMaps)
+                _listPopulation?.ClearAndPopulateAll(TryBuyOnMap, _feedback);
+            else
+                _listPopulation?.ClearAndPopulate(_mapId, TryBuy, _feedback);
+        }
+
+        public static void Open()
+        {
+            UIManager.Instance?.ShowPanel(Pid, null, UILayer.Popup);
         }
 
         void TryBuy(string rumorId)
+            => TryBuyOnMap(_mapId, rumorId);
+
+        void TryBuyOnMap(string mapId, string rumorId)
         {
             var glm = MainGameManager.Instance?.gameLogicManager;
-            if (glm?.playerDataManager == null || string.IsNullOrEmpty(_mapId))
+            if (glm?.playerDataManager == null || string.IsNullOrEmpty(mapId))
             {
                 return;
             }
 
-            var ok = glm.playerDataManager.RumorIntel.TryPurchase(_mapId, rumorId, out var err);
+            var ok = glm.playerDataManager.RumorIntel.TryPurchase(mapId, rumorId, out var err);
             if (!ok)
             {
                 Debug.LogWarning("[RumorIntelShop] Purchase failed: " + err);

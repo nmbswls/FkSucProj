@@ -1,1 +1,439 @@
-[{"facility_id":"elder_hall","level":1,"display_name":"初建","desc":"搭建基础议事厅","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":20},{"item_id":"stone","count":10}],"daily_outputs":[{"item_id":"gold","count":10}]},{"facility_id":"elder_hall","level":2,"display_name":"扩建","desc":"增加办事窗口","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":40},{"item_id":"stone","count":20}],"daily_outputs":[{"item_id":"gold","count":20},{"item_id":"wood","count":5}]},{"facility_id":"elder_hall","level":3,"display_name":"完善","desc":"提升管理效率","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":60},{"item_id":"stone","count":30},{"item_id":"gold","count":100}],"daily_outputs":[{"item_id":"gold","count":40},{"item_id":"desire_shard","count":1}]},{"facility_id":"merchant_stall","level":1,"display_name":"开张","desc":"启用商摊","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":15},{"item_id":"gold","count":50}],"daily_outputs":[{"item_id":"gold","count":15}]},{"facility_id":"merchant_stall","level":2,"display_name":"扩容","desc":"扩大交易规模","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":30},{"item_id":"gold","count":120}],"daily_outputs":[{"item_id":"gold","count":35},{"item_id":"wood","count":10}]},{"facility_id":"teleport_gate","level":1,"display_name":"修复","desc":"恢复传送功能","unlock_conds":[],"unlock_costs":[{"item_id":"stone","count":25},{"item_id":"gold","count":80}],"daily_outputs":[]},{"facility_id":"teleport_gate","level":2,"display_name":"强化","desc":"提升传送稳定性","unlock_conds":[],"unlock_costs":[{"item_id":"stone","count":50},{"item_id":"gold","count":200}],"daily_outputs":[]},{"facility_id":"village_hall","level":1,"display_name":"接管","desc":"接管村政厅","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":10}],"daily_outputs":[{"item_id":"wood","count":8},{"item_id":"gold","count":5}]},{"facility_id":"village_hall","level":2,"display_name":"整顿","desc":"整顿村务","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":25},{"item_id":"gold","count":60}],"daily_outputs":[{"item_id":"wood","count":15},{"item_id":"gold","count":15}]},{"facility_id":"tavern","level":1,"display_name":"起建","desc":"搭建边境酒馆","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":25},{"item_id":"gold","count":80}],"daily_outputs":[{"item_id":"gold","count":6}]},{"facility_id":"tavern","level":2,"display_name":"扩建","desc":"增加情报与通识产出","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":40},{"item_id":"gold","count":150}],"daily_outputs":[{"item_id":"gold","count":12}]},{"facility_id":"tavern","level":3,"display_name":"完善","desc":"成为聚落情报枢纽","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":60},{"item_id":"gold","count":250}],"daily_outputs":[{"item_id":"gold","count":20}]},{"facility_id":"transport_camp","level":1,"display_name":"起建","desc":"搭建运输队营地","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":30},{"item_id":"stone","count":15}],"daily_outputs":[{"item_id":"gold","count":8}]},{"facility_id":"transport_camp","level":2,"display_name":"扩建","desc":"扩大商队周转能力","unlock_conds":[],"unlock_costs":[{"item_id":"wood","count":50},{"item_id":"gold","count":120}],"daily_outputs":[{"item_id":"gold","count":18}]},{"facility_id":"market","level":1,"display_name":"市集 1级","desc":"提升市集经营能力","unlock_conds":[],"unlock_costs":[],"output_interval":1,"output_items":[],"effects":[]},{"facility_id":"market","level":2,"display_name":"市集 2级","desc":"提升市集经营能力","unlock_conds":[],"unlock_costs":[],"output_interval":1,"output_items":[],"effects":[]},{"facility_id":"market","level":3,"display_name":"市集 3级","desc":"提升市集经营能力","unlock_conds":[],"unlock_costs":[],"output_interval":1,"output_items":[],"effects":[]},{"facility_id":"market","level":4,"display_name":"市集 4级","desc":"提升市集经营能力","unlock_conds":[],"unlock_costs":[],"output_interval":1,"output_items":[],"effects":[]},{"facility_id":"market","level":5,"display_name":"市集 5级","desc":"提升市集经营能力","unlock_conds":[],"unlock_costs":[],"output_interval":1,"output_items":[],"effects":[]}]
+[
+  {
+    "facility_id": "elder_hall",
+    "level": 1,
+    "display_name": "初建",
+    "desc": "搭建基础议事厅",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 20
+      },
+      {
+        "item_id": "stone",
+        "count": 10
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "facility_id": "elder_hall",
+    "level": 2,
+    "display_name": "扩建",
+    "desc": "增加办事窗口",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 40
+      },
+      {
+        "item_id": "stone",
+        "count": 20
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 20
+      },
+      {
+        "item_id": "wood",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "facility_id": "elder_hall",
+    "level": 3,
+    "display_name": "完善",
+    "desc": "提升管理效率",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 60
+      },
+      {
+        "item_id": "stone",
+        "count": 30
+      },
+      {
+        "item_id": "gold",
+        "count": 100
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 40
+      },
+      {
+        "item_id": "desire_shard",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "facility_id": "merchant_stall",
+    "level": 1,
+    "display_name": "开张",
+    "desc": "启用商摊",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 15
+      },
+      {
+        "item_id": "gold",
+        "count": 50
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 15
+      }
+    ]
+  },
+  {
+    "facility_id": "merchant_stall",
+    "level": 2,
+    "display_name": "扩容",
+    "desc": "扩大交易规模",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 30
+      },
+      {
+        "item_id": "gold",
+        "count": 120
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 35
+      },
+      {
+        "item_id": "wood",
+        "count": 10
+      }
+    ]
+  },
+  {
+    "facility_id": "teleport_gate",
+    "level": 1,
+    "display_name": "修复",
+    "desc": "恢复传送功能",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "stone",
+        "count": 25
+      },
+      {
+        "item_id": "gold",
+        "count": 80
+      }
+    ],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "teleport_gate",
+    "level": 2,
+    "display_name": "强化",
+    "desc": "提升传送稳定性",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "stone",
+        "count": 50
+      },
+      {
+        "item_id": "gold",
+        "count": 200
+      }
+    ],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "village_hall",
+    "level": 1,
+    "display_name": "接管",
+    "desc": "接管村政厅",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 10
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "wood",
+        "count": 8
+      },
+      {
+        "item_id": "gold",
+        "count": 5
+      }
+    ]
+  },
+  {
+    "facility_id": "village_hall",
+    "level": 2,
+    "display_name": "整顿",
+    "desc": "整顿村务",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 25
+      },
+      {
+        "item_id": "gold",
+        "count": 60
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "wood",
+        "count": 15
+      },
+      {
+        "item_id": "gold",
+        "count": 15
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 1,
+    "display_name": "起建",
+    "desc": "搭建边境酒馆",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 25
+      },
+      {
+        "item_id": "gold",
+        "count": 80
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 6
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 2,
+    "display_name": "扩建",
+    "desc": "增加情报与通识产出",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 40
+      },
+      {
+        "item_id": "gold",
+        "count": 150
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 12
+      }
+    ]
+  },
+  {
+    "facility_id": "tavern",
+    "level": 3,
+    "display_name": "完善",
+    "desc": "成为聚落情报枢纽",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 60
+      },
+      {
+        "item_id": "gold",
+        "count": 250
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 20
+      }
+    ]
+  },
+  {
+    "facility_id": "transport_camp",
+    "level": 1,
+    "display_name": "起建",
+    "desc": "搭建运输队营地",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 30
+      },
+      {
+        "item_id": "stone",
+        "count": 15
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 8
+      }
+    ]
+  },
+  {
+    "facility_id": "transport_camp",
+    "level": 2,
+    "display_name": "扩建",
+    "desc": "扩大商队周转能力",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 50
+      },
+      {
+        "item_id": "gold",
+        "count": 120
+      }
+    ],
+    "daily_outputs": [
+      {
+        "item_id": "gold",
+        "count": 18
+      }
+    ]
+  },
+  {
+    "facility_id": "market",
+    "level": 1,
+    "display_name": "市集 1级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "output_interval": 1,
+    "output_items": [],
+    "effects": []
+  },
+  {
+    "facility_id": "market",
+    "level": 2,
+    "display_name": "市集 2级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "output_interval": 1,
+    "output_items": [],
+    "effects": []
+  },
+  {
+    "facility_id": "market",
+    "level": 3,
+    "display_name": "市集 3级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "output_interval": 1,
+    "output_items": [],
+    "effects": []
+  },
+  {
+    "facility_id": "market",
+    "level": 4,
+    "display_name": "市集 4级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "output_interval": 1,
+    "output_items": [],
+    "effects": []
+  },
+  {
+    "facility_id": "market",
+    "level": 5,
+    "display_name": "市集 5级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "output_interval": 1,
+    "output_items": [],
+    "effects": []
+  },
+  {
+    "facility_id": "farm_station",
+    "level": 1,
+    "display_name": "复耕小站",
+    "desc": "管理农田、种子与收获仓库；建成后镇民可协助浇水施肥",
+    "unlock_conds": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "home_01.hearth_stable",
+        "param6": ""
+      }
+    ],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 20
+      },
+      {
+        "item_id": "stone",
+        "count": 10
+      }
+    ],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "farm_station",
+    "level": 2,
+    "display_name": "扩展仓",
+    "desc": "提高派工收割效率",
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "wood",
+        "count": 40
+      },
+      {
+        "item_id": "stone",
+        "count": 20
+      },
+      {
+        "item_id": "gold",
+        "count": 100
+      }
+    ],
+    "daily_outputs": []
+  }
+]

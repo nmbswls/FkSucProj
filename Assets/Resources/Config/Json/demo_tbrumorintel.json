@@ -21,7 +21,11 @@
         "param6": ""
       }
     ],
-    "interact_point_cfg_id": ""
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_fix_npc_demo",
@@ -45,7 +49,11 @@
         "param6": ""
       }
     ],
-    "interact_point_cfg_id": ""
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_rand_a",
@@ -69,7 +77,11 @@
         "param6": ""
       }
     ],
-    "interact_point_cfg_id": ""
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_rand_b",
@@ -93,12 +105,16 @@
         "param6": ""
       }
     ],
-    "interact_point_cfg_id": ""
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_cult_influence_demo",
-    "thumb_name": "Cult influence lead",
-    "full_text": "A discreet contact point has been prepared. Use it to establish influence in this area.",
+    "thumb_name": "教团仪式的隐秘线索",
+    "full_text": "有人在这片地区筹备隐秘仪式。进入冒险并解决该事件，可推进当地教团锚点。",
     "cost_item_id": "rumor_points",
     "cost_count": 100,
     "duration_days": 7,
@@ -117,6 +133,10 @@
         "param6": ""
       }
     ],
-    "interact_point_cfg_id": "cult_influence_point"
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "village_01",
+    "event_group_cfg_id": "rumor_cult_smear_demo",
+    "cult_action_id": "rumor_cult_influence_demo",
+    "event_expire_days": 1
   }
 ]

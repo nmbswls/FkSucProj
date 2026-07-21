@@ -24,7 +24,8 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         { if(!_buf["move_speed"].IsNumber) { throw new SerializationException(); }  MoveSpeed = _buf["move_speed"]; }
         { if(!_buf["base_atk"].IsNumber) { throw new SerializationException(); }  BaseAtk = _buf["base_atk"]; }
         { if(!_buf["physical_power"].IsNumber) { throw new SerializationException(); }  PhysicalPower = _buf["physical_power"]; }
-        { if(!_buf["h_power"].IsNumber) { throw new SerializationException(); }  HPower = _buf["h_power"]; }
+        { if(!_buf["h_technique"].IsNumber) { throw new SerializationException(); }  HTechnique = _buf["h_technique"]; }
+        { if(!_buf["h_strength"].IsNumber) { throw new SerializationException(); }  HStrength = _buf["h_strength"]; }
         { if(!_buf["base_blurt_amount"].IsNumber) { throw new SerializationException(); }  BaseBlurtAmount = _buf["base_blurt_amount"]; }
         { if(!_buf["base_blurt_dmg"].IsNumber) { throw new SerializationException(); }  BaseBlurtDmg = _buf["base_blurt_dmg"]; }
         { if(!_buf["default_h_shield"].IsNumber) { throw new SerializationException(); }  DefaultHShield = _buf["default_h_shield"]; }
@@ -60,9 +61,13 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
     /// </summary>
     public float PhysicalPower;
     /// <summary>
-    /// h能力
+    /// H技巧
     /// </summary>
-    public float HPower;
+    public float HTechnique;
+    /// <summary>
+    /// H强度
+    /// </summary>
+    public float HStrength;
     /// <summary>
     /// 基础射精量
     /// </summary>
@@ -92,7 +97,8 @@ public sealed partial class UnitNpcAttr : Luban.BeanBase
         + "moveSpeed:" + MoveSpeed + ","
         + "baseAtk:" + BaseAtk + ","
         + "physicalPower:" + PhysicalPower + ","
-        + "hPower:" + HPower + ","
+        + "hTechnique:" + HTechnique + ","
+        + "hStrength:" + HStrength + ","
         + "baseBlurtAmount:" + BaseBlurtAmount + ","
         + "baseBlurtDmg:" + BaseBlurtDmg + ","
         + "defaultHShield:" + DefaultHShield + ","

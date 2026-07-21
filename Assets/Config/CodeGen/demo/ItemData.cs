@@ -40,6 +40,7 @@ public sealed partial class ItemData : Luban.BeanBase
         { if(!_buf["can_dismantle"].IsBoolean) { throw new SerializationException(); }  CanDismantle = _buf["can_dismantle"]; }
         { if(!_buf["market_sellable"].IsBoolean) { throw new SerializationException(); }  MarketSellable = _buf["market_sellable"]; }
         { if(!_buf["market_base_price"].IsNumber) { throw new SerializationException(); }  MarketBasePrice = _buf["market_base_price"]; }
+        { if(!_buf["cooking_ingredient"].IsBoolean) { throw new SerializationException(); }  CookingIngredient = _buf["cooking_ingredient"]; }
     }
 
     public static ItemData DeserializeItemData(JSONNode _buf)
@@ -135,6 +136,10 @@ public sealed partial class ItemData : Luban.BeanBase
     /// 市集基础售价（金币/个）
     /// </summary>
     public long MarketBasePrice;
+    /// <summary>
+    /// ???????????????
+    /// </summary>
+    public bool CookingIngredient;
    
     public const int __ID__ = 1942709544;
     public override int GetTypeId() => __ID__;
@@ -168,6 +173,7 @@ public sealed partial class ItemData : Luban.BeanBase
         + "canDismantle:" + CanDismantle + ","
         + "marketSellable:" + MarketSellable + ","
         + "marketBasePrice:" + MarketBasePrice + ","
+        + "cookingIngredient:" + CookingIngredient + ","
         + "}";
     }
 }

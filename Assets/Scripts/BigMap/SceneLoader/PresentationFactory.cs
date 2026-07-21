@@ -99,6 +99,10 @@ namespace My
                         }
                         return $"Prefab/Presentations/FishingSpot/{spotCfg.PrefabPath}";
                     }
+                case EEntityType.SeedBasket:
+                    {
+                        return "Prefab/Presentations/SeedBasket/SeedBasket";
+                    }
                 case EEntityType.Trap:
                     {
                         return $"Prefab/Presentations/Trap/{cfgId}";

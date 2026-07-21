@@ -23,7 +23,7 @@ public sealed partial class BodyPartLevel : Luban.BeanBase
         { if(!_buf["need_exp"].IsNumber) { throw new SerializationException(); }  NeedExp = _buf["need_exp"]; }
         { var __json0 = _buf["global_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } GlobalBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  GlobalBonuses.Add(__v0); }   }
         { if(!_buf["hp"].IsNumber) { throw new SerializationException(); }  Hp = _buf["hp"]; }
-        { if(!_buf["h_power"].IsNumber) { throw new SerializationException(); }  HPower = _buf["h_power"]; }
+        { if(!_buf["h_technique"].IsNumber) { throw new SerializationException(); }  HTechnique = _buf["h_technique"]; }
         { if(!_buf["absorb_rate"].IsNumber) { throw new SerializationException(); }  AbsorbRate = _buf["absorb_rate"]; }
         { var __json0 = _buf["local_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } LocalBonuses = new System.Collections.Generic.List<demo.PartLocalStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.PartLocalStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.PartLocalStatBonus.DeserializePartLocalStatBonus(__e0);  }  LocalBonuses.Add(__v0); }   }
     }
@@ -38,7 +38,7 @@ public sealed partial class BodyPartLevel : Luban.BeanBase
     public long NeedExp;
     public System.Collections.Generic.List<demo.TalentStatBonus> GlobalBonuses;
     public long Hp;
-    public long HPower;
+    public long HTechnique;
     public long AbsorbRate;
     public System.Collections.Generic.List<demo.PartLocalStatBonus> LocalBonuses;
    
@@ -59,7 +59,7 @@ public sealed partial class BodyPartLevel : Luban.BeanBase
         + "needExp:" + NeedExp + ","
         + "globalBonuses:" + Luban.StringUtil.CollectionToString(GlobalBonuses) + ","
         + "hp:" + Hp + ","
-        + "hPower:" + HPower + ","
+        + "hTechnique:" + HTechnique + ","
         + "absorbRate:" + AbsorbRate + ","
         + "localBonuses:" + Luban.StringUtil.CollectionToString(LocalBonuses) + ","
         + "}";

@@ -974,6 +974,13 @@ namespace My.Input
                 return;
             }
 
+            var farmSys = glm?.farmSystem;
+            if (farmSys != null && farmSys.IsPlantingMode)
+            {
+                farmSys.TryPlantFacingCell();
+                return;
+            }
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 var huntingRadialOpen = My.UI.HuntingHudPanel.Instance?.ActionRadial;
@@ -1052,7 +1059,19 @@ namespace My.Input
             }
 
             var lgm = MainGameManager.Instance?.gameLogicManager;
-            if (lgm == null || !lgm.IsHumanQuickBarAvailable())
+            if (lgm == null)
+            {
+                return;
+            }
+
+            if (lgm.farmSystem != null && lgm.farmSystem.IsPlantingMode)
+            {
+                lgm.farmSystem.CycleSelectedSeed(deltaY > 0f ? -1 : 1);
+                FarmSeedBarPanel.Instance?.Refresh();
+                return;
+            }
+
+            if (!lgm.IsHumanQuickBarAvailable())
             {
                 return;
             }

@@ -246,6 +246,12 @@ namespace My.Map.Logic
         public Dictionary<int, long> MemberId2EntityMap = new();
 
         public List<int> CurrActiveMembers = new();
+        public Dictionary<int, int> MemberStatusById = new();
+        public List<int> DefeatedMemberIds = new();
+        public Dictionary<int, int> TriggerTimesById = new();
+        public Dictionary<int, float> TriggerLastFireTimeById = new();
+        public int TerminalState;
+        public bool OutcomeClaimed;
         
         //public List<int> SleepMemberIds = new();
         //public List<int> DestroyedMemberIds = new();
@@ -284,6 +290,12 @@ namespace My.Map.Logic
     [Serializable]
     public class LogicEntityRecord4FishingSpot : LogicEntityRecord
     {
+    }
+
+    [Serializable]
+    public class LogicEntityRecord4SeedBasket : LogicEntityRecord
+    {
+        public string LogicAreaId;
     }
 
     [Serializable]

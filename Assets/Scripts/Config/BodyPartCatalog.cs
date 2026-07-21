@@ -191,6 +191,54 @@ namespace My.Config
             return map;
         }
 
+        // 当前等级榨取率（百分点，5 = +5%）
+        public static long GetAbsorbRatePercent(EBodyPart partId, int level)
+        {
+            var row = GetLevelRow(partId, level);
+            return row != null ? System.Math.Max(0, row.AbsorbRate) : 0;
+        }
+
+        // 将已装备 PartGear 的 local_bonuses 叠进部位局部属性
+        public static void AccumulateEquippedGearLocalBonuses(EBodyPart partId, PlayerEquipmentManager equipment, StatMap targetMap)
+        {
+            if (targetMap == null || equipment == null || partId == EBodyPart.None)
+            {
+                return;
+            }
+
+            var slots = equipment.GetEquippedOnPart(partId);
+            if (slots == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < slots.Count; i++)
+            {
+                var slot = slots[i];
+                if (slot == null || string.IsNullOrEmpty(slot.ItemId))
+                {
+                    continue;
+                }
+
+                var gear = PartGearCatalog.GetOrDefault(slot.ItemId);
+                if (gear?.LocalBonuses == null)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < gear.LocalBonuses.Count; j++)
+                {
+                    var b = gear.LocalBonuses[j];
+                    if (b == null)
+                    {
+                        continue;
+                    }
+
+                    targetMap.Add(b.AttrId, b.Val);
+                }
+            }
+        }
+
         public static EYCAttribute MapPartToGearPointYc(EBodyPart partId)
         {
             return partId switch

@@ -8411,6 +8411,96 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: bedroom_in_entry
+--- !u!1 &413841250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 413841251}
+  - component: {fileID: 413841254}
+  - component: {fileID: 413841253}
+  - component: {fileID: 413841252}
+  m_Layer: 0
+  m_Name: site_tavern_built
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &413841251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413841250}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14, y: 31, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &413841252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413841250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 1
+  HintPivot: {fileID: 0}
+--- !u!114 &413841253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413841250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 1
+--- !u!114 &413841254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413841250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/HomeFacility/tavern
+  AppearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:1
+    Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &422196223
 GameObject:
   m_ObjectHideFlags: 0
@@ -15859,6 +15949,96 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &486692246
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 486692247}
+  - component: {fileID: 486692250}
+  - component: {fileID: 486692249}
+  - component: {fileID: 486692248}
+  m_Layer: 0
+  m_Name: site_transport_built
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &486692247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486692246}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 27.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &486692248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486692246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 2
+  HintPivot: {fileID: 0}
+--- !u!114 &486692249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486692246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 2
+--- !u!114 &486692250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486692246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/HomeFacility/transport_camp
+  AppearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:2
+    Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &494207032
 GameObject:
   m_ObjectHideFlags: 0
@@ -17452,6 +17632,96 @@ Transform:
   - {fileID: 1961182699}
   m_Father: {fileID: 9900030022}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &880670942
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 880670943}
+  - component: {fileID: 880670946}
+  - component: {fileID: 880670945}
+  - component: {fileID: 880670944}
+  m_Layer: 0
+  m_Name: site_transport_ruin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &880670943
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880670942}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 21, y: 27.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &880670944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880670942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 2
+  HintPivot: {fileID: 0}
+--- !u!114 &880670945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880670942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 2
+--- !u!114 &880670946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880670942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/FacilityRuin/ruin_transport_camp
+  AppearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
+  DisappearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:2
+    Param6: 
 --- !u!1001 &884500291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21437,6 +21707,144 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1368142777
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1368142778}
+  - component: {fileID: 1368142779}
+  - component: {fileID: 1368142780}
+  m_Layer: 0
+  m_Name: farm_seed_basket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1368142778
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368142777}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 26.5, y: 17, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1368142779
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368142777}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 0.7, g: 0.55, b: 0.25, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!114 &1368142780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1368142777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19badbd2bcf084949bae3fd72d517947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RefreshInfo:
+    StaticId: 0
+    UniqName: farm_seed_basket
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: home_01.reclaimed
+      Param6: 
+    DisappearCond:
+      Type: 0
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 4481877036998852608
+  references:
+    version: 2
+    RefIds:
+    - rid: 4481877036998852608
+      type: {class: EntityInitInfo4SeedBasket, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: SeedBasket
+        Position: {x: 26.5, y: 17}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        LogicAreaId: homestead_01
 --- !u!1 &1371103527
 GameObject:
   m_ObjectHideFlags: 0
@@ -21581,6 +21989,96 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6971293384994181939, guid: c64dd8bf17784804ea6ea1fbdd461fae, type: 3}
   m_PrefabInstance: {fileID: 1401619579}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1411636284
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1411636285}
+  - component: {fileID: 1411636288}
+  - component: {fileID: 1411636287}
+  - component: {fileID: 1411636286}
+  m_Layer: 0
+  m_Name: site_tavern_ruin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1411636285
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411636284}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14, y: 31, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1411636286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411636284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 1
+  HintPivot: {fileID: 0}
+--- !u!114 &1411636287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411636284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 1
+--- !u!114 &1411636288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411636284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/FacilityRuin/ruin_tavern
+  AppearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
+  DisappearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:1
+    Param6: 
 --- !u!1 &1424233580
 GameObject:
   m_ObjectHideFlags: 0
@@ -25021,6 +25519,96 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: bedroom_in_entry
+--- !u!1 &1993739839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1993739840}
+  - component: {fileID: 1993739843}
+  - component: {fileID: 1993739842}
+  - component: {fileID: 1993739841}
+  m_Layer: 0
+  m_Name: site_farm_station_ruin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1993739840
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993739839}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25, y: 20, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1993739841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993739839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 6
+  HintPivot: {fileID: 0}
+--- !u!114 &1993739842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993739839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 6
+--- !u!114 &1993739843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993739839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/FacilityRuin/ruin_tavern
+  AppearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
+  DisappearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:6
+    Param6: 
 --- !u!1 &1994990322
 GameObject:
   m_ObjectHideFlags: 0
@@ -25121,6 +25709,96 @@ MonoBehaviour:
     Position: {x: 23, y: 30, z: 0}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
     Scale: {x: 1, y: 1, z: 1}
+--- !u!1 &2022284957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2022284958}
+  - component: {fileID: 2022284961}
+  - component: {fileID: 2022284960}
+  - component: {fileID: 2022284959}
+  m_Layer: 0
+  m_Name: site_farm_station_built
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2022284958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022284957}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25, y: 20, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2022284959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022284957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e4f1a29b3d5e7f8a0c2d4e6f8a0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 6
+  HintPivot: {fileID: 0}
+--- !u!114 &2022284960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022284957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9f5a2b38c4e6f8a9b1d3e5f7a9b1c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SiteId: 6
+--- !u!114 &2022284961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022284957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Presentations/HomeFacility/tavern
+  AppearCond:
+    Type: 2
+    Param1: 1
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: town_facility_site:6
+    Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &2047703232
 GameObject:
   m_ObjectHideFlags: 0
@@ -25504,6 +26182,67 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
+--- !u!1 &2090234147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2090234148}
+  - component: {fileID: 2090234149}
+  m_Layer: 0
+  m_Name: farm_plot_home01_field_a
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2090234148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090234147}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 28, y: 18, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9900030022}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2090234149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090234147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daef2d28ad71b3c458c94db28ad96fbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Key: Map/FarmPlot/home01_field_a
+  AppearCond:
+    Type: 2
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: home_01.reclaimed
+    Param6: 
+  DisappearCond:
+    Type: 0
+    Param1: 0
+    Param2: 0
+    Param3: 0
+    Param4: 0
+    Param5: 
+    Param6: 
 --- !u!1 &2094202112
 GameObject:
   m_ObjectHideFlags: 0
@@ -26043,6 +26782,14 @@ Transform:
   - {fileID: 697555846}
   - {fileID: 864368119}
   - {fileID: 1828337010}
+  - {fileID: 2090234148}
+  - {fileID: 1368142778}
+  - {fileID: 1993739840}
+  - {fileID: 2022284958}
+  - {fileID: 1411636285}
+  - {fileID: 413841251}
+  - {fileID: 880670943}
+  - {fileID: 486692247}
   m_Father: {fileID: 1606442274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807

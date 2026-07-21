@@ -405,6 +405,10 @@ namespace My.UI.Talent
                     return $"肉体强度 +{bonus.Val / 1000f:0.#}";
                 case EYCAttribute.PhysicalResist:
                     return $"肉体耐受 +{bonus.Val / 1000f:0.#}";
+                case EYCAttribute.HTechnique:
+                    return $"H技巧 +{bonus.Val / 1000f:0.#}";
+                case EYCAttribute.HStrength:
+                    return $"H强度 +{bonus.Val / 1000f:0.#}";
             }
 
             if (Mathf.Abs(bonus.Val) >= 1000)

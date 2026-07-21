@@ -568,29 +568,5 @@
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
-  },
-  {
-    "skill_id": "item_throw_sound_ball",
-    "level": 1,
-    "cool_down": 0,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "item_throw_flash_grenade",
-    "level": 1,
-    "cool_down": 0,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
-  },
-  {
-    "skill_id": "item_throw_caltrop",
-    "level": 1,
-    "cool_down": 0,
-    "ability_extra": [],
-    "main_ability_id": "",
-    "passive_buff_ids": []
   }
 ]

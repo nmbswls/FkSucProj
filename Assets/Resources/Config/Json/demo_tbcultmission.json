@@ -1,0 +1,8 @@
+[
+  {
+    "mission_id": "amplify_anchor",
+    "mission_type": 1,
+    "display_name": "增幅锚点",
+    "description": "永久增幅指定锚点，使其全部产出提高25%。"
+  }
+]

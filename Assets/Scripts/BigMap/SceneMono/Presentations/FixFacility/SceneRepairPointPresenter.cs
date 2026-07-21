@@ -187,6 +187,10 @@ namespace My.Map.Scene
         {
             if (selectionId == TownFacilityInteractUtil.SelectManageFacility)
             {
+                if (RepairPointEntity == null || !RepairPointEntity.IsRepaired)
+                {
+                    return true;
+                }
                 var facilityId = TownFacilityInteractUtil.ResolveFacilityIdFromRuin(RepairPointEntity?.CfgId);
                 if (!string.IsNullOrEmpty(facilityId))
                 {
@@ -274,6 +278,10 @@ namespace My.Map.Scene
             }
 
             var manageFacilityId = TownFacilityInteractUtil.ResolveFacilityIdFromRuin(RepairPointEntity.CfgId);
+            if (!RepairPointEntity.IsRepaired)
+            {
+                manageFacilityId = null;
+            }
             if (!string.IsNullOrEmpty(manageFacilityId))
             {
                 ret.Add(new SceneInteractSelection()

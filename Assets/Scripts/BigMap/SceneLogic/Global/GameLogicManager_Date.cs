@@ -4,6 +4,7 @@ using cfg.demo;
 using My.Map;
 using System.Collections.Generic;
 using UnityEngine;
+using My.Farm;
 using My.Home;
 using My.Player;
 using My.UI;
@@ -41,9 +42,17 @@ namespace My
             public int CultControlledTownCount;
             public long CultTownDailyFaith;
             public long CultFaithAdded;
+            public long CultAnchorFaithAdded;
+            public long CultAnchorLinkersAdded;
+            public Dictionary<string, long> CultAnchorItemOutputs = new();
             public long MarketGoldEarned;
             public int MarketSoldItemCount;
             public int MarketUnsoldItemCount;
+            public int FarmHarvestCount;
+            public int FarmAutoPlantCount;
+            public long TavernGoldEarned;
+            public int TavernInfluenceEarned;
+            public int TavernSoldCount;
         }
         public event Action<OneDayBalanceInfo> EventOnOneDayBalance;
 
@@ -225,9 +234,22 @@ namespace My
             balanceInfo.CultTownDailyFaith = cultFaithPerTown;
             balanceInfo.CultFaithAdded = cultFaithAdded;
 
+            var anchorSettlement = cult?.ApplyAnchorSettlement(SettlementDayIndex + 1);
+            if (anchorSettlement != null)
+            {
+                balanceInfo.CultAnchorFaithAdded = anchorSettlement.FaithAdded;
+                balanceInfo.CultAnchorLinkersAdded = anchorSettlement.LinkersAdded;
+                foreach (var pair in anchorSettlement.ItemOutputs)
+                {
+                    balanceInfo.CultAnchorItemOutputs[pair.Key] = pair.Value;
+                }
+            }
+
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
             playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
+            RumorIntelSpawn?.PruneExpiredEventsForCurrentMap();
+            farmSystem?.ApplyDailySettlement(balanceInfo);
 
             EventOnOneDayBalance?.Invoke(balanceInfo);
         }

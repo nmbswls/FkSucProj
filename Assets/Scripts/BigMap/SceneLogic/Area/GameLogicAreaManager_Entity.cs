@@ -593,6 +593,21 @@ namespace My.Map.Logic
             return TryGetRefreshInfoByStaticId(staticId, out var ri) && IsFishingSpotRefreshInfo(ri);
         }
 
+        internal static bool IsSeedBasketRefreshInfo(DynamicEntityRefreshInfo ri)
+        {
+            return ri?.InitInfo != null && ri.InitInfo.EntityType == EEntityType.SeedBasket;
+        }
+
+        internal bool IsSeedBasketRefreshRuntime(int staticId, SceneRefreshInfoRuntime rt)
+        {
+            if (rt?.LinkedRefreshInfo != null)
+            {
+                return IsSeedBasketRefreshInfo(rt.LinkedRefreshInfo);
+            }
+
+            return TryGetRefreshInfoByStaticId(staticId, out var ri) && IsSeedBasketRefreshInfo(ri);
+        }
+
         private void EnsureLinkedRefreshOnRuntime(int staticId, SceneRefreshInfoRuntime rt)
         {
             if (rt == null || rt.LinkedRefreshInfo != null)
@@ -807,6 +822,17 @@ namespace My.Map.Logic
                 case EEntityType.FishingSpot:
                     {
                         record = new LogicEntityRecord4FishingSpot();
+                        break;
+                    }
+                case EEntityType.SeedBasket:
+                    {
+                        var seedRec = new LogicEntityRecord4SeedBasket();
+                        if (initInfo is EntityInitInfo4SeedBasket seedInit)
+                        {
+                            seedRec.LogicAreaId = seedInit.LogicAreaId;
+                        }
+
+                        record = seedRec;
                         break;
                     }
                 case EEntityType.Trap:

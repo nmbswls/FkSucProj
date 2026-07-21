@@ -9,9 +9,9 @@ namespace My.Map.Fight
     {
         None = 0,
         Level = 1 << 0,
-        HPower = 1 << 1,
+        HTechnique = 1 << 1,
         XiXue = 1 << 2,
-        AllCombatSource = Level | HPower | XiXue,
+        AllCombatSource = Level | HTechnique | XiXue,
     }
 
     public static class FightAttrCapture
@@ -28,9 +28,9 @@ namespace My.Map.Fight
                 extraAttrs[AttrIdConsts.SrcLevel_Pipeline] = level;
             }
 
-            if (kinds.HasFlag(FightAttrCaptureKind.HPower) && src.TryGetAttr(AttrIdConsts.HPower, out var hPower))
+            if (kinds.HasFlag(FightAttrCaptureKind.HTechnique) && src.TryGetAttr(AttrIdConsts.HTechnique, out var hTechnique))
             {
-                extraAttrs[AttrIdConsts.HPower_Pipeline] = hPower;
+                extraAttrs[AttrIdConsts.HTechnique_Pipeline] = hTechnique;
             }
 
             if (kinds.HasFlag(FightAttrCaptureKind.XiXue) && src.TryGetAttr(AttrIdConsts.DamageXiXue, out var xixue))

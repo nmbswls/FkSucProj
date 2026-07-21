@@ -46,6 +46,9 @@ namespace My.Map
         /// </summary>
         FishingSpot,
 
+        // 小镇种子篮：交互入口；库存在 FarmSystem
+        SeedBasket,
+
         Trap,
         SkillProxy,
     }

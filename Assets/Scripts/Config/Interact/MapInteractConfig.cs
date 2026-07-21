@@ -71,14 +71,23 @@ namespace My.Config
 
             EGMemberChangeState = 100,
             EGMemberActivate = 101,
+            // Param1 = target stage id. Owner must be an EventGroup.
+            EGAdvanceStage = 102,
+            // Param3 = outcome kind; Param4 = optional static action id.
+            // Dynamic event-specific arguments remain in the EventGroup runtime context.
+            ResolveEventGroupOutcome = 103,
 
             // Param3=key; Param1=operand; Param2=(int)ELocalIntWriteMode.
             // StaticName targets a named entity; Default targets the owner.
             ModifyLocalIntValue = 110,
             // Records the current settlement day in the target's timed refresh state.
             RecordRefreshSettlementDay = 111,
-            // Param3 = influence id; the current logic area is resolved at interaction time.
+            // Param3 = cult action id; the current logic area is resolved at interaction time.
             ApplyDemonCultInfluence = 112,
+            // Param3 = countermeasure action id; Param4 = target anchor id.
+            ApplyDemonCultCountermeasure = 113,
+            // Runtime variables: rumor_id, cult_action_id, target_overlay_id.
+            ApplyDemonCultAnchorAction = 114,
         }
 
         public EOutputType OutputType;

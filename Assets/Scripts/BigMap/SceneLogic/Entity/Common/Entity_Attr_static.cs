@@ -12,7 +12,8 @@ namespace My.Map.Entity
         public const string Defense = "Defense";
 
         public const string PhysicalPower = "PhysicalPower"; // 肉体强度
-        public const string HPower = "HPower"; // H能力
+        public const string HTechnique = "HTechnique"; // H技巧：仅用于 HAct 对抗 Adv
+        public const string HStrength = "HStrength"; // H强度：放大 HAct 基础冲击量
         public const string Will = "Will"; // 意志
 
         public const string Arm_Final = "Arm_Final"; // 最终护甲 = （（白字护甲 * 白字护甲额外）+ 绿字护甲） * 绿字额外 
@@ -57,7 +58,7 @@ namespace My.Map.Entity
 
         public const string HImpulse_Pipeline = "HImpulse_Pipeline";
         public const string SrcLevel_Pipeline = "SrcLevel_Pipeline";
-        public const string HPower_Pipeline = "HPower_Pipeline";
+        public const string HTechnique_Pipeline = "HTechnique_Pipeline";
         public const string XiXue_Pipeline = "XiXue_Pipeline";
 
         // 施放时由武器栏写入 ctx.CacheAttrVal，供 UseWeapon OnHitEffects 引用

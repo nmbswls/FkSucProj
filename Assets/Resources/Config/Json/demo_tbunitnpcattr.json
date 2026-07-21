@@ -6,7 +6,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
     "default_h_shield": 0
@@ -18,7 +19,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
     "default_h_shield": 0
@@ -30,7 +32,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
     "default_h_shield": 0
@@ -42,7 +45,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
     "default_h_shield": 10
@@ -54,7 +58,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 60,
     "default_h_shield": 10
@@ -66,7 +71,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
+    "h_technique": 10,
+    "h_strength": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -78,7 +84,8 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
+    "h_technique": 14,
+    "h_strength": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -90,7 +97,8 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
+    "h_technique": 18,
+    "h_strength": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -102,7 +110,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
+    "h_technique": 10,
+    "h_strength": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -114,7 +123,8 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
+    "h_technique": 14,
+    "h_strength": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -126,7 +136,8 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
+    "h_technique": 18,
+    "h_strength": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -138,7 +149,8 @@
     "move_speed": 2,
     "base_atk": 5,
     "physical_power": 1,
-    "h_power": 10,
+    "h_technique": 10,
+    "h_strength": 10,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -150,7 +162,8 @@
     "move_speed": 2,
     "base_atk": 8,
     "physical_power": 1,
-    "h_power": 14,
+    "h_technique": 14,
+    "h_strength": 14,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -162,7 +175,8 @@
     "move_speed": 2,
     "base_atk": 12,
     "physical_power": 1,
-    "h_power": 18,
+    "h_technique": 18,
+    "h_strength": 18,
     "base_blurt_amount": 5,
     "base_blurt_dmg": 999,
     "default_h_shield": 0
@@ -174,7 +188,8 @@
     "move_speed": 2.8,
     "base_atk": 4,
     "physical_power": 8,
-    "h_power": 0,
+    "h_technique": 1,
+    "h_strength": 1,
     "base_blurt_amount": 0,
     "base_blurt_dmg": 0,
     "default_h_shield": 0
@@ -186,7 +201,8 @@
     "move_speed": 1.8,
     "base_atk": 2,
     "physical_power": 6,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 2,
     "base_blurt_dmg": 40,
     "default_h_shield": 0
@@ -198,7 +214,8 @@
     "move_speed": 1.9,
     "base_atk": 2,
     "physical_power": 5,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 2,
     "base_blurt_dmg": 20,
     "default_h_shield": 0
@@ -210,7 +227,8 @@
     "move_speed": 1.7,
     "base_atk": 2.5,
     "physical_power": 6,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 2,
     "base_blurt_dmg": 20,
     "default_h_shield": 0
@@ -222,7 +240,8 @@
     "move_speed": 1.4,
     "base_atk": 1.5,
     "physical_power": 4,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 1,
     "base_blurt_dmg": 15,
     "default_h_shield": 0
@@ -234,7 +253,8 @@
     "move_speed": 1.6,
     "base_atk": 3,
     "physical_power": 8,
-    "h_power": 0,
+    "h_technique": 0,
+    "h_strength": 1,
     "base_blurt_amount": 3,
     "base_blurt_dmg": 30,
     "default_h_shield": 0
@@ -246,7 +266,8 @@
     "move_speed": 1.8,
     "base_atk": 4,
     "physical_power": 8,
-    "h_power": 0,
+    "h_technique": 1,
+    "h_strength": 1,
     "base_blurt_amount": 2,
     "base_blurt_dmg": 45,
     "default_h_shield": 0
@@ -258,7 +279,8 @@
     "move_speed": 1.6,
     "base_atk": 5,
     "physical_power": 10,
-    "h_power": 0,
+    "h_technique": 1,
+    "h_strength": 1,
     "base_blurt_amount": 2,
     "base_blurt_dmg": 40,
     "default_h_shield": 0

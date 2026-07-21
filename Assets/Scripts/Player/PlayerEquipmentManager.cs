@@ -432,6 +432,7 @@ namespace My.Player
 
             Prog?.GearManager?.RebuildStatProvidersFromEquipment();
             Prog?.ProgressionRoot?.ForceDirty();
+            _playerMgr?.BodyPartSystem?.RebuildAllLocalStats();
             return true;
         }
 
@@ -561,6 +562,7 @@ namespace My.Player
 
             Prog?.GearManager?.RebuildStatProvidersFromEquipment();
             Prog?.ProgressionRoot?.ForceDirty();
+            _playerMgr?.BodyPartSystem?.RebuildAllLocalStats();
             return true;
         }
 

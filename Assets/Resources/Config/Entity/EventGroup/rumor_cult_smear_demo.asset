@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834e569363032a84684e80f019fd7faa, type: 3}
+  m_Name: rumor_cult_smear_demo
+  m_EditorClassIdentifier:
+  CfgId: rumor_cult_smear_demo
+  ShowName: "\u6559\u56E2\u6D82\u62B9\u4EEA\u5F0F"
+  PrefabName:
+  NameOffset: -1
+  IsAlwaysActive: 0
+  PersistByUniqName: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel:
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u5B8C\u6210\u6240\u6709\u6D82\u62B9\u70B9\u4EE5\u7ED3\u675F\u4EEA\u5F0F\u3002"
+    InteractInfos:
+    - InteractId: 99
+      Label:
+      UnLabel:
+      HideWhenFail: 1
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 103
+        Param1: 0
+        Param2: 0
+        Param3: rumor_cult_anchor
+        Param4:
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName:
+        DynamicEntityVariable:
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos: []
+  InitState: 0
+  StateChangeRules: []
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId:
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: Poison
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 0
+    RevealDurationSeconds: 8
+    GcLiquidCheckRadius: 0.3
+  Stages:
+  - StageId: 0
+    EnsureMemberIds: 010000000200000003000000
+    ConditionMode: 0
+    CompletionConditions:
+    - ConditionType: 1
+      MemberIds:
+      MemberTag: paint_point
+      RequiredStatusId: 1
+    CompleteInteractId: 99
+    NextStageId: -1
+    CompleteEvent: 1
+    DestroyOnComplete: 1
+  GroupMemberInfos:
+  - MemberId: 1
+    Tags:
+    - paint_point
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 710001
+  - MemberId: 2
+    Tags:
+    - paint_point
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 710002
+  - MemberId: 3
+    Tags:
+    - paint_point
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 710003
+  InnerTriggers: []
+  EventGroupStateInfos: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 710001
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: cult_smear_point
+        Position: {x: -1.2, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId:
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 710002
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: cult_smear_point
+        Position: {x: 0, y: 0.8}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId:
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []
+    - rid: 710003
+      type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: cult_smear_point
+        Position: {x: 1.2, y: 0}
+        FaceDir: {x: 0, y: 0}
+        BindRoomId:
+        OrgFactionId: 0
+        Variables:
+          keys: []
+          values: []

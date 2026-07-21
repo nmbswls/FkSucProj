@@ -191,6 +191,37 @@ public partial class Tables
     public demo.TbTownWalkerPopulation TbTownWalkerPopulation {get; }
     public demo.TbAlchemyVirtueDef TbAlchemyVirtueDef {get; }
     public demo.TbAlchemyAspectDef TbAlchemyAspectDef {get; }
+    /// <summary>
+    /// 教团地图锚点定义
+    /// </summary>
+    public demo.TbCultAnchor TbCultAnchor {get; }
+    /// <summary>
+    /// 教团锚点周期产出
+    /// </summary>
+    public demo.TbCultAnchorOutput TbCultAnchorOutput {get; }
+    /// <summary>
+    /// 教团行为到锚点进度映射
+    /// </summary>
+    public demo.TbCultAnchorAction TbCultAnchorAction {get; }
+    /// <summary>
+    /// 地区教会压力等级与风险规则
+    /// </summary>
+    public demo.TbCultChurchPressureLevel TbCultChurchPressureLevel {get; }
+    /// <summary>
+    /// 锚点反制行动效果
+    /// </summary>
+    public demo.TbCultAnchorPressureAction TbCultAnchorPressureAction {get; }
+    public demo.TbCropDef TbCropDef {get; }
+    public demo.TbFarmPlot TbFarmPlot {get; }
+    public demo.TbFarmStationPlanDefault TbFarmStationPlanDefault {get; }
+    /// <summary>
+    /// 固定料理配方
+    /// </summary>
+    public demo.TbCookingRecipe TbCookingRecipe {get; }
+    /// <summary>
+    /// 教团秘会任务定义
+    /// </summary>
+    public demo.TbCultMission TbCultMission {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -326,6 +357,16 @@ public partial class Tables
         TbTownWalkerPopulation = new demo.TbTownWalkerPopulation(loader("demo_tbtownwalkerpopulation"));
         TbAlchemyVirtueDef = new demo.TbAlchemyVirtueDef(loader("demo_tbalchemyvirtuedef"));
         TbAlchemyAspectDef = new demo.TbAlchemyAspectDef(loader("demo_tbalchemyaspectdef"));
+        TbCultAnchor = new demo.TbCultAnchor(loader("demo_tbcultanchor"));
+        TbCultAnchorOutput = new demo.TbCultAnchorOutput(loader("demo_tbcultanchoroutput"));
+        TbCultAnchorAction = new demo.TbCultAnchorAction(loader("demo_tbcultanchoraction"));
+        TbCultChurchPressureLevel = new demo.TbCultChurchPressureLevel(loader("demo_tbcultchurchpressurelevel"));
+        TbCultAnchorPressureAction = new demo.TbCultAnchorPressureAction(loader("demo_tbcultanchorpressureaction"));
+        TbCropDef = new demo.TbCropDef(loader("demo_tbcropdef"));
+        TbFarmPlot = new demo.TbFarmPlot(loader("demo_tbfarmplot"));
+        TbFarmStationPlanDefault = new demo.TbFarmStationPlanDefault(loader("demo_tbfarmstationplandefault"));
+        TbCookingRecipe = new demo.TbCookingRecipe(loader("demo_tbcookingrecipe"));
+        TbCultMission = new demo.TbCultMission(loader("demo_tbcultmission"));
         ResolveRef();
     }
     
@@ -463,6 +504,16 @@ public partial class Tables
         TbTownWalkerPopulation.ResolveRef(this);
         TbAlchemyVirtueDef.ResolveRef(this);
         TbAlchemyAspectDef.ResolveRef(this);
+        TbCultAnchor.ResolveRef(this);
+        TbCultAnchorOutput.ResolveRef(this);
+        TbCultAnchorAction.ResolveRef(this);
+        TbCultChurchPressureLevel.ResolveRef(this);
+        TbCultAnchorPressureAction.ResolveRef(this);
+        TbCropDef.ResolveRef(this);
+        TbFarmPlot.ResolveRef(this);
+        TbFarmStationPlanDefault.ResolveRef(this);
+        TbCookingRecipe.ResolveRef(this);
+        TbCultMission.ResolveRef(this);
     }
 }
 

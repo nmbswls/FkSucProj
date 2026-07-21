@@ -1,0 +1,189 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 834e569363032a84684e80f019fd7faa, type: 3}
+  m_Name: rumor_cult_orc_ambush_demo
+  m_EditorClassIdentifier:
+  CfgId: rumor_cult_orc_ambush_demo
+  ShowName: "\u6559\u56E2\u534A\u517D\u4EBA\u4F0F\u51FB"
+  PrefabName:
+  NameOffset: -1
+  IsAlwaysActive: 0
+  PersistByUniqName: 0
+  ShowOnWorldMap: 0
+  WorldMapMarkerLabel:
+  MainStatusInfo:
+    StatusId: 0
+    Desp: "\u8C03\u67E5\u53EF\u7591\u7684\u6559\u56E2\u75D5\u8FF9\u3002"
+    InteractInfos:
+    - InteractId: 1
+      Label: "\u8C03\u67E5\u75D5\u8FF9"
+      UnLabel: "\u8C03\u67E5\u75D5\u8FF9"
+      HideWhenFail: 1
+      NeedDist: 0.8
+      Passive: 0
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 102
+        Param1: 1
+        Param2: 0
+        Param3:
+        Param4:
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName:
+        DynamicEntityVariable:
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  ExtraStatusInfos:
+  - StatusId: 1
+    Desp: "\u51FB\u8D25\u6240\u6709\u534A\u517D\u4EBA\u3002"
+    InteractInfos:
+    - InteractId: 99
+      Label:
+      UnLabel:
+      HideWhenFail: 1
+      NeedDist: 0
+      Passive: 1
+      CheckCommonCond: []
+      CheckInteractCond: []
+      Outputs:
+      - OutputType: 103
+        Param1: 0
+        Param2: 0
+        Param3: rumor_cult_anchor
+        Param4:
+        Param5: 0
+        Param6: 0
+        DelayTime: 0
+        TargetType: 0
+        MemberId: 0
+        StaticName:
+        DynamicEntityVariable:
+    HasBlock: 0
+    AutoTriggerCollide: 0
+    AutoTrigger: 0
+  InitState: 0
+  StateChangeRules: []
+  PoisonSettings:
+    Enable: 0
+    ApplyPoisonConds: []
+    NpcTriggerBuffId:
+    BaitDurationSeconds: 30
+    ReapplyCooldownSeconds: 20
+    ApplyPoisonLabel: Poison
+    NpcFloatText: ...
+    NpcApproachStopDistance: 0.4
+  DormantRevealSettings:
+    Enable: 0
+    RevealDurationSeconds: 8
+    GcLiquidCheckRadius: 0.3
+  Stages:
+  - StageId: 0
+    EnsureMemberIds:
+    ConditionMode: 0
+    CompletionConditions: []
+    CompleteInteractId: 0
+    NextStageId: -1
+    CompleteEvent: 0
+    DestroyOnComplete: 0
+  - StageId: 1
+    EnsureMemberIds: 010000000200000003000000
+    ConditionMode: 0
+    CompletionConditions:
+    - ConditionType: 2
+      MemberIds:
+      MemberTag: enemy
+      RequiredStatusId: 0
+    CompleteInteractId: 99
+    NextStageId: -1
+    CompleteEvent: 1
+    DestroyOnComplete: 1
+  GroupMemberInfos:
+  - MemberId: 1
+    Tags:
+    - enemy
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 720001
+  - MemberId: 2
+    Tags:
+    - enemy
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 720002
+  - MemberId: 3
+    Tags:
+    - enemy
+    PlacementMode: 0
+    NamedPointName:
+    InitInfo:
+      rid: 720003
+  InnerTriggers: []
+  EventGroupStateInfos: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 720001
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_01
+        Position: {x: -1.5, y: 0.5}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId:
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_npc
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey:
+        PatrolPortalNetworkId:
+        PatrolCycleNodeIds: []
+    - rid: 720002
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_01
+        Position: {x: 0, y: 1.2}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId:
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_npc
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey:
+        PatrolPortalNetworkId:
+        PatrolCycleNodeIds: []
+    - rid: 720003
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: initial_orc_02
+        Position: {x: 1.5, y: 0.5}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId:
+        OrgFactionId: 5
+        MoveMode: 0
+        EnmityConfId: default_npc
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey:
+        PatrolPortalNetworkId:
+        PatrolCycleNodeIds: []

@@ -88,7 +88,6 @@ namespace My.Map.Fight
             ResourceDeltaIntent intent,
             System.Func<long> getDefenderExtraDmgRate,
             System.Func<long> getDefenderArm,
-            System.Func<long> getDefenderHPower,
             System.Func<long> getBasicJianShang,
             System.Func<long> getNonHJianShang)
         {
@@ -98,6 +97,13 @@ namespace My.Map.Fight
             }
 
             var rawDmg = System.Math.Abs(rawDeltaNegative);
+
+            // HAct ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù³Ô¶ï¿½ï¿½ï¿½ï¿½Ëºï¿½/ï¿½ï¿½ï¿½ï¿½/Hï¿½ï¿½ï¿½É¼ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½Í¨ï¿½Ã¹ï¿½ï¿½ï¿½
+            if (dmgCategory == EDmgCategory.H)
+            {
+                return -rawDmg;
+            }
+
             long dmg = rawDmg;
 
             var extra1 = getDefenderExtraDmgRate();
@@ -120,17 +126,6 @@ namespace My.Map.Fight
 
                 dmg = (long)(dmg * (10000 - armReduce10000) * 0.0001);
             }
-            else if (dmgCategory == EDmgCategory.H)
-            {
-                var srcHpower = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HPower_Pipeline) ?? 0;
-                long hReduce10000 = PlayerGamePlayRule.CalcDmgReduceRate10000ByH(srcHpower, getDefenderHPower());
-                if (hReduce10000 > 8000)
-                {
-                    hReduce10000 = 8000;
-                }
-
-                dmg = (long)(dmg * (10000 - hReduce10000) * 0.0001);
-            }
 
             var basicJs = getBasicJianShang();
             if (basicJs > 9000)
@@ -140,7 +135,6 @@ namespace My.Map.Fight
 
             dmg = (long)(dmg * (10000 - basicJs) * 0.0001);
 
-            if (dmgCategory != EDmgCategory.H)
             {
                 var nonH = getNonHJianShang();
                 if (nonH > 9000)
@@ -155,22 +149,22 @@ namespace My.Map.Fight
         }
 
         /// <summary>
-        /// Í¨¹ýh³å»÷Á¦¼ÆËã·ÖÁ÷ºóµÄÊýÖµ
+        /// Í¨ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
         /// </summary>
         /// <param name="hImpulse"></param>
         /// <param name="src"></param>
         /// <returns></returns>
         public static (long, long) DistributeClimaxAndEstrusFromHImpulse(long hImpulse, IFightAttrProvider src)
         {
-            src.TryGetAttr(AttrIdConsts.PhysicalResist, out var naishou); // »ñÈ¡ÄÍÊÜ
+            src.TryGetAttr(AttrIdConsts.PhysicalResist, out var naishou); // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½
 
             double p_k = 2.0;
-            double p = (hImpulse * 0.001) / (hImpulse * 0.001 + naishou * 0.001 * p_k + 10); // ¼ÆËãp´©Í¸ÂÊ Ò»²¿·Ö³å»÷Á¦±äÎª·¢ÇéÌõ Ò»²¿·ÖÊ©¼Ó¸ø¸ß³±Ìõ
+            double p = (hImpulse * 0.001) / (hImpulse * 0.001 + naishou * 0.001 * p_k + 10); // ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½Í¸ï¿½ï¿½ Ò»ï¿½ï¿½ï¿½Ö³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ò»ï¿½ï¿½ï¿½ï¿½Ê©ï¿½Ó¸ï¿½ï¿½ß³ï¿½ï¿½ï¿½
             double addClimax = hImpulse * p;
             long maxEstrus = 3_000;
 
             double addEstrus = 0;
-            // ·ÀÖ¹³¬Ð¡ÉËº¦¹Ð²ä
+            // ï¿½ï¿½Ö¹ï¿½ï¿½Ð¡ï¿½Ëºï¿½ï¿½Ð²ï¿½
             if (hImpulse > 3000)
             {
                 double e = 1.5;
@@ -181,7 +175,7 @@ namespace My.Map.Fight
         }
 
         /// <summary>
-        /// Í¨¹ýh³å»÷Á¦¼ÆËã·ÖÁ÷ºóµÄÊýÖµ
+        /// Í¨ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
         /// </summary>
         /// <param name="hImpulse"></param>
         /// <param name="src"></param>

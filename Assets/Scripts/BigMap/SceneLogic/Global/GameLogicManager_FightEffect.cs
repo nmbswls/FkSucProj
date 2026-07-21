@@ -44,6 +44,11 @@ namespace My
                             executor = new AbilityEffectExecutor4ApplyDamage();
                         }
                         break;
+                    case MapFightEffectApplyHActCfg:
+                        {
+                            executor = new AbilityEffectExecutor4ApplyHAct();
+                        }
+                        break;
 
                     case MapAbilityEffectThrowStartCfg:
                         {

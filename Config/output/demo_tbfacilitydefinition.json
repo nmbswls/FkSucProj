@@ -55,5 +55,14 @@
     "max_supervisor_slots": 1,
     "presentation_prefab": "",
     "interaction_handler_id": "market"
+  },
+  {
+    "facility_id": "farm_station",
+    "display_name": "农业小站",
+    "capabilities": 43,
+    "max_workforce": 4,
+    "presentation_prefab": "",
+    "interaction_handler_id": "farm",
+    "max_supervisor_slots": 0
   }
 ]

@@ -358,6 +358,18 @@ namespace My.Home
 
         public void SetTownProsperity(int value) { value = Mathf.Max(0, value); if (TownProsperity == value) return; TownProsperity = value; EvOnTownEcoChanged?.Invoke(); }
         public void SetTownCurrentPopulation(int value) { value = Mathf.Max(0, value); if (TownCurrentPopulation == value) return; TownCurrentPopulation = value; EvOnTownEcoChanged?.Invoke(); }
+        public void AddTownInfluence(string townId, int amount)
+        {
+            if (string.IsNullOrEmpty(townId) || amount == 0 || LogicManager == null) return;
+            if (string.Equals(CurrentTownId, townId, StringComparison.Ordinal))
+            {
+                TownInfluence = Mathf.Max(0, TownInfluence + amount);
+                EvOnTownEcoChanged?.Invoke();
+                return;
+            }
+            var town = LogicManager.worldPersistState?.GetLogicAreaHomesteadState(townId);
+            if (town != null) town.Influence = Mathf.Max(0, town.Influence + amount);
+        }
 
         public FacilityDefinition GetFacilityDefinition(FixedFacilityInfo facility) => facility?.Definition ?? FacilityDefinitionCatalog.Get(facility?.FacilityId);
         public bool SupportsFacilityWorkforce(FixedFacilityInfo facility) => SupportsHelperWorkforce(GetFacilityDefinition(facility));
@@ -430,18 +442,18 @@ namespace My.Home
 
         public void OnPlayerEnterHome() { }
         public void EnsureHomeFacilityRecordsRegistered() => RefreshFixedFacilities();
-        public void DoRepairFacility(string ruinCfgId, Vector2 repairPos)
+        public bool DoRepairFacility(string ruinCfgId, Vector2 repairPos)
         {
             var targetFacilityId = TownFacilityInteractUtil.ResolveFacilityIdFromRuin(ruinCfgId);
             if (string.IsNullOrEmpty(targetFacilityId) || LogicManager == null)
             {
-                return;
+                return false;
             }
 
             var logicAreaId = TownFacilityUtil.ResolveCurrentLogicAreaId(LogicManager.AreaManager);
             if (string.IsNullOrEmpty(logicAreaId))
             {
-                return;
+                return false;
             }
 
             var site = TownFacilitySiteCatalog.FindByMapAndFacility(logicAreaId, targetFacilityId);
@@ -450,15 +462,19 @@ namespace My.Home
                 if (LogicManager.townFacilityDevelopmentSystem?.TryUpgradeFacility(logicAreaId, site.Id, out _) == true)
                 {
                     EvOnFacilityUpdate?.Invoke();
+                    return true;
                 }
 
-                return;
+                return false;
             }
 
             if (LogicManager.townFacilityDevelopmentSystem?.TryUpgradeFacility(logicAreaId, 0, targetFacilityId, out _) == true)
             {
                 EvOnFacilityUpdate?.Invoke();
+                return true;
             }
+
+            return false;
         }
         public bool CheckHasFacility(string facilityId) { RefreshFixedFacilities(); return FixedFacilities.Exists(item => item.FacilityId == facilityId && !item.Removed); }
         public void RefreshProduceValue() { }

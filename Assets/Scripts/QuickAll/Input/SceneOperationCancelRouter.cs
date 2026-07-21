@@ -17,6 +17,12 @@ namespace My.Input
                 return false;
             }
 
+            if (glm.farmSystem != null && glm.farmSystem.IsPlantingMode)
+            {
+                glm.farmSystem.ExitPlantingMode();
+                return true;
+            }
+
             if (glm.NpcDirectControl.Active)
             {
                 glm.NpcDirectControl.Exit();

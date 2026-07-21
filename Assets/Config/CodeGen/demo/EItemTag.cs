@@ -276,6 +276,10 @@ namespace cfg.demo
         /// ?????
         /// </summary>
         ArmarAccessory = 65,
+        /// <summary>
+        /// 种子
+        /// </summary>
+        Seed = 66,
     }
 
 } 

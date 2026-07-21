@@ -1,0 +1,52 @@
+[
+  {
+    "crop_id": "crop_wheat",
+    "display_name": "麦子",
+    "seed_item_id": "seed_wheat",
+    "harvest_item_id": "produce_wheat",
+    "harvest_count": 2,
+    "grow_days": 4,
+    "sprout_day": 1,
+    "sort_order": 10
+  },
+  {
+    "crop_id": "crop_cabbage",
+    "display_name": "卷心菜",
+    "seed_item_id": "seed_cabbage",
+    "harvest_item_id": "produce_cabbage",
+    "harvest_count": 1,
+    "grow_days": 3,
+    "sprout_day": 1,
+    "sort_order": 20
+  },
+  {
+    "crop_id": "crop_potato",
+    "display_name": "土豆",
+    "seed_item_id": "seed_potato",
+    "harvest_item_id": "produce_potato",
+    "harvest_count": 2,
+    "grow_days": 5,
+    "sprout_day": 1,
+    "sort_order": 30
+  },
+  {
+    "crop_id": "crop_berry",
+    "display_name": "浆果",
+    "seed_item_id": "seed_berry",
+    "harvest_item_id": "produce_berry",
+    "harvest_count": 3,
+    "grow_days": 3,
+    "sprout_day": 1,
+    "sort_order": 40
+  },
+  {
+    "crop_id": "crop_herb",
+    "display_name": "药草",
+    "seed_item_id": "seed_herb",
+    "harvest_item_id": "produce_herb",
+    "harvest_count": 2,
+    "grow_days": 2,
+    "sprout_day": 1,
+    "sort_order": 50
+  }
+]

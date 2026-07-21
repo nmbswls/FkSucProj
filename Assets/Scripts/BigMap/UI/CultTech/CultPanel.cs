@@ -46,6 +46,9 @@ namespace My.UI.CultTech
             BindTab(_overviewTab, 0);
             BindTab(_doctrineTab, 1);
             BindTab(_seatTab, 2);
+            SetTabLabel(_overviewTab, "总览");
+            SetTabLabel(_doctrineTab, "教义");
+            SetTabLabel(_seatTab, "古老教座");
         }
 
         void BindTab(Button tab, int index)
@@ -98,8 +101,22 @@ namespace My.UI.CultTech
             if (tab == null) return;
             var image = tab.GetComponent<Image>();
             if (image != null) image.color = active
-                ? new Color(0.42f, 0.22f, 0.32f, 1f)
-                : new Color(0.16f, 0.12f, 0.18f, 1f);
+                ? new Color(0.46f, 0.16f, 0.25f, 0.98f)
+                : new Color(0.12f, 0.07f, 0.13f, 0.92f);
+            var label = tab.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (label != null)
+            {
+                label.color = active
+                    ? new Color(1f, 0.9f, 0.82f, 1f)
+                    : new Color(0.7f, 0.62f, 0.68f, 1f);
+                label.fontStyle = active ? FontStyles.Bold : FontStyles.Normal;
+            }
+        }
+
+        static void SetTabLabel(Button tab, string text)
+        {
+            var label = tab != null ? tab.GetComponentInChildren<TextMeshProUGUI>(true) : null;
+            if (label != null) label.text = text;
         }
 
         static DemonCultSystem ResolveCult() => MainGameManager.Instance?.gameLogicManager?.playerDataManager?.ProgressionSystem?.DemonCult;

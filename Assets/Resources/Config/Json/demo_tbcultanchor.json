@@ -1,0 +1,11 @@
+[
+  {
+    "anchor_id": "village_01_sanctum",
+    "logic_area_id": "village_01",
+    "region_key": "default",
+    "display_name": "未名圣所",
+    "establish_progress": 10,
+    "show_conds": [],
+    "output_id": 1
+  }
+]

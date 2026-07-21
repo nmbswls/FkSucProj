@@ -75,6 +75,8 @@ namespace My.Player
                         ExpireSettlementDay = e.ExpireSettlementDay,
                         IsRandomKind = e.IsRandomKind,
                         Revealed = e.Revealed,
+                        Spawned = e.Spawned,
+                        EventExpireSettlementDay = e.EventExpireSettlementDay,
                     });
                 }
             }
@@ -97,8 +99,37 @@ namespace My.Player
         {
             foreach (var b in _byMap.Values)
             {
-                b.ActiveIntel.RemoveAll(a => worldDay >= a.ExpireSettlementDay);
+                b.ActiveIntel.RemoveAll(a => !IsEntryActive(a, worldDay));
             }
+        }
+
+        static bool IsEntryActive(RumorActiveEntry entry, int worldDay)
+        {
+            if (entry == null)
+            {
+                return false;
+            }
+
+            var expireDay = entry.Spawned
+                ? entry.EventExpireSettlementDay
+                : entry.ExpireSettlementDay;
+            return expireDay > worldDay;
+        }
+
+        static string ResolveAreaVariantId(string mapId)
+        {
+            var overlay = string.IsNullOrEmpty(mapId)
+                ? null
+                : CfgMgr.Cfgs?.TbAreaOverlayStateInfo?.GetOrDefault(mapId);
+            return !string.IsNullOrEmpty(overlay?.VarId) ? overlay.VarId : mapId;
+        }
+
+        public static bool MatchesTargetMap(RumorIntel def, string mapId)
+        {
+            return def != null
+                && (string.IsNullOrEmpty(def.TargetOverlayId)
+                    || def.TargetOverlayId == mapId
+                    || def.TargetOverlayId == ResolveAreaVariantId(mapId));
         }
 
         public bool HasActiveRandomIntel(string mapId)
@@ -106,7 +137,7 @@ namespace My.Player
             var b = GetOrCreateBlock(mapId);
             foreach (var a in b.ActiveIntel)
             {
-                if (a.IsRandomKind && Day < a.ExpireSettlementDay)
+                if (a.IsRandomKind && IsEntryActive(a, Day))
                 {
                     return true;
                 }
@@ -120,7 +151,7 @@ namespace My.Player
             var b = GetOrCreateBlock(mapId);
             foreach (var a in b.ActiveIntel)
             {
-                if (a.RumorId == rumorId && worldDay < a.ExpireSettlementDay)
+                if (a.RumorId == rumorId && IsEntryActive(a, worldDay))
                 {
                     return true;
                 }
@@ -157,6 +188,7 @@ namespace My.Player
                 var def = CfgMgr.Cfgs.TbRumorIntel.GetOrDefault(row.RumorId);
                 if (def == null
                     || def.IntelKind != ERumorIntelKind.RandomPoolEntry
+                    || !MatchesTargetMap(def, mapId)
                     || !_glm.CheckCommonCondsAll(def.AppearConds))
                 {
                     continue;
@@ -246,6 +278,11 @@ namespace My.Player
                     continue;
                 }
 
+                if (!MatchesTargetMap(row, mapId))
+                {
+                    continue;
+                }
+
                 if (IsRumorActive(mapId, row.RumorId, day))
                 {
                     continue;
@@ -281,6 +318,12 @@ namespace My.Player
             if (def == null)
             {
                 error = "rumor_unknown";
+                return false;
+            }
+
+            if (!MatchesTargetMap(def, mapId))
+            {
+                error = "rumor_wrong_map";
                 return false;
             }
 
@@ -352,9 +395,30 @@ namespace My.Player
 
         public List<RumorActiveEntry> GetActiveSnapshot(string mapId)
         {
-            var b = GetOrCreateBlock(mapId);
             var day = Day;
-            return b.ActiveIntel.FindAll(a => day < a.ExpireSettlementDay);
+            PruneExpiredRumors(day);
+            var b = GetOrCreateBlock(mapId);
+            return b.ActiveIntel.FindAll(a => IsEntryActive(a, day));
+        }
+
+        public int MarkSpawned(string mapId, string rumorId, int eventExpireDays)
+        {
+            var b = GetOrCreateBlock(mapId);
+            foreach (var entry in b.ActiveIntel)
+            {
+                if (entry.RumorId == rumorId)
+                {
+                    if (!entry.Spawned || entry.EventExpireSettlementDay <= 0)
+                    {
+                        entry.Spawned = true;
+                        entry.EventExpireSettlementDay = Day + Mathf.Max(1, eventExpireDays);
+                    }
+
+                    return entry.EventExpireSettlementDay;
+                }
+            }
+
+            return 0;
         }
 
         public void ConsumeActiveForMap(string mapId, IReadOnlyCollection<string> rumorIds)

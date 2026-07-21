@@ -1,15 +1,34 @@
 [
   {
+    "item_id": "part_mouth_ring",
+    "body_part": 1,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "口环。提升口部榨取增益与敏感。",
+    "local_bonuses": [
+      { "attr_id": 3, "val": 1500 },
+      { "attr_id": 1, "val": 800 }
+    ]
+  },
+  {
     "item_id": "part_mouth_lollipop",
     "body_part": 1,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "",
+    "desc": "棒棒糖环。轻量敏感装饰。",
     "local_bonuses": [
-      {
-        "attr_id": 1,
-        "val": 25
-      }
+      { "attr_id": 1, "val": 1000 }
+    ]
+  },
+  {
+    "item_id": "part_breast_ring",
+    "body_part": 2,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "乳环。胸接触时提高敏感与少量榨取增益。",
+    "local_bonuses": [
+      { "attr_id": 1, "val": 2000 },
+      { "attr_id": 3, "val": 800 }
     ]
   },
   {
@@ -17,12 +36,20 @@
     "body_part": 2,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "胸部胸针，稳固局部感知。",
+    "desc": "感知胸针。稳固耐受。",
     "local_bonuses": [
-      {
-        "attr_id": 2,
-        "val": 15
-      }
+      { "attr_id": 2, "val": 1500 }
+    ]
+  },
+  {
+    "item_id": "part_womb_plug",
+    "body_part": 3,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "宫塞。主榨取部位核心增益。",
+    "local_bonuses": [
+      { "attr_id": 3, "val": 2500 },
+      { "attr_id": 1, "val": 500 }
     ]
   },
   {
@@ -30,12 +57,20 @@
     "body_part": 3,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "腹部位念珠，温和提升耐力。",
+    "desc": "温养念珠。温和提升榨取增益。",
     "local_bonuses": [
-      {
-        "attr_id": 3,
-        "val": 10
-      }
+      { "attr_id": 3, "val": 1200 }
+    ]
+  },
+  {
+    "item_id": "part_anus_plug",
+    "body_part": 4,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "肛塞。尻部榨取与耐受。",
+    "local_bonuses": [
+      { "attr_id": 3, "val": 1800 },
+      { "attr_id": 2, "val": 1000 }
     ]
   },
   {
@@ -43,7 +78,30 @@
     "body_part": 4,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "尾部铃铛，增加流体获取。",
-    "local_bonuses": []
+    "desc": "尻铃。增加流体获取。",
+    "local_bonuses": [
+      { "attr_id": 3, "val": 1000 }
+    ]
+  },
+  {
+    "item_id": "part_limb_cuff",
+    "body_part": 5,
+    "gear_slot_cost": 1,
+    "min_part_level": 1,
+    "desc": "肢体束环。提高控制抗性。",
+    "local_bonuses": [
+      { "attr_id": 4, "val": 2000 }
+    ]
+  },
+  {
+    "item_id": "part_skin_seal",
+    "body_part": 6,
+    "gear_slot_cost": 1,
+    "min_part_level": 2,
+    "desc": "肌纹封贴。抑制气场泄漏并略增耐受。",
+    "local_bonuses": [
+      { "attr_id": 5, "val": -1000 },
+      { "attr_id": 2, "val": 800 }
+    ]
   }
 ]

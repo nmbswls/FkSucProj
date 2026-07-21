@@ -80,34 +80,45 @@ namespace My.Map
             return before < threshold && after >= threshold;
         }
 
-        //sui'ji hou'qu
+        // 按 filter_types 精确匹配抽一条（不用子串，避免标签互相包含）
         public static int RandomGetOneHAct(string filterType, int desireLevel)
         {
+            if (string.IsNullOrEmpty(filterType))
+            {
+                return 0;
+            }
+
             var dList = CfgMgr.Cfgs.TbHActInfo.DataList;
             List<int> candidates = new();
-            for(int i=0;i< dList.Count;i++)
+            for (int i = 0; i < dList.Count; i++)
             {
-                bool matched = false;
-                foreach(var filter in dList[i].FilterTypes)
+                var row = dList[i];
+                if (row == null || row.FilterTypes == null)
                 {
-                    if(filter.Contains(filterType))
+                    continue;
+                }
+
+                bool matched = false;
+                foreach (var filter in row.FilterTypes)
+                {
+                    if (string.Equals(filter, filterType, StringComparison.Ordinal))
                     {
                         matched = true;
                         break;
                     }
                 }
 
-                if(!matched)
+                if (!matched)
                 {
                     continue;
                 }
 
-                if(dList[i].PlayerMinDesire > desireLevel)
+                if (row.PlayerMinDesire > desireLevel)
                 {
                     continue;
                 }
 
-                candidates.Add(dList[i].Id);
+                candidates.Add(row.Id);
             }
 
             if (candidates.Count == 0)
@@ -217,48 +228,24 @@ namespace My.Map
             }
         }
 
-        /// <summary>
-        /// 解析h行动公式
-        /// </summary>
-        /// <param name="actId"></param>
-        /// <param name="hPowerPlayer"></param>
-        /// <param name="hPowerEnemy"></param>
-        /// <param name="enemyLevel"></param>
-        /// <param name="hImpulseEnemy"></param>
-        /// <param name="hImpulsePlayer"></param>
-        /// <returns></returns>
-        public static bool ResolveHActParams(int actId, long hPowerPlayer, long hPowerEnemy, int enemyLevel, out long hImpulseEnemy, out long hImpulsePlayer)
+        // HAct 冲击计算已迁移至 HActResolver
+        public static bool ResolveHActParams(
+            int actId,
+            BaseUnitLogicEntity player,
+            BaseUnitLogicEntity enemy,
+            float intensity,
+            out long hImpulseEnemy,
+            out long hImpulsePlayer)
         {
             hImpulseEnemy = 0;
             hImpulsePlayer = 0;
-
-            var hActInfo = CfgMgr.Cfgs.TbHActInfo.GetOrDefault(actId);
-            if (hActInfo == null) return false;
-
-            double totalHImpulse = hActInfo.HImpulseBase;
-            double C = 100 + 5 * enemyLevel;
-
-            double hVsRate = 1.0f;
-            // 经由对等平滑公式增幅或减弱 改变原始h冲击
-            if (hActInfo.IsPlayerPassive)
+            if (!HActResolver.TryResolve(actId, player, enemy, intensity, out var result))
             {
-                //double hVsRate = (hPowerEnemy * 0.001 + C) / (hPowerPlayer * 0.001 + C);
-                
-                totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
-            }
-            else
-            {
-                //double hVsRate = (hPowerPlayer * 0.001 + C) / (hPowerEnemy * 0.001 + C);
-                totalHImpulse = totalHImpulse * hVsRate; // 经由对等平滑公式增幅或减弱
+                return false;
             }
 
-            // 根据动作的分流比例，分担总h冲击
-            // 问题是主角屌了 反震也变弱了
-            double hEnemy = totalHImpulse * hActInfo.CoefEnemy;
-            double hPlayer = totalHImpulse * hActInfo.CoefPlayer;
-
-            hImpulseEnemy = (long)(hEnemy * 1000);
-            hImpulsePlayer = (long)(hPlayer * 1000);
+            hImpulseEnemy = result.ImpulseOnEnemy;
+            hImpulsePlayer = result.ImpulseOnPlayer;
             return true;
         }
 
@@ -484,10 +471,11 @@ namespace My.Map
             return (long)((armValue * 0.001) / (armValue * 0.001 + K) * 10000);
         }
 
-        public static long CalcDmgReduceRate10000ByH(long hPowerAttacker, long hPowerTarget)
+        // 旧 H 伤减伤公式；HAct 派生伤害已不再走此路径，保留供对照/潜在复用
+        public static long CalcDmgReduceRate10000ByHTechnique(long hTechniqueAttacker, long hTechniqueTarget)
         {
             float K = 0.5f;
-            return (long)((hPowerAttacker * 1.0f) / (hPowerAttacker + K * hPowerTarget) * 1000);
+            return (long)((hTechniqueAttacker * 1.0f) / (hTechniqueAttacker + K * hTechniqueTarget) * 1000);
         }
 
         public static long GetCharmWillCompare(long charmVal, long will)

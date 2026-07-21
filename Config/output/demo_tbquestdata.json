@@ -151,7 +151,32 @@
     "name": "收复拼合村",
     "desc": "击退占据 home_01 的流匪冒险者。",
     "init_step_id": "200_s1",
-    "finish_reward": [],
+    "finish_reward": [
+      [
+        "seed_wheat",
+        8
+      ],
+      [
+        "seed_cabbage",
+        6
+      ],
+      [
+        "seed_herb",
+        6
+      ],
+      [
+        "seed_potato",
+        4
+      ],
+      [
+        "seed_berry",
+        4
+      ],
+      [
+        "item_fertilizer_basic",
+        10
+      ]
+    ],
     "is_auto_accept": true,
     "acceept_cond": [
       {

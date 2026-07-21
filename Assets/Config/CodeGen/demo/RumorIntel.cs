@@ -30,6 +30,10 @@ public sealed partial class RumorIntel : Luban.BeanBase
         { if(!_buf["intel_kind"].IsNumber) { throw new SerializationException(); }  IntelKind = (demo.ERumorIntelKind)_buf["intel_kind"].AsInt; }
         { var __json0 = _buf["appear_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } AppearConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  AppearConds.Add(__v0); }   }
         { if(!_buf["interact_point_cfg_id"].IsString) { throw new SerializationException(); }  InteractPointCfgId = _buf["interact_point_cfg_id"]; }
+        { if(!_buf["target_overlay_id"].IsString) { throw new SerializationException(); }  TargetOverlayId = _buf["target_overlay_id"]; }
+        { if(!_buf["event_group_cfg_id"].IsString) { throw new SerializationException(); }  EventGroupCfgId = _buf["event_group_cfg_id"]; }
+        { if(!_buf["cult_action_id"].IsString) { throw new SerializationException(); }  CultActionId = _buf["cult_action_id"]; }
+        { if(!_buf["event_expire_days"].IsNumber) { throw new SerializationException(); }  EventExpireDays = _buf["event_expire_days"]; }
     }
 
     public static RumorIntel DeserializeRumorIntel(JSONNode _buf)
@@ -85,6 +89,22 @@ public sealed partial class RumorIntel : Luban.BeanBase
     /// interact_point_cfg_id
     /// </summary>
     public string InteractPointCfgId;
+    /// <summary>
+    /// target_overlay_id
+    /// </summary>
+    public string TargetOverlayId;
+    /// <summary>
+    /// event_group_cfg_id
+    /// </summary>
+    public string EventGroupCfgId;
+    /// <summary>
+    /// cult_action_id
+    /// </summary>
+    public string CultActionId;
+    /// <summary>
+    /// event_expire_days
+    /// </summary>
+    public int EventExpireDays;
    
     public const int __ID__ = -815770636;
     public override int GetTypeId() => __ID__;
@@ -109,6 +129,10 @@ public sealed partial class RumorIntel : Luban.BeanBase
         + "intelKind:" + IntelKind + ","
         + "appearConds:" + Luban.StringUtil.CollectionToString(AppearConds) + ","
         + "interactPointCfgId:" + InteractPointCfgId + ","
+        + "targetOverlayId:" + TargetOverlayId + ","
+        + "eventGroupCfgId:" + EventGroupCfgId + ","
+        + "cultActionId:" + CultActionId + ","
+        + "eventExpireDays:" + EventExpireDays + ","
         + "}";
     }
 }

@@ -112,6 +112,21 @@ namespace My.Player
             return partId != EBodyPart.None && _parts.TryGetValue(partId, out var state) ? state : null;
         }
 
+        // 等级榨取率（百分点）+ 局部 FluidGain（万分比）供内射吸收使用
+        public void GetExtractBonuses(EBodyPart partId, out long absorbRatePercent, out long fluidGainPerMyriad)
+        {
+            absorbRatePercent = 0;
+            fluidGainPerMyriad = 0;
+            var state = GetPartState(partId);
+            if (state == null)
+            {
+                return;
+            }
+
+            absorbRatePercent = BodyPartCatalog.GetAbsorbRatePercent(partId, state.Level);
+            fluidGainPerMyriad = GetLocalStat(partId, EPartLocalAttribute.FluidGain);
+        }
+
         public long GetLocalStat(EBodyPart partId, EPartLocalAttribute attr)
         {
             var state = GetPartState(partId);
@@ -190,22 +205,18 @@ namespace My.Player
             return Math.Max(0, nextNeed - state.Exp);
         }
 
-        void RebuildAllLocalStats()
+        public void RebuildAllLocalStats()
         {
+            var equip = _owner?.EquipmentManager;
             foreach (var kv in _parts)
             {
-                RebuildLocalStats(kv.Value);
+                kv.Value?.RebuildLocalStats(equip);
             }
         }
 
-        static void RebuildLocalStats(BodyPartRuntimeState state)
+        void RebuildLocalStats(BodyPartRuntimeState state)
         {
-            if (state == null)
-            {
-                return;
-            }
-
-            state.RebuildLocalStats();
+            state?.RebuildLocalStats(_owner?.EquipmentManager);
         }
 
         void NotifyProgressionChanged()

@@ -311,6 +311,8 @@ namespace My.Map
             attributeStore.RegisterResource(AttrIdConsts.HP, AttrIdConsts.HP_MAX, null, 250_000);
 
             attributeStore.RegisterNumeric(AttrIdConsts.PhysicalPower, BasePhysicalPower);
+            attributeStore.RegisterNumeric(AttrIdConsts.HTechnique, initialBase: 1000);
+            attributeStore.RegisterNumeric(AttrIdConsts.HStrength, initialBase: 1000);
 
             // 数值类
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerGcThreshold, initialBase: 100_000);
@@ -1930,6 +1932,12 @@ namespace My.Map
             attributeStore.RefreshAttrBaseNum(
                 AttrIdConsts.PhysicalResist,
                 progression.GetFinalAttribute((int)EYCAttribute.PhysicalResist));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.HTechnique,
+                1000 + progression.GetFinalAttribute((int)EYCAttribute.HTechnique));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.HStrength,
+                1000 + progression.GetFinalAttribute((int)EYCAttribute.HStrength));
             attributeStore.Commit();
         }
 
@@ -2039,7 +2047,8 @@ namespace My.Map
         {
             base.OnDamageBeforeFinalReduce(dmg, intent);
 
-            if(!intent.deltaFlags.HasFlag(EDmgFlag.Loss))
+            // HAct 派生的 H 伤害不再二次转冲击；普通伤害仍可按管线转冲击
+            if (!intent.deltaFlags.HasFlag(EDmgFlag.Loss) && intent.DmgCategory != EDmgCategory.H)
             {
                 // 获取原始h系数
                 var hParam = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HImpulse_Pipeline) ?? 0;
@@ -2058,10 +2067,15 @@ namespace My.Map
         /// </summary>
         /// <param name="hImpulse"></param>
         /// <param name="intent"></param>
-        public void ApplyHImpulseDirectly(long hImpulse, ResourceDeltaIntent intent = null)
+        public void ApplyHImpulseDirectly(long hImpulse, ResourceDeltaIntent intent = null, float climaxWeight = 1f)
         {
-            // 根据h冲击力分配高潮与发情
+            // 根据h冲击力分配高潮与发情；climaxWeight 来自 HAct.player_climax_weight
             (var climax, var estrus) = DamagePipeline.DistributeClimaxAndEstrusFromHImpulse(hImpulse, new LiveEntityFightAttrProvider(this));
+            if (climaxWeight > 0f && !Mathf.Approximately(climaxWeight, 1f))
+            {
+                climax = (long)(climax * climaxWeight);
+            }
+
             Debug.Log("OnDamageBeforeFinalReduce impulse h " + hImpulse + " " + climax + " " + estrus);
 
             // 叠加高潮条（快乐条
@@ -2116,6 +2130,8 @@ namespace My.Map
         /// </summary>
         public void OnAbsorbBlurtDirectly(float absorbVal, NpcUnitLogicEntity sourceNpc = null)
         {
+            absorbVal = ApplyBodyPartExtractBonus(absorbVal, sourceNpc);
+
             long hungerBaseRate = 2000;
             var hungerVal = (long)(absorbVal * (hungerBaseRate * 0.0001) * 10000);
             Debug.Log("直接吸取 hunger " + hungerVal);
@@ -2155,6 +2171,41 @@ namespace My.Map
                     SjAmount = absorbVal,
                 });
             }
+        }
+
+        // 内射吸收：按当前 H 会话接触部位叠 AbsorbRate(%) + FluidGain(万分比)
+        float ApplyBodyPartExtractBonus(float absorbVal, NpcUnitLogicEntity sourceNpc)
+        {
+            if (absorbVal <= 0f || sourceNpc == null)
+            {
+                return absorbVal;
+            }
+
+            var bodyParts = LogicManager?.playerDataManager?.BodyPartSystem;
+            var tracker = LogicManager?.playerDataManager?.HInteraction;
+            if (bodyParts == null || tracker == null)
+            {
+                return absorbVal;
+            }
+
+            if (!tracker.TryGetForPartner(sourceNpc.Id, out var session) || session.ContactPart == EBodyPart.None)
+            {
+                return absorbVal;
+            }
+
+            bodyParts.GetExtractBonuses(session.ContactPart, out var absorbRatePercent, out var fluidGainPerMyriad);
+            float mul = 1f + absorbRatePercent * 0.01f;
+            mul *= 1f + fluidGainPerMyriad * 0.0001f;
+            if (mul < 0.01f)
+            {
+                mul = 0.01f;
+            }
+
+            var boosted = absorbVal * mul;
+            Debug.Log(
+                $"[BodyPartExtract] part={session.ContactPart} act={session.SourceActId} " +
+                $"absorb%={absorbRatePercent} fluid={fluidGainPerMyriad} {absorbVal:F3}->{boosted:F3}");
+            return boosted;
         }
 
 
