@@ -1,7 +1,7 @@
 using cfg.demo;
 using UnityEngine;
 
-namespace My.Player
+namespace My.Map
 {
     public enum EHInteractionSource
     {
@@ -13,18 +13,17 @@ namespace My.Player
         CloseupHTangle = 5,
     }
 
-    // 当前 H 互动会话：fcked 只表示“可内射吸收”，细节放这里
+    // 单侧短命 H 会话（接收或主动）；挂在 NPC 上，不进存档
     public struct HInteractionSnapshot
     {
         public bool IsActive;
-        public long PartnerEntityId;
         public EBodyPart ContactPart;
         public int SourceActId;
         public EHInteractionSource Source;
         public float ExpireAt;
     }
 
-    public sealed class HInteractionTracker
+    public sealed class HInteractionSlot
     {
         public const float DefaultHoldSeconds = 8f;
 
@@ -34,22 +33,14 @@ namespace My.Player
         public bool HasActive => _current.IsActive && (_current.ExpireAt <= 0f || Time.time <= _current.ExpireAt);
 
         public void Begin(
-            long partnerEntityId,
             EBodyPart contactPart,
             EHInteractionSource source,
             int actId = 0,
             float holdSeconds = DefaultHoldSeconds)
         {
-            if (partnerEntityId == 0)
-            {
-                Clear();
-                return;
-            }
-
             _current = new HInteractionSnapshot
             {
                 IsActive = true,
-                PartnerEntityId = partnerEntityId,
                 ContactPart = contactPart,
                 SourceActId = actId,
                 Source = source,
@@ -57,17 +48,16 @@ namespace My.Player
             };
         }
 
-        // HAct 结算推进射精条时刷新会话（保留接触部位）
-        public void NoteActSettlement(long partnerEntityId, int actId, float holdSeconds = DefaultHoldSeconds)
+        public void NoteAct(int actId, float holdSeconds = DefaultHoldSeconds)
         {
-            if (partnerEntityId == 0 || actId <= 0)
+            if (actId <= 0)
             {
                 return;
             }
 
-            if (!HasActive || _current.PartnerEntityId != partnerEntityId)
+            if (!HasActive)
             {
-                Begin(partnerEntityId, InferDefaultContactPart(actId), EHInteractionSource.CombatSkill, actId, holdSeconds);
+                Begin(HActContactPart.InferDefault(actId), EHInteractionSource.CombatSkill, actId, holdSeconds);
                 return;
             }
 
@@ -76,6 +66,23 @@ namespace My.Player
             {
                 _current.ExpireAt = Time.time + holdSeconds;
             }
+        }
+
+        public void NoteAct(int actId, EBodyPart contactPart, EHInteractionSource source, float holdSeconds = DefaultHoldSeconds)
+        {
+            if (!HasActive || _current.ContactPart == EBodyPart.None)
+            {
+                Begin(contactPart != EBodyPart.None ? contactPart : HActContactPart.InferDefault(actId), source, actId, holdSeconds);
+                return;
+            }
+
+            if (contactPart != EBodyPart.None)
+            {
+                _current.ContactPart = contactPart;
+            }
+
+            _current.Source = source;
+            NoteAct(actId, holdSeconds);
         }
 
         public void SetContactPart(EBodyPart contactPart)
@@ -93,18 +100,10 @@ namespace My.Player
             _current = default;
         }
 
-        public void ClearIfPartner(long partnerEntityId)
-        {
-            if (_current.IsActive && _current.PartnerEntityId == partnerEntityId)
-            {
-                Clear();
-            }
-        }
-
-        public bool TryGetForPartner(long partnerEntityId, out HInteractionSnapshot snapshot)
+        public bool TryGet(out HInteractionSnapshot snapshot)
         {
             snapshot = default;
-            if (!HasActive || _current.PartnerEntityId != partnerEntityId)
+            if (!HasActive)
             {
                 return false;
             }
@@ -112,9 +111,19 @@ namespace My.Player
             snapshot = _current;
             return true;
         }
+    }
 
-        // 无显式部位时：优先从 HAct 描述推断接触/承精部位，再回退 filter 池
-        public static EBodyPart InferDefaultContactPart(int actId)
+    // NPC 双槽：被动接收（推射精/内射）与主动施为（对玩家）
+    public sealed class NpcHInteractionState
+    {
+        public HInteractionSlot Receive { get; } = new();
+        public HInteractionSlot Active { get; } = new();
+    }
+
+    // 从 HAct 推断玩家接触/承精部位
+    public static class HActContactPart
+    {
+        public static EBodyPart InferDefault(int actId)
         {
             var act = My.Config.CfgMgr.Cfgs?.TbHActInfo?.GetOrDefault(actId);
             if (act == null)
@@ -122,7 +131,7 @@ namespace My.Player
                 return EBodyPart.Womb;
             }
 
-            var fromDesc = InferContactPartFromDesc(act.Desc);
+            var fromDesc = InferFromDesc(act.Desc);
             if (fromDesc != EBodyPart.None)
             {
                 return fromDesc;
@@ -148,15 +157,13 @@ namespace My.Player
             return EBodyPart.Womb;
         }
 
-        // 按描述关键词推断承精/主接触部位（内射读榨取用，不是演出分镜）
-        static EBodyPart InferContactPartFromDesc(string desc)
+        public static EBodyPart InferFromDesc(string desc)
         {
             if (string.IsNullOrEmpty(desc))
             {
                 return EBodyPart.None;
             }
 
-            // 口系优先于泛插入（如「手口」「口爆」「口乳」）
             if (desc.Contains("口") || desc.Contains("吻") || desc.Contains("69") || desc.Contains("坐脸"))
             {
                 return EBodyPart.Mouth;

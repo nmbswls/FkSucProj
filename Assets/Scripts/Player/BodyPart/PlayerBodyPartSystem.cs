@@ -127,6 +127,20 @@ namespace My.Player
             fluidGainPerMyriad = GetLocalStat(partId, EPartLocalAttribute.FluidGain);
         }
 
+        // HAct 命中指定部位时叠入结算的技巧/强度
+        public void GetCombatBonuses(EBodyPart partId, out long hTechnique, out long hStrength)
+        {
+            hTechnique = 0;
+            hStrength = 0;
+            var state = GetPartState(partId);
+            if (state == null)
+            {
+                return;
+            }
+
+            BodyPartCatalog.GetCombatBonuses(partId, state.Level, out hTechnique, out hStrength);
+        }
+
         public long GetLocalStat(EBodyPart partId, EPartLocalAttribute attr)
         {
             var state = GetPartState(partId);

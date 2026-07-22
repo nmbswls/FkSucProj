@@ -8,7 +8,6 @@ using My.Input;
 using My.Map;
 using My.Map.Entity;
 using My.Map.View;
-using My.Player;
 using My.UI;
 using TMPro;
 using UnityEngine;
@@ -97,14 +96,12 @@ namespace My.MiniGame
             SetPrompt("按 Space 进行判定");
             SetPromptColor(normalTextColor);
 
-            // 随机一个静态动作；默认接触「穴」
+            // 随机一个静态动作；默认接触「穴」，写到目标 NPC.Receive
             var glm = MainGameManager.Instance.gameLogicManager;
             actId = PlayerGamePlayRule.RandomGetOneHAct("Unsensor", glm.playerLogicEntity.DesireLevel);
-            glm.playerDataManager?.HInteraction?.Begin(
-                targetEntityId,
-                EBodyPart.Womb,
-                EHInteractionSource.StaticAbsorb,
-                actId);
+            var npc = glm.GetLogicEntity(targetEntityId, false) as NpcUnitLogicEntity;
+            npc?.HInteraction.Receive.Begin(
+                EBodyPart.Womb, EHInteractionSource.StaticAbsorb, actId);
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 

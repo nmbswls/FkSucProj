@@ -1,3 +1,4 @@
+using cfg.demo;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
@@ -35,12 +36,17 @@ namespace My.Map.View
             SrcEntityId = srcEntityId;
             Duration = duration;
 
-            var player = MainGameManager.Instance.gameLogicManager.playerLogicEntity;
+            var glm = MainGameManager.Instance.gameLogicManager;
+            var player = glm.playerLogicEntity;
             HActId = PlayerGamePlayRule.RandomGetOneHAct("KnockDown", player.DesireLevel);
             if (HActId == 0)
             {
                 Debug.LogError("PauseCloseupKnockdownWindow: no KnockDown HAct");
             }
+
+            var npc = glm.GetLogicEntity(srcEntityId, false) as NpcUnitLogicEntity;
+            npc?.HInteraction.Active.Begin(
+                EBodyPart.Womb, EHInteractionSource.CloseupKnockdown, HActId);
         }
 
         public override void Show()

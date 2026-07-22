@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Map;
 using My.Map.Fight;
-using My.Player;
 using UnityEngine;
+using static My.Map.Fight.FightStruct;
 
 namespace My.Map.Entity
 {
@@ -20,6 +22,7 @@ namespace My.Map.Entity
             public long ImpulseOnEnemy;
             public long HpDamageOnDefender;
             public float PlayerClimaxWeight;
+            public EBodyPart ContactPart;
             public BaseUnitLogicEntity Attacker;
             public BaseUnitLogicEntity Defender;
         }
@@ -107,6 +110,16 @@ namespace My.Map.Entity
             long hTechDef = Math.Max(0, defender.GetAttr(AttrIdConsts.HTechnique));
             long hStrAtk = Math.Max(0, attacker.GetAttr(AttrIdConsts.HStrength));
 
+            var contactPart = HActContactPart.InferDefault(act.Id);
+            ApplyPlayerPartCombatBonus(
+                player as PlayerLogicEntity,
+                contactPart,
+                attacker,
+                defender,
+                ref hTechAtk,
+                ref hTechDef,
+                ref hStrAtk);
+
             int defLevel = Mathf.Max(1, defender.GetUnitLevel());
             double C = 100.0 + 5.0 * defLevel;
             double contest = act.ContestCoef > 0f ? act.ContestCoef : 1f;
@@ -141,10 +154,54 @@ namespace My.Map.Entity
                 ImpulseOnEnemy = ResolveSideImpulse(enemy, attacker, defender, impulseAttacker, impulseDefender),
                 HpDamageOnDefender = hpDamage,
                 PlayerClimaxWeight = act.PlayerClimaxWeight > 0f ? act.PlayerClimaxWeight : 1f,
+                ContactPart = contactPart,
                 Attacker = attacker,
                 Defender = defender,
             };
             return true;
+        }
+
+        // 玩家参与侧叠入指定部位的技巧/强度
+        static void ApplyPlayerPartCombatBonus(
+            PlayerLogicEntity player,
+            EBodyPart contactPart,
+            BaseUnitLogicEntity attacker,
+            BaseUnitLogicEntity defender,
+            ref long hTechAtk,
+            ref long hTechDef,
+            ref long hStrAtk)
+        {
+            if (player == null || contactPart == EBodyPart.None)
+            {
+                return;
+            }
+
+            var bodyParts = player.LogicManager?.playerDataManager?.BodyPartSystem;
+            if (bodyParts == null)
+            {
+                return;
+            }
+
+            bodyParts.GetCombatBonuses(contactPart, out var partTech, out var partStr);
+            if (partTech <= 0 && partStr <= 0)
+            {
+                return;
+            }
+
+            // 表内部位 h_technique 目前是偏大的占位绝对值；作「额外」叠入时软折算
+            const long SoftDiv = 50;
+            long techExtra = partTech / SoftDiv;
+            long strExtra = partStr / SoftDiv;
+
+            if (ReferenceEquals(player, attacker))
+            {
+                hTechAtk += techExtra;
+                hStrAtk += strExtra;
+            }
+            else if (ReferenceEquals(player, defender))
+            {
+                hTechDef += techExtra;
+            }
         }
 
         static long ResolveSideImpulse(
@@ -214,36 +271,47 @@ namespace My.Map.Entity
             var climaxWeight = result.PlayerClimaxWeight > 0f ? result.PlayerClimaxWeight : 1f;
             ApplyImpulseToUnit(result.Attacker, result.ImpulseOnAttacker, climaxWeight);
             ApplyImpulseToUnit(result.Defender, result.ImpulseOnDefender, climaxWeight);
-            NotePlayerDrivenNpcInteraction(result, sourceActId);
+            NoteNpcHInteractionContexts(result, sourceActId);
 
             if (applyHpDamage && result.HpDamageOnDefender > 0 && result.Defender != null)
             {
-                ApplyHActHpDamage(result.Attacker, result.Defender, result.HpDamageOnDefender, knockBackForce);
+                ApplyHActHpDamage(
+                    result.Attacker,
+                    result.Defender,
+                    result.HpDamageOnDefender,
+                    result.ContactPart,
+                    knockBackForce);
             }
         }
 
-        // 玩家对 NPC 推进冲击时：刷新 H 会话 + 延长 NpcFcked，供随后内射读取部位榨取
-        static void NotePlayerDrivenNpcInteraction(HActResolveResult result, int sourceActId)
+        // 写入 NPC 双槽：玩家打 NPC → Receive；NPC 打玩家 → Active
+        static void NoteNpcHInteractionContexts(HActResolveResult result, int sourceActId)
         {
-            if (sourceActId <= 0 || result.Defender is not NpcUnitLogicEntity npc)
+            if (sourceActId <= 0)
             {
                 return;
             }
 
-            if (result.Attacker is not PlayerLogicEntity)
+            var contactPart = result.ContactPart != EBodyPart.None
+                ? result.ContactPart
+                : HActContactPart.InferDefault(sourceActId);
+            var glm = result.Attacker?.LogicManager ?? result.Defender?.LogicManager;
+
+            if (result.Attacker is PlayerLogicEntity && result.Defender is NpcUnitLogicEntity npcRecv)
             {
+                npcRecv.HInteraction.Receive.NoteAct(
+                    sourceActId, contactPart, EHInteractionSource.CombatSkill);
+                glm?.globalBuffManager?.AddBuff(
+                    npcRecv.Id, "fcked_marked", 1,
+                    overrideDuration: HInteractionSlot.DefaultHoldSeconds);
                 return;
             }
 
-            var glm = npc.LogicManager;
-            var tracker = glm?.playerDataManager?.HInteraction;
-            if (tracker == null)
+            if (result.Attacker is NpcUnitLogicEntity npcAtk && result.Defender is PlayerLogicEntity)
             {
-                return;
+                npcAtk.HInteraction.Active.NoteAct(
+                    sourceActId, contactPart, EHInteractionSource.CombatSkill);
             }
-
-            tracker.NoteActSettlement(npc.Id, sourceActId);
-            glm.globalBuffManager?.AddBuff(npc.Id, "fcked_marked", 1, overrideDuration: HInteractionTracker.DefaultHoldSeconds);
         }
 
         static void ApplyImpulseToUnit(BaseUnitLogicEntity unit, long impulse, float playerClimaxWeight = 1f)
@@ -263,11 +331,12 @@ namespace My.Map.Entity
             }
         }
 
-        // HAct 派生 HP 伤害：仅走 H 类别纯扣血，不再经普攻减伤管线属性
+        // HAct 派生 HP 伤害：仅走 H 类别纯扣血；带 HitPart flag 供部位减伤读取
         public static void ApplyHActHpDamage(
             BaseUnitLogicEntity attacker,
             BaseUnitLogicEntity defender,
             long rawDamage,
+            EBodyPart contactPart = EBodyPart.None,
             float knockBackForce = 0f)
         {
             if (defender == null || rawDamage <= 0)
@@ -287,14 +356,35 @@ namespace My.Map.Entity
                 }
             }
 
+            var flags = ToHitPartFlag(contactPart);
+            Dictionary<string, long> extraAttrs = null;
+            if (contactPart != EBodyPart.None && defender is PlayerLogicEntity playerDef)
+            {
+                var bodyParts = playerDef.LogicManager?.playerDataManager?.BodyPartSystem;
+                if (bodyParts != null)
+                {
+                    bodyParts.GetCombatBonuses(contactPart, out var partTech, out var partStr);
+                    extraAttrs = new Dictionary<string, long>(2);
+                    if (partTech > 0)
+                    {
+                        extraAttrs[AttrIdConsts.HTechnique_Pipeline] = partTech;
+                    }
+
+                    if (partStr > 0)
+                    {
+                        extraAttrs[AttrIdConsts.HStrength_Pipeline] = partStr;
+                    }
+                }
+            }
+
             // 不写入 HImpulse_Pipeline，避免伤再转冲击
             defender.ApplyResourceChange(
                 AttrIdConsts.HP,
                 -rawDamage,
                 true,
-                FightStruct.EDmgFlag.None,
+                flags,
                 srcId,
-                null,
+                extraAttrs,
                 EDmgCategory.H,
                 srcPos,
                 hitDir);

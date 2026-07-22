@@ -2173,7 +2173,7 @@ namespace My.Map
             }
         }
 
-        // 内射吸收：按当前 H 会话接触部位叠 AbsorbRate(%) + FluidGain(万分比)
+        // 内射吸收：读 NPC.Receive 接触部位，叠 AbsorbRate(%) + FluidGain(万分比)
         float ApplyBodyPartExtractBonus(float absorbVal, NpcUnitLogicEntity sourceNpc)
         {
             if (absorbVal <= 0f || sourceNpc == null)
@@ -2182,13 +2182,12 @@ namespace My.Map
             }
 
             var bodyParts = LogicManager?.playerDataManager?.BodyPartSystem;
-            var tracker = LogicManager?.playerDataManager?.HInteraction;
-            if (bodyParts == null || tracker == null)
+            if (bodyParts == null)
             {
                 return absorbVal;
             }
 
-            if (!tracker.TryGetForPartner(sourceNpc.Id, out var session) || session.ContactPart == EBodyPart.None)
+            if (!sourceNpc.HInteraction.Receive.TryGet(out var session) || session.ContactPart == EBodyPart.None)
             {
                 return absorbVal;
             }
@@ -2206,6 +2205,52 @@ namespace My.Map
                 $"[BodyPartExtract] part={session.ContactPart} act={session.SourceActId} " +
                 $"absorb%={absorbRatePercent} fluid={fluidGainPerMyriad} {absorbVal:F3}->{boosted:F3}");
             return boosted;
+        }
+
+        // 带 HitPart 的 H 伤害：用部位 HStrength（及 Endurance）做承伤修正
+        protected override long AdjustHCategoryHpDamage(long rawDmg, ResourceDeltaIntent intent)
+        {
+            if (rawDmg <= 0 || intent == null)
+            {
+                return rawDmg;
+            }
+
+            EBodyPart part = EBodyPart.None;
+            if (!FightStruct.TryGetHitPart(intent.deltaFlags, out part) || part == EBodyPart.None)
+            {
+                return rawDmg;
+            }
+
+            long partStr = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HStrength_Pipeline) ?? 0;
+            var bodyParts = LogicManager?.playerDataManager?.BodyPartSystem;
+            if (bodyParts != null && partStr <= 0)
+            {
+                bodyParts.GetCombatBonuses(part, out _, out partStr);
+            }
+
+            long endurance = bodyParts?.GetLocalStat(part, EPartLocalAttribute.Endurance) ?? 0;
+
+            // HStrength：软对抗减伤；Endurance：万分比减伤（上限 80%）
+            double dmg = rawDmg;
+            if (partStr > 0)
+            {
+                dmg = dmg * 1000.0 / (1000.0 + partStr * 0.001);
+            }
+
+            if (endurance > 0)
+            {
+                long er = endurance > 8000 ? 8000 : endurance;
+                dmg = dmg * (10000 - er) * 0.0001;
+            }
+
+            var adjusted = (long)Math.Max(1, dmg);
+            if (adjusted != rawDmg)
+            {
+                Debug.Log(
+                    $"[HitPartHDmg] part={part} str={partStr} endu={endurance} {rawDmg}->{adjusted}");
+            }
+
+            return adjusted;
         }
 
 

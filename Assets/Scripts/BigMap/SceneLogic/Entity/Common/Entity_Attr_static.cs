@@ -59,6 +59,7 @@ namespace My.Map.Entity
         public const string HImpulse_Pipeline = "HImpulse_Pipeline";
         public const string SrcLevel_Pipeline = "SrcLevel_Pipeline";
         public const string HTechnique_Pipeline = "HTechnique_Pipeline";
+        public const string HStrength_Pipeline = "HStrength_Pipeline";
         public const string XiXue_Pipeline = "XiXue_Pipeline";
 
         // 施放时由武器栏写入 ctx.CacheAttrVal，供 UseWeapon OnHitEffects 引用

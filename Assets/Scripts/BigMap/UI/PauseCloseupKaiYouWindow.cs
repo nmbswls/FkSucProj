@@ -1,8 +1,10 @@
 
 using System;
+using cfg.demo;
 using DG.Tweening;
 using My.Config;
 using My.Input;
+using My.Map;
 using My.Map.Entity;
 using My.UI;
 using TMPro;
@@ -89,12 +91,18 @@ namespace My.Map.View
             this.SrcEntityId = srcEntityId;
             this.Duration = duration;
 
-            HActId = PlayerGamePlayRule.RandomGetOneHAct("KaiYou", MainGameManager.Instance.gameLogicManager.playerLogicEntity.DesireLevel);
+            var glm = MainGameManager.Instance.gameLogicManager;
+            HActId = PlayerGamePlayRule.RandomGetOneHAct("KaiYou", glm.playerLogicEntity.DesireLevel);
 
             if (HActId == 0)
             {
                 Debug.LogError("RefreshData");
             }
+
+            // NPC 主动：开胸类默认接触胸
+            var npc = glm.GetLogicEntity(srcEntityId, false) as NpcUnitLogicEntity;
+            npc?.HInteraction.Active.Begin(
+                EBodyPart.Breast, EHInteractionSource.CloseupKaiYou, HActId);
 
             CheckPlayerCanCounter();
 

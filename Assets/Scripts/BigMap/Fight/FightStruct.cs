@@ -56,6 +56,51 @@ namespace My.Map.Fight
             Nonlethal = 1 << 5,
 
             Loss = 1 << 6,
+
+            // H 命中接触部位（供 H 类伤害读取玩家部位 HStrength / Endurance）
+            HitPart_Mouth = 1 << 8,
+            HitPart_Breast = 1 << 9,
+            HitPart_Womb = 1 << 10,
+            HitPart_Tail = 1 << 11,
+            HitPart_Wing = 1 << 12,
+            HitPart_Skin = 1 << 13,
+        }
+
+        public const EDmgFlag HitPartMask =
+            EDmgFlag.HitPart_Mouth | EDmgFlag.HitPart_Breast | EDmgFlag.HitPart_Womb |
+            EDmgFlag.HitPart_Tail | EDmgFlag.HitPart_Wing | EDmgFlag.HitPart_Skin;
+
+        public static EDmgFlag ToHitPartFlag(cfg.demo.EBodyPart part)
+        {
+            return part switch
+            {
+                cfg.demo.EBodyPart.Mouth => EDmgFlag.HitPart_Mouth,
+                cfg.demo.EBodyPart.Breast => EDmgFlag.HitPart_Breast,
+                cfg.demo.EBodyPart.Womb => EDmgFlag.HitPart_Womb,
+                cfg.demo.EBodyPart.Tail => EDmgFlag.HitPart_Tail,
+                cfg.demo.EBodyPart.Wing => EDmgFlag.HitPart_Wing,
+                cfg.demo.EBodyPart.Skin => EDmgFlag.HitPart_Skin,
+                _ => EDmgFlag.None,
+            };
+        }
+
+        public static bool TryGetHitPart(EDmgFlag flags, out cfg.demo.EBodyPart part)
+        {
+            part = cfg.demo.EBodyPart.None;
+            var masked = flags & HitPartMask;
+            if (masked == EDmgFlag.None)
+            {
+                return false;
+            }
+
+            // 多 flag 时按部位枚举优先级取最低位
+            if ((masked & EDmgFlag.HitPart_Mouth) != 0) { part = cfg.demo.EBodyPart.Mouth; return true; }
+            if ((masked & EDmgFlag.HitPart_Breast) != 0) { part = cfg.demo.EBodyPart.Breast; return true; }
+            if ((masked & EDmgFlag.HitPart_Womb) != 0) { part = cfg.demo.EBodyPart.Womb; return true; }
+            if ((masked & EDmgFlag.HitPart_Tail) != 0) { part = cfg.demo.EBodyPart.Tail; return true; }
+            if ((masked & EDmgFlag.HitPart_Wing) != 0) { part = cfg.demo.EBodyPart.Wing; return true; }
+            if ((masked & EDmgFlag.HitPart_Skin) != 0) { part = cfg.demo.EBodyPart.Skin; return true; }
+            return false;
         }
 
         public enum EInterruptSource

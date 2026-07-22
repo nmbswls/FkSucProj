@@ -198,6 +198,21 @@ namespace My.Config
             return row != null ? System.Math.Max(0, row.AbsorbRate) : 0;
         }
 
+        // 当前等级部位战斗属性（与全身 attr 同毫点刻度；表暂无独立 h_strength 时用 h_technique 兼作部位输出强度）
+        public static void GetCombatBonuses(EBodyPart partId, int level, out long hTechnique, out long hStrength)
+        {
+            hTechnique = 0;
+            hStrength = 0;
+            var row = GetLevelRow(partId, level);
+            if (row == null)
+            {
+                return;
+            }
+
+            hTechnique = System.Math.Max(0, row.HTechnique);
+            hStrength = hTechnique;
+        }
+
         // 将已装备 PartGear 的 local_bonuses 叠进部位局部属性
         public static void AccumulateEquippedGearLocalBonuses(EBodyPart partId, PlayerEquipmentManager equipment, StatMap targetMap)
         {

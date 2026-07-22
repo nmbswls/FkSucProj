@@ -60,9 +60,6 @@ namespace My.Player
 
         public PlayerBodyPartSystem BodyPartSystem { get; private set; }
 
-        // 当前 H 互动会话（接触部位 / 来源 Act）；与 NpcFcked 布尔标记分工
-        public HInteractionTracker HInteraction { get; } = new();
-
         public PlayerJingYuanCodexSystem JingYuanCodexSystem { get; private set; }
 
         public PlayerJingYuanEssenceSystem JingYuanEssenceSystem { get; private set; }

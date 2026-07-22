@@ -58,6 +58,9 @@ namespace My.Map
         public bool IsFaQing { get { return NpcDesirePhase >= 2; } }
         public int NpcDesirePhase { get; private set; } // npc独特欲望阶段  
 
+        // 被动接收 / 主动施为 H 上下文（与 NpcFcked、射精条同属 NPC）
+        public NpcHInteractionState HInteraction { get; } = new();
+
         protected bool hShieldBroken;
 
 

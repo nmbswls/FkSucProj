@@ -3,7 +3,6 @@ using cfg.demo;
 using My.Input;
 using My.Map;
 using My.Map.Entity;
-using My.Player;
 using My.UI;
 using TMPro;
 using UnityEngine;
@@ -204,7 +203,13 @@ namespace My.Map.View
 
             _accEnemyImpulse += resolved.ImpulseOnEnemy;
             _accPlayerImpulse += resolved.ImpulseOnPlayer;
-            glm.playerDataManager?.HInteraction?.NoteActSettlement(SrcEntityId, _currentActId);
+            if (npc != null)
+            {
+                npc.HInteraction.Receive.NoteAct(
+                    _currentActId,
+                    resolved.ContactPart != EBodyPart.None ? resolved.ContactPart : EBodyPart.Womb,
+                    EHInteractionSource.CloseupHTangle);
+            }
         }
 
         void Update()
@@ -277,14 +282,12 @@ namespace My.Map.View
                 return;
             }
 
-            // 缠绵默认接触「穴」；fcked 拉长到会话窗口，便于射精条满时内射
-            glm.playerDataManager?.HInteraction?.Begin(
-                SrcEntityId,
-                EBodyPart.Womb,
-                EHInteractionSource.CloseupHTangle,
-                _currentActId);
+            // 缠绵默认接触「穴」；写 NPC.Receive + 拉长 fcked，便于射精条满时内射
+            var npc = glm.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
+            npc?.HInteraction.Receive.Begin(
+                EBodyPart.Womb, EHInteractionSource.CloseupHTangle, _currentActId);
             glm.globalBuffManager.AddBuff(
-                SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionTracker.DefaultHoldSeconds);
+                SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionSlot.DefaultHoldSeconds);
             glm.globalBuffManager.AddBuff(glm.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
         }
 
@@ -334,9 +337,10 @@ namespace My.Map.View
             if (npc != null && settlement.EnemyImpulseApply > 0)
             {
                 npc.ApplyNpcHImpulse(settlement.EnemyImpulseApply);
-                glm.playerDataManager?.HInteraction?.NoteActSettlement(SrcEntityId, _currentActId);
+                npc.HInteraction.Receive.NoteAct(
+                    _currentActId, EBodyPart.Womb, EHInteractionSource.CloseupHTangle);
                 glm.globalBuffManager?.AddBuff(
-                    SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionTracker.DefaultHoldSeconds);
+                    SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionSlot.DefaultHoldSeconds);
             }
 
             if (npc != null && settlement.DeeperLayers > 0)
