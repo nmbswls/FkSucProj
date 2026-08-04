@@ -58,9 +58,13 @@ namespace My.UI.Bag
         public LoopGridView BigBagGridView;
         public TextMeshProUGUI BigBagTitleText;
         public EPlayerBagId BigBagId = EPlayerBagId.Big;
-        [Range(1, 3)]
-        public int BigBagColumns = 3;
+        [Range(1, 2)]
+        public int BigBagColumns = 2;
         public string BigBagItemPrefabName = "OneItem";
+        [Min(0f)]
+        public float BigBagDockSingleRowHeight = 118f;
+        [Min(0f)]
+        public float BigBagDockAdditionalRowHeight = 88f;
 
         public class InnerMainBagTabItem
         {
@@ -110,6 +114,7 @@ namespace My.UI.Bag
 
 
         private bool markDirty = false;
+        private PlayerBag boundBigBag;
         private void Awake()
         {
             GridView.InitGridView(0, OnMainGetItemByIndex);
@@ -117,6 +122,7 @@ namespace My.UI.Bag
             InitBigBagView();
 
             GridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, Columns);
+            BindBigBagUpdateListener();
 
             BindMainBagTabs();
 
@@ -130,6 +136,11 @@ namespace My.UI.Bag
 
             JingYuanButton?.onClick.AddListener(() => UIManager.Instance.ShowPanel(JingYuanCarriedPanel.PanelIdConst));
             
+
+            if (SpecBagSelectionsTr == null)
+            {
+                return;
+            }
 
             for (int i = 0; i < SpecBagSelectionsTr.childCount; i++)
             {
@@ -174,11 +185,11 @@ namespace My.UI.Bag
                 SpeBagItems.Add(item);
             }
 
-            CollapseSpeBagBtn.onClick.RemoveAllListeners();
-            CollapseSpeBagBtn.onClick.AddListener(() =>
+            if (CollapseSpeBagBtn != null)
             {
-                CloseSpeBag();
-            });
+                CollapseSpeBagBtn.onClick.RemoveAllListeners();
+                CollapseSpeBagBtn.onClick.AddListener(CloseSpeBag);
+            }
 
             //gameObject.SetActive(false);
         }
@@ -189,11 +200,12 @@ namespace My.UI.Bag
             {
                 BigBagGridView.InitGridView(0, OnBigGetItemByIndex);
                 BigBagGridView.SetGridFixedGroupCount(GridFixedType.ColumnCountFixed, BigBagColumns);
+                BigBagGridView.ArrangeType = GridItemArrangeType.BottomLeftToTopRight;
             }
 
             if (BigBagTitleText != null)
             {
-                BigBagTitleText.text = "大件";
+                BigBagTitleText.text = "\u5927\u4ef6";
             }
         }
 
@@ -213,12 +225,58 @@ namespace My.UI.Bag
 
             if (!visible)
             {
+                ResizeBigBagDock(0);
                 BigBagGridView.SetListItemCount(0);
                 return;
             }
 
+            ResizeBigBagDock(bag.BasicCapacity);
             BigBagGridView.SetListItemCount(bag.BasicCapacity);
             BigBagGridView.RefreshAllShownItem();
+        }
+
+        void ResizeBigBagDock(int capacity)
+        {
+            if (BigBagDockRoot == null)
+            {
+                return;
+            }
+
+            var dockRect = BigBagDockRoot.GetComponent<RectTransform>();
+            if (dockRect == null)
+            {
+                return;
+            }
+
+            int rows = capacity <= 0 ? 1 : Mathf.CeilToInt((float)capacity / Mathf.Max(1, BigBagColumns));
+            dockRect.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Vertical,
+                BigBagDockSingleRowHeight + (rows - 1) * BigBagDockAdditionalRowHeight);
+        }
+
+        void BindBigBagUpdateListener()
+        {
+            var currentBag = BindingInventory?.GetBagById((int)BigBagId);
+            if (ReferenceEquals(boundBigBag, currentBag))
+            {
+                return;
+            }
+
+            if (boundBigBag != null)
+            {
+                boundBigBag.EvOnBagUpdate -= OnBigBagUpdated;
+            }
+
+            boundBigBag = currentBag;
+            if (boundBigBag != null)
+            {
+                boundBigBag.EvOnBagUpdate += OnBigBagUpdated;
+            }
+        }
+
+        void OnBigBagUpdated()
+        {
+            markDirty = true;
         }
 
         void BindMainBagTabs()
@@ -279,6 +337,7 @@ namespace My.UI.Bag
 
             SwitchMainBagTab(EPlayerBagId.Default, force: true);
             CloseSpeBag();
+            BindBigBagUpdateListener();
             RefreshBigBag();
 
             PlayerHumanItemBarPanel.ShowCompanionForBagIfNeeded();
@@ -349,6 +408,11 @@ namespace My.UI.Bag
 
         void OnDestroy()
         {
+            if (boundBigBag != null)
+            {
+                boundBigBag.EvOnBagUpdate -= OnBigBagUpdated;
+                boundBigBag = null;
+            }
         }
 
         private void OnInventoryChanged(int idx)
@@ -367,8 +431,16 @@ namespace My.UI.Bag
             if (CurrExpandBagId != 0)
             {
                 var speBag = BindingInventory.GetBagById((int)CurrExpandBagId);
-                SpeGridView.SetListItemCount(speBag.BasicCapacity + speBag.ExtraSlots.Count + 1);
-                SpeGridView.RefreshAllShownItem();
+                if (speBag != null)
+                {
+                    SpeGridView.SetListItemCount(speBag.BasicCapacity + speBag.ExtraSlots.Count + 1);
+                    SpeGridView.RefreshAllShownItem();
+                }
+                else
+                {
+                    CurrExpandBagId = 0;
+                    SpeGridView.SetListItemCount(0);
+                }
             }
 
             RefreshBigBag();

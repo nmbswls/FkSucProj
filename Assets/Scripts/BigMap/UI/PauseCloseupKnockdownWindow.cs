@@ -46,7 +46,7 @@ namespace My.Map.View
 
             var npc = glm.GetLogicEntity(srcEntityId, false) as NpcUnitLogicEntity;
             npc?.HInteraction.Active.Begin(
-                EBodyPart.Womb, EHInteractionSource.CloseupKnockdown, HActId);
+                EBodyPart.FrontHole, EHInteractionSource.CloseupKnockdown, HActId);
         }
 
         public override void Show()
@@ -76,8 +76,10 @@ namespace My.Map.View
                 return;
             }
 
-            // Closeup 互动不派生 HP（表内 KnockDown 的 hp_from_impulse_coef 保持 0）
-            HActResolver.TryResolveAndApply(HActId, p, target, intensity: 1f, applyHpDamage: false);
+            // Closeup 互动不派生 HP；接触部位与 Active 会话一致
+            HActResolver.TryResolveAndApply(
+                HActId, p, target, intensity: 1f, applyHpDamage: false,
+                preferredContactPart: EBodyPart.FrontHole);
 
             p.ApplyResourceChange(AttrIdConsts.PlayerSanity, -4_000, false, Fight.FightStruct.EDmgFlag.None, srcEntityId: SrcEntityId);
 

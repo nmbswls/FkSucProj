@@ -1,0 +1,15 @@
+[
+  {
+    "output_id": 1,
+    "cycle_days": 1,
+    "faith": 5,
+    "item_id": "stick",
+    "item_count": 1,
+    "dream_resource_id": "",
+    "dream_resource_count": 0,
+    "daily_linker_add": 1,
+    "base_efficiency_percent": 50,
+    "efficiency_per_linker_percent": 1,
+    "max_efficiency_percent": 100
+  }
+]

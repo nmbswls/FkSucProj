@@ -25,26 +25,26 @@ MonoBehaviour:
   PaintExportPPU: 16
   SlicePixelSize: 512
   MaskColor: {r: 1, g: 0, b: 1, a: 1}
-  ExportRevision: 15
+  ExportRevision: 32
   ContextExpandRatio: 0.25
   Chunks:
   - X: 0
     Y: 0
-    Source: 0
+    Source: 1
     TemplateStale: 0
     TileCoverageRatio: 0.4923172
   - X: 1
     Y: 0
-    Source: 0
+    Source: 1
     TemplateStale: 0
     TileCoverageRatio: 0.50348663
   - X: 0
     Y: 1
-    Source: 0
+    Source: 1
     TemplateStale: 0
     TileCoverageRatio: 0.5203438
   - X: 1
     Y: 1
-    Source: 0
+    Source: 1
     TemplateStale: 0
     TileCoverageRatio: 0.5806618

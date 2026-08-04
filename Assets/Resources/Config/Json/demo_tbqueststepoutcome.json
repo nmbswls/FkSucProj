@@ -131,13 +131,11 @@
     "need_objective_ids": [
       "202_s1_Main"
     ],
-    "is_final": true,
+    "is_final": false,
     "is_fail": false,
-    "next_step_id": "",
+    "next_step_id": "202_s2",
     "finish_reward": [],
-    "set_variables": [
-      "home_01.survivors_counted"
-    ]
+    "set_variables": []
   },
   {
     "outcome_id": "203_s1_Main",
@@ -426,7 +424,44 @@
     "next_step_id": "",
     "finish_reward": [],
     "set_variables": [
-      "village_01.herb_shop_task_done"
+      "home_01.medicine_delivered"
+    ]
+  },
+  {
+    "outcome_id": "216_s1_Main",
+    "need_objective_ids": [
+      "216_s1_Main"
+    ],
+    "is_final": false,
+    "is_fail": false,
+    "next_step_id": "216_s2",
+    "finish_reward": [],
+    "set_variables": []
+  },
+  {
+    "outcome_id": "216_s2_Main",
+    "need_objective_ids": [
+      "216_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "village_01.road_cleared"
+    ]
+  },
+  {
+    "outcome_id": "202_s2_Main",
+    "need_objective_ids": [
+      "202_s2_Main"
+    ],
+    "is_final": true,
+    "is_fail": false,
+    "next_step_id": "",
+    "finish_reward": [],
+    "set_variables": [
+      "home_01.survivors_counted"
     ]
   }
 ]

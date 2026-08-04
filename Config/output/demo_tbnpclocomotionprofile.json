@@ -1,0 +1,86 @@
+[
+  {
+    "id": "vera_default",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "vera_work",
+    "idle_anim": "vera_work_idle",
+    "move_anim": "vera_work_move",
+    "priority": 20
+  },
+  {
+    "id": "vera_sleep",
+    "idle_anim": "vera_sleep_idle",
+    "move_anim": "move",
+    "priority": 20
+  },
+  {
+    "id": "vera_wait",
+    "idle_anim": "vera_wait_idle",
+    "move_anim": "move",
+    "priority": 20
+  },
+  {
+    "id": "home01_emon_pre",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_emon_post",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_duran_pre",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_duran_post",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_evan_pre",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_evan_post",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_hearn_pre",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_hearn_post",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_vera_pre",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  },
+  {
+    "id": "home01_vera_post",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
+  }
+]

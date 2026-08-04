@@ -1,0 +1,35 @@
+{
+  "DialogId": "jingyuan_pool_offer_h",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "精元池秘仪",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "池水微微颤动。你将精元导入秘仪纹路，温热与空虚交替涌上。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "低语",
+              "Content": "泄出的并非浪费……它们凝成浊液，等待下一次炼制。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "……够了。把这些留下。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

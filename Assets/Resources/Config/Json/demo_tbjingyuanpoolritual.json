@@ -1,0 +1,22 @@
+[
+  {
+    "ritual_id": "pool_offer_basic",
+    "display_name": "池畔泄欲",
+    "desc": "基准兑换：约 25 精元 = 1 浊液。消耗 50 → 获得 2。",
+    "dialog_id": "jingyuan_pool_offer_h",
+    "cost_jingyuan": 50,
+    "reward_item_id": "jingyuan_slurry",
+    "reward_item_count": 2,
+    "jingyuan_per_material": 25
+  },
+  {
+    "ritual_id": "pool_offer_bulk",
+    "display_name": "溢流倾泻",
+    "desc": "批量兑换：约 20 精元 = 1 浊液。消耗 200 → 获得 10。适合处理超额精元。",
+    "dialog_id": "jingyuan_pool_offer_h",
+    "cost_jingyuan": 200,
+    "reward_item_id": "jingyuan_slurry",
+    "reward_item_count": 10,
+    "jingyuan_per_material": 20
+  }
+]

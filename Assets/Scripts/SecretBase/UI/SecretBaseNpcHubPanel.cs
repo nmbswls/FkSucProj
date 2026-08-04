@@ -415,6 +415,8 @@ namespace My.UI
                     ECommonCheckType.CheckVariable => $"满足条件 {cond.Param5}",
                     ECommonCheckType.FuncOpen => $"解锁功能 {(EFuncOpenType)cond.Param1}",
                     ECommonCheckType.CharacterFavorLevel => $"{cond.Param5}好感达到 Lv{cond.Param1}",
+                    ECommonCheckType.CultTechNodeLevel => $"教团科技节点 {cond.Param1} 达到 Lv{(cond.Param2 > 0 ? cond.Param2 : 1)}",
+                    ECommonCheckType.CultAttributeAtLeast => $"教团属性 {cond.Param5} ≥ {cond.Param1}",
                     _ => "特殊条件",
                 });
             }

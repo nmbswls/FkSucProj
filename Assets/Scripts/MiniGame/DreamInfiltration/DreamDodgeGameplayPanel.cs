@@ -598,9 +598,20 @@ namespace My.MiniGame.Dream
             }
 
             UIManager.Instance?.HidePanel(DreamInfiltrationIds.GameplayPanel);
+            var totalScore = _forceDamage + _sootheDamage + _trickDamage;
+            var finalWon = won;
+            if (finalWon
+                && _ctx != null
+                && _ctx.EntrySource == DreamEntrySourceKind.AbstractGroupEntry
+                && _ctx.RequiredScore > 0
+                && totalScore < _ctx.RequiredScore)
+            {
+                finalWon = false;
+            }
+
             var payload = new DreamSettlementPayload
             {
-                Won = won,
+                Won = finalWon,
                 ThemeDisplayName = _ctx.ThemeDisplayName,
                 ForceScore    = _forceDamage,
                 SoothingScore = _sootheDamage,
@@ -609,9 +620,12 @@ namespace My.MiniGame.Dream
                 SpotId = _ctx.SpotId,
                 CharacterKey = _ctx.CharacterKey,
                 CharDreamEntryId = _ctx.CharDreamEntryId,
-                VictoryTendency = won
+                AbstractGroupId = _ctx.AbstractGroupId,
+                AbstractGroupStage = _ctx.AbstractGroupStage,
+                VictoryTendency = finalWon
                     ? DreamVictoryTendencyResolver.Resolve(_forceDamage, _sootheDamage, _trickDamage)
                     : null,
+                AdvanceDayAfterClose = true,
             };
             UIManager.Instance?.ShowPanel(DreamInfiltrationIds.SettlementPanel, payload, UILayer.Overlay);
         }
@@ -699,10 +713,13 @@ namespace My.MiniGame.Dream
         public float AoeWarningDuration = 1.5f;
         public int ProjectileDamage = 20;
         public float TrickApproachSpeed = 65f;
+        public int RequiredScore;
 
         public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.FacilitySpot;
         public string SpotId = "";
         public string CharacterKey = "";
         public int CharDreamEntryId;
+        public string AbstractGroupId = "";
+        public int AbstractGroupStage;
     }
 }

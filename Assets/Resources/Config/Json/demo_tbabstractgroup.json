@@ -1,0 +1,26 @@
+[
+  {
+    "group_id": "riverside_peddlers",
+    "display_name": "河畔小贩团",
+    "desc": "沿河叫卖的无名商贩结成的松散团体。",
+    "icon_path": "",
+    "max_stage": 3,
+    "tags": [
+      "town,trade"
+    ],
+    "unlock_conds": [],
+    "retired_after_max": true
+  },
+  {
+    "group_id": "nightwatch_helpers",
+    "display_name": "夜巡协力会",
+    "desc": "自愿跟夜巡帮衬的居民互助会。",
+    "icon_path": "",
+    "max_stage": 3,
+    "tags": [
+      "night,militia"
+    ],
+    "unlock_conds": [],
+    "retired_after_max": true
+  }
+]

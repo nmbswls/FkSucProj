@@ -8,7 +8,7 @@
     "duration_days": 3,
     "effect_type": 0,
     "loot_point_cfg_id": "rumor_gold_chest",
-    "npc_cfg_id": "",
+    "npc_cfg_id": "27",
     "intel_kind": 0,
     "appear_conds": [
       {
@@ -20,7 +20,12 @@
         "param5": "",
         "param6": ""
       }
-    ]
+    ],
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_fix_npc_demo",
@@ -30,7 +35,7 @@
     "cost_count": 100,
     "duration_days": 2,
     "effect_type": 1,
-    "loot_point_cfg_id": "",
+    "loot_point_cfg_id": "27",
     "npc_cfg_id": "civil",
     "intel_kind": 0,
     "appear_conds": [
@@ -43,7 +48,12 @@
         "param5": "",
         "param6": ""
       }
-    ]
+    ],
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_rand_a",
@@ -54,7 +64,7 @@
     "duration_days": 1,
     "effect_type": 0,
     "loot_point_cfg_id": "rumor_gold_chest",
-    "npc_cfg_id": "",
+    "npc_cfg_id": "27",
     "intel_kind": 1,
     "appear_conds": [
       {
@@ -66,7 +76,12 @@
         "param5": "",
         "param6": ""
       }
-    ]
+    ],
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
   },
   {
     "rumor_id": "rumor_rand_b",
@@ -76,7 +91,7 @@
     "cost_count": 200,
     "duration_days": 1,
     "effect_type": 1,
-    "loot_point_cfg_id": "",
+    "loot_point_cfg_id": "27",
     "npc_cfg_id": "civil",
     "intel_kind": 1,
     "appear_conds": [
@@ -89,6 +104,39 @@
         "param5": "",
         "param6": ""
       }
-    ]
+    ],
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "",
+    "event_group_cfg_id": "",
+    "cult_action_id": "",
+    "event_expire_days": 1
+  },
+  {
+    "rumor_id": "rumor_cult_influence_demo",
+    "thumb_name": "教团仪式的隐秘线索",
+    "full_text": "有人在这片地区筹备隐秘仪式。进入冒险并解决该事件，可推进当地教团锚点。",
+    "cost_item_id": "rumor_points",
+    "cost_count": 100,
+    "duration_days": 7,
+    "effect_type": 2,
+    "loot_point_cfg_id": "",
+    "npc_cfg_id": "",
+    "intel_kind": 0,
+    "appear_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "interact_point_cfg_id": "",
+    "target_overlay_id": "village_01",
+    "event_group_cfg_id": "rumor_cult_smear_demo",
+    "cult_action_id": "rumor_cult_influence_demo",
+    "event_expire_days": 1
   }
 ]

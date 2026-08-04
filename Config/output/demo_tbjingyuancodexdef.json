@@ -1,0 +1,86 @@
+[
+  {
+    "codex_id": "orc_i",
+    "display_name": "兽人精元",
+    "match_tag": "orc_i",
+    "sort_order": 1,
+    "pickup_item_id": "j_drop_orc_i"
+  },
+  {
+    "codex_id": "orc_ii",
+    "display_name": "兽人精英精元",
+    "match_tag": "orc_ii",
+    "sort_order": 2,
+    "pickup_item_id": "j_drop_orc_ii"
+  },
+  {
+    "codex_id": "human_i",
+    "display_name": "白羊座精元",
+    "match_tag": "human_i",
+    "sort_order": 7,
+    "pickup_item_id": "j_drop_human_i"
+  },
+  {
+    "codex_id": "human_ii",
+    "display_name": "金牛座精元",
+    "match_tag": "human_ii",
+    "sort_order": 8,
+    "pickup_item_id": "j_drop_human_ii"
+  },
+  {
+    "codex_id": "human_iii",
+    "display_name": "双子座精元",
+    "match_tag": "human_iii",
+    "sort_order": 9,
+    "pickup_item_id": "j_drop_human_iii"
+  },
+  {
+    "codex_id": "human_iv",
+    "display_name": "巨蟹座精元",
+    "match_tag": "human_iv",
+    "sort_order": 10,
+    "pickup_item_id": "j_drop_human_iv"
+  },
+  {
+    "codex_id": "human_v",
+    "display_name": "狮子座精元",
+    "match_tag": "human_v",
+    "sort_order": 11,
+    "pickup_item_id": "j_drop_human_v"
+  },
+  {
+    "codex_id": "human_vi",
+    "display_name": "处女座精元",
+    "match_tag": "human_vi",
+    "sort_order": 12,
+    "pickup_item_id": "j_drop_human_vi"
+  },
+  {
+    "codex_id": "human_vii",
+    "display_name": "天秤座精元",
+    "match_tag": "human_vii",
+    "sort_order": 13,
+    "pickup_item_id": "j_drop_human_vii"
+  },
+  {
+    "codex_id": "monster_i",
+    "display_name": "天蝎座精元",
+    "match_tag": "monster_i",
+    "sort_order": 14,
+    "pickup_item_id": "j_drop_monster_i"
+  },
+  {
+    "codex_id": "monster_ii",
+    "display_name": "射手座精元",
+    "match_tag": "monster_ii",
+    "sort_order": 15,
+    "pickup_item_id": "j_drop_monster_ii"
+  },
+  {
+    "codex_id": "monster_iii",
+    "display_name": "摩羯座精元",
+    "match_tag": "monster_iii",
+    "sort_order": 16,
+    "pickup_item_id": "j_drop_monster_iii"
+  }
+]

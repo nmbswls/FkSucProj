@@ -1,0 +1,55 @@
+{
+  "DialogId": "home_01_self_seal_briefing",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "咕啾说明自我封印方案，并引导玩家寻找卡莱尔。",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "咕啾",
+              "Content": "这个时代的魔力太稀薄了。主人的存在本身就像往浅水里压进一块巨石，越靠近人群，周围越容易失稳。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "所以我要把自己削弱成一个普通人？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "不是削弱，是封存。教会在最初那座地牢里留下的封印残骸还能改造，我可以把它变成一层能随时收束和解除的外壳。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "但魅魔术式需要圣职者的力量作为引子。村里只有卡莱尔符合条件。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "他现在连看都不肯看我。很好，至少这次他有一个无法拒绝的理由。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "home_01.self_seal_briefed",
+          "Param6": ""
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using My.Farm;
 using My.Home;
+using My.MiniGame.Dream;
 using My.Player;
 using My.UI;
 
@@ -34,6 +35,10 @@ namespace My
         {
             public long AddFallenAmount = 0;
             public long FromFallenAmount = 0;
+            public long AddFallenBaseAmount = 0;
+            public long AddFallenSpreadAmount = 0;
+            public long FromFallenBaseAmount = 0;
+            public long FromFallenSpreadAmount = 0;
             public long DesireShardAdded = 0;
             public Dictionary<string, long> TownFacilityOutputs = new();
             public Dictionary<string, long> TransportRecoveredOutputs = new();
@@ -42,9 +47,19 @@ namespace My
             public int CultControlledTownCount;
             public long CultTownDailyFaith;
             public long CultFaithAdded;
+            public long CultTownFaithAdded;
+            public long CultLinkerFaithAdded;
+            public long CultRegionLinkersAdded;
             public long CultAnchorFaithAdded;
             public long CultAnchorLinkersAdded;
             public Dictionary<string, long> CultAnchorItemOutputs = new();
+            public int CultSecretMissionCompleted;
+            public long CultSecretMissionFaithAdded;
+            public long CultSecretMissionLinkersAdded;
+            public long CultSecretMissionPressureReduced;
+            public int CultSecretMissionWatchCleared;
+            public int CultSecretMissionDisableCleared;
+            public Dictionary<string, long> CultSecretMissionItemOutputs = new();
             public long MarketGoldEarned;
             public int MarketSoldItemCount;
             public int MarketUnsoldItemCount;
@@ -165,30 +180,17 @@ namespace My
             Debug.Log("Settlement day balance");
             //
 
-            // 计算每日自然上涨沉沦人数
-            float hotRate = 1.0f;
-            float K = 0.1f;
-            float pow = 0.5f; // 使用近二次公式增长
+            // 沉沦：基础人数 + 扩散人数（展示用合计）
+            FallenPopulationService.ApplyDailySettlement(this, balanceInfo);
 
-            long fixAddVal = playerDataManager.ProgressionSystem.GetFinalAttribute((int)EYCAttribute.FixFallenAdd);
-            long bombAddVal = (long) (playerDataManager.TotalFallPeopleAmount * hotRate * K * Math.Pow(playerDataManager.TotalFallPeopleAmount, pow));
-
-            balanceInfo.FromFallenAmount = playerDataManager.TotalFallPeopleAmount;
-            balanceInfo.AddFallenAmount = fixAddVal + bombAddVal;
-
-            playerDataManager.TotalFallPeopleAmount += fixAddVal + bombAddVal;
-
-            // 结算每日固定欲望碎片
-            long addYuWang = (long)(Math.Pow(playerDataManager.TotalFallPeopleAmount, 0.5f));
+            // 结算每日固定欲望碎片（仍按合计）
+            long addYuWang = (long)(Math.Pow(Math.Max(0, playerDataManager.TotalFallPeopleAmount), 0.5f));
             balanceInfo.DesireShardAdded = addYuWang;
 
             if(addYuWang > 0)
             {
                 playerDataManager.GiveItemToPlayer("desire_shard", addYuWang);
             }
-
-            //  
-            playerDataManager.ProgressionSystem.BaseStats.OnFallenAmountUpdate(playerDataManager.TotalFallPeopleAmount);
 
             var townOutputs = townFacilityDevelopmentSystem?.ApplyDailySettlement(playerDataManager);
             if (townOutputs?.MergedOutputs != null && townOutputs.MergedOutputs.Count > 0)
@@ -225,16 +227,39 @@ namespace My
             cult?.RefreshAutoUnlockedSeats();
             var controlledTownCount = worldPersistState?.GetControlledTownCount() ?? 0;
             var cultFaithPerTown = cult?.GetCultAttributeValue(ECultAttribute.TownDailyFaith) ?? 0;
-            var cultFaithAdded = controlledTownCount * cultFaithPerTown;
-            if (cultFaithAdded != 0)
+            var townFaithAdded = controlledTownCount * cultFaithPerTown;
+            if (townFaithAdded != 0)
             {
-                cult?.AddFaith(cultFaithAdded);
+                cult?.AddFaith(townFaithAdded);
             }
             balanceInfo.CultControlledTownCount = controlledTownCount;
             balanceInfo.CultTownDailyFaith = cultFaithPerTown;
-            balanceInfo.CultFaithAdded = cultFaithAdded;
+            balanceInfo.CultTownFaithAdded = townFaithAdded;
 
-            var anchorSettlement = cult?.ApplyAnchorSettlement(SettlementDayIndex + 1);
+            // 灵感皈依先涨教徒，再进锚点效率与什一结算
+            balanceInfo.CultRegionLinkersAdded = cult?.ApplyRegionDailyLinkerSettlement() ?? 0;
+
+            // 日结开始先丢弃精元池超额，保留玩家在上一日内分解/转化的窗口
+            My.SecretBase.JingYuanPoolService.ClampOverflowAtSettlement(this);
+
+            var settlementDay = SettlementDayIndex + 1;
+            // 先结算到期秘会（灭迹可在盯梢升级前生效）
+            var secretMission = cult?.ApplySecretMissionSettlement(settlementDay);
+            if (secretMission != null)
+            {
+                balanceInfo.CultSecretMissionCompleted = secretMission.CompletedCount;
+                balanceInfo.CultSecretMissionFaithAdded = secretMission.FaithAdded;
+                balanceInfo.CultSecretMissionLinkersAdded = secretMission.LinkersAdded;
+                balanceInfo.CultSecretMissionPressureReduced = secretMission.PressureReduced;
+                balanceInfo.CultSecretMissionWatchCleared = secretMission.WatchClearedCount;
+                balanceInfo.CultSecretMissionDisableCleared = secretMission.DisableClearedCount;
+                foreach (var pair in secretMission.ItemOutputs)
+                {
+                    balanceInfo.CultSecretMissionItemOutputs[pair.Key] = pair.Value;
+                }
+            }
+
+            var anchorSettlement = cult?.ApplyAnchorSettlement(settlementDay);
             if (anchorSettlement != null)
             {
                 balanceInfo.CultAnchorFaithAdded = anchorSettlement.FaithAdded;
@@ -245,11 +270,18 @@ namespace My
                 }
             }
 
+            balanceInfo.CultLinkerFaithAdded = cult?.ApplyLinkerFaithSettlement() ?? 0;
+            balanceInfo.CultFaithAdded = balanceInfo.CultTownFaithAdded
+                + balanceInfo.CultLinkerFaithAdded
+                + balanceInfo.CultAnchorFaithAdded
+                + balanceInfo.CultSecretMissionFaithAdded;
+
             SettlementDayIndex++;
             worldPersistState?.ApplyFishingRestockForSettlement(SettlementDayIndex);
             playerDataManager?.RumorIntel?.PruneExpiredRumors(SettlementDayIndex);
             RumorIntelSpawn?.PruneExpiredEventsForCurrentMap();
             farmSystem?.ApplyDailySettlement(balanceInfo);
+            AbstractGroupDreamService.OnSettlementDayBalance(this);
 
             EventOnOneDayBalance?.Invoke(balanceInfo);
         }

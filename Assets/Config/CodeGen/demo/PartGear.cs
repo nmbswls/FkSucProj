@@ -24,6 +24,9 @@ public sealed partial class PartGear : Luban.BeanBase
         { if(!_buf["min_part_level"].IsNumber) { throw new SerializationException(); }  MinPartLevel = _buf["min_part_level"]; }
         { if(!_buf["desc"].IsString) { throw new SerializationException(); }  Desc = _buf["desc"]; }
         { var __json0 = _buf["local_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } LocalBonuses = new System.Collections.Generic.List<demo.PartLocalStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.PartLocalStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.PartLocalStatBonus.DeserializePartLocalStatBonus(__e0);  }  LocalBonuses.Add(__v0); }   }
+        { if(!_buf["base_arm"].IsNumber) { throw new SerializationException(); }  BaseArm = _buf["base_arm"]; }
+        { if(!_buf["base_hp_max"].IsNumber) { throw new SerializationException(); }  BaseHpMax = _buf["base_hp_max"]; }
+        { if(!_buf["exclusion_group"].IsString) { throw new SerializationException(); }  ExclusionGroup = _buf["exclusion_group"]; }
     }
 
     public static PartGear DeserializePartGear(JSONNode _buf)
@@ -55,6 +58,18 @@ public sealed partial class PartGear : Luban.BeanBase
     /// local_bonuses
     /// </summary>
     public System.Collections.Generic.List<demo.PartLocalStatBonus> LocalBonuses;
+    /// <summary>
+    /// base_arm
+    /// </summary>
+    public long BaseArm;
+    /// <summary>
+    /// base_hp_max
+    /// </summary>
+    public long BaseHpMax;
+    /// <summary>
+    /// exclusion_group
+    /// </summary>
+    public string ExclusionGroup;
    
     public const int __ID__ = 1953515501;
     public override int GetTypeId() => __ID__;
@@ -73,6 +88,9 @@ public sealed partial class PartGear : Luban.BeanBase
         + "minPartLevel:" + MinPartLevel + ","
         + "desc:" + Desc + ","
         + "localBonuses:" + Luban.StringUtil.CollectionToString(LocalBonuses) + ","
+        + "baseArm:" + BaseArm + ","
+        + "baseHpMax:" + BaseHpMax + ","
+        + "exclusionGroup:" + ExclusionGroup + ","
         + "}";
     }
 }

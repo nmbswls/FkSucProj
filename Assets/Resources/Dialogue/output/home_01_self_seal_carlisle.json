@@ -1,0 +1,83 @@
+{
+  "DialogId": "home_01_self_seal_carlisle",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "卡莱尔被迫合作。H 演出正文留空；演出结束后解锁 Human 状态。",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "卡莱尔",
+              "Content": "我没有什么想和你说的。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "那就听。我的力量正在扰乱这里的魔力，继续下去，这个村子会先替你承担后果。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "我能改造教会留下的封印，但术式需要圣职者的力量作为引子。只要完成这一次，主人就能把自己封存成普通人的状态。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "卡莱尔",
+              "Content": "……我帮的不是你。仪式之后，离村民远一点。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "当然。我们只是第一次恰好站在同一边。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "咕啾",
+              "Content": "封印稳定了。现在主人可以在真身与人类状态之间切换；进入文明聚落时，外壳也会主动收束力量。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "卡莱尔",
+              "Content": "记住你的承诺。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "player.human_form_unlocked",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 8,
+          "Param1": 1,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        }
+      ]
+    }
+  ]
+}

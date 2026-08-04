@@ -101,7 +101,8 @@ namespace My.Map.Fight
             // HAct �����˺������ٳԶ����˺�/����/H���ɼ���/�������˵�ͨ�ù���
             if (dmgCategory == EDmgCategory.H)
             {
-                return -rawDmg;
+                // 跳过护甲等；只消费 intent 内已折算的 entity 同名 pipeline（如 HStrength_Pipeline）
+                return -ResolveHCategoryHpDamage(rawDmg, intent);
             }
 
             long dmg = rawDmg;
@@ -148,12 +149,24 @@ namespace My.Map.Fight
             return -dmg;
         }
 
-        /// <summary>
-        /// ͨ��h�����������������ֵ
-        /// </summary>
-        /// <param name="hImpulse"></param>
-        /// <param name="src"></param>
-        /// <returns></returns>
+        // H 类最终扣血：读取边界已写入的 HStrength_Pipeline（部位贡献折成的同量纲毫点）
+        public static long ResolveHCategoryHpDamage(long rawDmg, ResourceDeltaIntent intent)
+        {
+            if (rawDmg <= 0)
+            {
+                return 0;
+            }
+
+            long partStr = intent?.extraAttrs?.GetValueOrDefault(AttrIdConsts.HStrength_Pipeline) ?? 0;
+            if (partStr <= 0)
+            {
+                return rawDmg;
+            }
+
+            var adjusted = (long)(rawDmg * 1000.0 / (1000.0 + partStr * 0.001));
+            return adjusted < 1 ? 1 : adjusted;
+        }
+
         public static (long, long) DistributeClimaxAndEstrusFromHImpulse(long hImpulse, IFightAttrProvider src)
         {
             src.TryGetAttr(AttrIdConsts.PhysicalResist, out var naishou); // ��ȡ����

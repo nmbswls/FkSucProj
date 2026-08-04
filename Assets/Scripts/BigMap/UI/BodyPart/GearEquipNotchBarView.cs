@@ -20,7 +20,12 @@ namespace My.UI.BodyPart
 
             if (summaryText != null)
             {
-                summaryText.text = $"装备点数 {used}/{cap}";
+                summaryText.text = cap == 0 ? "此部位不可装备" : $"装备点数 {used}/{cap}";
+            }
+
+            if (notchRoot != null)
+            {
+                notchRoot.gameObject.SetActive(cap > 0);
             }
 
             EnsureCellCount(cap);

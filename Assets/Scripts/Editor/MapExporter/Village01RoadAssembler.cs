@@ -1,5 +1,7 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using My;
+using My.Map;
 using My.MapExport;
 using SimpleJSON;
 using cfg.demo;
@@ -14,6 +16,12 @@ public static class Village01RoadAssembler
     const string SceneName = "Village01_Road";
     const string GroundSpritePath = "Assets/Arts/Tile/basic_01/ground_grasss.png";
     const string GroundTilePath = "Assets/Resources/Map/Prototype/village_01_road_ground.asset";
+    const string TownGateTriggerPrefabPath = "Assets/Resources/Map/Zone/Village01RoadTownGateTrigger.prefab";
+    const string TownGateTriggerResourceKey = "Map/Zone/Village01RoadTownGateTrigger";
+    const string TownGateDialogId = "village_01_road_town_gate";
+    const string RoadGateOpenSwitch = "village_01.road_gate_open";
+    const int RoadQuestId = 216;
+    const string RoadQuestStepId = "216_s2";
 
     [MenuItem("Tools/Maps/Village 01/Install Road Prototype")]
     public static void Install()
@@ -50,7 +58,19 @@ public static class Village01RoadAssembler
         ClearChildren(dynamicRoot);
         var common = EnsureChild(dynamicRoot, "Common");
         CreateTeleporter(common, "teleporter_to_home", new Vector3(0f, 5f, 0f), "homestead_01", "entry_01");
-        CreateTeleporter(common, "teleporter_to_village_01", new Vector3(0f, 232f, 0f), "village_01", "entry_bottom");
+        CreateTeleporter(
+            common,
+            "teleporter_to_village_01",
+            new Vector3(0f, 232f, 0f),
+            "village_01",
+            "entry_bottom",
+            MakeCheckVariableCond(RoadGateOpenSwitch, true));
+        CreateRoadMonster(common, "village_01_road_slime_01", new Vector3(-4f, 72f, 0f));
+        CreateRoadMonster(common, "village_01_road_slime_02", new Vector3(4f, 122f, 0f));
+        CreateRoadMonster(common, "village_01_road_slime_03", new Vector3(0f, 172f, 0f));
+
+        CreateTownGateTriggerPrefab();
+        InstallTownGateTrigger(root.MapVariantRoot.Find("Trigger"));
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
@@ -272,7 +292,13 @@ public static class Village01RoadAssembler
         };
     }
 
-    static void CreateTeleporter(Transform parent, string name, Vector3 position, string targetMap, string targetPoint)
+    static void CreateTeleporter(
+        Transform parent,
+        string name,
+        Vector3 position,
+        string targetMap,
+        string targetPoint,
+        CommonCheckCond appearCond = null)
     {
         var go = new GameObject(name);
         go.transform.SetParent(parent, false);
@@ -280,7 +306,7 @@ public static class Village01RoadAssembler
         go.AddComponent<DynamicEntityExportGenerator>().RefreshInfo = new DynamicEntityRefreshInfo
         {
             UniqName = name,
-            AppearCond = MakeNoneCond(),
+            AppearCond = appearCond ?? MakeNoneCond(),
             DisappearCond = MakeNoneCond(),
             WillRespawn = false,
             DungeonNodeId = -1,
@@ -295,9 +321,108 @@ public static class Village01RoadAssembler
         };
     }
 
+    static void CreateRoadMonster(Transform parent, string name, Vector3 position)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        go.transform.position = position;
+        go.AddComponent<DynamicEntityExportGenerator>().RefreshInfo = new DynamicEntityRefreshInfo
+        {
+            UniqName = name,
+            AppearCond = MakeTaskStepCond(RoadQuestId, RoadQuestStepId),
+            DisappearCond = MakeTaskFinishCond(RoadQuestId),
+            WillRespawn = false,
+            RespawnInterval = 0f,
+            DungeonNodeId = -1,
+            SpawnPolicy = EDungeonSpawnPolicy.Immediate,
+            InitInfo = new EntityInitInfo4Npc
+            {
+                CfgId = "slime_green",
+                Position = new Vector2(position.x, position.y),
+                FaceDir = Vector2.down,
+                MoveMode = UnitMoveBehaveInfo.EMoveBehaveType.NoMove,
+                EnmityConfId = string.Empty,
+                IsPeace = false,
+            },
+        };
+    }
+
+    static void CreateTownGateTriggerPrefab()
+    {
+        EnsureDirectory("Assets/Resources/Map/Zone");
+        var prefabRoot = new GameObject("Village01RoadTownGateTrigger");
+        try
+        {
+            var zoneLayer = LayerMask.NameToLayer("Zone");
+            if (zoneLayer >= 0)
+            {
+                prefabRoot.layer = zoneLayer;
+            }
+
+            var collider = prefabRoot.AddComponent<BoxCollider2D>();
+            collider.isTrigger = true;
+            collider.size = new Vector2(28f, 4f);
+
+            var trigger = prefabRoot.AddComponent<DialogTriggerZone>();
+            trigger.DialogId = TownGateDialogId;
+            trigger.EnableCondition = new List<CommonCheckCond>
+            {
+                MakeTaskFinishCond(RoadQuestId),
+                MakeCheckVariableCond(RoadGateOpenSwitch, false),
+            };
+
+            PrefabUtility.SaveAsPrefabAsset(prefabRoot, TownGateTriggerPrefabPath);
+        }
+        finally
+        {
+            Object.DestroyImmediate(prefabRoot);
+        }
+    }
+
+    static void InstallTownGateTrigger(Transform triggerRoot)
+    {
+        if (triggerRoot == null)
+        {
+            throw new System.InvalidOperationException("Village01_Road_Editor has no MapVariantRoot/Trigger.");
+        }
+
+        var existing = triggerRoot.Find("town_gate_dialog_trigger");
+        if (existing != null)
+        {
+            Object.DestroyImmediate(existing.gameObject);
+        }
+
+        var go = new GameObject("town_gate_dialog_trigger");
+        go.transform.SetParent(triggerRoot, false);
+        go.transform.position = new Vector3(0f, 228f, 0f);
+        var provider = go.AddComponent<MapScenePrefabProvider>();
+        provider.Key = TownGateTriggerResourceKey;
+        provider.AppearCond = MakeNoneCond();
+        provider.DisappearCond = MakeCheckVariableCond(RoadGateOpenSwitch, true);
+    }
+
     static CommonCheckCond MakeNoneCond()
     {
         return CommonCheckCond.DeserializeCommonCheckCond(JSON.Parse("{\"type\":0,\"param1\":0,\"param2\":0,\"param3\":0,\"param4\":0,\"param5\":\"\",\"param6\":\"\"}"));
+    }
+
+    static CommonCheckCond MakeTaskFinishCond(int questId)
+    {
+        return CommonCheckCond.DeserializeCommonCheckCond(JSON.Parse(
+            $"{{\"type\":1,\"param1\":{questId},\"param2\":0,\"param3\":0,\"param4\":0,\"param5\":\"\",\"param6\":\"\"}}"));
+    }
+
+    static CommonCheckCond MakeTaskStepCond(int questId, string stepId)
+    {
+        return CommonCheckCond.DeserializeCommonCheckCond(JSON.Parse(
+            $"{{\"type\":5,\"param1\":{questId},\"param2\":0,\"param3\":0,\"param4\":0,\"param5\":\"{stepId}\",\"param6\":\"\"}}"));
+    }
+
+    static CommonCheckCond MakeCheckVariableCond(string variableName, bool shouldExist)
+    {
+        var param1 = shouldExist ? 0 : 1;
+        return CommonCheckCond.DeserializeCommonCheckCond(JSON.Parse(
+            $"{{\"type\":2,\"param1\":{param1},\"param2\":0,\"param3\":0,\"param4\":0,\"param5\":\"{variableName}\",\"param6\":\"\"}}"));
     }
 
     static void ClearChildren(Transform parent)

@@ -1,0 +1,93 @@
+[
+  {
+    "furnace_id": "furn_basic_cauldron",
+    "display_name": "陶土炼金釜",
+    "tier": 1,
+    "max_material_slots": 2,
+    "base_virtues": [
+      {
+        "virtue_id": 2,
+        "value": 1
+      }
+    ],
+    "base_aspects": [],
+    "amplify_virtue_id": 1,
+    "amplify_percent": 25,
+    "required_tools": [],
+    "owner_item_id": "furn_basic_cauldron"
+  },
+  {
+    "furnace_id": "furn_stone_retort",
+    "display_name": "石制蒸馏釜",
+    "tier": 2,
+    "max_material_slots": 3,
+    "base_virtues": [
+      {
+        "virtue_id": 4,
+        "value": 2
+      },
+      {
+        "virtue_id": 6,
+        "value": 1
+      }
+    ],
+    "base_aspects": [
+      {
+        "aspect_id": 5,
+        "value": 1
+      }
+    ],
+    "amplify_virtue_id": 2,
+    "amplify_percent": 30,
+    "required_tools": [
+      "tool_mortar"
+    ],
+    "owner_item_id": "furn_stone_retort"
+  },
+  {
+    "furnace_id": "furn_arcane_crucible",
+    "display_name": "秘仪坩埚",
+    "tier": 3,
+    "max_material_slots": 5,
+    "base_virtues": [
+      {
+        "virtue_id": 9,
+        "value": 2
+      },
+      {
+        "virtue_id": 10,
+        "value": 1
+      }
+    ],
+    "base_aspects": [
+      {
+        "aspect_id": 6,
+        "value": 1
+      },
+      {
+        "aspect_id": 8,
+        "value": 1
+      }
+    ],
+    "amplify_virtue_id": 9,
+    "amplify_percent": 50,
+    "required_tools": [
+      "tool_mortar",
+      "tool_glass_rod",
+      "tool_alchemy_kit"
+    ],
+    "owner_item_id": "furn_arcane_crucible"
+  },
+  {
+    "furnace_id": "furn_hand_craft",
+    "display_name": "手搓",
+    "tier": 0,
+    "max_material_slots": 1,
+    "base_virtues": [],
+    "base_aspects": [],
+    "amplify_virtue_id": 0,
+    "amplify_percent": 0,
+    "required_tools": [],
+    "owner_item_id": ""
+  }
+]

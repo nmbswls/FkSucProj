@@ -1,0 +1,92 @@
+[
+  {
+    "item_id": "loot_rusty_nail",
+    "outputs": [
+      {
+        "item_id": "mat_iron_scrap",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_bent_hinge",
+    "outputs": [
+      {
+        "item_id": "mat_iron_scrap",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_broken_gear",
+    "outputs": [
+      {
+        "item_id": "mat_iron_scrap",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_cracked_cup",
+    "outputs": [
+      {
+        "item_id": "mat_ceramic_shard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_empty_bottle",
+    "outputs": [
+      {
+        "item_id": "mat_glass_shard",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_candle_stub",
+    "outputs": [
+      {
+        "item_id": "mat_tallow",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "item_id": "loot_cloth_scrap",
+    "outputs": [
+      {
+        "item_id": "mat_linen_thread",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_rope_end",
+    "outputs": [
+      {
+        "item_id": "mat_plant_fiber",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_key_blank",
+    "outputs": [
+      {
+        "item_id": "mat_iron_scrap",
+        "count": 2
+      }
+    ]
+  },
+  {
+    "item_id": "loot_broken_lens",
+    "outputs": [
+      {
+        "item_id": "mat_glass_shard",
+        "count": 2
+      }
+    ]
+  }
+]

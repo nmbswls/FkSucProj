@@ -12,6 +12,10 @@ namespace My.MiniGame.Dream
         public string SpotId = "";
         public string CharacterKey = "";
         public int CharDreamEntryId;
+        public string AbstractGroupId = "";
+        public int AbstractGroupStage;
         public DreamTendencyKind? VictoryTendency;
+        public string ExtraSettlementNote = "";
+        public bool AdvanceDayAfterClose = true;
     }
 }

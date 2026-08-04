@@ -325,6 +325,8 @@ namespace My.Map
             attributeStore.RegisterNumeric(AttrIdConsts.PlayerSpellPower, initialBase: 0);
 
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_Inner, initialBase: 0);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Inner_MinExposeRate, initialBase: 5000);
+            attributeStore.RegisterNumeric(AttrIdConsts.Arm_Inner_ExposeRate, initialBase: 10000);
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_Base, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_White, initialBase: 0);
             attributeStore.RegisterNumeric(AttrIdConsts.Arm_White_Percent, initialBase: 0);
@@ -1925,6 +1927,12 @@ namespace My.Map
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm_Inner, progression.GetFinalAttribute((int)EYCAttribute.InnerCharm));
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.PlayerCharm_Static, progression.GetFinalAttribute((int)EYCAttribute.StaticCharm));
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Inner, progression.GetFinalAttribute((int)EYCAttribute.InnerArm));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.Arm_Inner_MinExposeRate,
+                5000 + progression.GetFinalAttribute((int)EYCAttribute.InnerArmMinExposeRate));
+            attributeStore.RefreshAttrBaseNum(
+                AttrIdConsts.HP_MAX,
+                250_000 + progression.GetFinalAttribute((int)EYCAttribute.HPMax));
             attributeStore.RefreshAttrBaseNum(AttrIdConsts.Arm_Base, progression.GetFinalAttribute((int)EYCAttribute.StaticArm));
             attributeStore.RefreshAttrBaseNum(
                 AttrIdConsts.PhysicalPower,
@@ -2206,53 +2214,6 @@ namespace My.Map
                 $"absorb%={absorbRatePercent} fluid={fluidGainPerMyriad} {absorbVal:F3}->{boosted:F3}");
             return boosted;
         }
-
-        // 带 HitPart 的 H 伤害：用部位 HStrength（及 Endurance）做承伤修正
-        protected override long AdjustHCategoryHpDamage(long rawDmg, ResourceDeltaIntent intent)
-        {
-            if (rawDmg <= 0 || intent == null)
-            {
-                return rawDmg;
-            }
-
-            EBodyPart part = EBodyPart.None;
-            if (!FightStruct.TryGetHitPart(intent.deltaFlags, out part) || part == EBodyPart.None)
-            {
-                return rawDmg;
-            }
-
-            long partStr = intent.extraAttrs?.GetValueOrDefault(AttrIdConsts.HStrength_Pipeline) ?? 0;
-            var bodyParts = LogicManager?.playerDataManager?.BodyPartSystem;
-            if (bodyParts != null && partStr <= 0)
-            {
-                bodyParts.GetCombatBonuses(part, out _, out partStr);
-            }
-
-            long endurance = bodyParts?.GetLocalStat(part, EPartLocalAttribute.Endurance) ?? 0;
-
-            // HStrength：软对抗减伤；Endurance：万分比减伤（上限 80%）
-            double dmg = rawDmg;
-            if (partStr > 0)
-            {
-                dmg = dmg * 1000.0 / (1000.0 + partStr * 0.001);
-            }
-
-            if (endurance > 0)
-            {
-                long er = endurance > 8000 ? 8000 : endurance;
-                dmg = dmg * (10000 - er) * 0.0001;
-            }
-
-            var adjusted = (long)Math.Max(1, dmg);
-            if (adjusted != rawDmg)
-            {
-                Debug.Log(
-                    $"[HitPartHDmg] part={part} str={partStr} endu={endurance} {rawDmg}->{adjusted}");
-            }
-
-            return adjusted;
-        }
-
 
         private float _lastTriggerHVoiceBlurtTime = 0;
         private const float TriggerHVoiceInterval = 2.0f;

@@ -163,6 +163,46 @@ namespace My
                         return worldPersistState != null
                                && worldPersistState.GetControlledTownCount() >= cond.Param1;
                     }
+                case cfg.demo.ECommonCheckType.CultTechNodeLevel:
+                    {
+                        var cult = playerSystem?.ProgressionSystem?.DemonCult;
+                        if (cult == null || cond.Param1 <= 0)
+                        {
+                            return false;
+                        }
+
+                        int minLevel = cond.Param2 > 0 ? (int)cond.Param2 : 1;
+                        return cult.GetTechNodeLevel((int)cond.Param1) >= minLevel;
+                    }
+                case cfg.demo.ECommonCheckType.CultAttributeAtLeast:
+                    {
+                        var cult = playerSystem?.ProgressionSystem?.DemonCult;
+                        if (cult == null || string.IsNullOrEmpty(cond.Param5))
+                        {
+                            return false;
+                        }
+
+                        if (!Enum.TryParse(cond.Param5, true, out ECultAttribute attribute)
+                            || attribute == ECultAttribute.None)
+                        {
+                            return false;
+                        }
+
+                        return cult.GetCultAttributeValue(attribute) >= cond.Param1;
+                    }
+                case cfg.demo.ECommonCheckType.StatAtLeast:
+                    {
+                        if (string.IsNullOrEmpty(cond.Param5)
+                            || !Enum.TryParse(cond.Param5, true, out EStatType statType)
+                            || statType == EStatType.None)
+                        {
+                            return false;
+                        }
+
+                        var stats = playerSystem?.StatisticSystem;
+                        return stats != null
+                               && stats.Get(statType, cond.Param6, null) >= cond.Param1;
+                    }
             }
             return false;
         }

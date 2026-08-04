@@ -198,19 +198,12 @@ namespace My.Config
             return row != null ? System.Math.Max(0, row.AbsorbRate) : 0;
         }
 
-        // 当前等级部位战斗属性（与全身 attr 同毫点刻度；表暂无独立 h_strength 时用 h_technique 兼作部位输出强度）
+        // 从已累加的局部属性读取部位 H 技巧/强度（与全身同毫点；不含装备时用等级重建）
         public static void GetCombatBonuses(EBodyPart partId, int level, out long hTechnique, out long hStrength)
         {
-            hTechnique = 0;
-            hStrength = 0;
-            var row = GetLevelRow(partId, level);
-            if (row == null)
-            {
-                return;
-            }
-
-            hTechnique = System.Math.Max(0, row.HTechnique);
-            hStrength = hTechnique;
+            var map = BuildLocalStats(partId, level);
+            hTechnique = System.Math.Max(0, map.Get((int)EPartLocalAttribute.HTechnique));
+            hStrength = System.Math.Max(0, map.Get((int)EPartLocalAttribute.HStrength));
         }
 
         // 将已装备 PartGear 的 local_bonuses 叠进部位局部属性
@@ -260,10 +253,9 @@ namespace My.Config
             {
                 EBodyPart.Mouth => EYCAttribute.PartGearPoint_Mouth,
                 EBodyPart.Breast => EYCAttribute.PartGearPoint_Breast,
-                EBodyPart.Womb => EYCAttribute.PartGearPoint_Womb,
-                EBodyPart.Tail => EYCAttribute.PartGearPoint_Tail,
-                EBodyPart.Wing => EYCAttribute.PartGearPoint_Wing,
-                EBodyPart.Skin => EYCAttribute.PartGearPoint_Skin,
+                EBodyPart.FrontHole => EYCAttribute.PartGearPoint_FrontHole,
+                EBodyPart.BackHole => EYCAttribute.PartGearPoint_BackHole,
+                EBodyPart.Limb => EYCAttribute.None,
                 _ => EYCAttribute.None,
             };
         }

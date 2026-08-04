@@ -17,8 +17,9 @@ namespace cfg.demo
         Sensitivity = 1,
         Endurance = 2,
         FluidGain = 3,
-        ControlResist = 4,
         AuraLeak = 5,
+        HTechnique = 6,
+        HStrength = 7,
     }
 
 } 

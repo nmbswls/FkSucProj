@@ -187,6 +187,9 @@ namespace My.UI.Home
                     : $"满足条件 {cond.Param5}",
                 ECommonCheckType.FuncOpen => $"解锁功能 {(EFuncOpenType)cond.Param1}",
                 ECommonCheckType.CharacterFavorLevel => $"{ResolveCharacterName(cond.Param5)} 好感达到 Lv.{cond.Param1}",
+                ECommonCheckType.CultTechNodeLevel => $"教团科技节点 {cond.Param1} 达到 Lv{(cond.Param2 > 0 ? cond.Param2 : 1)}",
+                ECommonCheckType.CultAttributeAtLeast => $"教团属性 {cond.Param5} ≥ {cond.Param1}",
+                ECommonCheckType.StatAtLeast => $"统计 {cond.Param5}{(string.IsNullOrEmpty(cond.Param6) ? string.Empty : $"/{cond.Param6}")} ≥ {cond.Param1}",
                 ECommonCheckType.AlwaysFail => "条件未满足",
                 _ => "解锁条件未满足",
             };

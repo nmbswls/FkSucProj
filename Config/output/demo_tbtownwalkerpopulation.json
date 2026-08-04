@@ -1,0 +1,67 @@
+[
+  {
+    "logic_area_id": "homestead_01",
+    "stage": 0,
+    "min_prosperity": 0,
+    "walker_limit": 0,
+    "walker_spawn_interval": 1.5,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "resident_idle_limit": 0,
+    "resident_idle_spawn_interval": 2.5,
+    "resident_idle_cfg_id": "civil_woman"
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "stage": 1,
+    "min_prosperity": 10,
+    "walker_limit": 4,
+    "walker_spawn_interval": 1.5,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "resident_idle_limit": 1,
+    "resident_idle_spawn_interval": 2.5,
+    "resident_idle_cfg_id": "civil_woman"
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "stage": 2,
+    "min_prosperity": 30,
+    "walker_limit": 8,
+    "walker_spawn_interval": 1.2,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "resident_idle_limit": 2,
+    "resident_idle_spawn_interval": 2,
+    "resident_idle_cfg_id": "civil_woman"
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "stage": 3,
+    "min_prosperity": 60,
+    "walker_limit": 14,
+    "walker_spawn_interval": 1,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "resident_idle_limit": 4,
+    "resident_idle_spawn_interval": 1.5,
+    "resident_idle_cfg_id": "civil_woman"
+  },
+  {
+    "logic_area_id": "homestead_01",
+    "stage": 4,
+    "min_prosperity": 100,
+    "walker_limit": 20,
+    "walker_spawn_interval": 0.8,
+    "walker_normal_weight": 6,
+    "walker_advanced_weight": 3,
+    "walker_elite_weight": 1,
+    "resident_idle_limit": 6,
+    "resident_idle_spawn_interval": 1.2,
+    "resident_idle_cfg_id": "civil_woman"
+  }
+]

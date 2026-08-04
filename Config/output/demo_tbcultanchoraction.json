@@ -1,0 +1,9 @@
+[
+  {
+    "logic_area_id": "village_01",
+    "anchor_id": "village_01_sanctum",
+    "anchor_level": 1,
+    "action_id": "rumor_cult_influence_demo",
+    "progress": 10
+  }
+]

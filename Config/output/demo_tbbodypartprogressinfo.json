@@ -23,6 +23,7 @@
     "global_bonuses": [
       {
         "attr_id": 10,
+        "human_attr_id": 0,
         "val": 1
       }
     ],
@@ -52,6 +53,7 @@
     "global_bonuses": [
       {
         "attr_id": 11,
+        "human_attr_id": 0,
         "val": 1
       }
     ],
@@ -73,6 +75,7 @@
     "global_bonuses": [
       {
         "attr_id": 12,
+        "human_attr_id": 0,
         "val": 1
       }
     ],
@@ -94,6 +97,7 @@
     "global_bonuses": [
       {
         "attr_id": 13,
+        "human_attr_id": 0,
         "val": 1
       }
     ],
@@ -115,6 +119,7 @@
     "global_bonuses": [
       {
         "attr_id": 13,
+        "human_attr_id": 0,
         "val": 1
       }
     ],

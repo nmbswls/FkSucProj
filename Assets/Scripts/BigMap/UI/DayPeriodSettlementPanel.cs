@@ -116,7 +116,12 @@ namespace My.UI
             summaryText.text =
                 $"沉沦人数：{info.FromFallenAmount} → {afterFallen}（+{info.AddFallenAmount}）\n" +
                 $"获得欲望碎片：{info.DesireShardAdded}\n" +
-                $"教团信仰：+{info.CultFaithAdded}（{info.CultControlledTownCount} 个受控城镇 × {info.CultTownDailyFaith}）\n" +
+                $"教团信仰：+{info.CultFaithAdded}" +
+                $"（城镇 {info.CultTownFaithAdded} / 教徒 {info.CultLinkerFaithAdded} / 锚点 {info.CultAnchorFaithAdded} / 秘会 {info.CultSecretMissionFaithAdded}）\n" +
+                $"教团教徒：区域灵感 +{info.CultRegionLinkersAdded}，锚点 +{info.CultAnchorLinkersAdded}，秘会 +{info.CultSecretMissionLinkersAdded}\n" +
+                (info.CultSecretMissionCompleted > 0
+                    ? $"秘会归来：{info.CultSecretMissionCompleted}（灭迹解盯 {info.CultSecretMissionWatchCleared} / 解封 {info.CultSecretMissionDisableCleared} / 降压 {info.CultSecretMissionPressureReduced}）\n"
+                    : string.Empty) +
                 $"运输队运回：{info.TransportRecoveredStackCount} 堆（遗失 {info.TransportLostStackCount} 堆）";
             summaryText.text += $"\nTavern sales: {info.TavernSoldCount}, gold +{info.TavernGoldEarned}, influence +{info.TavernInfluenceEarned}";
         }

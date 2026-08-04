@@ -49,7 +49,7 @@ public sealed partial class CultTechNodeLevel : Luban.BeanBase
     /// </summary>
     public int FaithCost;
     /// <summary>
-    /// 效果说明(占位)
+    /// 效果说明
     /// </summary>
     public string EffectDesc;
     /// <summary>

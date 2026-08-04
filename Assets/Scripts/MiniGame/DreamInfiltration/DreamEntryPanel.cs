@@ -41,6 +41,9 @@ namespace My.MiniGame.Dream
 
         public override void Setup(object data = null)
         {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            AbstractGroupDreamService.EnsureDailySynced(glm);
+
             _dreamSpotTable = CfgMgr.Cfgs?.TbDreamInfiltrationSpot;
             _characterDreamEntryTable = CfgMgr.Cfgs?.TbCharDreamEntryInfo;
             if (_dreamSpotTable == null || _dreamSpotTable.DataList == null || _dreamSpotTable.DataList.Count == 0)
@@ -114,6 +117,7 @@ namespace My.MiniGame.Dream
             }
 
             RebuildCharacterEntries();
+            RebuildAbstractGroupEntry();
         }
 
         private void RebuildCharacterEntries()
@@ -154,6 +158,27 @@ namespace My.MiniGame.Dream
             }
         }
 
+        private void RebuildAbstractGroupEntry()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (!AbstractGroupDreamService.TryGetTodayGroupEntry(glm, out var groupCfg, out var stageCfg))
+            {
+                return;
+            }
+
+            var inst = Instantiate(spotButtonTemplate, spotsContainer);
+            inst.gameObject.SetActive(true);
+            var view = inst.GetComponent<DreamEntrySpotButtonView>();
+            if (view != null)
+            {
+                view.BindAbstractGroupEntry(groupCfg, stageCfg, OnAbstractGroupEntryClicked);
+            }
+            else
+            {
+                Debug.LogError("[DreamInfiltration] SpotTemplate missing DreamEntrySpotButtonView.");
+            }
+        }
+
         private void ClearSpawnedSpots()
         {
             for (var i = spotsContainer.childCount - 1; i >= 0; i--)
@@ -162,6 +187,22 @@ namespace My.MiniGame.Dream
                 if (c == spotButtonTemplate) continue;
                 Destroy(c.gameObject);
             }
+        }
+
+        private bool TryBeginEntry(DreamGameplayContext ctx)
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (!AbstractGroupDreamService.IsDreamAllowedTonight(glm, out var reason))
+            {
+                if (reason == "not_night")
+                    UIEventGrantToastPanel.ShowToast("入梦", "仅夜间可入梦", "白天无法开启梦境通道。");
+                else if (reason == "used_today")
+                    UIEventGrantToastPanel.ShowToast("入梦", "今日已入梦", "请等待下一天夜间。");
+                return false;
+            }
+
+            DreamInfiltrationBootstrap.BeginGameplay(ctx);
+            return true;
         }
 
         private void OnSpotClicked(int index)
@@ -193,8 +234,7 @@ namespace My.MiniGame.Dream
                 SpotId = spot.SpotId,
             };
 
-            UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
-            UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);
+            TryBeginEntry(ctx);
         }
 
         public void OnCharacterEntryClicked(int entryId)
@@ -220,8 +260,23 @@ namespace My.MiniGame.Dream
                 return;
             }
 
-            UIManager.Instance?.HidePanel(DreamInfiltrationIds.EntryPanel);
-            UIManager.Instance?.ShowPanel(DreamInfiltrationIds.GameplayPanel, ctx, UILayer.Overlay);
+            TryBeginEntry(ctx);
+        }
+
+        private void OnAbstractGroupEntryClicked()
+        {
+            var glm = MainGameManager.Instance?.gameLogicManager;
+            if (!AbstractGroupDreamService.TryCreateGameplayContext(glm, out var ctx, out var reason))
+            {
+                Debug.Log($"[DreamInfiltration] Abstract group entry blocked: {reason}");
+                if (reason == "not_night")
+                    UIEventGrantToastPanel.ShowToast("入梦", "仅夜间可入梦", "白天无法开启梦境通道。");
+                else if (reason == "used_today")
+                    UIEventGrantToastPanel.ShowToast("入梦", "今日已入梦", "请等待下一天夜间。");
+                return;
+            }
+
+            TryBeginEntry(ctx);
         }
 
         public override bool OnCancel()

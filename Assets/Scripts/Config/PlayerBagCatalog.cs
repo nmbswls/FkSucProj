@@ -7,6 +7,8 @@ namespace My.Config
 {
     public static class PlayerBagCatalog
     {
+        public const int MaxBigBagCapacity = 4;
+
         static readonly List<PlayerBagDef> EmptyBagDefs = new();
 
         public static PlayerBagDef GetDef(EPlayerBagId bagId)
@@ -64,7 +66,7 @@ namespace My.Config
             int capacity = Math.Max(0, def.BaseCapacity + (int)attribute);
             if (def.BagId == (int)EPlayerBagId.Big)
             {
-                capacity = Math.Min(3, capacity);
+                capacity = Math.Min(MaxBigBagCapacity, capacity);
             }
 
             return capacity;

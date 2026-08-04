@@ -1,0 +1,40 @@
+{
+  "DialogId": "home_01_recovery_carlisle_check",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "复兴第二环：卡莱尔虚弱且保持冷战，只确认伤员与防务缺口。",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "埃蒙让我来确认伤员的情况。你一直坐在这里，总该看见了什么。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "卡莱尔",
+              "Content": "三个人不能移动，两个还能守夜。北边的缺口没人看着。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "就这些？",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "卡莱尔",
+              "Content": "你要的是情况。现在你知道了。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

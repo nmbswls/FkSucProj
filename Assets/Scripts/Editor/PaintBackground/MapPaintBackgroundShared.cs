@@ -253,6 +253,7 @@ public static class MapPaintBackgroundShared
         }
 
         Texture2D sliceTex = null;
+        Texture2D normalizedContext = null;
         Texture2D bgTex = null;
         try
         {
@@ -264,6 +265,12 @@ public static class MapPaintBackgroundShared
             else if (src.width == slicePx && src.height == slicePx)
             {
                 sliceTex = DuplicateTexture(src);
+            }
+            else if (src.width == src.height && src.width > slicePx && contextSize != slicePx)
+            {
+                normalizedContext = ResampleTexture(src, contextSize, contextSize, resampleFilter);
+                sliceTex = MapPaintBackgroundContext.CropCenterFromContext(
+                    normalizedContext, slicePx, expandRatio, resampleFilter);
             }
             else
             {
@@ -301,6 +308,11 @@ public static class MapPaintBackgroundShared
             if (sliceTex != null)
             {
                 Object.DestroyImmediate(sliceTex);
+            }
+
+            if (normalizedContext != null)
+            {
+                Object.DestroyImmediate(normalizedContext);
             }
 
             if (bgTex != null)

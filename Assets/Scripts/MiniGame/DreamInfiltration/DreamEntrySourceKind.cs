@@ -4,5 +4,6 @@ namespace My.MiniGame.Dream
     {
         FacilitySpot,
         CharacterEntry,
+        AbstractGroupEntry,
     }
 }

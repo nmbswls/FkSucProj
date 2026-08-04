@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Map.Entity;
 using My.Map.Logic;
 using My.Saving;
 using UnityEngine;
@@ -127,18 +128,31 @@ namespace My.Player
             fluidGainPerMyriad = GetLocalStat(partId, EPartLocalAttribute.FluidGain);
         }
 
-        // HAct 命中指定部位时叠入结算的技巧/强度
+        // HAct 命中指定部位：读局部 HTechnique/HStrength（含等级累加 + PartGear）
         public void GetCombatBonuses(EBodyPart partId, out long hTechnique, out long hStrength)
         {
-            hTechnique = 0;
-            hStrength = 0;
-            var state = GetPartState(partId);
-            if (state == null)
+            hTechnique = System.Math.Max(0, GetLocalStat(partId, EPartLocalAttribute.HTechnique));
+            hStrength = System.Math.Max(0, GetLocalStat(partId, EPartLocalAttribute.HStrength));
+        }
+
+        // 将接触部位贡献折成与 entity 同键的 pipeline 快照（不写活体 attributeStore）
+        public void CaptureCombatPipelineAttrs(EBodyPart partId, Dictionary<string, long> extraAttrs)
+        {
+            if (extraAttrs == null || partId == EBodyPart.None)
             {
                 return;
             }
 
-            BodyPartCatalog.GetCombatBonuses(partId, state.Level, out hTechnique, out hStrength);
+            GetCombatBonuses(partId, out var tech, out var str);
+            if (tech > 0)
+            {
+                extraAttrs[AttrIdConsts.HTechnique_Pipeline] = tech;
+            }
+
+            if (str > 0)
+            {
+                extraAttrs[AttrIdConsts.HStrength_Pipeline] = str;
+            }
         }
 
         public long GetLocalStat(EBodyPart partId, EPartLocalAttribute attr)

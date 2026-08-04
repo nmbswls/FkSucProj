@@ -1,0 +1,26 @@
+[
+  {
+    "attach_id": "evil_child_attach",
+    "attach_type": "evil_child",
+    "display_weight": 100,
+    "display_count_weight": 0,
+    "display_group_id": "evil_child",
+    "max_visible_count": 0,
+    "attach_main_buff": "attach_small",
+    "attach_view_prefab": "Prefab/Attach/evil_child_attach",
+    "auto_drop_time": -1,
+    "hit_count": 3
+  },
+  {
+    "attach_id": "forest_fly_attach",
+    "attach_type": "forest_fly",
+    "display_weight": 120,
+    "display_count_weight": 30,
+    "display_group_id": "forest_fly",
+    "max_visible_count": 1,
+    "attach_main_buff": "",
+    "attach_view_prefab": "Prefab/Attach/attach_unit_01",
+    "auto_drop_time": -1,
+    "hit_count": 1
+  }
+]

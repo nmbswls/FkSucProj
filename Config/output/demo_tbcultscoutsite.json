@@ -1,0 +1,44 @@
+[
+  {
+    "site_id": "scout_default_edge",
+    "display_name": "外缘拾遗",
+    "region_key": "default",
+    "logic_area_id": "",
+    "description": "无需深入探索即可派遣的基础搜集点。",
+    "unlock_conds": [],
+    "duration_days": 3,
+    "base_faith": 1,
+    "base_linker": 0,
+    "base_item_id": "stick",
+    "base_item_count": 2,
+    "special_item_id": "",
+    "special_item_count": 0,
+    "special_chance_percent": 0
+  },
+  {
+    "site_id": "scout_village_01_deep",
+    "display_name": "村中隐窖",
+    "region_key": "default",
+    "logic_area_id": "village_01",
+    "description": "需亲自踏足该地区后解锁。基础产出更高，并有低概率特殊掉落。",
+    "unlock_conds": [
+      {
+        "type": 14,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "EnterOverlay",
+        "param6": "village_01"
+      }
+    ],
+    "duration_days": 3,
+    "base_faith": 3,
+    "base_linker": 1,
+    "base_item_id": "stick",
+    "base_item_count": 5,
+    "special_item_id": "huihe",
+    "special_item_count": 1,
+    "special_chance_percent": 15
+  }
+]

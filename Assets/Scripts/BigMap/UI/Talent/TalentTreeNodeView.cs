@@ -61,26 +61,38 @@ namespace My.UI.Talent
             talentNodeId = nodeId;
             _hoverProvider?.Configure(nodeId, progression);
             var row = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(talentNodeId);
+            bool placeholder = row == null || row.MaxLevel <= 0;
             int cur = progression != null ? progression.GetTalentNodeLevel(talentNodeId) : 0;
-            int max = row != null ? row.MaxLevel : 1;
+            int max = row != null && row.MaxLevel > 0 ? row.MaxLevel : 0;
 
             if (titleText != null)
             {
                 string name = row != null && !string.IsNullOrEmpty(row.DisplayName)
                     ? row.DisplayName
-                    : $"Node {talentNodeId}";
+                    : placeholder ? "预留节点" : $"Node {talentNodeId}";
                 titleText.text = name;
             }
 
             if (levelText != null)
             {
-                levelText.text = $"Lv{cur}/{max}";
+                levelText.text = placeholder ? "未开放" : $"Lv{cur}/{max}";
             }
 
             if (descText != null)
             {
-                descText.text = string.Empty;
+                descText.text = placeholder ? "该节点尚未开放" : string.Empty;
             }
+
+            if (placeholder)
+            {
+                ApplyVisual(PlayerTalentManager.TalentNodeVisualState.Locked, false, "未开放");
+                SetSelected(false);
+                if (selectButton != null) selectButton.interactable = false;
+                if (unlockButton != null) unlockButton.interactable = false;
+                return;
+            }
+
+            if (selectButton != null) selectButton.interactable = true;
 
             if (progression == null)
             {

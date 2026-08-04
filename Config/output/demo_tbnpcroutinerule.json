@@ -1,0 +1,314 @@
+[
+  {
+    "id": "home01_vera_report",
+    "profile_id": "home01_vera",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 5,
+        "param1": 213,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "213_s2",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "vera_wait_report",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "wait",
+    "locomotion_profile_id": "vera_wait"
+  },
+  {
+    "id": "home01_vera_night",
+    "profile_id": "home01_vera",
+    "priority": 50,
+    "world_conds": [],
+    "day_period": 2,
+    "activity_type": 1,
+    "anchor_named_point": "vera_sleep_area",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 0,
+    "presentation_tag": "sleep",
+    "locomotion_profile_id": "vera_sleep"
+  },
+  {
+    "id": "home01_vera_day",
+    "profile_id": "home01_vera",
+    "priority": 20,
+    "world_conds": [],
+    "day_period": 1,
+    "activity_type": 2,
+    "anchor_named_point": "vera_work_area",
+    "target_named_path": "",
+    "wander_radius": 1.5,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 0,
+    "presentation_tag": "work",
+    "locomotion_profile_id": "vera_work"
+  },
+  {
+    "id": "home01_vera_default",
+    "profile_id": "home01_vera",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "vera_default",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 0,
+    "presentation_tag": "idle",
+    "locomotion_profile_id": "vera_default"
+  },
+  {
+    "id": "home01_emon_pre",
+    "profile_id": "home01_emon",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_pre_survivor_fire",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "pre",
+    "locomotion_profile_id": "home01_emon_pre"
+  },
+  {
+    "id": "home01_emon_post",
+    "profile_id": "home01_emon",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_post_sample_table",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "post",
+    "locomotion_profile_id": "home01_emon_post"
+  },
+  {
+    "id": "home01_duran_pre",
+    "profile_id": "home01_duran",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_pre_herb_shed",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "pre",
+    "locomotion_profile_id": "home01_duran_pre"
+  },
+  {
+    "id": "home01_duran_post",
+    "profile_id": "home01_duran",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_post_herb_shed",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "post",
+    "locomotion_profile_id": "home01_duran_post"
+  },
+  {
+    "id": "home01_evan_pre",
+    "profile_id": "home01_evan",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_pre_survivor_fire",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "pre",
+    "locomotion_profile_id": "home01_evan_pre"
+  },
+  {
+    "id": "home01_evan_post",
+    "profile_id": "home01_evan",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_post_sample_table",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "post",
+    "locomotion_profile_id": "home01_evan_post"
+  },
+  {
+    "id": "home01_hearn_pre",
+    "profile_id": "home01_hearn",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_pre_east_watch",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "pre",
+    "locomotion_profile_id": "home01_hearn_pre"
+  },
+  {
+    "id": "home01_hearn_post",
+    "profile_id": "home01_hearn",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_post_watch",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "post",
+    "locomotion_profile_id": "home01_hearn_post"
+  },
+  {
+    "id": "home01_vera_pre",
+    "profile_id": "home01_vera",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_pre_injured_shelter",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "pre",
+    "locomotion_profile_id": "home01_vera_pre"
+  },
+  {
+    "id": "home01_vera_post",
+    "profile_id": "home01_vera",
+    "priority": 100,
+    "world_conds": [
+      {
+        "type": 1,
+        "param1": 200,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_post_vera_room",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": 0,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "post",
+    "locomotion_profile_id": "home01_vera_post"
+  }
+]

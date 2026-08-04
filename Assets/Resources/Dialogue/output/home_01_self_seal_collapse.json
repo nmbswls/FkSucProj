@@ -1,0 +1,59 @@
+{
+  "DialogId": "home_01_self_seal_collapse",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "莉莉丝魔力失稳，倒地后转移到村内房间。",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4ActorAnim, Assembly-CSharp",
+          "AnimName": "knocked_down"
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "莉莉丝",
+              "Content": "……啧。不是伤，是周围的魔力在排斥我。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "主人，先别再压着力量走了！这里太靠近村子，继续失控会把附近的人都卷进来。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "把我带回房间。你最好已经想到办法了。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "home_01.self_seal_plan_known",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 6,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "homestead_01",
+          "Param6": "bedroom_in_entry"
+        }
+      ]
+    }
+  ]
+}

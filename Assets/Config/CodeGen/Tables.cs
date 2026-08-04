@@ -222,6 +222,38 @@ public partial class Tables
     /// 教团秘会任务定义
     /// </summary>
     public demo.TbCultMission TbCultMission {get; }
+    /// <summary>
+    /// 教团远征出征点
+    /// </summary>
+    public demo.TbCultScoutSite TbCultScoutSite {get; }
+    /// <summary>
+    /// 秘密基地可升级设施等级
+    /// </summary>
+    public demo.TbSecretBaseFacilityLevel TbSecretBaseFacilityLevel {get; }
+    /// <summary>
+    /// 精元池秘仪转换
+    /// </summary>
+    public demo.TbJingYuanPoolRitual TbJingYuanPoolRitual {get; }
+    /// <summary>
+    /// 秘会献精能力值产出
+    /// </summary>
+    public demo.TbCultOfferEssenceRule TbCultOfferEssenceRule {get; }
+    /// <summary>
+    /// 秘会能力值升级节点
+    /// </summary>
+    public demo.TbCultSecretCapabilityLevel TbCultSecretCapabilityLevel {get; }
+    /// <summary>
+    /// 抽象团体主表
+    /// </summary>
+    public demo.TbAbstractGroup TbAbstractGroup {get; }
+    /// <summary>
+    /// 抽象团体阶段
+    /// </summary>
+    public demo.TbAbstractGroupStage TbAbstractGroupStage {get; }
+    /// <summary>
+    /// 抽象团体阶段奖励
+    /// </summary>
+    public demo.TbAbstractGroupStageReward TbAbstractGroupStageReward {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -367,6 +399,14 @@ public partial class Tables
         TbFarmStationPlanDefault = new demo.TbFarmStationPlanDefault(loader("demo_tbfarmstationplandefault"));
         TbCookingRecipe = new demo.TbCookingRecipe(loader("demo_tbcookingrecipe"));
         TbCultMission = new demo.TbCultMission(loader("demo_tbcultmission"));
+        TbCultScoutSite = new demo.TbCultScoutSite(loader("demo_tbcultscoutsite"));
+        TbSecretBaseFacilityLevel = new demo.TbSecretBaseFacilityLevel(loader("demo_tbsecretbasefacilitylevel"));
+        TbJingYuanPoolRitual = new demo.TbJingYuanPoolRitual(loader("demo_tbjingyuanpoolritual"));
+        TbCultOfferEssenceRule = new demo.TbCultOfferEssenceRule(loader("demo_tbcultofferessencerule"));
+        TbCultSecretCapabilityLevel = new demo.TbCultSecretCapabilityLevel(loader("demo_tbcultsecretcapabilitylevel"));
+        TbAbstractGroup = new demo.TbAbstractGroup(loader("demo_tbabstractgroup"));
+        TbAbstractGroupStage = new demo.TbAbstractGroupStage(loader("demo_tbabstractgroupstage"));
+        TbAbstractGroupStageReward = new demo.TbAbstractGroupStageReward(loader("demo_tbabstractgroupstagereward"));
         ResolveRef();
     }
     
@@ -514,6 +554,14 @@ public partial class Tables
         TbFarmStationPlanDefault.ResolveRef(this);
         TbCookingRecipe.ResolveRef(this);
         TbCultMission.ResolveRef(this);
+        TbCultScoutSite.ResolveRef(this);
+        TbSecretBaseFacilityLevel.ResolveRef(this);
+        TbJingYuanPoolRitual.ResolveRef(this);
+        TbCultOfferEssenceRule.ResolveRef(this);
+        TbCultSecretCapabilityLevel.ResolveRef(this);
+        TbAbstractGroup.ResolveRef(this);
+        TbAbstractGroupStage.ResolveRef(this);
+        TbAbstractGroupStageReward.ResolveRef(this);
     }
 }
 

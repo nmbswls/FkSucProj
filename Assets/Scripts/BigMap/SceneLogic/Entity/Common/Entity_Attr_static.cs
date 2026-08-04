@@ -21,7 +21,9 @@ namespace My.Map.Entity
 
 
         public const string Arm_Base = "Arm_Base"; // 白字基础护甲（养成静态分量，不受衣装覆盖率缩放）
-        public const string Arm_Inner = "Arm_Inner"; // 内部护甲（养成内分量，经 Clothes_ExposeRate 折算进白字）
+        public const string Arm_Inner = "Arm_Inner"; // 内部护甲
+        public const string Arm_Inner_MinExposeRate = "Arm_Inner_MinExposeRate";
+        public const string Arm_Inner_ExposeRate = "Arm_Inner_ExposeRate";
 
         public const string Arm_White = "Arm_White"; // 白字护甲 = 基础护甲 + （内部护甲） * 转换比例
         public const string Arm_Green = "Arm_Green"; // 绿字护甲
@@ -60,6 +62,8 @@ namespace My.Map.Entity
         public const string SrcLevel_Pipeline = "SrcLevel_Pipeline";
         public const string HTechnique_Pipeline = "HTechnique_Pipeline";
         public const string HStrength_Pipeline = "HStrength_Pipeline";
+        // EBodyPart 整型（可选元数据）；战斗数值走上方同名 entity pipeline
+        public const string HitPart_Pipeline = "HitPart";
         public const string XiXue_Pipeline = "XiXue_Pipeline";
 
         // 施放时由武器栏写入 ctx.CacheAttrVal，供 UseWeapon OnHitEffects 引用
@@ -226,8 +230,18 @@ namespace My.Map.Entity
                         return charm * charm / (charm + k);
                     }),
 
-                (AttrIdConsts.Arm_White, new[] { AttrIdConsts.Arm_Base, AttrIdConsts.Arm_Inner, AttrIdConsts.Clothes_ExposeRate },
-                    ctx => ctx.Get(AttrIdConsts.Arm_Base) + (long)(ctx.Get(AttrIdConsts.Arm_Inner) * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
+                (AttrIdConsts.Arm_Inner_ExposeRate,
+                    new[] { AttrIdConsts.Arm_Inner_MinExposeRate, AttrIdConsts.Clothes_ExposeRate },
+                    ctx =>
+                    {
+                        long minRate = Math.Clamp(ctx.Get(AttrIdConsts.Arm_Inner_MinExposeRate), 0, 10000);
+                        long clothesRate = Math.Clamp(ctx.Get(AttrIdConsts.Clothes_ExposeRate), 0, 10000);
+                        return minRate + (10000 - minRate) * clothesRate / 10000;
+                    }),
+                (AttrIdConsts.Arm_White,
+                    new[] { AttrIdConsts.Arm_Base, AttrIdConsts.Arm_Inner, AttrIdConsts.Arm_Inner_ExposeRate },
+                    ctx => ctx.Get(AttrIdConsts.Arm_Base) +
+                        (long)(ctx.Get(AttrIdConsts.Arm_Inner) * ctx.Get(AttrIdConsts.Arm_Inner_ExposeRate) / 10000f)),
                 (AttrIdConsts.Arm_Extra_1, new[] { AttrIdConsts.PhysicalResist, AttrIdConsts.PhysicalResistArmRate, AttrIdConsts.Clothes_ExposeRate },
                     ctx => (long)(ctx.Get(AttrIdConsts.PhysicalResist) * ctx.Get(AttrIdConsts.PhysicalResistArmRate) / 10000f * ctx.Get(AttrIdConsts.Clothes_ExposeRate) / 10000f)),
                 (AttrIdConsts.Arm_Green, new[] { AttrIdConsts.Arm_Extra_1 }, ctx => ctx.Get(AttrIdConsts.Arm_Extra_1)),

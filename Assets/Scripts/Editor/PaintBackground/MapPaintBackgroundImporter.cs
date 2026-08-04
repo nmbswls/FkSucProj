@@ -33,6 +33,21 @@ public static class MapPaintBackgroundImporter
             return Fail("Import cancelled.");
         }
 
+        return ImportPaintedPng(root, mapName, coord, externalPath);
+    }
+
+    // Path-based entry point for Codex/batch automation. The editor window keeps using the file picker above.
+    public static ImportResult ImportPaintedPng(
+        MapChunkEditorRoot root,
+        string mapName,
+        ChunkCoord coord,
+        string externalPath)
+    {
+        if (root == null)
+        {
+            return Fail("MapChunkEditorRoot is missing.");
+        }
+
         if (!File.Exists(externalPath))
         {
             return Fail("Selected file does not exist.");
@@ -63,13 +78,13 @@ public static class MapPaintBackgroundImporter
 
         try
         {
-            bool sizeOk = (tex.width == slicePx && tex.height == slicePx) ||
-                          (tex.width == contextSize && tex.height == contextSize);
+            bool sizeOk = tex.width == tex.height && tex.width >= slicePx;
             if (!sizeOk)
             {
                 return Fail(
-                    $"Image size mismatch: expected {slicePx}x{slicePx} or {contextSize}x{contextSize} " +
-                    $"(context expand {expandRatio:P0}), got {tex.width}x{tex.height}.");
+                    $"Image size mismatch: expected a square PNG at least {slicePx}x{slicePx} " +
+                    $"(native context {contextSize}x{contextSize}, expand {expandRatio:P0}), " +
+                    $"got {tex.width}x{tex.height}.");
             }
 
             MapPaintBackgroundShared.EnsurePaintFolders(mapName);

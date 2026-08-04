@@ -724,6 +724,14 @@ public partial class DialoguePlayer : MonoBehaviour
                 }
                 break;
 
+            case DialogCommandData4ActorAnim cd4ActorAnim:
+                {
+                    MainGameManager.Instance?.gameLogicManager?.playerLogicEntity
+                        ?.DoDialogAnimation(cd4ActorAnim.AnimName);
+                    SafeComplete();
+                }
+                break;
+
             case DialogCommandData4SpawnDialogActor cd4SpawnActor:
                 {
                     SpawnDialogActor(cd4SpawnActor);
@@ -810,6 +818,11 @@ public partial class DialoguePlayer : MonoBehaviour
                                 {
                                     MainGameManager.Instance.gameLogicManager.playerDataManager?.FuncOpenSystem?.TryOpenFunc((EFuncOpenType)cd4Func.Param1);
                                 }
+                            }
+                            break;
+                        case EDialogSimpleFuncType.SetPlayerHumanMode:
+                            {
+                                MainGameManager.Instance.gameLogicManager.ForcePlayerHumanMode(cd4Func.Param1 != 0);
                             }
                             break;
                     }

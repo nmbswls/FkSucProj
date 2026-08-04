@@ -82,5 +82,11 @@
     "idle_anim": "idle",
     "move_anim": "move",
     "priority": 0
+  },
+  {
+    "id": "home01_carlisle_recovering",
+    "idle_anim": "idle",
+    "move_anim": "move",
+    "priority": 0
   }
 ]

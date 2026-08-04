@@ -65,7 +65,7 @@ namespace cfg.demo
         /// </summary>
         FixDmgReduceFinal = 11,
         /// <summary>
-        /// 固定堕落增加
+        /// 遗留：固定堕落增加（日结已改用FallenBase*）
         /// </summary>
         FixFallenAdd = 12,
         /// <summary>
@@ -113,21 +113,13 @@ namespace cfg.demo
         /// </summary>
         PartGearPoint_Breast = 101,
         /// <summary>
-        /// 子宫装备点
+        /// 前穴装备点
         /// </summary>
-        PartGearPoint_Womb = 102,
+        PartGearPoint_FrontHole = 102,
         /// <summary>
-        /// 尾部装备点
+        /// 后穴装备点
         /// </summary>
-        PartGearPoint_Tail = 103,
-        /// <summary>
-        /// 翅膀装备点
-        /// </summary>
-        PartGearPoint_Wing = 104,
-        /// <summary>
-        /// 皮肤装备点
-        /// </summary>
-        PartGearPoint_Skin = 105,
+        PartGearPoint_BackHole = 103,
         /// <summary>
         /// 大件背包槽位
         /// </summary>
@@ -192,6 +184,34 @@ namespace cfg.demo
         /// H强度
         /// </summary>
         HStrength = 37,
+        /// <summary>
+        /// Part Gear / exposed armor tuning
+        /// </summary>
+        InnerArmMinExposeRate = 38,
+        /// <summary>
+        /// 通用生命上限养成属性
+        /// </summary>
+        HPMax = 39,
+        /// <summary>
+        /// 每日基础沉沦增长（默认0，需天赋等开启）
+        /// </summary>
+        FallenBaseDailyAdd = 40,
+        /// <summary>
+        /// 基础沉沦家繁荣门槛；&gt;0且达标才加FromHome日增
+        /// </summary>
+        FallenBaseDailyHomeProsperityNeed = 41,
+        /// <summary>
+        /// 家繁荣达标时每日额外基础沉沦
+        /// </summary>
+        FallenBaseDailyAddFromHome = 42,
+        /// <summary>
+        /// 扩散人数上限倍数：上限=基础*该值（默认10）
+        /// </summary>
+        FallenSpreadCapMul = 43,
+        /// <summary>
+        /// 扩散日增千分比系数（默认100=0.1）
+        /// </summary>
+        FallenSpreadGrowthPermille = 44,
     }
 
 } 

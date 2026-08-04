@@ -310,5 +310,23 @@
     "relocate_policy": 1,
     "presentation_tag": "post",
     "locomotion_profile_id": "home01_vera_post"
+  },
+  {
+    "id": "home01_carlisle_recovering",
+    "profile_id": "home01_carlisle",
+    "priority": 0,
+    "world_conds": [],
+    "day_period": 0,
+    "activity_type": 1,
+    "anchor_named_point": "home_carlisle_recovery",
+    "target_named_path": "",
+    "wander_radius": 0,
+    "face_dir": {
+      "x": -1,
+      "y": 0
+    },
+    "relocate_policy": 1,
+    "presentation_tag": "recovering",
+    "locomotion_profile_id": "home01_carlisle_recovering"
   }
 ]

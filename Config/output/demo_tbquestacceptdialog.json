@@ -1,0 +1,87 @@
+[
+  {
+    "id": 100,
+    "quest_id": 300,
+    "character_key": "carlisle",
+    "entry_dialog_id": "carlisle_accept_first_aid",
+    "option_text": "检查他的伤势。",
+    "priority": 10,
+    "success_dialog_id": "carlisle_accept_first_aid_ok",
+    "fail_dialog_id": "carlisle_accept_first_aid_fail",
+    "open_cond": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "test_link_a.camp_done",
+        "param6": "0"
+      }
+    ]
+  },
+  {
+    "id": 110,
+    "quest_id": 301,
+    "character_key": "carlisle",
+    "entry_dialog_id": "carlisle_accept_clear_exit",
+    "option_text": "先把附近的怪物清掉。",
+    "priority": 10,
+    "success_dialog_id": "carlisle_accept_clear_exit_ok",
+    "fail_dialog_id": "carlisle_accept_clear_exit_fail",
+    "open_cond": [
+      {
+        "type": 1,
+        "param1": 300,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ]
+  },
+  {
+    "id": 120,
+    "quest_id": 302,
+    "character_key": "carlisle",
+    "entry_dialog_id": "carlisle_accept_stretcher",
+    "option_text": "做个能带他离开的东西。",
+    "priority": 10,
+    "success_dialog_id": "carlisle_accept_stretcher_ok",
+    "fail_dialog_id": "carlisle_accept_stretcher_fail",
+    "open_cond": [
+      {
+        "type": 1,
+        "param1": 301,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "0",
+        "param6": "0"
+      }
+    ]
+  },
+  {
+    "id": 143,
+    "quest_id": 213,
+    "character_key": "home_vera",
+    "entry_dialog_id": "vera_dream_accept",
+    "option_text": "问她水盆里的旧影。",
+    "priority": 10,
+    "success_dialog_id": "vera_dream_accept_ok",
+    "fail_dialog_id": "vera_dream_accept_fail",
+    "open_cond": []
+  },
+  {
+    "id": 2150,
+    "quest_id": 215,
+    "character_key": "village_herbalist",
+    "entry_dialog_id": "village_herbalist_request",
+    "option_text": "买一份草药敗剂",
+    "priority": 10,
+    "success_dialog_id": "village_herbalist_request",
+    "fail_dialog_id": "",
+    "open_cond": []
+  }
+]

@@ -1,0 +1,70 @@
+[
+  {
+    "level": 0,
+    "display_name": "初识文明",
+    "desc": "开始理解人类聚落的基本运作。",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "custom_unlock_conds": []
+  },
+  {
+    "level": 1,
+    "display_name": "聚落成形",
+    "desc": "已掌握若干基础技术，城镇功能开始成形。",
+    "unlock_conds": [
+      {
+        "type": 0,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "custom_unlock_conds": []
+  },
+  {
+    "level": 2,
+    "display_name": "城镇协作",
+    "desc": "多项技术形成协作网络，生产与探索开始互相支撑。",
+    "unlock_conds": [
+      {
+        "type": 9,
+        "param1": 3,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "custom_unlock_conds": []
+  },
+  {
+    "level": 3,
+    "display_name": "文明雏形",
+    "desc": "人类城镇具备稳定的知识传承与生产体系。",
+    "unlock_conds": [
+      {
+        "type": 9,
+        "param1": 6,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "",
+        "param6": ""
+      }
+    ],
+    "custom_unlock_conds": []
+  }
+]

@@ -271,8 +271,15 @@ namespace My.UI
             equipNotchBar?.Refresh(used, cap);
             equippedBar?.Refresh(_eq, _selectedPart, OnUnequipRequested);
             BuildLocalStats(state);
-            bagGrid?.Refresh(_eq, _selectedPart, null);
-            bagGrid?.ConfigureEquipAnim(transferAnim, () => _selectedPart, RefreshAllAfterTransfer);
+            if (bagGrid != null)
+            {
+                bagGrid.gameObject.SetActive(cap > 0);
+                if (cap > 0)
+                {
+                    bagGrid.Refresh(_eq, _selectedPart, null);
+                    bagGrid.ConfigureEquipAnim(transferAnim, () => _selectedPart, RefreshAllAfterTransfer);
+                }
+            }
 
             partProgressLine?.Refresh(_selectedPart, state?.Level ?? 0);
         }

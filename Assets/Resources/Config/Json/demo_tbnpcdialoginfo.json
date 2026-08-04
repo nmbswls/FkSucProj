@@ -72,5 +72,32 @@
     "priority": 10,
     "show_cond": [],
     "need_npc_val": ""
+  },
+  {
+    "id": 104,
+    "npc_id": "game_init_carlisle_awake",
+    "dialog_id": "home_01_self_seal_carlisle",
+    "priority": 200,
+    "show_cond": [
+      {
+        "type": 2,
+        "param1": 0,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "home_01.self_seal_briefed",
+        "param6": "0"
+      },
+      {
+        "type": 2,
+        "param1": 1,
+        "param2": 0,
+        "param3": 0,
+        "param4": 0,
+        "param5": "player.human_form_unlocked",
+        "param6": "0"
+      }
+    ],
+    "need_npc_val": ""
   }
 ]

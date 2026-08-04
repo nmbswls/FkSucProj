@@ -53,7 +53,10 @@ namespace My.Saving
         public float CurrentHP;
         public float MaxHP;
 
+        // 沉沦合计（兼容旧档/展示）；运行时以 FallenBaseAmount + FallenSpreadAmount 为准并回写
         public long TotalFallPeopleAmount = 0;
+        public long FallenBaseAmount;
+        public long FallenSpreadAmount;
 
         // 内城：繁荣度、当前人口（与 HomeDataManager 同步）
         public int HomeProsperity;
@@ -101,6 +104,17 @@ namespace My.Saving
 
         // 隐秘据点建设等级（TbSecretBaseBuildLevel.level，卷轴右边界随等级扩大）
         public int SecretBaseBuildLevel = 1;
+
+        // 秘密基地可升级设施等级：facility_id -> level
+        public Dictionary<string, int> SecretBaseFacilityLevels = new();
+
+        // 精元池存储（普通精元弹药池，非优质精华）
+        public long JingYuanPoolStored;
+
+        // 抽象团体（小团体）入梦进度与日刷/日限
+        public Dictionary<string, AbstractGroupPersist> AbstractGroupById = new();
+        public AbstractGroupDailyRefreshPersist AbstractGroupDailyRefresh = new();
+        public DreamDailyLimitPersist DreamDailyLimit = new();
 
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
 
@@ -283,6 +297,35 @@ namespace My.Saving
         public int FavorValue;
         public int GiftsGivenToday;
         public int LastGiftSettlementDay = -1;
+    }
+
+    [Serializable]
+    public class AbstractGroupPersist
+    {
+        public string GroupId = string.Empty;
+        public int CurrentStage = 1;
+        public int HighestClearedStage;
+        public Dictionary<int, int> AttemptCountByStage = new();
+        public Dictionary<int, int> ClearCountByStage = new();
+        public Dictionary<int, int> BestScoreByStage = new();
+        public int LastRefreshSettlementDay = -1;
+        public bool Retired;
+        public bool SecretUnitGranted;
+    }
+
+    [Serializable]
+    public class AbstractGroupDailyRefreshPersist
+    {
+        public int SettlementDayIndex = -1;
+        public string SelectedGroupId = string.Empty;
+        public int SelectedStage;
+    }
+
+    [Serializable]
+    public class DreamDailyLimitPersist
+    {
+        public int SettlementDayIndex = -1;
+        public bool DreamUsedToday;
     }
 
     // 主背包单格稀疏持久化：仅存占格条目，使用 SlotIndex（与 PlayerBag.GetItemByIdx 平面下标一致）
@@ -564,6 +607,12 @@ namespace My.Saving
         public string MissionId = string.Empty;
         public string AssignedLogicAreaId = string.Empty;
         public string AssignedAnchorId = string.Empty;
+        public string AssignedScoutSiteId = string.Empty;
+        // 0 = 永久任务；>0 表示在该结算日及之后完成
+        public int MissionEndsSettlementDay;
+        // 秘会唯一能力值 0~100；旧档 Aptitude(1~5) 读档时换算
+        public int Capability;
+        public int Aptitude;
     }
 
     [Serializable]
@@ -781,10 +830,18 @@ namespace My.Saving
             data.PlayerData.TalentNodeLevels ??= new List<TalentNodeLevelPersist>();
             data.PlayerData.SavePointUnlocks ??= new List<SavePointUnlockPersist>();
             data.PlayerData.SecretBaseUnlockedFacilityIds ??= new List<string>();
+            data.PlayerData.SecretBaseFacilityLevels ??= new Dictionary<string, int>();
             if (data.PlayerData.SecretBaseBuildLevel < 1)
             {
                 data.PlayerData.SecretBaseBuildLevel = 1;
             }
+            data.PlayerData.JingYuanPoolStored = Math.Max(0, data.PlayerData.JingYuanPoolStored);
+            data.PlayerData.FallenBaseAmount = Math.Max(0, data.PlayerData.FallenBaseAmount);
+            data.PlayerData.FallenSpreadAmount = Math.Max(0, data.PlayerData.FallenSpreadAmount);
+            data.PlayerData.TotalFallPeopleAmount = Math.Max(0, data.PlayerData.TotalFallPeopleAmount);
+            data.PlayerData.AbstractGroupById ??= new Dictionary<string, AbstractGroupPersist>();
+            data.PlayerData.AbstractGroupDailyRefresh ??= new AbstractGroupDailyRefreshPersist();
+            data.PlayerData.DreamDailyLimit ??= new DreamDailyLimitPersist();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
             data.PlayerData.TriggeredDialogIds ??= new List<string>();

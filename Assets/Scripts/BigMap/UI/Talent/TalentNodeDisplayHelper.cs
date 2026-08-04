@@ -19,6 +19,7 @@ namespace My.UI.Talent
             public int CurrentLevel;
             public int MaxLevel;
             public int NextLevel;
+            public bool IsPlaceholder;
             public bool IsMaxed;
             public PlayerTalentManager.TalentNodeVisualState State;
             public TalentNode NodeCfg;
@@ -45,6 +46,7 @@ namespace My.UI.Talent
 
             int current = progression?.GetTalentNodeLevel(nodeId) ?? 0;
             int max = nodeCfg.MaxLevel;
+            bool isPlaceholder = max <= 0;
             bool isMaxed = current >= max;
             int next = isMaxed ? 0 : current + 1;
 
@@ -54,6 +56,7 @@ namespace My.UI.Talent
                 CurrentLevel = current,
                 MaxLevel = max,
                 NextLevel = next,
+                IsPlaceholder = isPlaceholder,
                 IsMaxed = isMaxed,
                 State = progression?.GetTalentNodeVisualState(nodeId)
                           ?? PlayerTalentManager.TalentNodeVisualState.Locked,
@@ -81,6 +84,11 @@ namespace My.UI.Talent
 
         public static string BuildHoverSummary(in NodeSnapshot snapshot)
         {
+            if (snapshot.IsPlaceholder)
+            {
+                return "该节点尚未开放";
+            }
+
             if (snapshot.IsMaxed)
             {
                 return BuildLevelEffectSummary(snapshot.CurrentLevelRow, true);
@@ -91,6 +99,11 @@ namespace My.UI.Talent
 
         public static string BuildHoverStateLabel(in NodeSnapshot snapshot)
         {
+            if (snapshot.IsPlaceholder)
+            {
+                return "未开放";
+            }
+
             if (snapshot.IsMaxed)
             {
                 return "已满级";
@@ -106,6 +119,11 @@ namespace My.UI.Talent
 
         public static string BuildHoverHint(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
+            if (snapshot.IsPlaceholder)
+            {
+                return string.Empty;
+            }
+
             if (snapshot.IsMaxed)
             {
                 return "已生效";
@@ -122,6 +140,11 @@ namespace My.UI.Talent
         public static string BuildDetailBody(in NodeSnapshot snapshot, ITalentProgressionContext progression)
         {
             var lines = new StringBuilder();
+
+            if (snapshot.IsPlaceholder)
+            {
+                return "该节点尚未开放";
+            }
 
             if (!string.IsNullOrEmpty(snapshot.NodeCfg?.Description))
             {
@@ -466,6 +489,9 @@ namespace My.UI.Talent
                 ECommonCheckType.CheckVariable => string.IsNullOrEmpty(cond.Param5) ? "满足剧情条件" : $"满足条件 {cond.Param5}",
                 ECommonCheckType.FuncOpen => $"解锁功能 {(EFuncOpenType)cond.Param1}",
                 ECommonCheckType.CharacterFavorLevel => $"{ResolveCharacterName(cond.Param5)}好感达到 Lv{cond.Param1}",
+                ECommonCheckType.CultTechNodeLevel => $"教团科技节点 {cond.Param1} 达到 Lv{(cond.Param2 > 0 ? cond.Param2 : 1)}",
+                ECommonCheckType.CultAttributeAtLeast => $"教团属性 {cond.Param5} ≥ {cond.Param1}",
+                ECommonCheckType.StatAtLeast => $"统计 {cond.Param5}{(string.IsNullOrEmpty(cond.Param6) ? string.Empty : $"/{cond.Param6}")} ≥ {cond.Param1}",
                 ECommonCheckType.AlwaysFail => "条件未满足",
                 _ => "解锁条件未满足",
             };

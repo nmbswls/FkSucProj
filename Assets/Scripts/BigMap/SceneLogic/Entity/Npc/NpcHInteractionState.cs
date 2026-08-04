@@ -128,7 +128,7 @@ namespace My.Map
             var act = My.Config.CfgMgr.Cfgs?.TbHActInfo?.GetOrDefault(actId);
             if (act == null)
             {
-                return EBodyPart.Womb;
+                return EBodyPart.FrontHole;
             }
 
             var fromDesc = InferFromDesc(act.Desc);
@@ -149,12 +149,12 @@ namespace My.Map
 
                     if (tag == "Unsensor" || tag == "Charmed" || tag == "KnockDown")
                     {
-                        return EBodyPart.Womb;
+                        return EBodyPart.FrontHole;
                     }
                 }
             }
 
-            return EBodyPart.Womb;
+            return EBodyPart.FrontHole;
         }
 
         public static EBodyPart InferFromDesc(string desc)
@@ -176,13 +176,13 @@ namespace My.Map
 
             if (desc.Contains("尻") || desc.Contains("肛") || desc.Contains("屁股"))
             {
-                return EBodyPart.Tail;
+                return EBodyPart.BackHole;
             }
 
             if (desc.Contains("入") || desc.Contains("插入") || desc.Contains("骑乘") ||
                 desc.Contains("穴") || desc.Contains("传教士") || desc.Contains("体位"))
             {
-                return EBodyPart.Womb;
+                return EBodyPart.FrontHole;
             }
 
             return EBodyPart.None;

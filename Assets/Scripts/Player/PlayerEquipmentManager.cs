@@ -67,7 +67,7 @@ namespace My.Player
 
         public int GetPartGearPointCap(EBodyPart part)
         {
-            if (part == EBodyPart.None)
+            if (part == EBodyPart.None || part == EBodyPart.Limb)
             {
                 return 0;
             }
@@ -710,7 +710,7 @@ namespace My.Player
 
     static class BodyPartUtil
     {
-        public const int PartSlotCount = 7;
+        public const int PartSlotCount = 6;
 
         public static int ToSlotIndex(EBodyPart part)
         {
@@ -718,10 +718,9 @@ namespace My.Player
             {
                 EBodyPart.Mouth => 1,
                 EBodyPart.Breast => 2,
-                EBodyPart.Womb => 3,
-                EBodyPart.Tail => 4,
-                EBodyPart.Wing => 5,
-                EBodyPart.Skin => 6,
+                EBodyPart.FrontHole => 3,
+                EBodyPart.BackHole => 4,
+                EBodyPart.Limb => 5,
                 _ => -1,
             };
         }

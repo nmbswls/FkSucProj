@@ -40,6 +40,13 @@ namespace My.Player
             targetMap.Add((int)EYCAttribute.CarryWeightBase, 300);
             targetMap.Add((int)EYCAttribute.CarryWeightExtraFlat, 0);
             targetMap.Add((int)EYCAttribute.CarryWeightExtraPercent, 0);
+
+            // 沉沦：前期基础日增为 0；扩散默认可涨到基础的 10 倍
+            targetMap.Add((int)EYCAttribute.FallenBaseDailyAdd, 0);
+            targetMap.Add((int)EYCAttribute.FallenBaseDailyHomeProsperityNeed, 0);
+            targetMap.Add((int)EYCAttribute.FallenBaseDailyAddFromHome, 0);
+            targetMap.Add((int)EYCAttribute.FallenSpreadCapMul, FallenPopulationService.DefaultSpreadCapMul);
+            targetMap.Add((int)EYCAttribute.FallenSpreadGrowthPermille, FallenPopulationService.DefaultSpreadGrowthPermille);
         }
     }
 

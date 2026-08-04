@@ -5,9 +5,16 @@ using UnityEngine.UI;
 
 namespace My.UI.CultTech
 {
-    // 教团 Overview：锚点行 + 派遣入口
+    // 教团 Overview：锚点行 + 增幅/灭迹入口
     public sealed class CultAnchorRowView : MonoBehaviour
     {
+        public enum EAnchorAction
+        {
+            None,
+            Amplify,
+            Cover,
+        }
+
         [SerializeField] TextMeshProUGUI nameText;
         [SerializeField] TextMeshProUGUI areaText;
         [SerializeField] TextMeshProUGUI statusText;
@@ -16,9 +23,8 @@ namespace My.UI.CultTech
         string _logicAreaId;
         string _anchorId;
         string _regionKey;
-        Action<string, string, string> _onDispatch;
-        Action<string> _onIntel;
-        bool _canOpenIntel;
+        EAnchorAction _action;
+        Action<string, string, string, EAnchorAction> _onDispatch;
 
         public string LogicAreaId => _logicAreaId;
         public string AnchorId => _anchorId;
@@ -37,19 +43,15 @@ namespace My.UI.CultTech
             string displayName,
             string status,
             bool amplified,
-            bool canAmplify,
-            Action<string, string, string> onDispatch,
-            string intelSummary = null,
-            bool canOpenIntel = false,
-            Action<string> onIntel = null)
+            EAnchorAction action,
+            Action<string, string, string, EAnchorAction> onDispatch)
         {
             ResolveRefs();
             _regionKey = regionKey ?? string.Empty;
             _logicAreaId = logicAreaId ?? string.Empty;
             _anchorId = anchorId ?? string.Empty;
+            _action = action;
             _onDispatch = onDispatch;
-            _onIntel = onIntel;
-            _canOpenIntel = canOpenIntel && _onIntel != null;
             if (nameText != null)
                 nameText.text = string.IsNullOrEmpty(displayName) ? _anchorId : displayName;
             if (areaText != null)
@@ -62,10 +64,17 @@ namespace My.UI.CultTech
             WireDispatch();
             if (dispatchButton != null)
             {
-                dispatchButton.interactable = _canOpenIntel || (canAmplify && _onDispatch != null);
+                dispatchButton.interactable = _action != EAnchorAction.None && _onDispatch != null;
                 var label = dispatchButton.GetComponentInChildren<TextMeshProUGUI>(true);
-                if (_canOpenIntel && label != null) label.text = "情报";
-                if (label != null) label.text = amplified ? "已增幅" : canAmplify ? "增幅" : "未建立";
+                if (label != null)
+                {
+                    label.text = _action switch
+                    {
+                        EAnchorAction.Cover => "灭迹",
+                        EAnchorAction.Amplify => "增幅",
+                        _ => amplified ? "已增幅" : "未建立",
+                    };
+                }
             }
         }
 
@@ -85,10 +94,8 @@ namespace My.UI.CultTech
             dispatchButton.onClick.RemoveAllListeners();
             dispatchButton.onClick.AddListener(() =>
             {
-                if (_canOpenIntel)
-                    _onIntel?.Invoke(_logicAreaId);
-                else if (!string.IsNullOrEmpty(_anchorId))
-                    _onDispatch?.Invoke(_regionKey, _logicAreaId, _anchorId);
+                if (_action != EAnchorAction.None && !string.IsNullOrEmpty(_anchorId))
+                    _onDispatch?.Invoke(_regionKey, _logicAreaId, _anchorId, _action);
             });
         }
 

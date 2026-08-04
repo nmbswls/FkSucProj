@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "display_name": "振奋",
+    "description": "提升精力与行动效率",
+    "sort_order": 10
+  },
+  {
+    "id": 2,
+    "display_name": "强韧",
+    "description": "增强体魄与耐受",
+    "sort_order": 20
+  },
+  {
+    "id": 3,
+    "display_name": "舒缓",
+    "description": "平复不适与躁动",
+    "sort_order": 30
+  },
+  {
+    "id": 4,
+    "display_name": "净化",
+    "description": "祛除杂质与污染",
+    "sort_order": 40
+  },
+  {
+    "id": 5,
+    "display_name": "锐利",
+    "description": "锋锐、穿透与精准",
+    "sort_order": 50
+  },
+  {
+    "id": 6,
+    "display_name": "稳态",
+    "description": "稳固结构与平衡",
+    "sort_order": 60
+  },
+  {
+    "id": 7,
+    "display_name": "生机",
+    "description": "滋养生命与恢复",
+    "sort_order": 70
+  },
+  {
+    "id": 8,
+    "display_name": "宁神",
+    "description": "安定心神与意识",
+    "sort_order": 80
+  },
+  {
+    "id": 9,
+    "display_name": "激变",
+    "description": "催化转化与反应",
+    "sort_order": 90
+  },
+  {
+    "id": 10,
+    "display_name": "凝华",
+    "description": "凝结、封存与定型",
+    "sort_order": 100
+  }
+]

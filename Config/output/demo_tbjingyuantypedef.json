@@ -1,0 +1,74 @@
+[
+  {
+    "type_id": "orc_i",
+    "display_name": "兽人精元",
+    "match_tag": "orc_i",
+    "sort_order": 1
+  },
+  {
+    "type_id": "orc_ii",
+    "display_name": "兽人精英精元",
+    "match_tag": "orc_ii",
+    "sort_order": 2
+  },
+  {
+    "type_id": "human_i",
+    "display_name": "白羊座",
+    "match_tag": "human_i",
+    "sort_order": 3
+  },
+  {
+    "type_id": "human_ii",
+    "display_name": "金牛座",
+    "match_tag": "human_ii",
+    "sort_order": 4
+  },
+  {
+    "type_id": "human_iii",
+    "display_name": "双子座",
+    "match_tag": "human_iii",
+    "sort_order": 5
+  },
+  {
+    "type_id": "human_iv",
+    "display_name": "巨蟹座",
+    "match_tag": "human_iv",
+    "sort_order": 6
+  },
+  {
+    "type_id": "human_v",
+    "display_name": "狮子座",
+    "match_tag": "human_v",
+    "sort_order": 7
+  },
+  {
+    "type_id": "human_vi",
+    "display_name": "处女座",
+    "match_tag": "human_vi",
+    "sort_order": 8
+  },
+  {
+    "type_id": "human_vii",
+    "display_name": "天秤座",
+    "match_tag": "human_vii",
+    "sort_order": 9
+  },
+  {
+    "type_id": "monster_i",
+    "display_name": "天蝎座",
+    "match_tag": "monster_i",
+    "sort_order": 10
+  },
+  {
+    "type_id": "monster_ii",
+    "display_name": "射手座",
+    "match_tag": "monster_ii",
+    "sort_order": 11
+  },
+  {
+    "type_id": "monster_iii",
+    "display_name": "摩羯座",
+    "match_tag": "monster_iii",
+    "sort_order": 12
+  }
+]

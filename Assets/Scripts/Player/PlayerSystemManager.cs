@@ -35,7 +35,16 @@ namespace My.Player
         //public string SavedReviveMap = "initial";
 
         public int Level { get; set; } = 0;
-        public long TotalFallPeopleAmount { get; set; } // 总诱惑人数
+        // 沉沦：基础 + 扩散；TotalFallPeopleAmount 为合计（展示/兼容）
+        public long FallenBaseAmount { get; private set; }
+        public long FallenSpreadAmount { get; private set; }
+        public long TotalFallPeopleAmount => Math.Max(0, FallenBaseAmount + FallenSpreadAmount);
+
+        public void SetFallenPopulation(long baseAmount, long spreadAmount)
+        {
+            FallenBaseAmount = Math.Max(0, baseAmount);
+            FallenSpreadAmount = Math.Max(0, spreadAmount);
+        }
 
         /// <summary>
         /// 玩家进度（养成等）子系统
@@ -208,6 +217,7 @@ namespace My.Player
             }
 
             Level = savingData.PlayerData.Level;
+            FallenPopulationService.LoadFromSave(this, savingData.PlayerData);
         }
 
         void InitPlayerSystems(SaveData savingData)
@@ -276,6 +286,8 @@ namespace My.Player
             {
                 data.PlayerData.GlobalSwitchMap[kv.Key] = kv.Value;
             }
+
+            FallenPopulationService.ApplyToSave(this, data.PlayerData);
 
             InventorySystem?.WriteMainBagToSave(data);
             InventorySystem?.WriteWarehouseToSave(data);

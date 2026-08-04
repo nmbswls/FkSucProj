@@ -195,7 +195,9 @@ namespace My.Map.View
             var player = glm.playerLogicEntity;
             var npc = glm.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
             float intensity = 1f + _heat;
-            if (!HActResolver.TryResolve(_currentActId, player, npc, intensity, out var resolved))
+            // 缠绵接触穴：显式传入，与 Receive 会话一致
+            if (!HActResolver.TryResolve(
+                    _currentActId, player, npc, intensity, out var resolved, EBodyPart.FrontHole))
             {
                 Debug.LogWarning("[PauseCloseupHTangleWindow] ResolveHActParams failed for act " + _currentActId);
                 return;
@@ -207,7 +209,7 @@ namespace My.Map.View
             {
                 npc.HInteraction.Receive.NoteAct(
                     _currentActId,
-                    resolved.ContactPart != EBodyPart.None ? resolved.ContactPart : EBodyPart.Womb,
+                    resolved.ContactPart != EBodyPart.None ? resolved.ContactPart : EBodyPart.FrontHole,
                     EHInteractionSource.CloseupHTangle);
             }
         }
@@ -285,7 +287,7 @@ namespace My.Map.View
             // 缠绵默认接触「穴」；写 NPC.Receive + 拉长 fcked，便于射精条满时内射
             var npc = glm.GetLogicEntity(SrcEntityId, false) as NpcUnitLogicEntity;
             npc?.HInteraction.Receive.Begin(
-                EBodyPart.Womb, EHInteractionSource.CloseupHTangle, _currentActId);
+                EBodyPart.FrontHole, EHInteractionSource.CloseupHTangle, _currentActId);
             glm.globalBuffManager.AddBuff(
                 SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionSlot.DefaultHoldSeconds);
             glm.globalBuffManager.AddBuff(glm.playerLogicEntity.Id, "charm_fck_bonus", 1, overrideDuration: 0.5f);
@@ -338,7 +340,7 @@ namespace My.Map.View
             {
                 npc.ApplyNpcHImpulse(settlement.EnemyImpulseApply);
                 npc.HInteraction.Receive.NoteAct(
-                    _currentActId, EBodyPart.Womb, EHInteractionSource.CloseupHTangle);
+                    _currentActId, EBodyPart.FrontHole, EHInteractionSource.CloseupHTangle);
                 glm.globalBuffManager?.AddBuff(
                     SrcEntityId, "fcked_marked", 1, overrideDuration: HInteractionSlot.DefaultHoldSeconds);
             }

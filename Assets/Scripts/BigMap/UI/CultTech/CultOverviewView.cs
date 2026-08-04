@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace My.UI.CultTech
 {
-    // 教团主页签：摘要 + region 列表 + 锚点/秘会明细 + 派遣占位
+    // 教团主页签：摘要 + region 列表 + 锚点/秘会明细 + 派遣
     public sealed class CultOverviewView : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI faithValueText;
@@ -266,11 +266,8 @@ namespace My.UI.CultTech
                     display,
                     FormatAnchorStatus(anchor),
                     amplified,
-                    anchor.Established && !amplified,
-                    OnDispatchFromAnchor,
-                    null,
-                    false,
-                    null);
+                    ResolveAnchorAction(anchor, amplified),
+                    OnDispatchFromAnchor);
                 row.transform.SetSiblingIndex(siblingIndex++);
             }
         }
@@ -301,8 +298,16 @@ namespace My.UI.CultTech
 
                 var unit = units[i];
                 var canDispatch = unit.State == ECultSecretUnitState.Available;
+                var canUpgrade = canDispatch && _cult.GetNextCapabilityLevel(unit) != null;
                 card.gameObject.SetActive(true);
-                card.Bind(unit.UnitId, unit.State, FormatSecretUnitDetail(unit), canDispatch, OnDispatchFromSecretUnit);
+                card.Bind(
+                    unit.UnitId,
+                    unit.State,
+                    FormatSecretUnitDetail(unit),
+                    canDispatch,
+                    OnDispatchFromSecretUnit,
+                    canUpgrade,
+                    OnUpgradeSecretUnit);
             }
         }
 
@@ -312,16 +317,50 @@ namespace My.UI.CultTech
             Refresh();
         }
 
-        void OnDispatchFromAnchor(string regionKey, string logicAreaId, string anchorId)
+        void OnDispatchFromAnchor(
+            string regionKey,
+            string logicAreaId,
+            string anchorId,
+            CultAnchorRowView.EAnchorAction action)
         {
             if (dispatchPanel == null) return;
             var display = ResolveAnchorDisplayName(logicAreaId, anchorId);
-            dispatchPanel.OpenFromAnchor(regionKey, logicAreaId, anchorId, display);
+            var missionType = action == CultAnchorRowView.EAnchorAction.Cover
+                ? ECultMissionType.CoverTraces
+                : ECultMissionType.AmplifyAnchor;
+            dispatchPanel.OpenFromAnchor(regionKey, logicAreaId, anchorId, display, missionType);
         }
 
         void OnDispatchFromSecretUnit(string unitId)
         {
             dispatchPanel?.OpenFromSecretUnit(unitId);
+        }
+
+        void OnUpgradeSecretUnit(string unitId)
+        {
+            if (_cult == null) return;
+            if (!_cult.TryUpgradeSecretUnitCapability(unitId, out var reason))
+            {
+                Debug.Log($"Secret unit capability upgrade failed: {reason}");
+                return;
+            }
+            Refresh();
+        }
+
+        CultAnchorRowView.EAnchorAction ResolveAnchorAction(CultAnchorInfo anchor, bool amplified)
+        {
+            if (anchor == null || !anchor.Established || _cult == null)
+                return CultAnchorRowView.EAnchorAction.None;
+
+            var day = (MainGameManager.Instance?.gameLogicManager?.SettlementDayIndex ?? 0) + 1;
+            if ((anchor.IsWatched || anchor.IsDisabled(day))
+                && !_cult.IsCoverTracesMissionOnAnchor(anchor.LogicAreaId, anchor.AnchorId))
+            {
+                return CultAnchorRowView.EAnchorAction.Cover;
+            }
+
+            if (!amplified) return CultAnchorRowView.EAnchorAction.Amplify;
+            return CultAnchorRowView.EAnchorAction.None;
         }
 
         void OnOpenIntelForArea(string logicAreaId)
@@ -384,21 +423,64 @@ namespace My.UI.CultTech
         string FormatSecretUnitDetail(CultSecretUnitInfo unit)
         {
             if (unit == null) return "-";
+            var cap = Math.Clamp(unit.Capability, 0, 100);
+            var capText = $"能力值 {cap}";
             if (unit.State == ECultSecretUnitState.Available)
-                return "可执行永久增幅";
+            {
+                var next = _cult?.GetNextCapabilityLevel(unit);
+                if (next != null)
+                {
+                    var costParts = new List<string>();
+                    if (next.CostJingyuan > 0) costParts.Add($"精元{next.CostJingyuan}");
+                    if (next.CostFaith > 0) costParts.Add($"信仰{next.CostFaith}");
+                    if (!string.IsNullOrEmpty(next.CostItemId) && next.CostItemCount > 0)
+                        costParts.Add($"{next.CostItemId}x{next.CostItemCount}");
+                    var costText = costParts.Count > 0 ? string.Join("+", costParts) : "免费";
+                    return $"空闲 · {capText}\n升级→{next.Capability}（{costText}）";
+                }
+                return $"空闲 · {capText} · 已满";
+            }
 
             var mission = CfgMgr.Cfgs?.TbCultMission?.GetOrDefault(unit.MissionId);
+            var missionName = mission != null && !string.IsNullOrEmpty(mission.DisplayName)
+                ? mission.DisplayName
+                : string.IsNullOrEmpty(unit.MissionId) ? "任务中" : unit.MissionId;
+            var remain = _cult != null ? _cult.GetMissionRemainingDays(unit) : 0;
+            var remainText = unit.MissionEndsSettlementDay > 0 ? $" · 剩 {remain} 日" : " · 永久";
+
             if (mission?.MissionType == ECultMissionType.AmplifyAnchor)
             {
                 var anchorName = ResolveAnchorDisplayName(unit.AssignedLogicAreaId, unit.AssignedAnchorId);
-                return $"{mission.DisplayName} · {anchorName} · 全产出 +{DemonCultSystem.AmplifyAnchorOutputBonusPercent}%";
+                return $"{missionName} · {anchorName} · +{DemonCultSystem.AmplifyAnchorOutputBonusPercent}%";
+            }
+            if (mission?.MissionType == ECultMissionType.ScoutGather)
+            {
+                var site = CfgMgr.Cfgs?.TbCultScoutSite?.GetOrDefault(unit.AssignedScoutSiteId);
+                var siteName = site != null && !string.IsNullOrEmpty(site.DisplayName)
+                    ? site.DisplayName
+                    : unit.AssignedScoutSiteId;
+                return $"{missionName} · {siteName}{remainText}";
+            }
+            if (mission?.MissionType == ECultMissionType.Preach)
+            {
+                var region = FormatRegionName(unit.AssignedRegionKey);
+                return $"{missionName} · {region}{remainText}";
+            }
+            if (mission?.MissionType == ECultMissionType.CoverTraces)
+            {
+                var anchorName = ResolveAnchorDisplayName(unit.AssignedLogicAreaId, unit.AssignedAnchorId);
+                return $"{missionName} · {anchorName}{remainText}";
+            }
+            if (mission?.MissionType == ECultMissionType.OfferEssence)
+            {
+                var region = FormatRegionName(unit.AssignedRegionKey);
+                var rule = _cult?.GetOfferEssenceRule(unit.Capability);
+                var expect = rule != null ? $"预计精元 {rule.JingyuanReward}" : capText;
+                return $"{missionName} · {region} · {expect}{remainText}";
             }
 
-            var region = string.IsNullOrEmpty(unit.AssignedRegionKey) ? "-" : unit.AssignedRegionKey;
-            var missionName = mission != null && !string.IsNullOrEmpty(mission.DisplayName)
-                ? mission.DisplayName
-                : string.IsNullOrEmpty(unit.MissionId) ? "无任务详情" : unit.MissionId;
-            return $"{region} · {missionName}";
+            var fallbackRegion = string.IsNullOrEmpty(unit.AssignedRegionKey) ? "-" : unit.AssignedRegionKey;
+            return $"{fallbackRegion} · {missionName} · {capText}{remainText}";
         }
 
         static long ResolveEstablishProgress(string logicAreaId, string anchorId)

@@ -29,9 +29,19 @@
 | 赫恩 | `home_hearn` | `InitialVillage_NightWatchman.prefab` | prefab 已有，尚未接入 home_01 正式场景 |
 | 麦穗 | `home_dog_maisui` | `InitialVillage_YellowDog.prefab` | prefab 已有，尚未接入 home_01 正式场景 |
 | 薇拉 | `home_vera` | `InitialVillage_Vera.prefab` / `vera_civil.prefab` | 已在 `Home_01_Editor` 放置 |
-| 卡莱尔 | `carlisle` | `game_init_luca_injured.prefab` 及现有 awake 配置 | 已用于 game_init、test_link_a；home_01 不作为常驻村民处理 |
+| 卡莱尔 | `carlisle` | `game_init_luca_injured.prefab` 及现有 awake 配置 | 已用于 game_init、test_link_a；收复后由 `NpcRoutineBinding` 使用 `game_init_carlisle_awake` 在 home_01 创建虚弱、冷战常驻状态 |
 
-当前 `Home_01_Editor`/`homestead_01.asset` 中已经落地的关键 NPC 只有埃蒙、灰露棚看管人和薇拉。艾文、赫恩、麦穗的 prefab 不等于已经完成场景接入，后续需要在编辑器场景中新增动态实体并导出。
+当前 `Home_01_Editor`/`homestead_01.asset` 中已经落地的关键 NPC 包括埃蒙、灰露棚看管人、薇拉和收复后的卡莱尔。卡莱尔不是场景 `DynamicEntityExportGenerator`，而是由 `npc_routine.xlsx` 的 Binding/Profile/Rule 在 `Home_01 + homestead_01` 初始化时创建，并锚定到 `home_carlisle_recovery`。艾文、赫恩和麦穗仍需按各自出现条件完成正式场景接入。
+
+## 自我封印主线接入
+
+自我封印不占用任务 id，也不新增“仪式任务”。它发生在任务 `204` 灰露草交付后的剧情停顿点；此时下一环 `205` 已引导玩家去找埃蒙，由地图必经 Trigger 和三段 Dialog 串联：
+
+1. `home_01_self_seal_collapse`：灰露棚与埃蒙站位之间的 Trigger 检查 `TaskFinish 204`，播放莉莉丝 `knocked_down` 动作，写入 `home_01.self_seal_plan_known`，随后静默传送到 `homestead_01 / bedroom_in_entry`。
+2. `home_01_self_seal_briefing`：房间 Trigger 在玩家抵达后播放咕啾说明，写入 `home_01.self_seal_briefed`，引导玩家寻找卡莱尔。
+3. `home_01_self_seal_carlisle`：以高优先级 NPC 对话绑定到 `game_init_carlisle_awake`。H 正文和演出保留空位；收尾先写入 `player.human_form_unlocked`，再切换到 Human。
+
+三个阶段只使用持久化 Global Switch 控制可重入和完成状态。正式解锁结果只有 `player.human_form_unlocked`，不再增加 `self_seal_complete` 等重复变量。`entry_01` 在该开关存在前不生成，确保玩家不能绕过仪式进入晨钟镇南北道。
 
 ## 3. 任务与对话归属
 
@@ -108,7 +118,7 @@
 
 home 常驻 NPC 不使用逐个 NPC 的 `DynamicEntityExportGenerator` 作为生成入口。它们属于地图人口，由 routine 系统在进入对应 map variant/overlay 时根据 `NpcRoutineProfile` 和 `NpcRoutineBinding` 创建；`NamedPoint` 是 routine 的站位锚点，不是 NPC refresh generator 的出生点。
 
-当前 `NpcRoutineSystem` 代码只实现了“NPC refresh record 创建后重新定位”的一部分能力：`OnNpcRefreshRecordCreated()` 会接收已有 record，并调用 `ApplyInitialPlacement()`。这不足以支持 home 人口系统，后续需要补充 routine profile 到 NPC record 的创建入口，并让已创建的 NPC 继续复用现有 routine rule、存档和表现层生命周期。
+当前 `NpcRoutineSystem` 已具备完整的人口创建入口：地图初始化调用 `EnsureConfiguredNpcsCreated()`，它按 `NpcRoutineBinding` 的 map variant、overlay、character key 和 NPC cfg 创建缺失的 NPC record，再由 `ApplyInitialPlacement()` 与现有 Rule 处理初始站位。场景动态生成器不是 home 常驻人口的来源。
 
 常驻 NPC 的正确链路是：
 

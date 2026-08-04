@@ -12,8 +12,9 @@ namespace My.UI.BodyPart
         {
             EBodyPart.Mouth,
             EBodyPart.Breast,
-            EBodyPart.Womb,
-            EBodyPart.Tail,
+            EBodyPart.FrontHole,
+            EBodyPart.BackHole,
+            EBodyPart.Limb,
         };
 
         public static bool IsVisiblePart(EBodyPart part)

@@ -1,0 +1,66 @@
+[
+  {
+    "capability_min": 0,
+    "jingyuan_reward": 50,
+    "premium_chance_percent": 4,
+    "premium_type": 3,
+    "premium_drop_level": 1,
+    "premium_quality_tier": 1
+  },
+  {
+    "capability_min": 20,
+    "jingyuan_reward": 80,
+    "premium_chance_percent": 7,
+    "premium_type": 3,
+    "premium_drop_level": 1,
+    "premium_quality_tier": 1
+  },
+  {
+    "capability_min": 35,
+    "jingyuan_reward": 110,
+    "premium_chance_percent": 10,
+    "premium_type": 4,
+    "premium_drop_level": 2,
+    "premium_quality_tier": 1
+  },
+  {
+    "capability_min": 50,
+    "jingyuan_reward": 150,
+    "premium_chance_percent": 14,
+    "premium_type": 4,
+    "premium_drop_level": 2,
+    "premium_quality_tier": 1
+  },
+  {
+    "capability_min": 65,
+    "jingyuan_reward": 190,
+    "premium_chance_percent": 18,
+    "premium_type": 4,
+    "premium_drop_level": 2,
+    "premium_quality_tier": 2
+  },
+  {
+    "capability_min": 80,
+    "jingyuan_reward": 240,
+    "premium_chance_percent": 22,
+    "premium_type": 1,
+    "premium_drop_level": 3,
+    "premium_quality_tier": 2
+  },
+  {
+    "capability_min": 90,
+    "jingyuan_reward": 280,
+    "premium_chance_percent": 26,
+    "premium_type": 1,
+    "premium_drop_level": 3,
+    "premium_quality_tier": 2
+  },
+  {
+    "capability_min": 100,
+    "jingyuan_reward": 320,
+    "premium_chance_percent": 30,
+    "premium_type": 5,
+    "premium_drop_level": 3,
+    "premium_quality_tier": 3
+  }
+]

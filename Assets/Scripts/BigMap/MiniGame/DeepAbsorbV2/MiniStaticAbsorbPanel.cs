@@ -101,7 +101,7 @@ namespace My.MiniGame
             actId = PlayerGamePlayRule.RandomGetOneHAct("Unsensor", glm.playerLogicEntity.DesireLevel);
             var npc = glm.GetLogicEntity(targetEntityId, false) as NpcUnitLogicEntity;
             npc?.HInteraction.Receive.Begin(
-                EBodyPart.Womb, EHInteractionSource.StaticAbsorb, actId);
+                EBodyPart.FrontHole, EHInteractionSource.StaticAbsorb, actId);
 
             QteBar.InitCursorPos();
             QteBar.ResetGame(); 
@@ -195,7 +195,9 @@ namespace My.MiniGame
 
             // 静态榨取：只结算冲击，不派生 HP
             var npc = MainGameManager.Instance.gameLogicManager.GetLogicEntity(TargetEntityId, false) as NpcUnitLogicEntity;
-            if (!HActResolver.TryResolveAndApply(actId, player, npc, intensity: 1f, applyHpDamage: false))
+            if (!HActResolver.TryResolveAndApply(
+                    actId, player, npc, intensity: 1f, applyHpDamage: false,
+                    preferredContactPart: EBodyPart.FrontHole))
             {
                 Debug.LogError("err ResolveHActParams");
             }

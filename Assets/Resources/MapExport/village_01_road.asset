@@ -13,17 +13,127 @@ MonoBehaviour:
   m_Name: village_01_road
   m_EditorClassIdentifier: 
   AreaId: village_01_road
-  Buckets: []
+  Buckets:
+  - Chunk:
+      X: 0
+      Y: 7
+    StaticItems:
+    - ItemId: 101
+      Key: Map/Zone/Village01RoadTownGateTrigger
+      Position: {x: 0, y: 228, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
+        Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: village_01.road_gate_open
+        Param6: 
+    FovStaticSegments: []
   EntityRefreshInfo:
   - StaticId: 100
-    UniqName: teleporter_to_village_01
+    UniqName: village_01_road_slime_03
     AppearCond:
-      Type: 0
-      Param1: 0
+      Type: 5
+      Param1: 216
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 216_s2
+      Param6: 
+    DisappearCond:
+      Type: 1
+      Param1: 216
       Param2: 0
       Param3: 0
       Param4: 0
       Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 1434717634226814986
+  - StaticId: 101
+    UniqName: village_01_road_slime_02
+    AppearCond:
+      Type: 5
+      Param1: 216
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 216_s2
+      Param6: 
+    DisappearCond:
+      Type: 1
+      Param1: 216
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 1434717634226814987
+  - StaticId: 102
+    UniqName: village_01_road_slime_01
+    AppearCond:
+      Type: 5
+      Param1: 216
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 216_s2
+      Param6: 
+    DisappearCond:
+      Type: 1
+      Param1: 216
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: 
+      Param6: 
+    WillRespawn: 0
+    RespawnInterval: 0
+    RefreshGroupKey: 
+    RefreshGroupPriority: 0
+    RefreshGroupHandoffPolicy: 1
+    RefreshTransitionMode: 1
+    DungeonNodeId: -1
+    SpawnPolicy: 0
+    InitInfo:
+      rid: 1434717634226814988
+  - StaticId: 103
+    UniqName: teleporter_to_village_01
+    AppearCond:
+      Type: 2
+      Param1: 0
+      Param2: 0
+      Param3: 0
+      Param4: 0
+      Param5: village_01.road_gate_open
       Param6: 
     DisappearCond:
       Type: 0
@@ -42,8 +152,8 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351556
-  - StaticId: 101
+      rid: 1434717634226814989
+  - StaticId: 104
     UniqName: teleporter_to_home
     AppearCond:
       Type: 0
@@ -70,7 +180,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481876947955351557
+      rid: 1434717634226814990
   NamedPoints:
   - Name: village_01_road_to_town
     PointType: 0
@@ -96,7 +206,55 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4481876947955351556
+    - rid: 1434717634226814986
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: 0, y: 172}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 1434717634226814987
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: 4, y: 122}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 1434717634226814988
+      type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
+      data:
+        CfgId: slime_green
+        Position: {x: -4, y: 72}
+        FaceDir: {x: 0, y: -1}
+        BindRoomId: 
+        OrgFactionId: 0
+        MoveMode: 0
+        EnmityConfId: 
+        IsPeace: 0
+        InitUnsensored: 0
+        InitNoLogic: 0
+        CharacterKey: 
+        PatrolPortalNetworkId: 
+        PatrolCycleNodeIds: []
+    - rid: 1434717634226814989
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -106,7 +264,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: village_01
         TargetNamedPoint: entry_bottom
-    - rid: 4481876947955351557
+    - rid: 1434717634226814990
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 

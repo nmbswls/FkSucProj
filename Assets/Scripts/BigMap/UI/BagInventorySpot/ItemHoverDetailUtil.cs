@@ -41,6 +41,16 @@ namespace My.UI
                     lines.AppendLine($"装备点数: {partGear.GearSlotCost}");
                 }
 
+                if (partGear.BaseArm != 0)
+                {
+                    lines.AppendLine($"基础护甲: +{partGear.BaseArm}");
+                }
+
+                if (partGear.BaseHpMax != 0)
+                {
+                    lines.AppendLine($"生命上限: +{partGear.BaseHpMax}");
+                }
+
                 if (partGear.BodyPart != EBodyPart.None)
                 {
                     var partDef = BodyPartCatalog.GetPartDef(partGear.BodyPart);

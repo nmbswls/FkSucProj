@@ -71,6 +71,8 @@ namespace My.Map
                 case AttrIdConsts.Will:
                 case AttrIdConsts.Arm_Base:
                 case AttrIdConsts.Arm_Inner:
+                case AttrIdConsts.Arm_Inner_MinExposeRate:
+                case AttrIdConsts.Arm_Inner_ExposeRate:
                 case AttrIdConsts.Arm_White:
                 case AttrIdConsts.Arm_White_Percent:
                 case AttrIdConsts.Arm_Green:

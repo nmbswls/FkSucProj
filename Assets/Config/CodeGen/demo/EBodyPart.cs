@@ -16,10 +16,9 @@ namespace cfg.demo
         None = 0,
         Mouth = 1,
         Breast = 2,
-        Womb = 3,
-        Tail = 4,
-        Wing = 5,
-        Skin = 6,
+        FrontHole = 3,
+        BackHole = 4,
+        Limb = 5,
     }
 
 } 

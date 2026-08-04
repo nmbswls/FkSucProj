@@ -142,7 +142,20 @@ namespace My.Map.View
                 return;
             }
 
+            // 与 HAct 对抗一致：全身技巧 + 当前 Active 接触部位技巧
             var hPowerPlayer = player.GetAttr(AttrIdConsts.HTechnique);
+            if (srcEntity is NpcUnitLogicEntity npcSrc &&
+                npcSrc.HInteraction.Active.TryGet(out var active) &&
+                active.ContactPart != EBodyPart.None)
+            {
+                var bodyParts = player.LogicManager?.playerDataManager?.BodyPartSystem;
+                if (bodyParts != null)
+                {
+                    bodyParts.GetCombatBonuses(active.ContactPart, out var partTech, out _);
+                    hPowerPlayer += partTech;
+                }
+            }
+
             var hPowerSrc = srcEntity.GetAttr(AttrIdConsts.HTechnique);
 
             if (hPowerPlayer < 5000) hPowerPlayer = 5000;

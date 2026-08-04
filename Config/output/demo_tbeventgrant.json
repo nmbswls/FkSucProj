@@ -1,0 +1,388 @@
+[
+  {
+    "id": "blurt_tier_1",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 1
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·初阶",
+    "desc": "累计吸收精液达到 1 次"
+  },
+  {
+    "id": "blurt_tier_3",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 3
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·二阶",
+    "desc": "累计吸收精液达到 3 次"
+  },
+  {
+    "id": "blurt_tier_5",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 5
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 2
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·三阶",
+    "desc": "累计吸收精液达到 5 次"
+  },
+  {
+    "id": "blurt_tier_10",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 10
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 3
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·四阶",
+    "desc": "累计吸收精液达到 10 次"
+  },
+  {
+    "id": "blurt_tier_20",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 20
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 3
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 2
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·五阶",
+    "desc": "累计吸收精液达到 20 次"
+  },
+  {
+    "id": "blurt_tier_50",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 50
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 4
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 3
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·六阶",
+    "desc": "累计吸收精液达到 50 次"
+  },
+  {
+    "id": "blurt_tier_100",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 100
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 5
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 4
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 2
+      },
+      {
+        "attr_id": 5,
+        "human_attr_id": 0,
+        "val": 1
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·七阶",
+    "desc": "累计吸收精液达到 100 次"
+  },
+  {
+    "id": "blurt_tier_200",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 200
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 6
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 5
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 3
+      },
+      {
+        "attr_id": 5,
+        "human_attr_id": 0,
+        "val": 2
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·八阶",
+    "desc": "累计吸收精液达到 200 次"
+  },
+  {
+    "id": "blurt_tier_500",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 500
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 8
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 6
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 4
+      },
+      {
+        "attr_id": 5,
+        "human_attr_id": 0,
+        "val": 3
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·九阶",
+    "desc": "累计吸收精液达到 500 次"
+  },
+  {
+    "id": "blurt_tier_1000",
+    "deliver_mode": 1,
+    "category": 2,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 8,
+        "arg0": "-",
+        "arg1": "-",
+        "op": 0,
+        "value": 1000
+      }
+    ],
+    "rewards": [],
+    "passive_id": "",
+    "stat_bonuses": [
+      {
+        "attr_id": 2,
+        "human_attr_id": 0,
+        "val": 10
+      },
+      {
+        "attr_id": 3,
+        "human_attr_id": 0,
+        "val": 8
+      },
+      {
+        "attr_id": 4,
+        "human_attr_id": 0,
+        "val": 5
+      },
+      {
+        "attr_id": 5,
+        "human_attr_id": 0,
+        "val": 4
+      }
+    ],
+    "hidden": false,
+    "name": "精液共鸣·十阶",
+    "desc": "累计吸收精液达到 1000 次"
+  },
+  {
+    "id": "knowledge_human_unsensored_5",
+    "deliver_mode": 0,
+    "category": 1,
+    "enable_conds": [],
+    "targets": [
+      {
+        "stat_type": 9,
+        "arg0": "human",
+        "arg1": "-",
+        "op": 0,
+        "value": 5
+      }
+    ],
+    "rewards": [
+      [
+        "knowledge_shard",
+        30
+      ]
+    ],
+    "passive_id": "",
+    "stat_bonuses": [],
+    "hidden": false,
+    "name": "人类通识·失神研究",
+    "desc": "以非致命手段使 5 名人类失神，获得通识碎片"
+  }
+]

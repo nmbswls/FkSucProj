@@ -1,0 +1,68 @@
+[
+  {
+    "group_id": "riverside_peddlers",
+    "stage": 1,
+    "reward_index": 1,
+    "item_id": "",
+    "item_count": 0,
+    "faith": 0,
+    "jingyuan": 40,
+    "fallen_base_amount": 5,
+    "only_first_clear": true
+  },
+  {
+    "group_id": "riverside_peddlers",
+    "stage": 2,
+    "reward_index": 1,
+    "item_id": "desire_shard",
+    "item_count": 2,
+    "faith": 0,
+    "jingyuan": 60,
+    "fallen_base_amount": 10,
+    "only_first_clear": true
+  },
+  {
+    "group_id": "riverside_peddlers",
+    "stage": 3,
+    "reward_index": 1,
+    "item_id": "desire_shard",
+    "item_count": 3,
+    "faith": 10,
+    "jingyuan": 80,
+    "fallen_base_amount": 20,
+    "only_first_clear": true
+  },
+  {
+    "group_id": "nightwatch_helpers",
+    "stage": 1,
+    "reward_index": 1,
+    "item_id": "",
+    "item_count": 0,
+    "faith": 15,
+    "jingyuan": 0,
+    "fallen_base_amount": 5,
+    "only_first_clear": true
+  },
+  {
+    "group_id": "nightwatch_helpers",
+    "stage": 2,
+    "reward_index": 1,
+    "item_id": "",
+    "item_count": 0,
+    "faith": 20,
+    "jingyuan": 40,
+    "fallen_base_amount": 10,
+    "only_first_clear": true
+  },
+  {
+    "group_id": "nightwatch_helpers",
+    "stage": 3,
+    "reward_index": 1,
+    "item_id": "desire_shard",
+    "item_count": 2,
+    "faith": 30,
+    "jingyuan": 60,
+    "fallen_base_amount": 20,
+    "only_first_clear": true
+  }
+]

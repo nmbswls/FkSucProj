@@ -20,13 +20,15 @@ namespace My
         public string TransportMarkerOverlayId = string.Empty;
 
         // true = 人类形态；false = 真身形态（仅真身下维持衣装/暴露等玩法）
-        public bool PlayerHumanMode = true;
+        public bool PlayerHumanMode;
 
         public long SPDesireShardDeposited;
     }
 
     public partial class GameLogicManager
     {
+        public const string HumanFormUnlockedSwitch = "player.human_form_unlocked";
+
         public bool PlayerHumanMode => GameSession.PlayerHumanMode;
 
         public bool PlayerPeaceMode => GameSession.IsPeaceful;
@@ -55,7 +57,7 @@ namespace My
 
         public bool IsSavePointFormSwitchVisible()
         {
-            if (IsInfiltrationRun)
+            if (IsInfiltrationRun || !IsHumanFormUnlocked())
             {
                 return false;
             }
@@ -66,6 +68,12 @@ namespace My
         public bool CanToggleSavePointForm(out string failReason)
         {
             failReason = null;
+            if (!IsHumanFormUnlocked())
+            {
+                failReason = "human_form_locked";
+                return false;
+            }
+
             if (IsInfiltrationRun)
             {
                 failReason = "infiltration";
@@ -123,6 +131,11 @@ namespace My
             }
 
             return cfg.IsCivilArea || cfg.IsDangerArea;
+        }
+
+        public bool IsHumanFormUnlocked()
+        {
+            return playerDataManager?.CheckHasParam(HumanFormUnlockedSwitch) == true;
         }
 
         private float _peaceModeTimer = 0;
@@ -192,6 +205,11 @@ namespace My
         // ????????????????????????????????????谢??????????????? PostNewAreaLoaded ??????????
         public void ForcePlayerHumanMode(bool human, bool refreshDespitePendingSwitch = false)
         {
+            if (human && !IsHumanFormUnlocked())
+            {
+                return;
+            }
+
             if (GameSession.PlayerHumanMode == human)
             {
                 return;

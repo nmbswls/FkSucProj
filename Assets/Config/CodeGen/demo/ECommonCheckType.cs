@@ -24,6 +24,9 @@ namespace cfg.demo
         HumanTechUnlockedCount = 9,
         ControlledTownCount = 10,
         NamedNpcLocalSwitch = 11,
+        CultTechNodeLevel = 12,
+        CultAttributeAtLeast = 13,
+        StatAtLeast = 14,
     }
 
 } 

@@ -1,0 +1,18 @@
+[
+  {
+    "rule_id": "default",
+    "base_success_rate": 45,
+    "concentration_diff_rate": 1,
+    "target_concentration_penalty": 35,
+    "lower_level_penalty_per_level": 15,
+    "min_success_rate": 10,
+    "max_success_rate": 90,
+    "min_gain": 4,
+    "max_gain": 12,
+    "residue_on_failure": 12,
+    "residue_on_success": 6,
+    "affix_inherit_rate": 35,
+    "residue_boost_cost": 20,
+    "residue_boost_success_rate": 20
+  }
+]

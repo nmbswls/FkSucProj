@@ -22,6 +22,14 @@ public sealed partial class CultMission : Luban.BeanBase
         { if(!_buf["mission_type"].IsNumber) { throw new SerializationException(); }  MissionType = (demo.ECultMissionType)_buf["mission_type"].AsInt; }
         { if(!_buf["display_name"].IsString) { throw new SerializationException(); }  DisplayName = _buf["display_name"]; }
         { if(!_buf["description"].IsString) { throw new SerializationException(); }  Description = _buf["description"]; }
+        { if(!_buf["duration_days"].IsNumber) { throw new SerializationException(); }  DurationDays = _buf["duration_days"]; }
+        { if(!_buf["linker_reward"].IsNumber) { throw new SerializationException(); }  LinkerReward = _buf["linker_reward"]; }
+        { if(!_buf["faith_reward"].IsNumber) { throw new SerializationException(); }  FaithReward = _buf["faith_reward"]; }
+        { if(!_buf["pressure_reduction"].IsNumber) { throw new SerializationException(); }  PressureReduction = _buf["pressure_reduction"]; }
+        { if(!_buf["item_id"].IsString) { throw new SerializationException(); }  ItemId = _buf["item_id"]; }
+        { if(!_buf["item_count"].IsNumber) { throw new SerializationException(); }  ItemCount = _buf["item_count"]; }
+        { if(!_buf["clear_watch"].IsBoolean) { throw new SerializationException(); }  ClearWatch = _buf["clear_watch"]; }
+        { if(!_buf["clear_disable"].IsBoolean) { throw new SerializationException(); }  ClearDisable = _buf["clear_disable"]; }
     }
 
     public static CultMission DeserializeCultMission(JSONNode _buf)
@@ -45,6 +53,38 @@ public sealed partial class CultMission : Luban.BeanBase
     /// 任务说明
     /// </summary>
     public string Description;
+    /// <summary>
+    /// 工期天数
+    /// </summary>
+    public int DurationDays;
+    /// <summary>
+    /// 教徒奖励
+    /// </summary>
+    public long LinkerReward;
+    /// <summary>
+    /// 信仰奖励
+    /// </summary>
+    public long FaithReward;
+    /// <summary>
+    /// 降压值
+    /// </summary>
+    public long PressureReduction;
+    /// <summary>
+    /// 物品
+    /// </summary>
+    public string ItemId;
+    /// <summary>
+    /// 数量
+    /// </summary>
+    public long ItemCount;
+    /// <summary>
+    /// 解除盯梢
+    /// </summary>
+    public bool ClearWatch;
+    /// <summary>
+    /// 解除封锁
+    /// </summary>
+    public bool ClearDisable;
    
     public const int __ID__ = 1744811783;
     public override int GetTypeId() => __ID__;
@@ -60,6 +100,14 @@ public sealed partial class CultMission : Luban.BeanBase
         + "missionType:" + MissionType + ","
         + "displayName:" + DisplayName + ","
         + "description:" + Description + ","
+        + "durationDays:" + DurationDays + ","
+        + "linkerReward:" + LinkerReward + ","
+        + "faithReward:" + FaithReward + ","
+        + "pressureReduction:" + PressureReduction + ","
+        + "itemId:" + ItemId + ","
+        + "itemCount:" + ItemCount + ","
+        + "clearWatch:" + ClearWatch + ","
+        + "clearDisable:" + ClearDisable + ","
         + "}";
     }
 }

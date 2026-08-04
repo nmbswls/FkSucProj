@@ -2,66 +2,66 @@
   {
     "talent_tree_id": "player_main",
     "node_id": 1,
-    "display_name": "魅力四射",
-    "max_level": 1,
+    "display_name": "基础攻击",
+    "max_level": 3,
     "icon_path": "default",
-    "description": ""
+    "description": "将欲望转化为直接的攻击力。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 2,
-    "display_name": "天分-护甲理解",
-    "max_level": 1,
+    "display_name": "持续强化",
+    "max_level": 3,
     "icon_path": "default",
-    "description": ""
+    "description": "在基础攻击训练上继续投入，提升稳定输出。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 3,
-    "display_name": "天分-意志魅力",
-    "max_level": 1,
+    "display_name": "预留节点",
+    "max_level": 0,
     "icon_path": "default",
-    "description": ""
+    "description": "该节点尚未开放。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 4,
-    "display_name": "天分-双防雏形",
-    "max_level": 1,
+    "display_name": "重击训练",
+    "max_level": 3,
     "icon_path": "default",
-    "description": ""
+    "description": "强化身体与装备的配合，提升攻击上限。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 5,
-    "display_name": "天分-统合",
-    "max_level": 1,
+    "display_name": "预留节点",
+    "max_level": 0,
     "icon_path": "default",
-    "description": ""
+    "description": "该节点尚未开放。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 11,
-    "display_name": "榨汁扩展1",
-    "max_level": 1,
+    "display_name": "预留节点",
+    "max_level": 0,
     "icon_path": "default",
-    "description": ""
+    "description": "该节点尚未开放。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 12,
-    "display_name": "榨汁扩展2",
-    "max_level": 1,
+    "display_name": "预留节点",
+    "max_level": 0,
     "icon_path": "default",
-    "description": ""
+    "description": "该节点尚未开放。"
   },
   {
     "talent_tree_id": "player_main",
     "node_id": 13,
-    "display_name": "榨汁扩展3",
-    "max_level": 1,
+    "display_name": "预留节点",
+    "max_level": 0,
     "icon_path": "default",
-    "description": ""
+    "description": "该节点尚未开放。"
   },
   {
     "talent_tree_id": "carlisle_tree",

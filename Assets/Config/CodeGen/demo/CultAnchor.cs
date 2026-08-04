@@ -25,6 +25,7 @@ public sealed partial class CultAnchor : Luban.BeanBase
         { if(!_buf["establish_progress"].IsNumber) { throw new SerializationException(); }  EstablishProgress = _buf["establish_progress"]; }
         { var __json0 = _buf["show_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } ShowConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  ShowConds.Add(__v0); }   }
         { if(!_buf["output_id"].IsNumber) { throw new SerializationException(); }  OutputId = _buf["output_id"]; }
+        { if(!_buf["rarity"].IsNumber) { throw new SerializationException(); }  Rarity = _buf["rarity"]; }
     }
 
     public static CultAnchor DeserializeCultAnchor(JSONNode _buf)
@@ -60,6 +61,10 @@ public sealed partial class CultAnchor : Luban.BeanBase
     /// 产出配置ID
     /// </summary>
     public int OutputId;
+    /// <summary>
+    /// 稀有度
+    /// </summary>
+    public int Rarity;
    
     public const int __ID__ = -837324326;
     public override int GetTypeId() => __ID__;
@@ -79,6 +84,7 @@ public sealed partial class CultAnchor : Luban.BeanBase
         + "establishProgress:" + EstablishProgress + ","
         + "showConds:" + Luban.StringUtil.CollectionToString(ShowConds) + ","
         + "outputId:" + OutputId + ","
+        + "rarity:" + Rarity + ","
         + "}";
     }
 }

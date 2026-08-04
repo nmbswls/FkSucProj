@@ -17,6 +17,7 @@ namespace My.MiniGame.Dream
         private DreamSettlementPayload _payload;
         private bool _closeWired;
         private bool _outcomeApplied;
+        private bool _dayAdvanceRequested;
 
         public override int FocusPriority => 840;
 
@@ -54,9 +55,7 @@ namespace My.MiniGame.Dream
 
         private void OnCloseClicked()
         {
-            ApplyOutcomeOnce();
-            UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
-            DreamInfiltrationBootstrap.ExitMiniGame();
+            CloseAndAdvance();
         }
 
         private void ApplyOutcomeOnce()
@@ -64,13 +63,33 @@ namespace My.MiniGame.Dream
             if (_outcomeApplied) return;
             _outcomeApplied = true;
             DreamInfiltrationOutcomeApplier.Apply(_payload);
+            RefreshBodyText();
+        }
+
+        private void CloseAndAdvance()
+        {
+            ApplyOutcomeOnce();
+            UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
+            DreamInfiltrationBootstrap.ExitMiniGame();
+            if (!_dayAdvanceRequested)
+            {
+                _dayAdvanceRequested = true;
+                DreamInfiltrationBootstrap.AdvanceDayAfterDreamIfNeeded(_payload);
+            }
         }
 
         public override void Setup(object data = null)
         {
             _payload = data as DreamSettlementPayload ?? new DreamSettlementPayload();
             _outcomeApplied = false;
+            _dayAdvanceRequested = false;
             if (_bodyTmp == null) ResolveRefs();
+            // 先落盘再刷新文案，便于展示团体奖励/秘会说明
+            ApplyOutcomeOnce();
+        }
+
+        private void RefreshBodyText()
+        {
             if (_bodyTmp == null)
             {
                 Debug.LogWarning("[DreamInfiltration] Settlement body text missing. Check prefab Box/Body.");
@@ -91,19 +110,29 @@ namespace My.MiniGame.Dream
                 tendencyLine = $"\n本次胜利方式：{tendencyName}";
             }
 
+            var groupLine = "";
+            if (r.EntrySource == DreamEntrySourceKind.AbstractGroupEntry && !string.IsNullOrEmpty(r.AbstractGroupId))
+            {
+                groupLine = $"\n小团体：{r.AbstractGroupId} 阶段 {r.AbstractGroupStage}";
+            }
+
+            var extra = string.IsNullOrEmpty(r.ExtraSettlementNote)
+                ? ""
+                : $"\n\n{r.ExtraSettlementNote}";
+
             _bodyTmp.text =
-                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "核心摧毁成功" : "梦境侵蚀失败")}{tendencyLine}\n\n" +
+                $"主题：{r.ThemeDisplayName}\n结果：{(r.Won ? "核心摧毁成功" : "梦境侵蚀失败")}{tendencyLine}{groupLine}\n\n" +
                 $"对核心伤害总计：{total}\n" +
                 $"  暴力炮弹：{r.ForceScore}\n" +
                 $"  温柔炮弹：{r.SoothingScore}\n" +
-                $"  计谋炮弹：{r.TrickScore}";
+                $"  计谋炮弹：{r.TrickScore}" +
+                extra +
+                "\n\n关闭后将推进至下一天。";
         }
 
         public override bool OnCancel()
         {
-            ApplyOutcomeOnce();
-            UIManager.Instance?.HidePanel(DreamInfiltrationIds.SettlementPanel);
-            DreamInfiltrationBootstrap.ExitMiniGame();
+            CloseAndAdvance();
             return true;
         }
     }

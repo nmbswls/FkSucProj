@@ -312,7 +312,24 @@ namespace My.Player
 
         static List<StatPair> ResolveGearStatPairs(string itemId)
         {
-            return null;
+            var gear = PartGearCatalog.GetOrDefault(itemId);
+            if (gear == null)
+            {
+                return null;
+            }
+
+            var pairs = new List<StatPair>(2);
+            if (gear.BaseArm != 0)
+            {
+                pairs.Add(new StatPair((int)EYCAttribute.InnerArm, gear.BaseArm));
+            }
+
+            if (gear.BaseHpMax != 0)
+            {
+                pairs.Add(new StatPair((int)EYCAttribute.HPMax, gear.BaseHpMax));
+            }
+
+            return pairs;
         }
     }
 
@@ -391,7 +408,7 @@ namespace My.Player
         public TalentNodeVisualState GetNodeVisualState(int nodeId)
         {
             var nodeCfg = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(nodeId);
-            if (nodeCfg == null)
+            if (nodeCfg == null || nodeCfg.MaxLevel <= 0)
             {
                 return TalentNodeVisualState.Locked;
             }
@@ -472,6 +489,12 @@ namespace My.Player
             if (nodeCfg == null)
             {
                 failReason = "no_cfg";
+                return false;
+            }
+
+            if (nodeCfg.MaxLevel <= 0)
+            {
+                failReason = "placeholder";
                 return false;
             }
 

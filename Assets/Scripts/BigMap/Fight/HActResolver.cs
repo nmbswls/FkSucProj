@@ -9,7 +9,7 @@ using static My.Map.Fight.FightStruct;
 
 namespace My.Map.Entity
 {
-    // HAct 统一结算：H强度定盘子，H技巧定上下风，self_coef 定自反馈开口
+    // HAct 统一结算：H强度定盘子，H技巧定上下风；接触部位贡献与全身同量纲相加
     public static class HActResolver
     {
         public const int DefaultHAttackActId = 100;
@@ -23,17 +23,20 @@ namespace My.Map.Entity
             public long HpDamageOnDefender;
             public float PlayerClimaxWeight;
             public EBodyPart ContactPart;
+            public long EffectiveHTechniqueAtk;
+            public long EffectiveHTechniqueDef;
+            public long EffectiveHStrengthAtk;
             public BaseUnitLogicEntity Attacker;
             public BaseUnitLogicEntity Defender;
         }
 
-        // 由玩家+NPC 与表内 is_player_passive 决定攻受角色
         public static bool TryResolve(
             int actId,
             BaseUnitLogicEntity player,
             BaseUnitLogicEntity enemy,
             float intensity,
-            out HActResolveResult result)
+            out HActResolveResult result,
+            EBodyPart preferredContactPart = EBodyPart.None)
         {
             result = default;
             var act = CfgMgr.Cfgs.TbHActInfo.GetOrDefault(actId);
@@ -57,7 +60,6 @@ namespace My.Map.Entity
 
             if (attacker == null || defender == null)
             {
-                // 缺一侧时：仍用在场单位占位，避免静态入口直接失败
                 attacker ??= player;
                 defender ??= player;
                 if (ReferenceEquals(attacker, defender) && enemy != null)
@@ -66,16 +68,17 @@ namespace My.Map.Entity
                 }
             }
 
-            return TryResolveWithRoles(act, attacker, defender, player, enemy, intensity, out result);
+            return TryResolveWithRoles(
+                act, attacker, defender, player, enemy, intensity, preferredContactPart, out result);
         }
 
-        // 技能等已明确攻受时使用
         public static bool TryResolveWithRoles(
             int actId,
             BaseUnitLogicEntity attacker,
             BaseUnitLogicEntity defender,
             float intensity,
-            out HActResolveResult result)
+            out HActResolveResult result,
+            EBodyPart preferredContactPart = EBodyPart.None)
         {
             result = default;
             var act = CfgMgr.Cfgs.TbHActInfo.GetOrDefault(actId);
@@ -86,7 +89,8 @@ namespace My.Map.Entity
 
             var player = attacker as PlayerLogicEntity ?? defender as PlayerLogicEntity;
             var enemy = attacker as NpcUnitLogicEntity ?? defender as NpcUnitLogicEntity;
-            return TryResolveWithRoles(act, attacker, defender, player, enemy, intensity, out result);
+            return TryResolveWithRoles(
+                act, attacker, defender, player, enemy, intensity, preferredContactPart, out result);
         }
 
         static bool TryResolveWithRoles(
@@ -96,6 +100,7 @@ namespace My.Map.Entity
             BaseUnitLogicEntity player,
             BaseUnitLogicEntity enemy,
             float intensity,
+            EBodyPart preferredContactPart,
             out HActResolveResult result)
         {
             result = default;
@@ -110,8 +115,15 @@ namespace My.Map.Entity
             long hTechDef = Math.Max(0, defender.GetAttr(AttrIdConsts.HTechnique));
             long hStrAtk = Math.Max(0, attacker.GetAttr(AttrIdConsts.HStrength));
 
-            var contactPart = HActContactPart.InferDefault(act.Id);
-            ApplyPlayerPartCombatBonus(
+            var contactPart = ResolveContactPart(
+                act.Id,
+                preferredContactPart,
+                player as PlayerLogicEntity,
+                attacker,
+                defender);
+
+            // 对抗：有效技巧/强度 = 全身 + 当前接触部位（仅玩家侧有部位表）
+            ApplyPlayerPartContestBonus(
                 player as PlayerLogicEntity,
                 contactPart,
                 attacker,
@@ -124,14 +136,12 @@ namespace My.Map.Entity
             double C = 100.0 + 5.0 * defLevel;
             double contest = act.ContestCoef > 0f ? act.ContestCoef : 1f;
 
-            // H技巧对抗
             double adv = (hTechAtk * 0.001 * contest + C) / (hTechDef * 0.001 + C);
             if (adv < 1e-6)
             {
                 adv = 1e-6;
             }
 
-            // H强度放大动作基础量
             double strengthMul = Math.Max(0.01, hStrAtk * 0.001);
             double effectiveBase = act.HImpulseBase * intensity * strengthMul;
 
@@ -155,14 +165,51 @@ namespace My.Map.Entity
                 HpDamageOnDefender = hpDamage,
                 PlayerClimaxWeight = act.PlayerClimaxWeight > 0f ? act.PlayerClimaxWeight : 1f,
                 ContactPart = contactPart,
+                EffectiveHTechniqueAtk = hTechAtk,
+                EffectiveHTechniqueDef = hTechDef,
+                EffectiveHStrengthAtk = hStrAtk,
                 Attacker = attacker,
                 Defender = defender,
             };
             return true;
         }
 
-        // 玩家参与侧叠入指定部位的技巧/强度
-        static void ApplyPlayerPartCombatBonus(
+        // 显式指定 > NPC 会话槽 > HAct 推断
+        static EBodyPart ResolveContactPart(
+            int actId,
+            EBodyPart preferred,
+            PlayerLogicEntity player,
+            BaseUnitLogicEntity attacker,
+            BaseUnitLogicEntity defender)
+        {
+            if (preferred != EBodyPart.None)
+            {
+                return preferred;
+            }
+
+            var npc = attacker as NpcUnitLogicEntity ?? defender as NpcUnitLogicEntity;
+            if (player != null && npc != null)
+            {
+                if (ReferenceEquals(player, attacker) &&
+                    npc.HInteraction.Receive.TryGet(out var recv) &&
+                    recv.ContactPart != EBodyPart.None)
+                {
+                    return recv.ContactPart;
+                }
+
+                if (ReferenceEquals(player, defender) &&
+                    npc.HInteraction.Active.TryGet(out var active) &&
+                    active.ContactPart != EBodyPart.None)
+                {
+                    return active.ContactPart;
+                }
+            }
+
+            return HActContactPart.InferDefault(actId);
+        }
+
+        // 玩家攻：部位技巧+强度叠攻方；玩家受：部位技巧叠守方（强度仍是攻方盘子）
+        static void ApplyPlayerPartContestBonus(
             PlayerLogicEntity player,
             EBodyPart contactPart,
             BaseUnitLogicEntity attacker,
@@ -188,19 +235,14 @@ namespace My.Map.Entity
                 return;
             }
 
-            // 表内部位 h_technique 目前是偏大的占位绝对值；作「额外」叠入时软折算
-            const long SoftDiv = 50;
-            long techExtra = partTech / SoftDiv;
-            long strExtra = partStr / SoftDiv;
-
             if (ReferenceEquals(player, attacker))
             {
-                hTechAtk += techExtra;
-                hStrAtk += strExtra;
+                hTechAtk += partTech;
+                hStrAtk += partStr;
             }
             else if (ReferenceEquals(player, defender))
             {
-                hTechDef += techExtra;
+                hTechDef += partTech;
             }
         }
 
@@ -234,9 +276,10 @@ namespace My.Map.Entity
             BaseUnitLogicEntity player,
             BaseUnitLogicEntity enemy,
             float intensity = 1f,
-            bool applyHpDamage = true)
+            bool applyHpDamage = true,
+            EBodyPart preferredContactPart = EBodyPart.None)
         {
-            if (!TryResolve(actId, player, enemy, intensity, out var result))
+            if (!TryResolve(actId, player, enemy, intensity, out var result, preferredContactPart))
             {
                 return false;
             }
@@ -251,9 +294,11 @@ namespace My.Map.Entity
             BaseUnitLogicEntity defender,
             float intensity = 1f,
             bool applyHpDamage = true,
-            float knockBackForce = 0f)
+            float knockBackForce = 0f,
+            EBodyPart preferredContactPart = EBodyPart.None)
         {
-            if (!TryResolveWithRoles(actId, attacker, defender, intensity, out var result))
+            if (!TryResolveWithRoles(
+                    actId, attacker, defender, intensity, out var result, preferredContactPart))
             {
                 return false;
             }
@@ -284,7 +329,6 @@ namespace My.Map.Entity
             }
         }
 
-        // 写入 NPC 双槽：玩家打 NPC → Receive；NPC 打玩家 → Active
         static void NoteNpcHInteractionContexts(HActResolveResult result, int sourceActId)
         {
             if (sourceActId <= 0)
@@ -331,7 +375,6 @@ namespace My.Map.Entity
             }
         }
 
-        // HAct 派生 HP 伤害：仅走 H 类别纯扣血；带 HitPart flag 供部位减伤读取
         public static void ApplyHActHpDamage(
             BaseUnitLogicEntity attacker,
             BaseUnitLogicEntity defender,
@@ -356,33 +399,13 @@ namespace My.Map.Entity
                 }
             }
 
-            var flags = ToHitPartFlag(contactPart);
-            Dictionary<string, long> extraAttrs = null;
-            if (contactPart != EBodyPart.None && defender is PlayerLogicEntity playerDef)
-            {
-                var bodyParts = playerDef.LogicManager?.playerDataManager?.BodyPartSystem;
-                if (bodyParts != null)
-                {
-                    bodyParts.GetCombatBonuses(contactPart, out var partTech, out var partStr);
-                    extraAttrs = new Dictionary<string, long>(2);
-                    if (partTech > 0)
-                    {
-                        extraAttrs[AttrIdConsts.HTechnique_Pipeline] = partTech;
-                    }
+            var extraAttrs = BuildHActHpExtraAttrs(defender, contactPart);
 
-                    if (partStr > 0)
-                    {
-                        extraAttrs[AttrIdConsts.HStrength_Pipeline] = partStr;
-                    }
-                }
-            }
-
-            // 不写入 HImpulse_Pipeline，避免伤再转冲击
             defender.ApplyResourceChange(
                 AttrIdConsts.HP,
                 -rawDamage,
                 true,
-                flags,
+                EDmgFlag.None,
                 srcId,
                 extraAttrs,
                 EDmgCategory.H,
@@ -393,6 +416,29 @@ namespace My.Map.Entity
             {
                 defender.ApplyKnockBack(hitDir.Value, knockBackForce);
             }
+        }
+
+        static Dictionary<string, long> BuildHActHpExtraAttrs(
+            BaseUnitLogicEntity defender,
+            EBodyPart contactPart)
+        {
+            if (contactPart == EBodyPart.None)
+            {
+                return null;
+            }
+
+            var extraAttrs = new Dictionary<string, long>(4)
+            {
+                [AttrIdConsts.HitPart_Pipeline] = (int)contactPart,
+            };
+
+            if (defender is PlayerLogicEntity playerDef)
+            {
+                playerDef.LogicManager?.playerDataManager?.BodyPartSystem
+                    ?.CaptureCombatPipelineAttrs(contactPart, extraAttrs);
+            }
+
+            return extraAttrs;
         }
     }
 }

@@ -24,6 +24,22 @@ namespace cfg.demo
         /// 增幅锚点
         /// </summary>
         AmplifyAnchor = 1,
+        /// <summary>
+        /// 远征搜集
+        /// </summary>
+        ScoutGather = 2,
+        /// <summary>
+        /// 区域传教
+        /// </summary>
+        Preach = 3,
+        /// <summary>
+        /// 灭迹
+        /// </summary>
+        CoverTraces = 4,
+        /// <summary>
+        /// 献精
+        /// </summary>
+        OfferEssence = 5,
     }
 
 } 

@@ -32,10 +32,10 @@
 
 ### 眷恋者
 
-眷恋者就是全局的 `FallenAmount`，对应当前运行时的 `PlayerSystemManager.TotalFallPeopleAmount` 和存档中的 `PlayerData.TotalFallPeopleAmount`。
+眷恋者就是全局沉沦合计：`FallenBaseAmount + FallenSpreadAmount`（展示/兼容字段仍为 `TotalFallPeopleAmount`）。
 
 ```text
-眷恋者 = 全局 FallenAmount = TotalFallPeopleAmount
+眷恋者 = TotalFallPeopleAmount = FallenBaseAmount + FallenSpreadAmount
 ```
 
 它不等于区域教徒，也不参与教徒的区域分配。锚点可以预留眷恋者对进度的加速入口，但当前加速值固定为 0。

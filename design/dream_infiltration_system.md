@@ -2,18 +2,32 @@
 
 ## 固定入口
 
-项目中“入梦”专指玩家在 `secretbase` 使用入梦设施进入的小游戏。
+项目中“入梦”专指玩家在 `secretbase` 使用入梦设施进入的**内嵌弹幕躲避小游戏**（`DreamDodgeGameplayPanel`：移动躲避弹幕/AOE，拾取倾向物攻击核心）。
 
 固定流程：
 
 1. 玩家在世界中通过任务、关系或其他条件解锁某个 Character 梦境入口。
 2. 解锁状态写入持久化数据，不立即启动小游戏。
 3. 玩家返回 `secretbase`，与入梦设施交互。
-4. `DreamEntryPanel` 展示普通梦境点位和已解锁的 Character 梦境。
+4. `DreamEntryPanel` 展示普通梦境点位、已解锁的 Character 梦境，以及当日刷新的抽象团体入口（见 `abstract_group_dream_system.md`）。
 5. 玩家在该面板选择入口后进入 `DreamDodgeGameplayPanel`。
-6. 结算结果写回对应 Character 的持久化档案。
+6. 结算结果写回对应归属档案：Character → `NpcCharacterPersist`；抽象团体 → 独立 `AbstractGroupPersist`。
+7. **任意入口完成一局（胜负均算）并关闭结算后，世界推进至下一天**（夜间 → 白天 + 日结）。
 
-城镇 NPC 对话、任务选项、地图交互点和过场不得直接打开角色入梦。代码层不提供 Dialogue `OpenCharacterDream` 命令。
+城镇 NPC 对话、任务选项、地图交互点和过场不得直接打开角色入梦或团体入梦。代码层不提供 Dialogue `OpenCharacterDream` / 直开团体梦境命令。
+
+抽象团体（路人与 Character 之间的第三层）的完整需求见：`design/abstract_group_dream_system.md`。
+
+## 时段与日限（已定）
+
+| 规则 | 说明 |
+|---|---|
+| 仅夜间可入梦 | `GameLogicManager.DayPeriod == Night` 才允许打开入口或开始小游戏；白天交互应提示并拒绝 |
+| 入梦后推日 | 关闭结算面板后调用时段推进：`Night → Day` 并触发 `HandleOneDayBalance` |
+| 每天只入梦 1 次 | 与推日叠加保证；另以 `DreamDailyLimit.DreamUsedToday` 在**进入小游戏时**置位，防止同夜中途退出后再开 |
+| 中途取消 | 从玩法退回入口仍占用今日次数，**不推日**；关闭入口面板不占用次数 |
+
+推日后玩家处于白天，需再等到夜间才能再次入梦。日结时清 `DreamUsedToday`，并刷新抽象团体当日入口。
 
 ## Character 入口
 
@@ -55,3 +69,10 @@ PlayerData.NpcCharacterPersistByKey[character_key]
 ```
 
 当前记录尝试次数以及三种倾向胜利次数。旧存档没有尝试次数时，以已有胜利次数兼容推导最小完成量。
+
+## 小游戏形态
+
+- UI 内嵌弹幕躲避：玩家在 `PlayArea` 移动，躲避直线弹与 AOE，拾取暴力/安抚/计谋倾向物后向核心发射弧形炮弹。
+- 常规通关：核心 HP 归零；失败：玩家 HP 归零。
+- 抽象团体额外可用阶段表 `required_score`：核心摧毁且对核心总伤害 ≥ 目标分才算通关（见团体文档）。
+- 难度由入口上下文写入 `DreamGameplayContext`（主题、核心/玩家 HP、弹伤等）；团体入口从阶段表读取。

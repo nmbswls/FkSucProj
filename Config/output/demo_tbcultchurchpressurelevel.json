@@ -1,0 +1,23 @@
+[
+  {
+    "level": 1,
+    "min_pressure": 1,
+    "watch_chance_percent": 20,
+    "warning_days": 2,
+    "disable_days": 3
+  },
+  {
+    "level": 2,
+    "min_pressure": 10,
+    "watch_chance_percent": 40,
+    "warning_days": 1,
+    "disable_days": 5
+  },
+  {
+    "level": 3,
+    "min_pressure": 25,
+    "watch_chance_percent": 70,
+    "warning_days": 1,
+    "disable_days": 7
+  }
+]

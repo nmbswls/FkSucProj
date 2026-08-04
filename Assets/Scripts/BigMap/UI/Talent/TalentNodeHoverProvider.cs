@@ -1,5 +1,6 @@
 using My.Player;
 using My.UI;
+using My.Config;
 using UnityEngine;
 
 namespace My.UI.Talent
@@ -37,6 +38,12 @@ namespace My.UI.Talent
         public override HoverTipParams? GetSimpleTipInfo()
         {
             if (_nodeId <= 0)
+            {
+                return null;
+            }
+
+            var node = CfgMgr.Cfgs?.TbTalentNode?.GetOrDefault(_nodeId);
+            if (node == null || node.MaxLevel <= 0)
             {
                 return null;
             }

@@ -222,6 +222,20 @@ namespace My
                 return;
             }
 
+            var targetArea = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapOverlayId);
+            if (IsInfiltrationRun)
+            {
+                ForcePlayerHumanMode(false);
+            }
+            else if (targetArea != null && targetArea.IsDangerArea && !targetArea.IsCivilArea)
+            {
+                ForcePlayerHumanMode(false);
+            }
+            else if (targetArea != null && targetArea.IsCivilArea && !targetArea.IsDangerArea)
+            {
+                ForcePlayerHumanMode(true);
+            }
+
             // TrySnapshotOpenWorldBeforeEnteringHome(mapOverlayId);
             TrySnapshotOpenWorldBeforeEnteringSecretBase(mapOverlayId);
 

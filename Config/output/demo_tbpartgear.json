@@ -1,107 +1,182 @@
 [
   {
-    "item_id": "part_mouth_ring",
-    "body_part": 1,
-    "gear_slot_cost": 1,
-    "min_part_level": 1,
-    "desc": "口环。提升口部榨取增益与敏感。",
-    "local_bonuses": [
-      { "attr_id": 3, "val": 1500 },
-      { "attr_id": 1, "val": 800 }
-    ]
-  },
-  {
     "item_id": "part_mouth_lollipop",
     "body_part": 1,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "棒棒糖环。轻量敏感装饰。",
+    "desc": "稳定口部与降低噪音的基础束带。",
     "local_bonuses": [
-      { "attr_id": 1, "val": 1000 }
-    ]
+      {
+        "attr_id": 1,
+        "val": 500
+      },
+      {
+        "attr_id": 2,
+        "val": 300
+      }
+    ],
+    "base_arm": 12000,
+    "base_hp_max": 8000,
+    "exclusion_group": ""
   },
   {
-    "item_id": "part_breast_ring",
-    "body_part": 2,
+    "item_id": "part_mouth_ball",
+    "body_part": 1,
+    "gear_slot_cost": 2,
+    "min_part_level": 1,
+    "desc": "提高耐受和抗打断，但限制部分主动交流。",
+    "local_bonuses": [
+      {
+        "attr_id": 2,
+        "val": 900
+      },
+      {
+        "attr_id": 5,
+        "val": -200
+      }
+    ],
+    "base_arm": 22000,
+    "base_hp_max": 12000,
+    "exclusion_group": ""
+  },
+  {
+    "item_id": "part_mouth_blindfold",
+    "body_part": 1,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "乳环。胸接触时提高敏感与少量榨取增益。",
+    "desc": "牺牲部分视觉感知，换取稳定与 H 互动倾向。",
     "local_bonuses": [
-      { "attr_id": 1, "val": 2000 },
-      { "attr_id": 3, "val": 800 }
-    ]
+      {
+        "attr_id": 2,
+        "val": 400
+      },
+      {
+        "attr_id": 6,
+        "val": 200
+      }
+    ],
+    "base_arm": 10000,
+    "base_hp_max": 7000,
+    "exclusion_group": ""
   },
   {
     "item_id": "part_breast_brooch",
     "body_part": 2,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "感知胸针。稳固耐受。",
+    "desc": "胸部基础防护与承受能力。",
     "local_bonuses": [
-      { "attr_id": 2, "val": 1500 }
-    ]
+      {
+        "attr_id": 2,
+        "val": 600
+      },
+      {
+        "attr_id": 1,
+        "val": 500
+      }
+    ],
+    "base_arm": 14000,
+    "base_hp_max": 10000,
+    "exclusion_group": ""
   },
   {
-    "item_id": "part_womb_plug",
-    "body_part": 3,
-    "gear_slot_cost": 1,
+    "item_id": "part_breast_clamp",
+    "body_part": 2,
+    "gear_slot_cost": 2,
     "min_part_level": 1,
-    "desc": "宫塞。主榨取部位核心增益。",
+    "desc": "更高防护和胸部互动强度。",
     "local_bonuses": [
-      { "attr_id": 3, "val": 2500 },
-      { "attr_id": 1, "val": 500 }
-    ]
+      {
+        "attr_id": 6,
+        "val": 500
+      },
+      {
+        "attr_id": 7,
+        "val": 300
+      }
+    ],
+    "base_arm": 24000,
+    "base_hp_max": 14000,
+    "exclusion_group": ""
   },
   {
     "item_id": "part_womb_bead",
     "body_part": 3,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "温养念珠。温和提升榨取增益。",
+    "desc": "稳定提升前穴榨取和资源获取。",
     "local_bonuses": [
-      { "attr_id": 3, "val": 1200 }
-    ]
+      {
+        "attr_id": 3,
+        "val": 700
+      },
+      {
+        "attr_id": 1,
+        "val": 300
+      }
+    ],
+    "base_arm": 12000,
+    "base_hp_max": 9000,
+    "exclusion_group": ""
   },
   {
-    "item_id": "part_anus_plug",
-    "body_part": 4,
-    "gear_slot_cost": 1,
+    "item_id": "part_womb_seal",
+    "body_part": 3,
+    "gear_slot_cost": 2,
     "min_part_level": 1,
-    "desc": "肛塞。尻部榨取与耐受。",
+    "desc": "强化持续作战中的稳定与耐受。",
     "local_bonuses": [
-      { "attr_id": 3, "val": 1800 },
-      { "attr_id": 2, "val": 1000 }
-    ]
+      {
+        "attr_id": 2,
+        "val": 700
+      },
+      {
+        "attr_id": 5,
+        "val": -300
+      }
+    ],
+    "base_arm": 23000,
+    "base_hp_max": 13000,
+    "exclusion_group": ""
   },
   {
     "item_id": "part_tail_bell",
     "body_part": 4,
     "gear_slot_cost": 1,
     "min_part_level": 1,
-    "desc": "尻铃。增加流体获取。",
+    "desc": "后穴基础防护与流体获取。",
     "local_bonuses": [
-      { "attr_id": 3, "val": 1000 }
-    ]
+      {
+        "attr_id": 3,
+        "val": 600
+      },
+      {
+        "attr_id": 2,
+        "val": 400
+      }
+    ],
+    "base_arm": 13000,
+    "base_hp_max": 9000,
+    "exclusion_group": ""
   },
   {
-    "item_id": "part_limb_cuff",
-    "body_part": 5,
-    "gear_slot_cost": 1,
+    "item_id": "part_tail_plug",
+    "body_part": 4,
+    "gear_slot_cost": 2,
     "min_part_level": 1,
-    "desc": "肢体束环。提高控制抗性。",
+    "desc": "高耐受后穴装备，适合纷争区战斗。",
     "local_bonuses": [
-      { "attr_id": 4, "val": 2000 }
-    ]
-  },
-  {
-    "item_id": "part_skin_seal",
-    "body_part": 6,
-    "gear_slot_cost": 1,
-    "min_part_level": 2,
-    "desc": "肌纹封贴。抑制气场泄漏并略增耐受。",
-    "local_bonuses": [
-      { "attr_id": 5, "val": -1000 },
-      { "attr_id": 2, "val": 800 }
-    ]
+      {
+        "attr_id": 2,
+        "val": 900
+      },
+      {
+        "attr_id": 7,
+        "val": 400
+      }
+    ],
+    "base_arm": 25000,
+    "base_hp_max": 15000,
+    "exclusion_group": ""
   }
 ]

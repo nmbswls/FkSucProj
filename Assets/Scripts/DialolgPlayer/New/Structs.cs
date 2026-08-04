@@ -92,6 +92,7 @@ namespace My.Dialog
         SetGlobalSwitch,
         Teleport,
         OpenFunc,
+        SetPlayerHumanMode,
     }
 
 

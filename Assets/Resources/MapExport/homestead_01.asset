@@ -83,10 +83,57 @@ MonoBehaviour:
         Param6: 
     FovStaticSegments: []
   - Chunk:
+      X: -3
+      Y: -3
+    StaticItems:
+    - ItemId: 104
+      Key: Map/Zone/Home01SelfSealBriefingTrigger
+      Position: {x: -91.11, y: -90.19, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: home_01.self_seal_plan_known
+        Param6: 
+      DisappearCond:
+        Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: home_01.self_seal_briefed
+        Param6: 
+    FovStaticSegments: []
+  - Chunk:
       X: 0
       Y: 0
     StaticItems:
-    - ItemId: 104
+    - ItemId: 105
+      Key: Map/Zone/Home01SelfSealCollapseTrigger
+      Position: {x: 19, y: 30, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 1
+        Param1: 204
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
+        Type: 2
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: home_01.self_seal_plan_known
+        Param6: 
+    - ItemId: 106
       Key: Presentations/HomeFacility/transport_camp
       Position: {x: 21, y: 27.5, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -107,7 +154,7 @@ MonoBehaviour:
         Param4: 0
         Param5: 
         Param6: 
-    - ItemId: 105
+    - ItemId: 107
       Key: Presentations/FacilityRuin/ruin_transport_camp
       Position: {x: 21, y: 27.5, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -128,51 +175,9 @@ MonoBehaviour:
         Param4: 0
         Param5: town_facility_site:2
         Param6: 
-    - ItemId: 106
-      Key: Presentations/HomeFacility/tavern
-      Position: {x: 14, y: 31, z: 0}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 2
-        Param1: 1
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: town_facility_site:1
-        Param6: 
-      DisappearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-    - ItemId: 107
-      Key: Presentations/FacilityRuin/ruin_tavern
-      Position: {x: 14, y: 31, z: 0}
-      Rotation: {x: -0, y: -0, z: -0, w: 1}
-      Scale: {x: 1, y: 1, z: 1}
-      AppearCond:
-        Type: 0
-        Param1: 0
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: 
-        Param6: 
-      DisappearCond:
-        Type: 2
-        Param1: 1
-        Param2: 0
-        Param3: 0
-        Param4: 0
-        Param5: town_facility_site:1
-        Param6: 
     - ItemId: 108
       Key: Presentations/HomeFacility/tavern
-      Position: {x: 25, y: 20, z: 0}
+      Position: {x: 14, y: 31, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
       AppearCond:
@@ -181,7 +186,7 @@ MonoBehaviour:
         Param2: 0
         Param3: 0
         Param4: 0
-        Param5: town_facility_site:6
+        Param5: town_facility_site:1
         Param6: 
       DisappearCond:
         Type: 0
@@ -193,6 +198,48 @@ MonoBehaviour:
         Param6: 
     - ItemId: 109
       Key: Presentations/FacilityRuin/ruin_tavern
+      Position: {x: 14, y: 31, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+      DisappearCond:
+        Type: 2
+        Param1: 1
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: town_facility_site:1
+        Param6: 
+    - ItemId: 110
+      Key: Presentations/HomeFacility/tavern
+      Position: {x: 25, y: 20, z: 0}
+      Rotation: {x: -0, y: -0, z: -0, w: 1}
+      Scale: {x: 1, y: 1, z: 1}
+      AppearCond:
+        Type: 2
+        Param1: 1
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: town_facility_site:6
+        Param6: 
+      DisappearCond:
+        Type: 0
+        Param1: 0
+        Param2: 0
+        Param3: 0
+        Param4: 0
+        Param5: 
+        Param6: 
+    - ItemId: 111
+      Key: Presentations/FacilityRuin/ruin_tavern
       Position: {x: 25, y: 20, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
       Scale: {x: 1, y: 1, z: 1}
@@ -212,7 +259,7 @@ MonoBehaviour:
         Param4: 0
         Param5: town_facility_site:6
         Param6: 
-    - ItemId: 110
+    - ItemId: 112
       Key: Map/FarmPlot/home01_field_a
       Position: {x: 28, y: 18, z: 0}
       Rotation: {x: -0, y: -0, z: -0, w: 1}
@@ -262,7 +309,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780951
+      rid: 1434717636911169559
   - StaticId: 101
     UniqName: home_kitchen_front_rubble
     AppearCond:
@@ -290,7 +337,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780952
+      rid: 1434717636911169560
   - StaticId: 102
     UniqName: jump_01_b
     AppearCond:
@@ -318,7 +365,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780953
+      rid: 1434717636911169561
   - StaticId: 103
     UniqName: jump_01_a
     AppearCond:
@@ -346,7 +393,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780954
+      rid: 1434717636911169562
   - StaticId: 104
     UniqName: 
     AppearCond:
@@ -374,7 +421,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780955
+      rid: 1434717636911169563
   - StaticId: 105
     UniqName: farm_seed_basket
     AppearCond:
@@ -402,7 +449,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780956
+      rid: 1434717636911169564
   - StaticId: 106
     UniqName: teleporter_to_home_east
     AppearCond:
@@ -430,7 +477,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780957
+      rid: 1434717636911169565
   - StaticId: 107
     UniqName: 
     AppearCond:
@@ -458,7 +505,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780958
+      rid: 1434717636911169566
   - StaticId: 108
     UniqName: 
     AppearCond:
@@ -486,7 +533,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780959
+      rid: 1434717636911169567
   - StaticId: 109
     UniqName: 
     AppearCond:
@@ -514,7 +561,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780960
+      rid: 1434717636911169568
   - StaticId: 110
     UniqName: bedroom_bed
     AppearCond:
@@ -542,7 +589,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780961
+      rid: 1434717636911169569
   - StaticId: 111
     UniqName: 
     AppearCond:
@@ -570,7 +617,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780962
+      rid: 1434717636911169570
   - StaticId: 112
     UniqName: 
     AppearCond:
@@ -598,7 +645,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780963
+      rid: 1434717636911169571
   - StaticId: 113
     UniqName: home_fishing_01
     AppearCond:
@@ -626,7 +673,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780964
+      rid: 1434717636911169572
   - StaticId: 114
     UniqName: 
     AppearCond:
@@ -654,16 +701,16 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780965
+      rid: 1434717636911169573
   - StaticId: 115
     UniqName: 
     AppearCond:
-      Type: 0
+      Type: 2
       Param1: 0
       Param2: 0
       Param3: 0
       Param4: 0
-      Param5: 
+      Param5: player.human_form_unlocked
       Param6: 
     DisappearCond:
       Type: 0
@@ -682,7 +729,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780966
+      rid: 1434717636911169574
   - StaticId: 116
     UniqName: 
     AppearCond:
@@ -710,7 +757,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780967
+      rid: 1434717636911169575
   - StaticId: 117
     UniqName: 
     AppearCond:
@@ -738,7 +785,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780968
+      rid: 1434717636911169576
   - StaticId: 118
     UniqName: 
     AppearCond:
@@ -766,7 +813,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780969
+      rid: 1434717636911169577
   - StaticId: 119
     UniqName: 
     AppearCond:
@@ -794,7 +841,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780970
+      rid: 1434717636911169578
   - StaticId: 120
     UniqName: 
     AppearCond:
@@ -822,7 +869,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780971
+      rid: 1434717636911169579
   - StaticId: 121
     UniqName: 
     AppearCond:
@@ -850,7 +897,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780972
+      rid: 1434717636911169580
   - StaticId: 122
     UniqName: 
     AppearCond:
@@ -878,8 +925,13 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 4481877039398780973
+      rid: 1434717636911169581
   NamedPoints:
+  - Name: home_carlisle_recovery
+    PointType: 0
+    Position: {x: 13.5, y: 31, z: 0}
+    Rotation: {x: -0, y: -0, z: -0, w: 1}
+    Scale: {x: 0, y: 0, z: 0}
   - Name: ruined_kitchen_out_entry
     PointType: 0
     Position: {x: 48.402, y: 15.937001, z: 0}
@@ -1029,7 +1081,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 4481877039398780951
+    - rid: 1434717636911169559
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_kitchen_utensils
@@ -1040,7 +1092,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780952
+    - rid: 1434717636911169560
       type: {class: EntityInitInfo4DestroyObj, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: obj_home_kitchen_rubble
@@ -1048,7 +1100,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: -1}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780953
+    - rid: 1434717636911169561
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_01_jp_01_b
@@ -1059,7 +1111,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780954
+    - rid: 1434717636911169562
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: home_01_jp_01_a
@@ -1070,7 +1122,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780955
+    - rid: 1434717636911169563
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: teleport
@@ -1081,7 +1133,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780956
+    - rid: 1434717636911169564
       type: {class: EntityInitInfo4SeedBasket, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: SeedBasket
@@ -1090,7 +1142,7 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         LogicAreaId: homestead_01
-    - rid: 4481877039398780957
+    - rid: 1434717636911169565
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1100,7 +1152,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: test_link_b
         TargetNamedPoint: enter_from_home_01
-    - rid: 4481877039398780958
+    - rid: 1434717636911169566
       type: {class: EntityInitInfo4SavePoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: base_entry
@@ -1108,7 +1160,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780959
+    - rid: 1434717636911169567
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1118,7 +1170,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: ruined_kitchen_out_entry
-    - rid: 4481877039398780960
+    - rid: 1434717636911169568
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1128,7 +1180,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: bedroom_out_entry
-    - rid: 4481877039398780961
+    - rid: 1434717636911169569
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: bedroom_bed
@@ -1139,7 +1191,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780962
+    - rid: 1434717636911169570
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1149,7 +1201,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: ruined_kitchen_in_entry
-    - rid: 4481877039398780963
+    - rid: 1434717636911169571
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1159,7 +1211,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: bedroom_in_entry
-    - rid: 4481877039398780964
+    - rid: 1434717636911169572
       type: {class: EntityInitInfo4FishingSpot, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: fish_spot_base_01
@@ -1167,7 +1219,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780965
+    - rid: 1434717636911169573
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1177,7 +1229,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: 
         TargetNamedPoint: bedroom_in_entry
-    - rid: 4481877039398780966
+    - rid: 1434717636911169574
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -1187,7 +1239,7 @@ MonoBehaviour:
         OrgFactionId: 0
         TargetMapName: village_01_road
         TargetNamedPoint: village_01_road_from_home
-    - rid: 4481877039398780967
+    - rid: 1434717636911169575
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab3
@@ -1195,7 +1247,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780968
+    - rid: 1434717636911169576
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab2
@@ -1203,7 +1255,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780969
+    - rid: 1434717636911169577
       type: {class: EntityInitInfo4FacilityRuin, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: ruin_lab1
@@ -1211,7 +1263,7 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 0}
         BindRoomId: 
         OrgFactionId: 0
-    - rid: 4481877039398780970
+    - rid: 1434717636911169578
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: lock_door_01
@@ -1222,7 +1274,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780971
+    - rid: 1434717636911169579
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: bridge_block
@@ -1233,7 +1285,7 @@ MonoBehaviour:
         Variables:
           keys: []
           values: []
-    - rid: 4481877039398780972
+    - rid: 1434717636911169580
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole
@@ -1246,7 +1298,7 @@ MonoBehaviour:
           - tp_name
           values:
           - hole_01_p
-    - rid: 4481877039398780973
+    - rid: 1434717636911169581
       type: {class: EntityInitInfo4InteractPoint, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: hole

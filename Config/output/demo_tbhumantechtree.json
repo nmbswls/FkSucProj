@@ -1,0 +1,8 @@
+[
+  {
+    "tree_id": "human_main",
+    "display_name": "人类文明",
+    "layout_prefab_path": "UI/Prefabs/TalentTreeLayouts/HumanTechTreeLayout",
+    "owner_character_key": ""
+  }
+]

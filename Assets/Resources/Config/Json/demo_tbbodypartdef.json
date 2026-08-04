@@ -19,7 +19,7 @@
   },
   {
     "part_id": 3,
-    "display_name": "穴",
+    "display_name": "前穴",
     "max_level": 5,
     "base_gear_point": 1,
     "icon": "",
@@ -28,7 +28,7 @@
   },
   {
     "part_id": 4,
-    "display_name": "尻",
+    "display_name": "后穴",
     "max_level": 5,
     "base_gear_point": 1,
     "icon": "",
@@ -39,18 +39,9 @@
     "part_id": 5,
     "display_name": "肢体",
     "max_level": 5,
-    "base_gear_point": 1,
+    "base_gear_point": 0,
     "icon": "",
     "sort_order": 5,
-    "unlock_conds": []
-  },
-  {
-    "part_id": 6,
-    "display_name": "肤",
-    "max_level": 5,
-    "base_gear_point": 2,
-    "icon": "",
-    "sort_order": 6,
     "unlock_conds": []
   }
 ]

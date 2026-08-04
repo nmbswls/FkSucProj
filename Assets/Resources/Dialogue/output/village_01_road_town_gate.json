@@ -1,0 +1,65 @@
+{
+  "DialogId": "village_01_road_town_gate",
+  "LockTime": true,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "首次抵达晨钟镇城门，收束封印后直接入城",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "咕啾",
+              "Content": "前面就是晨钟镇。镇里人多眼杂，您现在这样走进去，整条街都会察觉到异常。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "我知道。封印会把力量和气息一并压回去，至少在他们眼里，我只是一个普通人。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "咕啾",
+              "Content": "那就维持人类形态进城。先找到能处理伤势的药，别在城门口停留。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 5,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "village_01.road_gate_open",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 8,
+          "Param1": 1,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "",
+          "Param6": ""
+        },
+        {
+          "$type": "My.Dialog.DialogCommandData4SimpleFunc, Assembly-CSharp",
+          "SimpleFuncType": 6,
+          "Param1": 0,
+          "Param2": 0,
+          "Param3": 0,
+          "Param4": 0,
+          "Param5": "village_01",
+          "Param6": "entry_bottom"
+        }
+      ]
+    }
+  ]
+}

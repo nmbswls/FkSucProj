@@ -177,26 +177,8 @@ public static class UiPrefabMigrationBuilder
 
     static void BuildJingYuanPool()
     {
-        var root = new GameObject("JingYuanPoolPanel", typeof(RectTransform), typeof(CanvasGroup));
-        SetRect(root, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        root.AddComponent<My.UI.JingYuanPoolPanel>();
-        var built = Child(root, "BuiltRoot"); SetRect(built, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        Image("Background", built, new Color(.055f, .065f, .09f, .98f), true);
-        Text("Title", built, "精元池", 30, new Vector2(.1f, .78f), new Vector2(.9f, .9f), Vector2.zero, Vector2.zero);
-        Text("Description", built, "在古老火团的供奉中调和精元", 15, new Vector2(.1f, .69f), new Vector2(.9f, .77f), Vector2.zero, Vector2.zero);
-        var tune = Child(built, "TuneButton"); tune.AddComponent<Image>().color = new Color(.28f, .16f, .38f, 1); tune.AddComponent<Button>();
-        SetRect(tune, new Vector2(.18f, .42f), new Vector2(.82f, .57f), Vector2.zero, Vector2.zero); Text("Label", tune.transform, "调精", 20, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        var warehouse = Child(built, "WarehouseButton"); warehouse.AddComponent<Image>().color = new Color(.16f, .22f, .3f, 1); warehouse.AddComponent<Button>();
-        SetRect(warehouse, new Vector2(.18f, .25f), new Vector2(.82f, .4f), Vector2.zero, Vector2.zero); Text("Label", warehouse.transform, "精元仓库", 20, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        var close = Child(built, "CloseButton"); close.AddComponent<Image>().color = new Color(.18f, .12f, .18f, 1); close.AddComponent<Button>();
-        SetRect(close, new Vector2(.88f, .86f), new Vector2(.96f, .94f), Vector2.zero, Vector2.zero); Text("Label", close.transform, "X", 18, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-        var serialized = new SerializedObject(root.GetComponent<My.UI.JingYuanPoolPanel>());
-        serialized.FindProperty("tuneButton").objectReferenceValue = tune.GetComponent<Button>();
-        serialized.FindProperty("warehouseButton").objectReferenceValue = warehouse.GetComponent<Button>();
-        serialized.FindProperty("closeButton").objectReferenceValue = close.GetComponent<Button>();
-        serialized.ApplyModifiedPropertiesWithoutUndo();
-        PrefabUtility.SaveAsPrefabAsset(root, $"{SecretBaseRoot}/JingYuanPoolPanel.prefab");
-        Object.DestroyImmediate(root);
+        // 完整重建交给 Tools/UI/Rebuild JingYuan Pool Panel
+        JingYuanPoolPanelBuilder.Rebuild();
     }
 
     static void WireSecretBaseWarehouseButton()

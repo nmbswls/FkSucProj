@@ -1,0 +1,123 @@
+[
+  {
+    "id": 103,
+    "quest_id": 300,
+    "step_id": "300_s1",
+    "character_key": "carlisle",
+    "dialog_id": "carlisle_remind_first_aid",
+    "option_text": "我该怎么稳定他的伤势？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 113,
+    "quest_id": 301,
+    "step_id": "301_s1",
+    "character_key": "carlisle",
+    "dialog_id": "carlisle_remind_clear_exit",
+    "option_text": "退路还不安全。",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 123,
+    "quest_id": 302,
+    "step_id": "302_s1",
+    "character_key": "carlisle",
+    "dialog_id": "carlisle_remind_stretcher",
+    "option_text": "还需要能固定他的材料。",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 129,
+    "quest_id": 203,
+    "step_id": "203_s1",
+    "character_key": "home_merchant",
+    "dialog_id": "",
+    "option_text": "火堆还缺什么？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 131,
+    "quest_id": 204,
+    "step_id": "204_s1",
+    "character_key": "home_merchant",
+    "dialog_id": "",
+    "option_text": "灰露草棚要怎么处理？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 134,
+    "quest_id": 206,
+    "step_id": "206_s1",
+    "character_key": "home_elder",
+    "dialog_id": "",
+    "option_text": "村外的路标怎么补？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 137,
+    "quest_id": 208,
+    "step_id": "208_s1",
+    "character_key": "home_elder",
+    "dialog_id": "",
+    "option_text": "需要带回什么样本？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 139,
+    "quest_id": 211,
+    "step_id": "211_s1",
+    "character_key": "home_elder",
+    "dialog_id": "forest_quest_211_remind",
+    "option_text": "北路的花露有什么特征？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 141,
+    "quest_id": 212,
+    "step_id": "212_s1",
+    "character_key": "home_elder",
+    "dialog_id": "forest_quest_212_remind",
+    "option_text": "森林之心究竟是什么？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 146,
+    "quest_id": 213,
+    "step_id": "213_s1",
+    "character_key": "home_vera",
+    "dialog_id": "vera_dream_remind",
+    "option_text": "关于那个反复出现的梦……",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  },
+  {
+    "id": 2151,
+    "quest_id": 215,
+    "step_id": "215_s2",
+    "character_key": "village_herbalist",
+    "dialog_id": "village_herbalist_remind",
+    "option_text": "该买哪种药？",
+    "priority": 10,
+    "require_objective_dialog_id": 0,
+    "show_cond": []
+  }
+]

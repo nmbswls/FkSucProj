@@ -492,15 +492,57 @@
   {
     "step_id": "215_s3",
     "quest_id": 215,
-    "desc": "把药送给需要的人",
+    "desc": "把治疗物资带回 home_01",
     "is_root": false,
     "auto_next": true,
-    "push_npc_id": "village_herbalist",
+    "push_npc_id": "home_elder",
     "objectives": [
       "215_s3_Main"
     ],
     "outcomes": [
       "215_s3_Main"
+    ]
+  },
+  {
+    "step_id": "216_s1",
+    "quest_id": 216,
+    "desc": "从家园北侧出口进入晨钟镇南北道",
+    "is_root": true,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "216_s1_Main"
+    ],
+    "outcomes": [
+      "216_s1_Main"
+    ]
+  },
+  {
+    "step_id": "216_s2",
+    "quest_id": 216,
+    "desc": "清理道路并前往晨钟镇",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "",
+    "objectives": [
+      "216_s2_Main"
+    ],
+    "outcomes": [
+      "216_s2_Main"
+    ]
+  },
+  {
+    "step_id": "202_s2",
+    "quest_id": 202,
+    "desc": "让卡莱尔确认伤员情况",
+    "is_root": false,
+    "auto_next": true,
+    "push_npc_id": "carlisle",
+    "objectives": [
+      "202_s2_Main"
+    ],
+    "outcomes": [
+      "202_s2_Main"
     ]
   }
 ]

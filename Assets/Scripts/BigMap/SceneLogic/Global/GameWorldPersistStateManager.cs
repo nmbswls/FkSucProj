@@ -6,6 +6,7 @@ using System.Linq;
 using My.Config;
 using My.Home;
 using My.Saving;
+using My.MiniGame.Dream;
 using System;
 using UnityEngine;
 using My.Map;
@@ -18,7 +19,9 @@ namespace My
         private readonly Dictionary<string, RepairPointRuntimeSave> _ruinRuntime = new();
         private readonly Dictionary<string, SavePointUnlockPersist> _savePointUnlockById = new(StringComparer.Ordinal);
         private readonly HashSet<string> _secretBaseUnlockedFacilities = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, int> _secretBaseFacilityLevels = new(StringComparer.Ordinal);
         private int _secretBaseBuildLevel = 1;
+        private long _jingYuanPoolStored;
 
         public readonly WorldNpcCharacterPersistRegistry NpcCharacters = new();
 
@@ -105,6 +108,8 @@ namespace My
 
             NpcCharacters.LoadFromSave(savingData?.PlayerData?.NpcCharacterPersistByKey);
 
+            AbstractGroupDreamService.LoadFromSave(savingData?.PlayerData);
+
             MapInteractPoints.LoadFromSave(savingData?.PlayerData?.InteractPointByUniqName);
 
             if (savingData?.PlayerData?.MicroPlotConsumedByKey != null)
@@ -166,6 +171,18 @@ namespace My
             {
                 _secretBaseBuildLevel = 1;
             }
+
+            _secretBaseFacilityLevels.Clear();
+            if (savingData?.PlayerData?.SecretBaseFacilityLevels != null)
+            {
+                foreach (var kv in savingData.PlayerData.SecretBaseFacilityLevels)
+                {
+                    if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                        _secretBaseFacilityLevels[kv.Key] = kv.Value;
+                }
+            }
+
+            _jingYuanPoolStored = Math.Max(0, savingData?.PlayerData?.JingYuanPoolStored ?? 0);
 
             _logicAreaHomesteadByMapId.Clear();
             if (savingData?.TownDevelopmentById != null)
@@ -268,6 +285,18 @@ namespace My
 
             data.PlayerData.SecretBaseBuildLevel = _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
 
+            data.PlayerData.SecretBaseFacilityLevels ??= new Dictionary<string, int>();
+            data.PlayerData.SecretBaseFacilityLevels.Clear();
+            foreach (var kv in _secretBaseFacilityLevels)
+            {
+                if (!string.IsNullOrEmpty(kv.Key) && kv.Value > 0)
+                    data.PlayerData.SecretBaseFacilityLevels[kv.Key] = kv.Value;
+            }
+
+            data.PlayerData.JingYuanPoolStored = Math.Max(0, _jingYuanPoolStored);
+
+            AbstractGroupDreamService.ApplyToSave(data.PlayerData);
+
             data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
             data.TownDevelopmentById.Clear();
             foreach (var kv in _logicAreaHomesteadByMapId)
@@ -275,7 +304,9 @@ namespace My
                 if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || !HasMeaningfulHomesteadState(kv.Value)) continue;
                 data.TownDevelopmentById[kv.Key] = CloneTownDevelopment(kv.Value);
             }
-        }        public int GetSecretBaseBuildLevel()
+        }
+
+        public int GetSecretBaseBuildLevel()
         {
             return _secretBaseBuildLevel < 1 ? 1 : _secretBaseBuildLevel;
         }
@@ -298,6 +329,33 @@ namespace My
             }
 
             _secretBaseUnlockedFacilities.Add(facilityId);
+        }
+
+        public int GetSecretBaseFacilityLevel(string facilityId)
+        {
+            if (string.IsNullOrEmpty(facilityId)) return 0;
+            return _secretBaseFacilityLevels.TryGetValue(facilityId, out var level) ? Math.Max(1, level) : 1;
+        }
+
+        public void SetSecretBaseFacilityLevel(string facilityId, int level)
+        {
+            if (string.IsNullOrEmpty(facilityId)) return;
+            _secretBaseFacilityLevels[facilityId] = Math.Max(1, level);
+        }
+
+        public long JingYuanPoolStored => Math.Max(0, _jingYuanPoolStored);
+
+        public long SetJingYuanPoolStored(long amount)
+        {
+            _jingYuanPoolStored = Math.Max(0, amount);
+            return _jingYuanPoolStored;
+        }
+
+        public long AddJingYuanPoolStored(long delta)
+        {
+            if (delta == 0) return JingYuanPoolStored;
+            _jingYuanPoolStored = Math.Max(0, _jingYuanPoolStored + delta);
+            return _jingYuanPoolStored;
         }
 
         public SavePointUnlockPersist GetOrCreateSavePointUnlockState(string savePointId)

@@ -1,0 +1,35 @@
+{
+  "DialogId": "home_01_medicine_return",
+  "LockTime": false,
+  "Steps": [
+    {
+      "Id": "main",
+      "Note": "把晨钟镇取得的治疗物资带回 home_01",
+      "Commands": [
+        {
+          "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
+          "TextLines": [
+            {
+              "Speaker": "埃蒙",
+              "Content": "这些敷剂来得正是时候。先给伤得最重的人用，剩下的我会让人收好。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "城里还能买到更多，但这批足够让他们撑过眼下了。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "埃蒙",
+              "Content": "村子欠你一次。等伤员稳下来，我再把周围几条路的情况都告诉你。",
+              "VoiceLine": null
+            }
+          ],
+          "Speaker": null,
+          "Content": null,
+          "VoiceLine": null
+        }
+      ]
+    }
+  ]
+}

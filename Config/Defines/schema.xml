@@ -115,6 +115,9 @@
 		<var name="HumanTechUnlockedCount" value="9"/>
 		<var name="ControlledTownCount" value="10"/>
 		<var name="NamedNpcLocalSwitch" value="11"/>
+		<var name="CultTechNodeLevel" value="12"/>
+		<var name="CultAttributeAtLeast" value="13"/>
+		<var name="StatAtLeast" value="14"/>
     </enum>
 
     <enum name="ESecretBaseCharacterOptionAction">
@@ -223,25 +226,30 @@
         <var name="None" value="0"/>
         <var name="Mouth" value="1"/>
         <var name="Breast" value="2"/>
-        <var name="Womb" value="3"/>
-        <var name="Tail" value="4"/>
-        <var name="Wing" value="5"/>
-        <var name="Skin" value="6"/>
+        <var name="FrontHole" value="3"/>
+        <var name="BackHole" value="4"/>
+        <var name="Limb" value="5"/>
     </enum>
+
+    <!-- Part Gear 与身体交互部位共用五类初版部位；Limb 的 GearPoint 永远为 0。 -->
 
     <enum name="EPartLocalAttribute">
         <var name="None" value="0"/>
         <var name="Sensitivity" value="1"/>
         <var name="Endurance" value="2"/>
         <var name="FluidGain" value="3"/>
-        <var name="ControlResist" value="4"/>
+        <!-- 4 原 ControlResist 已删，勿复用避免旧档错读 -->
         <var name="AuraLeak" value="5"/>
+        <!-- 与全身 HTechnique/HStrength 同量纲；仅当前接触部位生效 -->
+        <var name="HTechnique" value="6"/>
+        <var name="HStrength" value="7"/>
     </enum>
 
     <bean name="PartLocalStatBonus" tags="sep=,">
         <var name="attr_id" type="int" comment="EPartLocalAttribute 整型"/>
         <var name="val" type="long" comment="固定加成"/>
     </bean>
+
 
     <!-- 战斗技能（原 SkillLibrary 硬编码，与 Config.Unit.EntitySkillCfg 字段对应） -->
     <enum name="ESkillCastConditionType">

@@ -1,5 +1,14 @@
 [
   {
+    "facility_id": "market",
+    "level": 1,
+    "display_name": "市集 1级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
     "facility_id": "elder_hall",
     "level": 1,
     "display_name": "初建",
@@ -217,6 +226,42 @@
     ]
   },
   {
+    "facility_id": "market",
+    "level": 2,
+    "display_name": "市集 2级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "market",
+    "level": 3,
+    "display_name": "市集 3级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "market",
+    "level": 4,
+    "display_name": "市集 4级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
+    "facility_id": "market",
+    "level": 5,
+    "display_name": "市集 5级",
+    "desc": "提升市集经营能力",
+    "unlock_conds": [],
+    "unlock_costs": [],
+    "daily_outputs": []
+  },
+  {
     "facility_id": "tavern",
     "level": 1,
     "display_name": "起建",
@@ -330,110 +375,5 @@
         "count": 18
       }
     ]
-  },
-  {
-    "facility_id": "market",
-    "level": 1,
-    "display_name": "市集 1级",
-    "desc": "提升市集经营能力",
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "output_interval": 1,
-    "output_items": [],
-    "effects": []
-  },
-  {
-    "facility_id": "market",
-    "level": 2,
-    "display_name": "市集 2级",
-    "desc": "提升市集经营能力",
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "output_interval": 1,
-    "output_items": [],
-    "effects": []
-  },
-  {
-    "facility_id": "market",
-    "level": 3,
-    "display_name": "市集 3级",
-    "desc": "提升市集经营能力",
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "output_interval": 1,
-    "output_items": [],
-    "effects": []
-  },
-  {
-    "facility_id": "market",
-    "level": 4,
-    "display_name": "市集 4级",
-    "desc": "提升市集经营能力",
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "output_interval": 1,
-    "output_items": [],
-    "effects": []
-  },
-  {
-    "facility_id": "market",
-    "level": 5,
-    "display_name": "市集 5级",
-    "desc": "提升市集经营能力",
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "output_interval": 1,
-    "output_items": [],
-    "effects": []
-  },
-  {
-    "facility_id": "farm_station",
-    "level": 1,
-    "display_name": "复耕小站",
-    "desc": "管理农田、种子与收获仓库；建成后镇民可协助浇水施肥",
-    "unlock_conds": [
-      {
-        "type": 2,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "home_01.hearth_stable",
-        "param6": ""
-      }
-    ],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 20
-      },
-      {
-        "item_id": "stone",
-        "count": 10
-      }
-    ],
-    "daily_outputs": []
-  },
-  {
-    "facility_id": "farm_station",
-    "level": 2,
-    "display_name": "扩展仓",
-    "desc": "提高派工收割效率",
-    "unlock_conds": [],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 40
-      },
-      {
-        "item_id": "stone",
-        "count": 20
-      },
-      {
-        "item_id": "gold",
-        "count": 100
-      }
-    ],
-    "daily_outputs": []
   }
 ]

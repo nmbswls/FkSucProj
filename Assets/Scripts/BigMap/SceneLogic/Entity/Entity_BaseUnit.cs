@@ -1695,12 +1695,6 @@ namespace My.Map
 
         }
 
-        // H 类 HP：默认不改；玩家可按 HitPart / HStrength_Pipeline 做部位修正
-        protected virtual long AdjustHCategoryHpDamage(long rawDmg, ResourceDeltaIntent intent)
-        {
-            return rawDmg;
-        }
-
         protected virtual long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
         {
             long delta = intent.delta;
@@ -1712,10 +1706,18 @@ namespace My.Map
                     return 0;
                 }
 
-                // HAct 派生 H 伤害：默认纯扣血；子类可按 HitPart 读部位 HStrength
+                // H / 非 H 均走 DamagePipeline；H 类在管线内读 HStrength_Pipeline，跳过护甲
                 if (intent.DmgCategory == EDmgCategory.H)
                 {
-                    var hDmg = AdjustHCategoryHpDamage(Math.Abs(delta), intent);
+                    var hResolved = DamagePipeline.ResolveHpDeltaCore(
+                        delta,
+                        intent.DmgCategory,
+                        intent,
+                        () => 0,
+                        () => 0,
+                        () => 0,
+                        () => 0);
+                    var hDmg = Math.Abs(hResolved);
                     OnDamageBeforeFinalReduce(hDmg, intent);
                     return -hDmg;
                 }

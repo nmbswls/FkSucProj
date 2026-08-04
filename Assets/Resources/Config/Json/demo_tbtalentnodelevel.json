@@ -3,17 +3,7 @@
     "node_id": 1,
     "level": 1,
     "prereq_node_ids": [],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
+    "unlock_conds": [],
     "unlock_costs": [
       {
         "item_id": "desire_shard",
@@ -22,28 +12,38 @@
     ],
     "stat_bonuses": [
       {
-        "attr_id": 3,
+        "attr_id": 20,
         "human_attr_id": 0,
-        "val": 5000
+        "val": 600
       }
     ],
-    "passive_skill_id": "talent_expose_charm"
+    "passive_skill_id": ""
   },
   {
-    "node_id": 2,
+    "node_id": 1,
     "level": 2,
     "prereq_node_ids": [],
-    "unlock_conds": [
+    "unlock_conds": [],
+    "unlock_costs": [
       {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
+        "item_id": "desire_shard",
+        "count": 400
       }
     ],
+    "stat_bonuses": [
+      {
+        "attr_id": 20,
+        "human_attr_id": 0,
+        "val": 700
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 1,
+    "level": 3,
+    "prereq_node_ids": [],
+    "unlock_conds": [],
     "unlock_costs": [
       {
         "item_id": "desire_shard",
@@ -52,129 +52,7 @@
     ],
     "stat_bonuses": [
       {
-        "attr_id": 3,
-        "human_attr_id": 0,
-        "val": 10000
-      }
-    ],
-    "passive_skill_id": "talent_expose_charm"
-  },
-  {
-    "node_id": 3,
-    "level": 3,
-    "prereq_node_ids": [],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
-    "unlock_costs": [
-      {
-        "item_id": "desire_shard",
-        "count": 5000
-      }
-    ],
-    "stat_bonuses": [
-      {
-        "attr_id": 3,
-        "human_attr_id": 0,
-        "val": 15000
-      }
-    ],
-    "passive_skill_id": "talent_expose_charm"
-  },
-  {
-    "node_id": 4,
-    "level": 4,
-    "prereq_node_ids": [],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
-    "unlock_costs": [
-      {
-        "item_id": "desire_shard",
-        "count": 10000
-      }
-    ],
-    "stat_bonuses": [
-      {
-        "attr_id": 3,
-        "human_attr_id": 0,
-        "val": 20000
-      }
-    ],
-    "passive_skill_id": "talent_expose_charm"
-  },
-  {
-    "node_id": 5,
-    "level": 5,
-    "prereq_node_ids": [],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
-    "unlock_costs": [
-      {
-        "item_id": "desire_shard",
-        "count": 50000
-      }
-    ],
-    "stat_bonuses": [
-      {
-        "attr_id": 3,
-        "human_attr_id": 0,
-        "val": 25000
-      }
-    ],
-    "passive_skill_id": "talent_expose_charm"
-  },
-  {
-    "node_id": 2,
-    "level": 1,
-    "prereq_node_ids": [
-      1
-    ],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
-    "unlock_costs": [
-      {
-        "item_id": "wood",
-        "count": 2
-      }
-    ],
-    "stat_bonuses": [
-      {
-        "attr_id": 4,
+        "attr_id": 20,
         "human_attr_id": 0,
         "val": 800
       }
@@ -182,33 +60,67 @@
     "passive_skill_id": ""
   },
   {
-    "node_id": 3,
+    "node_id": 2,
     "level": 1,
     "prereq_node_ids": [
       1
     ],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
+    "unlock_conds": [],
     "unlock_costs": [
       {
-        "item_id": "stick",
-        "count": 1
+        "item_id": "desire_shard",
+        "count": 500
       }
     ],
     "stat_bonuses": [
       {
-        "attr_id": 3,
+        "attr_id": 20,
         "human_attr_id": 0,
-        "val": 600
+        "val": 800
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 2,
+    "level": 2,
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 1200
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 20,
+        "human_attr_id": 0,
+        "val": 900
+      }
+    ],
+    "passive_skill_id": ""
+  },
+  {
+    "node_id": 2,
+    "level": 3,
+    "prereq_node_ids": [
+      1
+    ],
+    "unlock_conds": [],
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 2500
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 20,
+        "human_attr_id": 0,
+        "val": 1000
       }
     ],
     "passive_skill_id": ""
@@ -219,105 +131,65 @@
     "prereq_node_ids": [
       2
     ],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
+    "unlock_conds": [],
     "unlock_costs": [
       {
-        "item_id": "wood",
-        "count": 1
-      },
-      {
-        "item_id": "stick",
-        "count": 1
+        "item_id": "desire_shard",
+        "count": 1000
       }
     ],
     "stat_bonuses": [
       {
-        "attr_id": 5,
+        "attr_id": 20,
         "human_attr_id": 0,
-        "val": 700
-      },
-      {
-        "attr_id": 4,
-        "human_attr_id": 0,
-        "val": 400
+        "val": 1000
       }
     ],
     "passive_skill_id": ""
   },
   {
-    "node_id": 5,
-    "level": 1,
+    "node_id": 4,
+    "level": 2,
     "prereq_node_ids": [
-      2,
-      3
+      2
     ],
-    "unlock_conds": [
-      {
-        "type": 0,
-        "param1": 0,
-        "param2": 0,
-        "param3": 0,
-        "param4": 0,
-        "param5": "",
-        "param6": ""
-      }
-    ],
+    "unlock_conds": [],
     "unlock_costs": [
       {
-        "item_id": "gold",
-        "count": 5
+        "item_id": "desire_shard",
+        "count": 2500
       }
     ],
     "stat_bonuses": [
       {
-        "attr_id": 2,
+        "attr_id": 20,
         "human_attr_id": 0,
-        "val": 500
-      },
-      {
-        "attr_id": 5,
-        "human_attr_id": 0,
-        "val": 300
+        "val": 1100
       }
     ],
     "passive_skill_id": ""
   },
   {
-    "node_id": 11,
-    "level": 1,
-    "prereq_node_ids": [],
+    "node_id": 4,
+    "level": 3,
+    "prereq_node_ids": [
+      2
+    ],
     "unlock_conds": [],
-    "unlock_costs": [],
-    "stat_bonuses": [],
-    "passive_skill_id": "ex_zhazhi_01"
-  },
-  {
-    "node_id": 12,
-    "level": 1,
-    "prereq_node_ids": [],
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "stat_bonuses": [],
-    "passive_skill_id": "ex_zhazhi_02"
-  },
-  {
-    "node_id": 13,
-    "level": 1,
-    "prereq_node_ids": [],
-    "unlock_conds": [],
-    "unlock_costs": [],
-    "stat_bonuses": [],
-    "passive_skill_id": "ex_zhazhi_03"
+    "unlock_costs": [
+      {
+        "item_id": "desire_shard",
+        "count": 5000
+      }
+    ],
+    "stat_bonuses": [
+      {
+        "attr_id": 20,
+        "human_attr_id": 0,
+        "val": 1200
+      }
+    ],
+    "passive_skill_id": ""
   },
   {
     "node_id": 101,
@@ -337,7 +209,7 @@
     "unlock_costs": [],
     "stat_bonuses": [
       {
-        "attr_id": 12,
+        "attr_id": 40,
         "human_attr_id": 0,
         "val": 100
       }
