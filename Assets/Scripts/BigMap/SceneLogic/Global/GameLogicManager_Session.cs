@@ -1,6 +1,8 @@
 
 using My.Map;
 using My.Map.Entity;
+using My.Map.Fight;
+using My.Map.Unit;
 using My.UI;
 
 namespace My
@@ -139,6 +141,23 @@ namespace My
         }
 
         private float _peaceModeTimer = 0;
+        private bool _playerCombatEngaged;
+
+        public void NotifyPlayerCombatEntered(long sourceEntityId = 0)
+        {
+            if (playerLogicEntity == null || _playerCombatEngaged)
+            {
+                return;
+            }
+
+            _playerCombatEngaged = true;
+            playerLogicEntity.TryInterrupt(new FightStruct.InterruptRequest
+            {
+                source = FightStruct.EInterruptSource.CombatEnter,
+                priority = 80,
+                payload = sourceEntityId,
+            });
+        }
 
         private void TickPeaceMode()
         {
@@ -156,6 +175,7 @@ namespace My
             if (playerLogicEntity == null || AreaManager == null)
             {
                 GameSession.IsPeaceful = true;
+                _playerCombatEngaged = false;
                 return;
             }
 
@@ -184,6 +204,7 @@ namespace My
             }
 
             GameSession.IsPeaceful = true;
+            _playerCombatEngaged = false;
         }
 
 
@@ -223,7 +244,40 @@ namespace My
             }
 
             RefreshPlayerMagicClothesAndExposeForCurrentMode();
+            if (human)
+            {
+                ClearHumanModeHostility();
+            }
             NotifyHumanQuickBarStateChanged();
+        }
+
+        void ClearHumanModeHostility()
+        {
+            var player = playerLogicEntity;
+            var loadedEntities = AreaManager?.Repo?.Loaded?.Values;
+            if (player == null || loadedEntities == null)
+            {
+                return;
+            }
+
+            foreach (var entity in loadedEntities)
+            {
+                if (entity is not NpcUnitLogicEntity npc
+                    || npc.AggroSystem == null
+                    || !npc.AggroSystem.RemoveTarget(player.Id))
+                {
+                    continue;
+                }
+
+                if (npc.AIBrain != null
+                    && (npc.AIBrain.CurrentState == npc.AIBrain.StateCombat
+                        || npc.AIBrain.CurrentState == npc.AIBrain.StateFlee))
+                {
+                    npc.AIBrain.ChangeState(npc.AIBrain.StateIdle);
+                }
+
+                npc.AIBrain?.TriggerUpdateImmediately();
+            }
         }
 
         public const string SavePointDesireShardItemId = "desire_shard";

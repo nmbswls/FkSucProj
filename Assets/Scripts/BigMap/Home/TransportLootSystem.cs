@@ -61,7 +61,7 @@ namespace My.Home
             }
 
             var overlay = _logic.AreaManager?.cacheMapOverlayCfg;
-            if (overlay == null || (!overlay.IsDangerArea && !overlay.HuntingTarget))
+            if (overlay == null || (!overlay.IsDangerArea && !overlay.IsMagicSensitiveArea))
             {
                 failReason = "not_scavenge_map";
                 return false;

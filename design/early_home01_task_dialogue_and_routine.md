@@ -37,7 +37,7 @@
 
 自我封印不占用任务 id，也不新增“仪式任务”。它发生在任务 `204` 灰露草交付后的剧情停顿点；此时下一环 `205` 已引导玩家去找埃蒙，由地图必经 Trigger 和三段 Dialog 串联：
 
-1. `home_01_self_seal_collapse`：灰露棚与埃蒙站位之间的 Trigger 检查 `TaskFinish 204`，播放莉莉丝 `knocked_down` 动作，写入 `home_01.self_seal_plan_known`，随后静默传送到 `homestead_01 / bedroom_in_entry`。
+1. `home_01_self_seal_collapse`：灰露棚与埃蒙站位之间的窄长 Trigger 检查 `TaskFinish 204`。触发带不得覆盖灰露草交付 NPC 的交互站位，避免玩家仍在任务面板中时抢播；玩家向埃蒙移动时播放莉莉丝 `knocked_down` 动作，写入 `home_01.self_seal_plan_known`，随后静默传送到 `homestead_01 / bedroom_in_entry`。
 2. `home_01_self_seal_briefing`：房间 Trigger 在玩家抵达后播放咕啾说明，写入 `home_01.self_seal_briefed`，引导玩家寻找卡莱尔。
 3. `home_01_self_seal_carlisle`：以高优先级 NPC 对话绑定到 `game_init_carlisle_awake`。H 正文和演出保留空位；收尾先写入 `player.human_form_unlocked`，再切换到 Human。
 

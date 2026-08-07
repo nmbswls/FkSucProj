@@ -92,6 +92,7 @@ namespace My.Map.Entity
         Move = 1 << 1, // 普通受击
         Cancel = 1 << 2, // 普通取消
         Cast = 1 << 3,
+        Combat = 1 << 4,
     }
 
 

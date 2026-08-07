@@ -231,6 +231,11 @@ namespace My.Map.Unit
         public bool IsEnmityWith(BaseUnitLogicEntity otherUnit)
         {
 
+            if (otherUnit is PlayerLogicEntity player && player.LogicManager.PlayerHumanMode)
+            {
+                return false;
+            }
+
             if(CheckIsEmnityFaction(otherUnit.FactionId))
             {
                 return true;
@@ -242,11 +247,6 @@ namespace My.Map.Unit
                 && UnitEntity.IsInCombat)
             {
                 return true;
-            }
-
-            if(UnitEntity.LogicManager.GameSession.PlayerHumanMode)
-            {
-                return false;
             }
 
             if (UnitEntity.FactionId == EFactionId.Ally

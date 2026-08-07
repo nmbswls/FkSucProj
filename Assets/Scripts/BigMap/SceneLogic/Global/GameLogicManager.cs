@@ -200,6 +200,10 @@ namespace My
             BindSecretBaseOnInit();
 
             BeginFreeBigMapSession();
+            if (saveData?.GlobalRuntime?.IsInfiltrationRun == true)
+            {
+                BeginInfiltrationRunSession();
+            }
 
             MainStage = EMainGameStage.Initialized;
         }
@@ -223,6 +227,20 @@ namespace My
             }
 
             var targetArea = CfgMgr.Cfgs.TbAreaOverlayStateInfo.GetOrDefault(mapOverlayId);
+            if (targetArea == null)
+            {
+                Debug.LogError($"PlayerSwitchArea target overlay does not exist: {mapOverlayId}");
+                return;
+            }
+
+            if (!IsInfiltrationRun
+                && (targetArea.IsMagicSensitiveArea
+                    || (targetArea.IsCivilArea && targetArea.IsDangerArea)))
+            {
+                Debug.LogWarning($"PlayerSwitchArea rejected free entry to restricted overlay: {mapOverlayId}");
+                return;
+            }
+
             if (IsInfiltrationRun)
             {
                 ForcePlayerHumanMode(false);
@@ -934,6 +952,7 @@ namespace My
             if (saveData.GlobalRuntime != null)
             {
                 AlertVal = saveData.GlobalRuntime.AlertVal;
+                GameSession.PlayerHumanMode = saveData.GlobalRuntime.PlayerHumanMode && IsHumanFormUnlocked();
                 SettlementDayIndex = saveData.GlobalRuntime.SettlementDayIndex;
                 GameSession.SPDesireShardDeposited = saveData.GlobalRuntime.SavePointVaultDesireShardDepositedThisRun;
                 WantedManager.LastWantedTime = saveData.GlobalRuntime.WantedLastTime;
@@ -944,6 +963,7 @@ namespace My
             }
             else
             {
+                GameSession.PlayerHumanMode = false;
                 SettlementDayIndex = 0;
                 GameSession.SPDesireShardDeposited = 0;
             }
@@ -1034,6 +1054,8 @@ namespace My
 
             data.GlobalRuntime ??= new GlobalRuntimePersistData();
             data.GlobalRuntime.AlertVal = AlertVal;
+            data.GlobalRuntime.PlayerHumanMode = GameSession.PlayerHumanMode;
+            data.GlobalRuntime.IsInfiltrationRun = GameSession.IsInfiltrationRun;
             data.GlobalRuntime.WantedScaledVal = WantedManager != null ? WantedManager.CurrentWantedVal : 0;
             data.GlobalRuntime.WantedLastTime = WantedManager != null ? WantedManager.LastWantedTime : 0f;
             data.GlobalRuntime.WantedChannels = WantedManager != null ? WantedManager.ExportToPersist() : null;

@@ -254,6 +254,14 @@ public partial class Tables
     /// 抽象团体阶段奖励
     /// </summary>
     public demo.TbAbstractGroupStageReward TbAbstractGroupStageReward {get; }
+    /// <summary>
+    /// 入梦路人区域
+    /// </summary>
+    public demo.TbDreamPasserbyRegion TbDreamPasserbyRegion {get; }
+    /// <summary>
+    /// 入梦抽象路人
+    /// </summary>
+    public demo.TbDreamPasserby TbDreamPasserby {get; }
 
     public Tables(System.Func<string, JSONNode> loader)
     {
@@ -407,6 +415,8 @@ public partial class Tables
         TbAbstractGroup = new demo.TbAbstractGroup(loader("demo_tbabstractgroup"));
         TbAbstractGroupStage = new demo.TbAbstractGroupStage(loader("demo_tbabstractgroupstage"));
         TbAbstractGroupStageReward = new demo.TbAbstractGroupStageReward(loader("demo_tbabstractgroupstagereward"));
+        TbDreamPasserbyRegion = new demo.TbDreamPasserbyRegion(loader("demo_tbdreampasserbyregion"));
+        TbDreamPasserby = new demo.TbDreamPasserby(loader("demo_tbdreampasserby"));
         ResolveRef();
     }
     
@@ -562,6 +572,8 @@ public partial class Tables
         TbAbstractGroup.ResolveRef(this);
         TbAbstractGroupStage.ResolveRef(this);
         TbAbstractGroupStageReward.ResolveRef(this);
+        TbDreamPasserbyRegion.ResolveRef(this);
+        TbDreamPasserby.ResolveRef(this);
     }
 }
 

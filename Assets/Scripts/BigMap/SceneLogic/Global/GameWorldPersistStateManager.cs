@@ -109,6 +109,7 @@ namespace My
             NpcCharacters.LoadFromSave(savingData?.PlayerData?.NpcCharacterPersistByKey);
 
             AbstractGroupDreamService.LoadFromSave(savingData?.PlayerData);
+            DreamPasserbyService.LoadFromSave(savingData?.PlayerData);
 
             MapInteractPoints.LoadFromSave(savingData?.PlayerData?.InteractPointByUniqName);
 
@@ -296,6 +297,7 @@ namespace My
             data.PlayerData.JingYuanPoolStored = Math.Max(0, _jingYuanPoolStored);
 
             AbstractGroupDreamService.ApplyToSave(data.PlayerData);
+            DreamPasserbyService.ApplyToSave(data.PlayerData);
 
             data.TownDevelopmentById ??= new Dictionary<string, TownDevelopmentPersist>();
             data.TownDevelopmentById.Clear();

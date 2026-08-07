@@ -568,5 +568,29 @@
     "ability_extra": [],
     "main_ability_id": "",
     "passive_buff_ids": []
+  },
+  {
+    "skill_id": "magic_orb_self_destruct",
+    "level": 1,
+    "cool_down": 999,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "magic_orb_shell_passive",
+    "level": 1,
+    "cool_down": 0,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
+  },
+  {
+    "skill_id": "magic_orb_summon",
+    "level": 1,
+    "cool_down": 1,
+    "ability_extra": [],
+    "main_ability_id": "",
+    "passive_buff_ids": []
   }
 ]

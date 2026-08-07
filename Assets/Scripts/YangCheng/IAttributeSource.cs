@@ -99,6 +99,7 @@ namespace My.Player
         void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output);
     }
 
+
     public enum EProgressionModule
     {
         None,
@@ -189,6 +190,27 @@ namespace My.Player
                 else if (child is ProgressionAggregator agg)
                 {
                     agg.CollectContributedSkills(applied, output);
+                }
+            }
+        }
+
+        public void CollectSkillModifiers(List<SkillModifierSpec> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < _children.Count; i++)
+            {
+                var child = _children[i];
+                if (child is IProgressionSkillModifierSource modifierSource)
+                {
+                    modifierSource.CollectSkillModifiers(output);
+                }
+                else if (child is ProgressionAggregator agg)
+                {
+                    agg.CollectSkillModifiers(output);
                 }
             }
         }

@@ -9,6 +9,14 @@ namespace My.MiniGame.Dream
             if (payload == null) return;
 
             var glm = MainGameManager.Instance?.gameLogicManager;
+            if (payload.EntrySource == DreamEntrySourceKind.PasserbyEntry)
+            {
+                var note = DreamPasserbyService.ApplySettlement(glm, payload);
+                if (!string.IsNullOrEmpty(note))
+                    payload.ExtraSettlementNote = note;
+                return;
+            }
+
             if (payload.EntrySource == DreamEntrySourceKind.CharacterEntry)
             {
                 if (string.IsNullOrEmpty(payload.CharacterKey) || payload.CharDreamEntryId <= 0) return;
@@ -18,6 +26,7 @@ namespace My.MiniGame.Dream
                     payload.CharDreamEntryId,
                     payload.Won,
                     payload.VictoryTendency);
+                payload.ExtraSettlementNote = DreamEntryRewardSemantics.ApplyCharacterOutcomeNote(payload);
                 return;
             }
 
@@ -25,9 +34,7 @@ namespace My.MiniGame.Dream
             {
                 var note = AbstractGroupDreamService.ApplySettlement(glm, payload);
                 if (!string.IsNullOrEmpty(note))
-                {
                     payload.ExtraSettlementNote = note;
-                }
             }
         }
     }

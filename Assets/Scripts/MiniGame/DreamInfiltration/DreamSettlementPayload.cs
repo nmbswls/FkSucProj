@@ -8,8 +8,10 @@ namespace My.MiniGame.Dream
         public int SoothingScore;
         public int TrickScore;
 
-        public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.FacilitySpot;
+        public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.PasserbyEntry;
         public string SpotId = "";
+        public string PasserbyId = "";
+        public string PasserbyRegionId = "";
         public string CharacterKey = "";
         public int CharDreamEntryId;
         public string AbstractGroupId = "";

@@ -20,6 +20,7 @@ namespace Map.Logic.Events
         Attract,
         VariableChange,
         UnitDie,
+        BossEncounterDefeated,
 
         CostPendingAlert,
         ObjWithOwnerDestroyed,

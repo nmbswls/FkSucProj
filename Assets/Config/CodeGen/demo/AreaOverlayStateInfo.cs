@@ -30,7 +30,7 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         { if(!_buf["always_alert"].IsBoolean) { throw new SerializationException(); }  AlwaysAlert = _buf["always_alert"]; }
         { if(!_buf["is_civil_area"].IsBoolean) { throw new SerializationException(); }  IsCivilArea = _buf["is_civil_area"]; }
         { if(!_buf["is_danger_area"].IsBoolean) { throw new SerializationException(); }  IsDangerArea = _buf["is_danger_area"]; }
-        { if(!_buf["hunting_target"].IsBoolean) { throw new SerializationException(); }  HuntingTarget = _buf["hunting_target"]; }
+        { if(!_buf["is_magic_sensitive_area"].IsBoolean) { throw new SerializationException(); }  IsMagicSensitiveArea = _buf["is_magic_sensitive_area"]; }
         { var __json0 = _buf["hunting_unlock_conds"]; if(!__json0.IsArray) { throw new SerializationException(); } HuntingUnlockConds = new System.Collections.Generic.List<demo.CommonCheckCond>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.CommonCheckCond __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.CommonCheckCond.DeserializeCommonCheckCond(__e0);  }  HuntingUnlockConds.Add(__v0); }   }
         { if(!_buf["procedural_def_id"].IsString) { throw new SerializationException(); }  ProceduralDefId = _buf["procedural_def_id"]; }
         { if(!_buf["peace_zone_mark"].IsBoolean) { throw new SerializationException(); }  PeaceZoneMark = _buf["peace_zone_mark"]; }
@@ -100,9 +100,9 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
     /// </summary>
     public bool IsDangerArea;
     /// <summary>
-    /// 是否是出击目标
+    /// 是否为魔力敏感区<br/>仅能通过搜打撤/潜入进入，并作为出击目标
     /// </summary>
-    public bool HuntingTarget;
+    public bool IsMagicSensitiveArea;
     /// <summary>
     /// 解锁条件
     /// </summary>
@@ -179,7 +179,7 @@ public sealed partial class AreaOverlayStateInfo : Luban.BeanBase
         + "alwaysAlert:" + AlwaysAlert + ","
         + "isCivilArea:" + IsCivilArea + ","
         + "isDangerArea:" + IsDangerArea + ","
-        + "huntingTarget:" + HuntingTarget + ","
+        + "isMagicSensitiveArea:" + IsMagicSensitiveArea + ","
         + "huntingUnlockConds:" + Luban.StringUtil.CollectionToString(HuntingUnlockConds) + ","
         + "proceduralDefId:" + ProceduralDefId + ","
         + "peaceZoneMark:" + PeaceZoneMark + ","

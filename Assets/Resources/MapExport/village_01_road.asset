@@ -68,7 +68,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 1434717634226814986
+      rid: 1434717637607948298
   - StaticId: 101
     UniqName: village_01_road_slime_02
     AppearCond:
@@ -96,7 +96,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 1434717634226814987
+      rid: 1434717637607948299
   - StaticId: 102
     UniqName: village_01_road_slime_01
     AppearCond:
@@ -124,7 +124,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 1434717634226814988
+      rid: 1434717637607948300
   - StaticId: 103
     UniqName: teleporter_to_village_01
     AppearCond:
@@ -152,7 +152,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 1434717634226814989
+      rid: 1434717637607948301
   - StaticId: 104
     UniqName: teleporter_to_home
     AppearCond:
@@ -180,7 +180,7 @@ MonoBehaviour:
     DungeonNodeId: -1
     SpawnPolicy: 0
     InitInfo:
-      rid: 1434717634226814990
+      rid: 1434717637607948302
   NamedPoints:
   - Name: village_01_road_to_town
     PointType: 0
@@ -206,7 +206,7 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 1434717634226814986
+    - rid: 1434717637607948298
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -222,7 +222,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 1434717634226814987
+    - rid: 1434717637607948299
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -238,7 +238,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 1434717634226814988
+    - rid: 1434717637607948300
       type: {class: EntityInitInfo4Npc, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: slime_green
@@ -254,7 +254,7 @@ MonoBehaviour:
         CharacterKey: 
         PatrolPortalNetworkId: 
         PatrolCycleNodeIds: []
-    - rid: 1434717634226814989
+    - rid: 1434717637607948301
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -262,9 +262,9 @@ MonoBehaviour:
         FaceDir: {x: 0, y: 1}
         BindRoomId: 
         OrgFactionId: 0
-        TargetMapName: village_01
+        TargetMapName: village_01_d
         TargetNamedPoint: entry_bottom
-    - rid: 1434717634226814990
+    - rid: 1434717637607948302
       type: {class: EntityInitInfo4Teleporter, ns: My.MapExport, asm: Assembly-CSharp}
       data:
         CfgId: 
@@ -273,4 +273,4 @@ MonoBehaviour:
         BindRoomId: 
         OrgFactionId: 0
         TargetMapName: homestead_01
-        TargetNamedPoint: entry_01
+        TargetNamedPoint: home_01_road_return

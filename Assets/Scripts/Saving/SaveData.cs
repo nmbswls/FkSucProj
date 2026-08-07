@@ -114,6 +114,7 @@ namespace My.Saving
         // 抽象团体（小团体）入梦进度与日刷/日限
         public Dictionary<string, AbstractGroupPersist> AbstractGroupById = new();
         public AbstractGroupDailyRefreshPersist AbstractGroupDailyRefresh = new();
+        public DreamPasserbyDailyRefreshPersist DreamPasserbyDailyRefresh = new();
         public DreamDailyLimitPersist DreamDailyLimit = new();
 
         public Dictionary<string, MapRumorPersist> MapRumorByMapId = new();
@@ -328,6 +329,22 @@ namespace My.Saving
         public bool DreamUsedToday;
     }
 
+    [Serializable]
+    public class DreamPasserbyDailyEntryPersist
+    {
+        public string PasserbyId = string.Empty;
+        public string RegionId = string.Empty;
+        public float AnchorX = 0.5f;
+        public float AnchorY = 0.5f;
+    }
+
+    [Serializable]
+    public class DreamPasserbyDailyRefreshPersist
+    {
+        public int SettlementDayIndex = -1;
+        public List<DreamPasserbyDailyEntryPersist> Entries = new();
+    }
+
     // 主背包单格稀疏持久化：仅存占格条目，使用 SlotIndex（与 PlayerBag.GetItemByIdx 平面下标一致）
     [Serializable]
     public class MainBagSlotPersist
@@ -386,6 +403,12 @@ namespace My.Saving
     public class GlobalRuntimePersistData
     {
         public int AlertVal;
+
+        /// <summary>当前玩家形态；解锁资格仍由 player.human_form_unlocked 决定。</summary>
+        public bool PlayerHumanMode;
+
+        /// <summary>是否正在搜打撤/潜入会话；读档时用于恢复受限地图的合法入口上下文。</summary>
+        public bool IsInfiltrationRun;
 
         /// <summary>兼容旧档：effective 通缉（各通道 max）的镜像，便于排查。</summary>
         public int WantedScaledVal;
@@ -462,6 +485,14 @@ namespace My.Saving
     }
 
     [Serializable]
+    public class BossEncounterRuntimePersist
+    {
+        public string EncounterId;
+        public bool Defeated;
+        public int CompletionCount;
+    }
+
+    [Serializable]
     public class RumorActiveEntry
     {
         public string RumorId;
@@ -499,6 +530,7 @@ namespace My.Saving
         public long AreaAlertValue;
 
         public List<RefreshRuntimePersist> RefreshStates = new();
+        public List<BossEncounterRuntimePersist> BossEncounterStates = new();
 
         public Dictionary<long, int> RecordToRefreshStaticId = new();
 
@@ -534,6 +566,13 @@ namespace My.Saving
         public int LastTransportSettlementDay = -1;
         public int LastTransportRecoveredStackCount;
         public int LastTransportLostStackCount;
+    }
+
+    [Serializable]
+    public class AncientWorldProgressPersist
+    {
+        public int Stage;
+        public List<string> Milestones = new();
     }
 
     [Serializable]
@@ -754,6 +793,9 @@ namespace My.Saving
         // Global human civilization progress, separate from player-owned progression.
         public HumanCivilizationPersist HumanCivilization = new();
 
+        // Persistent world progression for ancient entities; independent from human civilization.
+        public AncientWorldProgressPersist AncientWorldProgress = new();
+
         // 教团：信仰 + 布道/教义节点
         public DemonCultPersist DemonCult = new();
 
@@ -795,6 +837,8 @@ namespace My.Saving
             data.Meta ??= new MetaData();
             data.PlayerData ??= new PlayerData();
             data.HumanCivilization ??= new HumanCivilizationPersist();
+            data.AncientWorldProgress ??= new AncientWorldProgressPersist();
+            data.AncientWorldProgress.Milestones ??= new List<string>();
             data.HumanCivilization.TechNodes ??= new List<HumanTechNodeLevelPersist>();
             data.HumanCivilization.MarketListings ??= new List<MarketListingPersist>();
             data.HumanCivilization.TransportPendingItems ??= new List<TransportPendingItemPersist>();
@@ -841,6 +885,8 @@ namespace My.Saving
             data.PlayerData.TotalFallPeopleAmount = Math.Max(0, data.PlayerData.TotalFallPeopleAmount);
             data.PlayerData.AbstractGroupById ??= new Dictionary<string, AbstractGroupPersist>();
             data.PlayerData.AbstractGroupDailyRefresh ??= new AbstractGroupDailyRefreshPersist();
+            data.PlayerData.DreamPasserbyDailyRefresh ??= new DreamPasserbyDailyRefreshPersist();
+            data.PlayerData.DreamPasserbyDailyRefresh.Entries ??= new List<DreamPasserbyDailyEntryPersist>();
             data.PlayerData.DreamDailyLimit ??= new DreamDailyLimitPersist();
             data.PlayerData.MapRumorByMapId ??= new Dictionary<string, MapRumorPersist>();
             data.PlayerData.MicroPlotConsumedByKey ??= new Dictionary<string, bool>();
@@ -889,6 +935,7 @@ namespace My.Saving
             {
                 if (mapRuntime == null) continue;
                 mapRuntime.WantedPressureSessions ??= new List<WantedPressureSessionPersist>();
+                mapRuntime.BossEncounterStates ??= new List<BossEncounterRuntimePersist>();
             }
         }
 

@@ -189,6 +189,7 @@ namespace My.Player
             innerListener = new(this);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.Common, innerListener);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitDie, innerListener);
+            logicManager.LogicEventBus.Subscribe(EMapLogicEventType.BossEncounterDefeated, innerListener);
             logicManager.LogicEventBus.Subscribe(EMapLogicEventType.UnitUnsensored, innerListener);
         }
 
@@ -568,7 +569,18 @@ namespace My.Player
         {
             //QuestSystem.OnLogicEvent(evt);
 
-            if(evt is MLEUnitDie deadEvent)
+            if (evt is MLEBossEncounterDefeated bossEvent)
+            {
+                PlayerEventBus.Publish(new PlayerBossEncounterDefeatedEvent
+                {
+                    EncounterId = bossEvent.EncounterId,
+                    BossCfgId = bossEvent.BossCfgId,
+                    BossEntityId = bossEvent.BossEntityId,
+                    AncientWorldProgressKey = bossEvent.AncientWorldProgressKey,
+                    AncientWorldProgressStageDelta = bossEvent.AncientWorldProgressStageDelta,
+                });
+            }
+            else if(evt is MLEUnitDie deadEvent)
             {
                 logicManager.AreaManager.Repo.Records.TryGetValue(deadEvent.EntityId, out var logicRecord);
                 if(logicRecord == null)

@@ -69,6 +69,8 @@ namespace My.Map.Logic
             PrepareForPersistenceSnapshot();
 
             var d = new MapRuntimePersistData { AreaAlertValue = AreaAlertValue };
+            d.BossEncounterStates = BossEncounters?.BuildPersistedState()
+                ?? new List<BossEncounterRuntimePersist>();
 
             foreach (var kv in RefreshInfoRuntimes)
             {
@@ -174,6 +176,7 @@ namespace My.Map.Logic
             }
 
             AreaAlertValue = data.AreaAlertValue;
+            BossEncounters?.ApplyPersistedState(data.BossEncounterStates);
 
             RefreshInfoRuntimes.Clear();
             foreach (var r in data.RefreshStates)

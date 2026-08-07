@@ -38,7 +38,7 @@
   {
     "entry_id": 6,
     "school_id": 2,
-    "display_name": "能量球召唤",
+    "display_name": "制造魔能球",
     "learn_conds": [],
     "skill_id": "orb_skill_summon",
     "skill_level": 1,

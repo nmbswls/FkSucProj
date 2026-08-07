@@ -37,10 +37,12 @@ namespace My.Map.Unit
         }
 
         private readonly Dictionary<long, HostileInfo> _threatTable = new Dictionary<long, HostileInfo>();
+        private bool _lockTargetToSelf;
 
         public long CurrentTargetId { get; private set; } = 0;
         public Vector2? LastKnownTargetPos { get; protected set; } = null;
         public bool HasHostile => CurrentTargetId != 0 && _threatTable.Count > 0;
+        public bool IsTargetLockedToSelf => _lockTargetToSelf;
         public bool CombatEngaged { get; private set; }
 
         float SharedThreatFloor => BaseSightThreat * SharedThreatRatio;
@@ -57,6 +59,12 @@ namespace My.Map.Unit
             if (_mode == EAggroMode.Player)
             {
                 TickPlayerCombatLog();
+                return;
+            }
+
+            if (_lockTargetToSelf)
+            {
+                MaintainLockedTarget();
                 return;
             }
 
@@ -94,6 +102,44 @@ namespace My.Map.Unit
             CombatEngaged = false;
             CurrentTargetId = 0;
             _clearCoolTimer = LogicTime.time + coolTime;
+            MaintainLockedTarget();
+        }
+
+        public void LockTargetToSelf()
+        {
+            _lockTargetToSelf = true;
+            _threatTable.Clear();
+            CurrentTargetId = 0;
+            LastKnownTargetPos = null;
+            MaintainLockedTarget();
+        }
+
+        public bool RemoveTarget(long targetId, float coolTime = 3.0f)
+        {
+            if (_lockTargetToSelf && targetId == _unit.Id)
+            {
+                return false;
+            }
+
+            if (targetId == 0 || !_threatTable.Remove(targetId))
+            {
+                return false;
+            }
+
+            if (CurrentTargetId == targetId)
+            {
+                CurrentTargetId = 0;
+                LastKnownTargetPos = null;
+                _unit.UnregisterGazeBySourceTag("Aggro");
+            }
+
+            if (_threatTable.Count == 0)
+            {
+                CombatEngaged = false;
+                _clearCoolTimer = LogicTime.time + coolTime;
+            }
+
+            return true;
         }
 
         public bool HasThreatEntry(long id)
@@ -165,6 +211,8 @@ namespace My.Map.Unit
                     LastKnownTargetPos = targetEntity.Pos;
                 }
             }
+
+            MaintainLockedTarget();
         }
 
         public bool HasSelfDamageThreat()
@@ -295,6 +343,12 @@ namespace My.Map.Unit
 
         public void OnTakeDamage(long attackerId, float amount)
         {
+            if (_lockTargetToSelf)
+            {
+                MaintainLockedTarget();
+                return;
+            }
+
             if (_unit.IsNoAggro()) return;
 
             if (_mode == EAggroMode.Player)
@@ -439,6 +493,7 @@ namespace My.Map.Unit
             if (_unit.LogicManager?.GameSession != null)
             {
                 _unit.LogicManager.GameSession.IsPeaceful = false;
+                _unit.LogicManager.NotifyPlayerCombatEntered(_unit.Id);
             }
         }
 
@@ -455,6 +510,32 @@ namespace My.Map.Unit
                 _threatTable[id] = info;
             }
             return info;
+        }
+
+        private void MaintainLockedTarget()
+        {
+            if (!_lockTargetToSelf)
+            {
+                return;
+            }
+
+            long targetId = _unit.Id;
+            var target = _unit.LogicManager.GetLogicEntity(targetId, false) as BaseUnitLogicEntity;
+            if (target == null || target.MarkDestroyed || target.IsDead)
+            {
+                _threatTable.Remove(targetId);
+                CurrentTargetId = 0;
+                LastKnownTargetPos = null;
+                CombatEngaged = false;
+                return;
+            }
+
+            var info = GetOrAddHostile(targetId);
+            info.LastInteractionTime = LogicTime.time;
+            info.IsVisible = true;
+            CurrentTargetId = targetId;
+            LastKnownTargetPos = target.Pos;
+            CombatEngaged = true;
         }
 
         private void CleanupInvalidTargets()

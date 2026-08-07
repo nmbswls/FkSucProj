@@ -13,7 +13,7 @@
 | 秘闻有效期 | `ExpireSettlementDay` | 在进入目标地图前允许保留的期限，不表示效果实体在地图中的存活时间。 |
 | 秘闻落点 | `ENamedPointType.RumorCandidate` | 地图导出的候选点；没有候选点时当前实现退化为玩家出生位置。 |
 | 秘闻效果 | `ERumorEffectType` | 当前支持额外宝箱 `Chest` 和特殊 NPC `Npc`。 |
-| 出发潜入界面 | `UIBedroomDeployPanel` | 选择 `HuntingTarget` 地图、打开秘闻购买面板并开始潜入。 |
+| 出发潜入界面 | `UIBedroomDeployPanel` | 选择 `IsMagicSensitiveArea` 地图、打开秘闻购买面板并开始潜入。 |
 | 秘闻购买面板 | `RumorIntelShopPanel` | 显示固定候选、随机候选和该目标地图的待生效秘闻。 |
 
 ## 当前数据流

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using cfg.demo;
 using My.Config;
+using My.Quest;
 using My.Saving;
 using My.UI.Talent;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace My.Player
     public class PlayerProgressionSystem : IPlayerSystem, ITalentProgressionContext
     {
         protected GameLogicManager LogicManager { get; private set; }
+        bool _bossEncounterEventsBound;
 
         public PlayerMain BaseStats { get; private set; }
         public PlayerGearManager GearManager { get; private set; }
@@ -53,6 +55,12 @@ namespace My.Player
             DemonCult = new DemonCultSystem();
             DemonCult.Initialize(ctx, savingData);
 
+            if (!_bossEncounterEventsBound)
+            {
+                PlayerEventBus.Subscribe<PlayerBossEncounterDefeatedEvent>(OnBossEncounterDefeated);
+                _bossEncounterEventsBound = true;
+            }
+
             GearManager = new PlayerGearManager();
             GearManager.InitializeAggregatorOnly();
 
@@ -89,6 +97,13 @@ namespace My.Player
             BindJingYuanEssenceSystem(owner?.JingYuanEssenceSystem);
         }
 
+        void OnBossEncounterDefeated(PlayerBossEncounterDefeatedEvent evt)
+        {
+            DemonCult?.TryApplyAncientWorldProgress(
+                evt.AncientWorldProgressKey,
+                evt.AncientWorldProgressStageDelta);
+        }
+
         // 养成侧技能贡献；优先级与历史被动装配一致：符文 > EventGrant
         public void CollectContributedSkills(HashSet<string> applied, List<(string skillId, int level)> output)
         {
@@ -100,6 +115,27 @@ namespace My.Player
             RuneAggregator?.CollectContributedSkills(applied, output);
             EventGrantAggregator?.CollectContributedSkills(applied, output);
             _boundJingYuanEssenceProvider?.CollectContributedSkills(applied, output);
+        }
+
+        public void CollectSkillModifiers(List<SkillModifierSpec> output)
+        {
+            if (output == null)
+            {
+                return;
+            }
+
+            ProgressionRoot?.CollectSkillModifiers(output);
+        }
+
+        public float ResolveSkillPhaseDuration(string skillId, string abilityId, string phaseName, float baseDuration)
+        {
+            var modifiers = new List<SkillModifierSpec>();
+            CollectSkillModifiers(modifiers);
+            return baseDuration * SkillModifierUtil.ResolvePhaseDurationMultiplier(
+                modifiers,
+                skillId,
+                abilityId,
+                phaseName);
         }
 
         void BindJingYuanEssenceSystem(PlayerJingYuanEssenceSystem essenceSystem)
@@ -588,39 +624,69 @@ namespace My.Player
                 }
 
                 var pairs = new List<StatPair>();
+                var skillModifiers = new List<SkillModifierSpec>();
                 for (int lv = 1; lv <= current; lv++)
                 {
                     var row = levelTable.Get(nodeId, lv);
-                    if (row?.StatBonuses == null)
+                    if (row == null)
                     {
                         continue;
                     }
 
-                    foreach (var b in row.StatBonuses)
+                    if (row.StatBonuses != null)
                     {
-                        if (b == null)
+                        foreach (var b in row.StatBonuses)
                         {
-                            continue;
-                        }
+                            if (b == null)
+                            {
+                                continue;
+                            }
 
-                        if (b.HumanAttrId != EHumanCivilizationAttribute.None)
-                        {
-                            humanCivilizationBonuses.TryGetValue(b.HumanAttrId, out var currentBonus);
-                            humanCivilizationBonuses[b.HumanAttrId] = currentBonus + b.Val;
+                            if (b.HumanAttrId != EHumanCivilizationAttribute.None)
+                            {
+                                humanCivilizationBonuses.TryGetValue(b.HumanAttrId, out var currentBonus);
+                                humanCivilizationBonuses[b.HumanAttrId] = currentBonus + b.Val;
+                            }
+                            else if (b.AttrId != 0)
+                            {
+                                pairs.Add(new StatPair(b.AttrId, b.Val));
+                            }
                         }
-                        else if (b.AttrId != 0)
+                    }
+
+                    if (row.SkillModifiers != null)
+                    {
+                        foreach (var modifier in row.SkillModifiers)
                         {
-                            pairs.Add(new StatPair(b.AttrId, b.Val));
+                            if (modifier == null || string.IsNullOrEmpty(modifier.SkillId) || modifier.Value <= 0f)
+                            {
+                                continue;
+                            }
+
+                            if (!Enum.TryParse<ESkillModifierType>(modifier.ModifierType, true, out var modifierType))
+                            {
+                                continue;
+                            }
+
+                            skillModifiers.Add(new SkillModifierSpec
+                            {
+                                SkillId = modifier.SkillId,
+                                AbilityId = modifier.AbilityId,
+                                PhaseName = modifier.PhaseName,
+                                ModifierType = modifierType,
+                                Value = modifier.Value,
+                                SourceId = $"talent:{nodeId}:{lv}",
+                            });
                         }
                     }
                 }
 
-                if (pairs.Count == 0)
+                if (pairs.Count == 0 && skillModifiers.Count == 0)
                 {
                     continue;
                 }
 
-                var provider = new TalentNodeProgressionProvider(pairs);
+                var provider = new TalentNodeProgressionProvider(pairs, skillModifiers);
                 TalentAggregator.AddChild(provider);
                 _activeProviders.Add(provider);
                 TalentNodeDict[nodeId] = new PlayerTalentNode

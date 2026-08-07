@@ -90121,6 +90121,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EncounterId: forest_deep_treant_encounter
   BossUniqName: forest_deep_treant_boss
+  AncientWorldProgressKey: ancient_world_forest_heart_defeated
+  AncientWorldProgressStageDelta: 1
+  AllowRepeatChallenge: 0
   DisplayName: "\u6DF1\u6797\u6811\u5996"
   ResetPoint: {fileID: 89164720}
   OutsideGraceTime: 0.75

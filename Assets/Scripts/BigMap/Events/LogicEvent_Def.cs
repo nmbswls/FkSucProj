@@ -42,6 +42,18 @@ namespace Map.Logic.Events
         public ResourceDeltaIntent? LastIntent;
     }
 
+    public partial struct MLEBossEncounterDefeated : IMapLogicEvent
+    {
+        public MapLogicEventContext Ctx { get; set; }
+        public EMapLogicEventType Type { get { return EMapLogicEventType.BossEncounterDefeated; } }
+
+        public string EncounterId;
+        public string BossCfgId;
+        public long BossEntityId;
+        public string AncientWorldProgressKey;
+        public int AncientWorldProgressStageDelta;
+    }
+
     public partial struct MLEUnitCantAlert : IMapLogicEvent
     {
         public MapLogicEventContext Ctx { get; set; }

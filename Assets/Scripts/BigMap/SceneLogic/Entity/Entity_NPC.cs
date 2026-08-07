@@ -43,6 +43,17 @@ namespace My.Map
         {
             var skills = ablilityManager.GetAllReadySkills();
             LogicManager?.AreaManager?.BossEncounters?.FilterReadySkills(this, skills);
+
+            var mapCfg = LogicManager?.AreaManager?.cacheMapOverlayCfg;
+            if (mapCfg != null && !mapCfg.IsDangerArea)
+            {
+                skills.RemoveAll(skill =>
+                {
+                    var cfg = skill?.cacheConfig;
+                    return cfg == null || !cfg.AllowInPeaceArea;
+                });
+            }
+
             return skills;
         }
 

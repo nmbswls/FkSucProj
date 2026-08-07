@@ -887,6 +887,9 @@ public static class MapOverlayExportCore
             EncounterId = provider.EncounterId,
             BossUniqName = provider.BossUniqName,
             DisplayName = provider.DisplayName,
+            AncientWorldProgressKey = provider.AncientWorldProgressKey,
+            AncientWorldProgressStageDelta = provider.AncientWorldProgressStageDelta,
+            AllowRepeatChallenge = provider.AllowRepeatChallenge,
             ArenaBounds = new Rect((Vector2)center - size * 0.5f, size),
             ResetPosition = provider.ResetPoint != null
                 ? (Vector2)provider.ResetPoint.position

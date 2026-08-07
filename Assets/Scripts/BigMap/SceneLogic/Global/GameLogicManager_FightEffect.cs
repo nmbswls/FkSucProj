@@ -165,6 +165,11 @@ namespace My
                             executor = new AbilityEffectExecutor4NextPhase();
                         }
                         break;
+                    case MapFightEffectDestroyEntityCfg:
+                        {
+                            executor = new AbilityEffectExecutor4DestroyEntity();
+                        }
+                        break;
                     case MapFightEffectTriggerAlert:
                         {
                             executor = new AbilityEffectExecutor4TriggerAlert();

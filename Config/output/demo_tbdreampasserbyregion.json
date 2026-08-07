@@ -1,0 +1,26 @@
+[
+  {
+    "region_id": "north_fringe",
+    "display_name": "北缘浅梦",
+    "desc": "偏北的模糊街区印象。",
+    "unlock_conds": [],
+    "region_weight": 10,
+    "enabled": true
+  },
+  {
+    "region_id": "market_haze",
+    "display_name": "市声雾带",
+    "desc": "市集残响凝成的雾带。",
+    "unlock_conds": [],
+    "region_weight": 10,
+    "enabled": true
+  },
+  {
+    "region_id": "riverside_mist",
+    "display_name": "河畔薄雾",
+    "desc": "河岸边漂着的无名梦屑。",
+    "unlock_conds": [],
+    "region_weight": 10,
+    "enabled": true
+  }
+]

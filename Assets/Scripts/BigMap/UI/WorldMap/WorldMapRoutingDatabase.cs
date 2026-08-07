@@ -312,6 +312,12 @@ namespace My.Map
                 return false;
             }
 
+            if (map.IsMagicSensitiveArea)
+            {
+                reason = "magic_sensitive_area";
+                return false;
+            }
+
             if (!SavePointUnlockHelper.IsActivated(glm, savePoint.SavePointId))
             {
                 reason = "save_point_locked";

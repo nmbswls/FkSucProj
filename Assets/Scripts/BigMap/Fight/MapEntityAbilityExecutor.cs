@@ -194,6 +194,7 @@ namespace My.Map.Entity
 
         public class AbilityRunningContext
         {
+            public string SkillId;
             public ILogicEntity Actor;         // 施动者
             public ILogicEntity Target;        // 目标对象（如门或敌人），可为空
             public Vector2 FaceDir;           // 面朝方向
@@ -326,7 +327,7 @@ namespace My.Map.Entity
         
         public virtual bool TryUseAbility(string abilityName, Vector2? inputVec = null, Vector2? castVec = null, ILogicEntity target = null, 
             Dictionary<string, string> overrideParams = null, Dictionary<string, string> phaseOverrideAnims = null, 
-            Action<bool> onAbilityEnd = null)
+            Action<bool> onAbilityEnd = null, string sourceSkillId = null)
         {
             var config = AbilityLibrary.GetAbilityConfig(abilityName);
             if (config == null)
@@ -334,7 +335,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            return TryStart(config, inputVec: inputVec, castVec1: castVec, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, onAbilityEnd: onAbilityEnd);
+            return TryStart(config, inputVec: inputVec, castVec1: castVec, target: target, runningOverrides: overrideParams, phaseOverrideAnims: phaseOverrideAnims, onAbilityEnd: onAbilityEnd, sourceSkillId: sourceSkillId);
         }
 
         public void Tick(float dt)
@@ -353,7 +354,7 @@ namespace My.Map.Entity
         /// <param name="runningOverrides"></param>
         /// <param name="phaseOverrideAnims"></param>
         /// <returns></returns>
-        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? inputVec = null, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null, Action<bool> onAbilityEnd = null)
+        protected bool TryStart(MapAbilitySpecConfig abilityConf, Vector2? inputVec = null, Vector2? castVec1 = null, ILogicEntity target = null, Dictionary<string, string> runningOverrides = null, Dictionary<string, string> phaseOverrideAnims = null, string? groupOwnerName = null, Action<bool> onAbilityEnd = null, string sourceSkillId = null)
         {
             var spatialHost = GetSpatialHost();
 
@@ -402,6 +403,7 @@ namespace My.Map.Entity
 
             CurrentCtx = new AbilityRunningContext
             {
+                SkillId = sourceSkillId,
                 Actor = EntityOwner,
                 Target = target,
                 AbilityTime = 0f,
@@ -567,6 +569,16 @@ namespace My.Map.Entity
                 Debug.LogError("TickIntern wrong param");
             }
             ctx.PhaseDuration = phaseDur;
+            if (!string.IsNullOrEmpty(ctx.SkillId)
+                && EntityOwner.Type == EEntityType.Player)
+            {
+                var progression = EntityOwner.LogicManager?.playerDataManager?.ProgressionSystem;
+                ctx.PhaseDuration = progression?.ResolveSkillPhaseDuration(
+                    ctx.SkillId,
+                    ctx.AbilityConfig.Id,
+                    phase.PhaseName,
+                    ctx.PhaseDuration) ?? ctx.PhaseDuration;
+            }
 
             // 默认：进入即播放自身AnimTag（也可当作一个事件）
             var animTag = phase.AnimTag;
@@ -719,7 +731,7 @@ namespace My.Map.Entity
             }
             else if (phase.ShowRangePreview)
             {
-                var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FinalLook, phaseDur, phase.PreviewIntent.FaceOffset);
+                var eId = EntityOwner.LogicManager.viewer.ShowRangeWarnEffect(phase.PreviewIntent.ShapeInfo,  EntityOwner.Pos, EntityOwner.FinalLook, ctx.PhaseDuration, phase.PreviewIntent.FaceOffset);
                 ctx.PhaseIntentEffectId = eId;
             }
 
@@ -807,6 +819,14 @@ namespace My.Map.Entity
                 case EInterruptSource.Cast:
                     {
                         if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Cast))
+                        {
+                            return false;
+                        }
+                    }
+                    break;
+                case EInterruptSource.CombatEnter:
+                    {
+                        if (!phase.InterruptMask.HasFlag(EAbilityInterruptMask.Combat))
                         {
                             return false;
                         }

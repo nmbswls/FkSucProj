@@ -9,6 +9,9 @@ namespace My.MapExport
         public string EncounterId = string.Empty;
         public string BossUniqName = string.Empty;
         public string DisplayName = string.Empty;
+        public string AncientWorldProgressKey = string.Empty;
+        public int AncientWorldProgressStageDelta;
+        public bool AllowRepeatChallenge;
         public Transform ResetPoint;
         public float OutsideGraceTime = 0.75f;
         public float ReturnMoveSpeedRate = 1.4f;

@@ -18,7 +18,7 @@ namespace My.UI
         //    var glm = MainGameManager.Instance?.gameLogicManager;
         //    foreach (var m in tb.DataList)
         //    {
-        //        if (m == null || string.IsNullOrEmpty(m.Id) || !m.HuntingTarget)
+        //        if (m == null || string.IsNullOrEmpty(m.Id) || !m.IsMagicSensitiveArea)
         //        {
         //            continue;
         //        }

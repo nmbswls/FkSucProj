@@ -2100,6 +2100,13 @@ namespace My.Map
 
         protected override long CalculateUnitHpChange(string attrId, ResourceDeltaIntent intent)
         {
+            if (LogicManager?.PlayerHumanMode == true
+                && intent.delta < 0
+                && !intent.deltaFlags.HasFlag(EDmgFlag.Loss))
+            {
+                return 0;
+            }
+
             long delta = base.CalculateUnitHpChange(attrId, intent);
 
             if(delta < 0)

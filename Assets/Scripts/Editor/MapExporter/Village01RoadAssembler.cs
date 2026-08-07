@@ -20,6 +20,8 @@ public static class Village01RoadAssembler
     const string TownGateTriggerResourceKey = "Map/Zone/Village01RoadTownGateTrigger";
     const string TownGateDialogId = "village_01_road_town_gate";
     const string RoadGateOpenSwitch = "village_01.road_gate_open";
+    const string DayTownOverlayId = "village_01_d";
+    const string HomeRoadReturnPoint = "home_01_road_return";
     const int RoadQuestId = 216;
     const string RoadQuestStepId = "216_s2";
 
@@ -57,12 +59,12 @@ public static class Village01RoadAssembler
         var dynamicRoot = root.transform.Find("DynamicRoot");
         ClearChildren(dynamicRoot);
         var common = EnsureChild(dynamicRoot, "Common");
-        CreateTeleporter(common, "teleporter_to_home", new Vector3(0f, 5f, 0f), "homestead_01", "entry_01");
+        CreateTeleporter(common, "teleporter_to_home", new Vector3(0f, 5f, 0f), "homestead_01", HomeRoadReturnPoint);
         CreateTeleporter(
             common,
             "teleporter_to_village_01",
             new Vector3(0f, 232f, 0f),
-            "village_01",
+            DayTownOverlayId,
             "entry_bottom",
             MakeCheckVariableCond(RoadGateOpenSwitch, true));
         CreateRoadMonster(common, "village_01_road_slime_01", new Vector3(-4f, 72f, 0f));
@@ -122,6 +124,16 @@ public static class Village01RoadAssembler
         {
             throw new System.InvalidOperationException("Home_01_Editor has no entry_01 teleporter.");
         }
+
+        var namedPointRoot = homeRoot.transform.Find("NamedPoint");
+        if (namedPointRoot == null)
+        {
+            throw new System.InvalidOperationException("Home_01_Editor has no NamedPoint root.");
+        }
+
+        var homeRoadReturnPosition = new Vector3(29.685f, 34.75f, 0f);
+        ValidateWalkablePoint(homeRoot, homeRoadReturnPosition, HomeRoadReturnPoint);
+        EnsureNamedPoint(namedPointRoot, HomeRoadReturnPoint, homeRoadReturnPosition);
 
         var info = (EntityInitInfo4Teleporter)departure.RefreshInfo.InitInfo;
         info.TargetMapName = "village_01_road";
@@ -290,6 +302,70 @@ public static class Village01RoadAssembler
             Rotation = go.transform.rotation,
             Scale = go.transform.localScale,
         };
+    }
+
+    static void EnsureNamedPoint(Transform parent, string name, Vector3 position)
+    {
+        var existing = parent.Find(name);
+        if (existing != null)
+        {
+            existing.position = position;
+            var existingGenerator = existing.GetComponent<NamePointGenerator>()
+                ?? existing.gameObject.AddComponent<NamePointGenerator>();
+            existingGenerator.Info = BuildNamedPoint(name, position, existing);
+            EditorUtility.SetDirty(existing.gameObject);
+            return;
+        }
+
+        CreateNamedPoint(parent, name, position);
+    }
+
+    static NamedPoint BuildNamedPoint(string name, Vector3 position, Transform owner)
+    {
+        return new NamedPoint
+        {
+            Name = name,
+            PointType = ENamedPointType.Normal,
+            Position = position,
+            Rotation = owner.rotation,
+            Scale = owner.localScale,
+        };
+    }
+
+    static void ValidateWalkablePoint(MapChunkEditorRoot root, Vector3 worldPosition, string pointName)
+    {
+        var gridRoot = root.MapVariantRoot != null ? root.MapVariantRoot.Find("GridRoot") : null;
+        if (gridRoot == null)
+        {
+            throw new System.InvalidOperationException("Home_01_Editor has no MapVariantRoot/GridRoot.");
+        }
+
+        var groundNames = new HashSet<string>(root.GroundLayerNames ?? System.Array.Empty<string>());
+        var tilemaps = gridRoot.GetComponentsInChildren<Tilemap>(true);
+        var grounds = new List<Tilemap>();
+        Tilemap hole = null;
+        foreach (var tilemap in tilemaps)
+        {
+            if (tilemap == null)
+            {
+                continue;
+            }
+
+            if (tilemap.gameObject.name == "Hole")
+            {
+                hole = tilemap;
+            }
+            else if (groundNames.Contains(tilemap.gameObject.name))
+            {
+                grounds.Add(tilemap);
+            }
+        }
+
+        if (!WorldAreaRoot.IsWorldPosWalkable(worldPosition, grounds.ToArray(), hole))
+        {
+            throw new System.InvalidOperationException(
+                $"NamedPoint '{pointName}' is not on walkable ground at {worldPosition}.");
+        }
     }
 
     static void CreateTeleporter(

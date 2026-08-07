@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using My.Config;
 using TMPro;
@@ -8,6 +9,13 @@ namespace My.UI.Talent
     public sealed class TalentTreeView : MonoBehaviour
     {
         public const string PlayerMainTreeId = "player_main";
+
+        [Header("Player main tree layout")]
+        [Tooltip("Height of each prerequisite-depth band, from the root band upward.")]
+        [SerializeField] float[] stageHeights = { 180f, 150f, 150f, 150f };
+        [SerializeField] float stageGap = 0f;
+        [SerializeField] float bottomPadding = 70f;
+
         [SerializeField] Transform nodeViewContainer;
         [SerializeField] TextMeshProUGUI debugTipText;
         [SerializeField] TalentDetailView detailView;
@@ -52,6 +60,11 @@ namespace My.UI.Talent
                 matchingBinders++;
                 var view = binder.GetComponentInChildren<TalentTreeNodeView>(true);
                 RefreshNodeView(view, binder.TalentNodeId);
+            }
+
+            if (_treeId == PlayerMainTreeId)
+            {
+                ApplyPlayerMainLayout();
             }
 
             int configuredNodeCount = CountConfiguredNodes();
@@ -194,6 +207,137 @@ namespace My.UI.Talent
             if (connections != null)
             {
                 connections.gameObject.SetActive(visible);
+            }
+        }
+
+        void ApplyPlayerMainLayout()
+        {
+            if (nodeViewContainer is not RectTransform content)
+            {
+                return;
+            }
+
+            var nodeRects = new Dictionary<int, RectTransform>();
+            var binders = content.GetComponentsInChildren<TalentTreeNodeBinder>(true);
+            for (int i = 0; i < binders.Length; i++)
+            {
+                if (binders[i].TryGetComponent<RectTransform>(out var rect))
+                {
+                    nodeRects[binders[i].TalentNodeId] = rect;
+                }
+            }
+
+            var depthByNode = new Dictionary<int, int>();
+            foreach (var pair in nodeRects)
+            {
+                depthByNode[pair.Key] = ResolveNodeDepth(pair.Key, new HashSet<int>());
+            }
+
+            int maxDepth = 0;
+            foreach (var depth in depthByNode.Values)
+            {
+                maxDepth = Math.Max(maxDepth, depth);
+            }
+
+            float totalHeight = bottomPadding;
+            for (int depth = 0; depth <= maxDepth; depth++)
+            {
+                totalHeight += GetStageHeight(depth);
+                if (depth < maxDepth)
+                {
+                    totalHeight += stageGap;
+                }
+            }
+
+            content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
+
+            foreach (var pair in nodeRects)
+            {
+                int depth = depthByNode[pair.Key];
+                float bandHeight = GetStageHeight(depth);
+                float lowerBands = bottomPadding;
+                for (int lowerDepth = 0; lowerDepth < depth; lowerDepth++)
+                {
+                    lowerBands += GetStageHeight(lowerDepth) + stageGap;
+                }
+
+                var position = pair.Value.anchoredPosition;
+                position.y = -lowerBands - bandHeight * 0.5f;
+                pair.Value.anchoredPosition = position;
+            }
+
+            RebuildConnectionGeometry(nodeRects);
+        }
+
+        float GetStageHeight(int depth)
+        {
+            if (stageHeights == null || stageHeights.Length == 0)
+            {
+                return 150f;
+            }
+
+            if (depth < stageHeights.Length)
+            {
+                return Mathf.Max(1f, stageHeights[depth]);
+            }
+
+            return Mathf.Max(1f, stageHeights[stageHeights.Length - 1]);
+        }
+
+        int ResolveNodeDepth(int nodeId, HashSet<int> visiting)
+        {
+            if (!visiting.Add(nodeId))
+            {
+                Debug.LogError($"[TalentTreeView] Cycle detected in talent prerequisites at node {nodeId}.");
+                return 0;
+            }
+
+            var level = CfgMgr.Cfgs?.TbTalentNodeLevel?.Get(nodeId, 1);
+            int depth = 0;
+            if (level?.PrereqNodeIds != null)
+            {
+                foreach (var prerequisite in level.PrereqNodeIds)
+                {
+                    depth = Mathf.Max(depth, ResolveNodeDepth(prerequisite, visiting) + 1);
+                }
+            }
+
+            visiting.Remove(nodeId);
+            return depth;
+        }
+
+        void RebuildConnectionGeometry(IReadOnlyDictionary<int, RectTransform> nodeRects)
+        {
+            var connections = nodeViewContainer.Find("Connections");
+            if (connections == null)
+            {
+                return;
+            }
+
+            foreach (Transform child in connections)
+            {
+                var parts = child.name.Split('_');
+                if (parts.Length != 3
+                    || !int.TryParse(parts[1], out var fromId)
+                    || !int.TryParse(parts[2], out var toId)
+                    || !nodeRects.TryGetValue(fromId, out var from)
+                    || !nodeRects.TryGetValue(toId, out var to))
+                {
+                    continue;
+                }
+
+                var line = child as RectTransform;
+                if (line == null)
+                {
+                    continue;
+                }
+
+                Vector2 delta = to.anchoredPosition - from.anchoredPosition;
+                line.anchorMin = new Vector2(0.5f, 0.5f);
+                line.anchorMax = new Vector2(0.5f, 0.5f);
+                line.anchoredPosition = (from.anchoredPosition + to.anchoredPosition) * 0.5f;
+                line.sizeDelta = new Vector2(delta.magnitude, Mathf.Max(1f, line.sizeDelta.y));
+                line.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
             }
         }
 

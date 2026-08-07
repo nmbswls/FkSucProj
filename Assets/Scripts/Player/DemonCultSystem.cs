@@ -102,6 +102,8 @@ namespace My.Player
         readonly Dictionary<string, CultAnchorInfo> _anchors = new(StringComparer.Ordinal);
         readonly Dictionary<string, long> _churchPressureByRegionKey = new(StringComparer.Ordinal);
         long _faith;
+        int _ancientWorldStage;
+        readonly HashSet<string> _ancientWorldMilestones = new(StringComparer.Ordinal);
         GameLogicManager _logic;
 
         const int BasicCultTechNodeId = 1;
@@ -110,6 +112,7 @@ namespace My.Player
         public event Action OnCultChanged;
 
         public long Faith => _faith;
+        public int AncientWorldStage => _ancientWorldStage;
         public int UnlockedSeatCount => _unlockedSeats.Count;
         public int SecretUnitCount => _secretUnits.Count;
         public int AvailableSecretUnitCount
@@ -284,6 +287,21 @@ namespace My.Player
             _anchors.Clear();
             _churchPressureByRegionKey.Clear();
             _faith = 0;
+            _ancientWorldStage = 0;
+            _ancientWorldMilestones.Clear();
+
+            var ancientProgress = savingData?.AncientWorldProgress;
+            if (ancientProgress != null)
+            {
+                _ancientWorldStage = Math.Max(0, ancientProgress.Stage);
+                foreach (var milestone in ancientProgress.Milestones ?? new List<string>())
+                {
+                    if (!string.IsNullOrEmpty(milestone))
+                    {
+                        _ancientWorldMilestones.Add(milestone);
+                    }
+                }
+            }
 
             var persist = savingData?.DemonCult;
             bool isFresh = persist == null
@@ -454,6 +472,12 @@ namespace My.Player
             {
                 return;
             }
+
+            savingData.AncientWorldProgress ??= new AncientWorldProgressPersist();
+            savingData.AncientWorldProgress.Stage = Math.Max(0, _ancientWorldStage);
+            savingData.AncientWorldProgress.Milestones ??= new List<string>();
+            savingData.AncientWorldProgress.Milestones.Clear();
+            savingData.AncientWorldProgress.Milestones.AddRange(_ancientWorldMilestones);
 
             savingData.DemonCult ??= new DemonCultPersist();
             savingData.DemonCult.Faith = _faith;
@@ -1681,6 +1705,45 @@ namespace My.Player
         }
 
         public bool IsSeatUnlocked(int seatId) => seatId <= 0 || _unlockedSeats.Contains(seatId);
+
+        public bool HasAncientWorldMilestone(string milestoneId)
+            => !string.IsNullOrEmpty(milestoneId) && _ancientWorldMilestones.Contains(milestoneId);
+
+        public void SetAncientWorldStage(int stage)
+        {
+            stage = Math.Max(0, stage);
+            if (_ancientWorldStage == stage)
+            {
+                return;
+            }
+
+            _ancientWorldStage = stage;
+            OnCultChanged?.Invoke();
+        }
+
+        public bool TryAddAncientWorldMilestone(string milestoneId)
+        {
+            if (string.IsNullOrEmpty(milestoneId) || !_ancientWorldMilestones.Add(milestoneId))
+            {
+                return false;
+            }
+
+            OnCultChanged?.Invoke();
+            return true;
+        }
+
+        public bool TryApplyAncientWorldProgress(string progressKey, int stageDelta)
+        {
+            if (string.IsNullOrWhiteSpace(progressKey)
+                || !_ancientWorldMilestones.Add(progressKey))
+            {
+                return false;
+            }
+
+            _ancientWorldStage = Math.Max(0, _ancientWorldStage + stageDelta);
+            OnCultChanged?.Invoke();
+            return true;
+        }
 
         public int GetTechNodeCount(int seatId)
         {

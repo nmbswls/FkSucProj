@@ -1908,6 +1908,7 @@ namespace My.Map.Entity
                 case MapFightEffectShowCloseupWindowCfg:
                 case MapFightEffectAddLiquidCfg:
                 case MapFightEffectMiniBlurtCfg:
+                case MapAbilityEffectNextPhaseCfg:
                     {
                         long srcEntity = CasterId;
 

@@ -18,10 +18,10 @@
   {
     "talent_tree_id": "player_main",
     "node_id": 3,
-    "display_name": "预留节点",
-    "max_level": 0,
-    "icon_path": "default",
-    "description": "该节点尚未开放。"
+    "display_name": "伪装回收",
+    "max_level": 1,
+    "icon_path": "stealth_return",
+    "description": "切回伪装状态的施法时间缩短50%。"
   },
   {
     "talent_tree_id": "player_main",
@@ -34,10 +34,10 @@
   {
     "talent_tree_id": "player_main",
     "node_id": 5,
-    "display_name": "预留节点",
-    "max_level": 0,
-    "icon_path": "default",
-    "description": "该节点尚未开放。"
+    "display_name": "蓄势重击",
+    "max_level": 1,
+    "icon_path": "heavy_charge",
+    "description": "普通右键重击的蓄力速度提升50%。"
   },
   {
     "talent_tree_id": "player_main",

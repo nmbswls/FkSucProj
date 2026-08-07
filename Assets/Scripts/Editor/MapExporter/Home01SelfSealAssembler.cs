@@ -29,7 +29,7 @@ public static class Home01SelfSealAssembler
             "Home01SelfSealCollapseTrigger",
             CollapsePrefabPath,
             CollapseDialogId,
-            new Vector2(3f, 3f),
+            new Vector2(1f, 8f),
             new List<CommonCheckCond>
             {
                 MakeTaskFinishCond(204),
@@ -77,7 +77,7 @@ public static class Home01SelfSealAssembler
         InstallProvider(
             triggerRoot,
             "self_seal_collapse_trigger",
-            new Vector3(19f, 30f, 0f),
+            new Vector3(19.5f, 30f, 0f),
             CollapseResourceKey,
             MakeTaskFinishCond(204),
             MakeCheckVariableCond(PlanKnownSwitch, true));

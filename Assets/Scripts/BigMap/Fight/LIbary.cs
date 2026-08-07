@@ -352,6 +352,16 @@ namespace My.Map.Entity
                 }
 
                 {
+                    var ab = CreateMagicOrbSummonAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
+                    var ab = CreateMagicOrbSelfDestructAbility();
+                    _abilityDict[ab.Id] = ab;
+                }
+
+                {
                     var ab = CreatePlayerEnterExposeAbility();
                     _abilityDict[ab.Id] = ab;
                 }
@@ -2658,6 +2668,125 @@ namespace My.Map.Entity
             return spec;
         }
 
+        private static MapAbilitySpecConfig CreateMagicOrbSummonAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "magic_orb_summon";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+
+            var mainPhase = new MapAbilityPhase
+            {
+                PhaseName = "Main",
+                DurationValue = new OneVariaty
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.1",
+                },
+            };
+            mainPhase.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.Timed,
+                TimeOffset = 0f,
+                Effect = new MapAbilityEffectSpawnEntityCfg
+                {
+                    EntityType = EEntityType.Npc,
+                    CfgId = "magic_orb_basic",
+                    LifeTime = 10f,
+                    SpawnCenter = MapAbilityEffectSpawnEntityCfg.ESpawnCenter.Source,
+                    SpawnRadius = 0.7f,
+                },
+            });
+            spec.Phases.Add(mainPhase);
+            return spec;
+        }
+
+        private static MapAbilitySpecConfig CreateMagicOrbSelfDestructAbility()
+        {
+            var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
+            spec.Id = "magic_orb_self_destruct";
+            spec.TypeTag = AbilityTypeTag.Combat;
+            spec.CastType = ECastType.NoTarget;
+            spec.TargetSelectPolicy = ETargetSelectPolicy.Self;
+
+            spec.Phases.Add(new MapAbilityPhase
+            {
+                PhaseName = "Charge",
+                LockMovement = true,
+                LockRotation = true,
+                InterruptMask = EAbilityInterruptMask.None,
+                ShowRangePreview = true,
+                PreviewIntent = new MapPreviewIntent
+                {
+                    ShapeInfo = new FightStruct.Shape
+                    {
+                        Type = FightStruct.EShapeType.Circle,
+                        Radius = 2.5f,
+                    },
+                },
+                DurationValue = new OneVariaty
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "8",
+                },
+            });
+
+            var execute = new MapAbilityPhase
+            {
+                PhaseName = "Execute",
+                LockMovement = true,
+                LockRotation = true,
+                InterruptMask = EAbilityInterruptMask.None,
+                DurationValue = new OneVariaty
+                {
+                    ValType = EOneVariatyType.Float,
+                    RawVal = "0.05",
+                },
+            };
+            execute.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapAbilityEffectHitBoxCfg
+                {
+                    Shape = MapAbilityEffectHitBoxCfg.EShape.Circle,
+                    Radius = 2.5f,
+                    CampFilterType = ECampFilterType.NotSelf,
+                    HitResult = new HitResult
+                    {
+                        OnHitEffects = new List<MapFightEffectCfg>
+                        {
+                            new MapFightEffectApplyDamageCfg
+                            {
+                                BaseDamage = 24000,
+                                DamageCategory = EDmgCategory.Magic,
+                                KnockBackForce = 0.8f,
+                            },
+                        },
+                    },
+                },
+            });
+            execute.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapFightEffectShowEffect
+                {
+                    ShowMode = MapFightEffectShowEffect.EShowMode.CasterAligned,
+                    EffectName = "Hit/Style01",
+                },
+            });
+            execute.Events.Add(new PhaseEffectEvent
+            {
+                Kind = PhaseEventKind.OnEnter,
+                Effect = new MapFightEffectDestroyEntityCfg
+                {
+                    Target = MapFightEffectDestroyEntityCfg.ETarget.Source,
+                    Reason = "ability_complete",
+                },
+            });
+            spec.Phases.Add(execute);
+            return spec;
+        }
+
         private static MapAbilitySpecConfig CreatePlayerEnterExposeAbility()
         {
             var spec = ScriptableObject.CreateInstance<MapAbilitySpecConfig>();
@@ -2725,7 +2854,7 @@ namespace My.Map.Entity
                 LockMovement = true,
                 LockRotation = true,
                 WithProgress = true,
-                InterruptMask = EAbilityInterruptMask.Hit,
+                InterruptMask = EAbilityInterruptMask.Hit | EAbilityInterruptMask.Combat,
                 DurationValue = new()
                 {
                     ValType = EOneVariatyType.Float,
@@ -3792,7 +3921,8 @@ namespace My.Map.Entity
                 {
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
-                        NeedTime = 2.0f,
+                        ThresholdMode = MapFightEffectXuLiStageCfg.EXuLiStageThresholdMode.PhaseRatio,
+                        NeedTime = 0.4f,
 
                         StageEffects = new()
                         {
@@ -3824,7 +3954,8 @@ namespace My.Map.Entity
 
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
-                        NeedTime = 1.0f,
+                        ThresholdMode = MapFightEffectXuLiStageCfg.EXuLiStageThresholdMode.PhaseRatio,
+                        NeedTime = 0.2f,
 
                         StageEffects = new()
                         {
@@ -3849,6 +3980,7 @@ namespace My.Map.Entity
 
                     new MapFightEffectXuLiStageCfg.EStageInfo()
                     {
+                        ThresholdMode = MapFightEffectXuLiStageCfg.EXuLiStageThresholdMode.PhaseRatio,
                         NeedTime = 0.0f,
 
                         StageEffects = new()

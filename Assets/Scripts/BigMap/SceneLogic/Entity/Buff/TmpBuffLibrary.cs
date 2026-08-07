@@ -1929,6 +1929,39 @@ namespace My.Map.Entity
                     },
                 };
 
+                _library["magic_orb_shell"] = new BuffDefinition()
+                {
+                    BuffId = "magic_orb_shell",
+                    LayerOverrideType = EBuffLayerOverrideType.Replace,
+                    MaxStackLayer = 1,
+                    DefaultDuration = -1,
+                    IsHidden = true,
+                    ModifierAttrs = new()
+                    {
+                        new BuffDefinition.OneModPair
+                        {
+                            ModifierAttrId = AttrIdConsts.ImmuneDamage,
+                            ModifierValue = 1,
+                        },
+                    },
+                    TriggerList = new()
+                    {
+                        new BuffTriggerRuleConfig
+                        {
+                            TriggerType = ETriggerType.OnHit,
+                            NeedCount = 1,
+                            OutputFightEffects = new()
+                            {
+                                new MapAbilityEffectNextPhaseCfg
+                                {
+                                    MatchSkill = "magic_orb_self_destruct",
+                                    MatchPhase = "Charge",
+                                },
+                            },
+                        },
+                    },
+                };
+
                 _library["orb_skill_regen"] = new BuffDefinition()
                 {
                     BuffId = "orb_skill_regen",

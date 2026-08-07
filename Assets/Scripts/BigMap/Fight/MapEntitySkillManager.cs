@@ -1192,7 +1192,7 @@ namespace My.Map.Entity
                 return false;
             }
 
-            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: overrideParams))
+            if (!Executor.TryUseAbility(realAbilityId, inputVec: inputVec, castVec: castVec, target: target, overrideParams: overrideParams, sourceSkillId: skillId))
             {
                 Debug.Log("UseSkill fail");
                 comboOrchestrator.TransitCombo(0);
@@ -1304,7 +1304,8 @@ namespace My.Map.Entity
                     inputVec: inputVec,
                     castVec: castVec,
                     target: target,
-                    overrideParams: merged))
+                    overrideParams: merged,
+                    sourceSkillId: skillId))
             {
                 return false;
             }

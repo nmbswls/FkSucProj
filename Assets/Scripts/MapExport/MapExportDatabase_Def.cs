@@ -199,6 +199,9 @@ namespace My.MapExport
         public string EncounterId = string.Empty;
         public string BossUniqName = string.Empty;
         public string DisplayName = string.Empty;
+        public string AncientWorldProgressKey = string.Empty;
+        public int AncientWorldProgressStageDelta;
+        public bool AllowRepeatChallenge;
         public Rect ArenaBounds;
         public Vector2 ResetPosition;
         public float OutsideGraceTime = 0.75f;

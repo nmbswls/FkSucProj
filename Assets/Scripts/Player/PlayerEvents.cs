@@ -51,6 +51,15 @@ namespace My.Quest
         public EPlayerEventType EventType { get { return EPlayerEventType.PlayerKillUnit; } }
     }
 
+    public struct PlayerBossEncounterDefeatedEvent
+    {
+        public string EncounterId;
+        public string BossCfgId;
+        public long BossEntityId;
+        public string AncientWorldProgressKey;
+        public int AncientWorldProgressStageDelta;
+    }
+
     public struct PlayerEntityInteractionCompletedEvent
     {
         public string CfgId;

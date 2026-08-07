@@ -25,6 +25,7 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         { var __json0 = _buf["unlock_costs"]; if(!__json0.IsArray) { throw new SerializationException(); } UnlockCosts = new System.Collections.Generic.List<demo.TalentUnlockCost>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentUnlockCost __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentUnlockCost.DeserializeTalentUnlockCost(__e0);  }  UnlockCosts.Add(__v0); }   }
         { var __json0 = _buf["stat_bonuses"]; if(!__json0.IsArray) { throw new SerializationException(); } StatBonuses = new System.Collections.Generic.List<demo.TalentStatBonus>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentStatBonus __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentStatBonus.DeserializeTalentStatBonus(__e0);  }  StatBonuses.Add(__v0); }   }
         { if(!_buf["passive_skill_id"].IsString) { throw new SerializationException(); }  PassiveSkillId = _buf["passive_skill_id"]; }
+        { var __json0 = _buf["skill_modifiers"]; if(!__json0.IsArray) { throw new SerializationException(); } SkillModifiers = new System.Collections.Generic.List<demo.TalentSkillModifier>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { demo.TalentSkillModifier __v0;  { if(!__e0.IsObject) { throw new SerializationException(); }  __v0 = global::cfg.demo.TalentSkillModifier.DeserializeTalentSkillModifier(__e0);  }  SkillModifiers.Add(__v0); }   }
     }
 
     public static TalentNodeLevel DeserializeTalentNodeLevel(JSONNode _buf)
@@ -60,6 +61,10 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
     /// passive_skill_id
     /// </summary>
     public string PassiveSkillId;
+    /// <summary>
+    /// 技能修正（skill_id,ability_id,phase_name,modifier_type,value）
+    /// </summary>
+    public System.Collections.Generic.List<demo.TalentSkillModifier> SkillModifiers;
    
     public const int __ID__ = -897608469;
     public override int GetTypeId() => __ID__;
@@ -69,6 +74,7 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         foreach (var _e in UnlockConds) { _e?.ResolveRef(tables); }
         foreach (var _e in UnlockCosts) { _e?.ResolveRef(tables); }
         foreach (var _e in StatBonuses) { _e?.ResolveRef(tables); }
+        foreach (var _e in SkillModifiers) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -81,6 +87,7 @@ public sealed partial class TalentNodeLevel : Luban.BeanBase
         + "unlockCosts:" + Luban.StringUtil.CollectionToString(UnlockCosts) + ","
         + "statBonuses:" + Luban.StringUtil.CollectionToString(StatBonuses) + ","
         + "passiveSkillId:" + PassiveSkillId + ","
+        + "skillModifiers:" + Luban.StringUtil.CollectionToString(SkillModifiers) + ","
         + "}";
     }
 }

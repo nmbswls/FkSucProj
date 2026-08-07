@@ -1,0 +1,173 @@
+[
+  {
+    "passerby_id": "pb_common_a",
+    "grade": 1,
+    "visual_variant": 0,
+    "refresh_weight": 20,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "alley_echo",
+    "dream_theme_display_name": "巷口回声",
+    "core_max_hp": 100,
+    "player_max_hp": 100,
+    "bullet_damage": 12,
+    "aoe_damage": 16,
+    "projectile_damage": 18,
+    "reward_desire_shard": 1,
+    "reward_jingyuan": 0,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_common_b",
+    "grade": 1,
+    "visual_variant": 1,
+    "refresh_weight": 20,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "window_light",
+    "dream_theme_display_name": "窗灯",
+    "core_max_hp": 100,
+    "player_max_hp": 100,
+    "bullet_damage": 12,
+    "aoe_damage": 16,
+    "projectile_damage": 18,
+    "reward_desire_shard": 1,
+    "reward_jingyuan": 0,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_common_c",
+    "grade": 1,
+    "visual_variant": 2,
+    "refresh_weight": 18,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "door_creak",
+    "dream_theme_display_name": "门轴",
+    "core_max_hp": 110,
+    "player_max_hp": 100,
+    "bullet_damage": 13,
+    "aoe_damage": 16,
+    "projectile_damage": 18,
+    "reward_desire_shard": 1,
+    "reward_jingyuan": 0,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_common_d",
+    "grade": 1,
+    "visual_variant": 0,
+    "refresh_weight": 18,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "street_dust",
+    "dream_theme_display_name": "街尘",
+    "core_max_hp": 110,
+    "player_max_hp": 100,
+    "bullet_damage": 13,
+    "aoe_damage": 17,
+    "projectile_damage": 18,
+    "reward_desire_shard": 1,
+    "reward_jingyuan": 0,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_uncommon_a",
+    "grade": 2,
+    "visual_variant": 1,
+    "refresh_weight": 12,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "coin_chime",
+    "dream_theme_display_name": "铜铃声",
+    "core_max_hp": 140,
+    "player_max_hp": 100,
+    "bullet_damage": 14,
+    "aoe_damage": 18,
+    "projectile_damage": 20,
+    "reward_desire_shard": 2,
+    "reward_jingyuan": 15,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_uncommon_b",
+    "grade": 2,
+    "visual_variant": 2,
+    "refresh_weight": 12,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "wet_cloth",
+    "dream_theme_display_name": "湿布",
+    "core_max_hp": 140,
+    "player_max_hp": 95,
+    "bullet_damage": 14,
+    "aoe_damage": 18,
+    "projectile_damage": 20,
+    "reward_desire_shard": 2,
+    "reward_jingyuan": 15,
+    "reward_fallen_base_amount": 0
+  },
+  {
+    "passerby_id": "pb_uncommon_c",
+    "grade": 2,
+    "visual_variant": 0,
+    "refresh_weight": 10,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "lantern_sway",
+    "dream_theme_display_name": "灯笼晃",
+    "core_max_hp": 150,
+    "player_max_hp": 95,
+    "bullet_damage": 15,
+    "aoe_damage": 18,
+    "projectile_damage": 20,
+    "reward_desire_shard": 2,
+    "reward_jingyuan": 20,
+    "reward_fallen_base_amount": 2
+  },
+  {
+    "passerby_id": "pb_rare_a",
+    "grade": 3,
+    "visual_variant": 1,
+    "refresh_weight": 6,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "name_slip",
+    "dream_theme_display_name": "无名笺",
+    "core_max_hp": 180,
+    "player_max_hp": 90,
+    "bullet_damage": 16,
+    "aoe_damage": 20,
+    "projectile_damage": 22,
+    "reward_desire_shard": 3,
+    "reward_jingyuan": 30,
+    "reward_fallen_base_amount": 3
+  },
+  {
+    "passerby_id": "pb_rare_b",
+    "grade": 3,
+    "visual_variant": 2,
+    "refresh_weight": 6,
+    "region_ids": [
+      "north_fringe,market_haze,riverside_mist"
+    ],
+    "dream_theme_id": "cold_well",
+    "dream_theme_display_name": "冷井",
+    "core_max_hp": 190,
+    "player_max_hp": 90,
+    "bullet_damage": 16,
+    "aoe_damage": 20,
+    "projectile_damage": 22,
+    "reward_desire_shard": 3,
+    "reward_jingyuan": 30,
+    "reward_fallen_base_amount": 3
+  }
+]

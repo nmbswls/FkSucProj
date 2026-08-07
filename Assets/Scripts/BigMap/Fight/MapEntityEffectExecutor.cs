@@ -1927,7 +1927,6 @@ namespace My.Map.Entity
                 return;
             }
             var abilityCtx = unit.abilityController.CurrentCtx;
-            var srcSkill = ctx.SourceInfo.SrcCfgId;
 
             if (abilityCtx.AbilityConfig.Id != realCfg.MatchSkill)
             {
@@ -1944,8 +1943,29 @@ namespace My.Map.Entity
                 return;
             }
 
-            Debug.Log("AbilityEffectExecutor4NextPhase try apply");
             abilityCtx.PhaseMarkSkip = true;
+        }
+    }
+
+    public class AbilityEffectExecutor4DestroyEntity : AbilityEffectExecutor
+    {
+        public override void Apply(MapFightEffectCfg effectConf, LogicFightEffectContext ctx)
+        {
+            if (effectConf is not MapFightEffectDestroyEntityCfg realCfg)
+            {
+                Debug.LogError("AbilityEffectExecutor4DestroyEntity cfg error");
+                return;
+            }
+
+            long entityId = realCfg.Target == MapFightEffectDestroyEntityCfg.ETarget.Target
+                ? ctx.TargetId
+                : ctx.SourceInfo.SrcEntityId;
+            if (entityId == 0 || ctx.Env.GetLogicEntity(entityId, false) == null)
+            {
+                return;
+            }
+
+            ctx.Env.AreaManager.RequestEntityDestroy(entityId, realCfg.Reason);
         }
     }
 
@@ -2500,13 +2520,22 @@ namespace My.Map.Entity
 
             ctx.RunningStorage.TryGetValue(key, out var xuliTime);
             float realTime = xuliTime * 0.001f;
+            float phaseDuration = 0f;
+            if (ctx.RunningStorage.TryGetValue("CurrentPhaseDurationMs", out var phaseDurationMs))
+            {
+                phaseDuration = phaseDurationMs * 0.001f;
+            }
             int stageIdx = -1;
 
             Debug.Log("AbilityFightExecutor4XuLiStage time" + realTime);
 
             for (int i=0;i<realCfg.StageInfos.Count;i++)
             {
-                if (realTime >= realCfg.StageInfos[i].NeedTime)
+                var stageInfo = realCfg.StageInfos[i];
+                var needTime = stageInfo.ThresholdMode == MapFightEffectXuLiStageCfg.EXuLiStageThresholdMode.PhaseRatio
+                    ? stageInfo.NeedTime * phaseDuration
+                    : stageInfo.NeedTime;
+                if (realTime >= needTime)
                 {
                     stageIdx = i;
                     break;

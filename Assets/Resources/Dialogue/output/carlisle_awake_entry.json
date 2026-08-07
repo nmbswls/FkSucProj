@@ -4,14 +4,19 @@
   "Steps": [
     {
       "Id": "1",
-      "Note": "TODO placeholder; replace with authored dialogue content.",
+      "Note": "自我封印前的卡莱尔常驻冷战对白。",
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
           "TextLines": [
             {
-              "Speaker": "",
-              "Content": "TODO：carlisle_awake_entry",
+              "Speaker": "卡莱尔",
+              "Content": "有事就说。没有就离我远一点。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "放心，我对陪一个把自己炸成重伤的圣职者闲聊也没有兴趣。",
               "VoiceLine": null
             }
           ],

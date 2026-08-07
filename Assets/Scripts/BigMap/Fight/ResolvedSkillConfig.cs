@@ -3,7 +3,7 @@ using cfg.demo;
 
 namespace My.Map.Entity
 {
-    // 技能基础表 + 等级表合并后的运行时视图
+    // 鎶€鑳藉熀纭€琛?+ 绛夌骇琛ㄥ悎骞跺悗鐨勮繍琛屾椂瑙嗗浘
     public sealed class ResolvedSkillConfig
     {
         public readonly EntitySkillData Base;
@@ -20,6 +20,7 @@ namespace My.Map.Entity
         public bool IsPassive => Base.IsPassive;
         public bool IsCombo => Base.IsCombo;
         public bool NeedHMode => Base.NeedHMode;
+        public bool AllowInPeaceArea => Base.AllowInPeaceArea;
         public bool InterruptCombo => Base.InterruptCombo;
         public bool IsDerived => Base.IsDerived;
         public int StackCount => Base.StackCount;

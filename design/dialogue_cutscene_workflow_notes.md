@@ -9,7 +9,7 @@
   - `ShowImage` 已补充为无条件 CG 图片命令，运行时在 `DialogueUI` 下创建全屏图片层，不依赖 prefab 预配槽位。
 - 场景角色移动：支持 `MoveEntity`，通过 `StaticName` 找动态实体，并要求实体实现 `IDialogueActor`。等待逻辑依赖 `DialogMoveFinished`。
 - Timeline / cutscene：支持加载 additive cutscene scene、播放 `PlayableDirector`、等待 Timeline signal、恢复 Timeline。
-- 角色动画：`DialogCommandData4ActorAnim` 目前只有数据结构和编辑器标签，`DialoguePlayer` 没有执行逻辑。
+- 角色动画：`DialogCommandData4ActorAnim` 已由 `DialoguePlayer` 执行；当前命令作用于玩家逻辑实体，并通过 `DoDialogAnimation` 播放指定逻辑动画名。
 - 头顶表情：当前 DialoguePlayer 没有专门 command。项目里有气泡/头顶 UI 相关系统，但还没有被对话命令统一调度。
 
 ## 是否适合直接在原场景播放日式 RPG 演出

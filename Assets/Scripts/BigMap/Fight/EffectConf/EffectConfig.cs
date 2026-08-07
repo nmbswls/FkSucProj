@@ -44,6 +44,19 @@ using UnityEngine;
         public string MatchPhase;
     }
 
+    [Serializable]
+    public class MapFightEffectDestroyEntityCfg : MapFightEffectCfg
+    {
+        public enum ETarget
+        {
+            Source,
+            Target,
+        }
+
+        public ETarget Target = ETarget.Source;
+        public string Reason = "fight_effect";
+    }
+
 
     [Serializable]
     public class MapFightEffectTriggerAlert : MapFightEffectCfg

@@ -10,9 +10,15 @@ namespace My.Map.Entity
     [Serializable]
     public class MapFightEffectXuLiStageCfg : MapFightEffectCfg
     {
+        public enum EXuLiStageThresholdMode
+        {
+            FixedTime,
+            PhaseRatio,
+        }
         [Serializable]
         public class EStageInfo
         {
+            public EXuLiStageThresholdMode ThresholdMode = EXuLiStageThresholdMode.FixedTime;
             public float NeedTime;
 
             public List<MapFightEffectCfg> StageEffects = new();

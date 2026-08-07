@@ -42,6 +42,7 @@ namespace My.Map.Unit
 
         // 临时字段，迁到 Luban 前用；配表 ai_brain_id 选模板，NPC 不硬编码 brain 名
         public bool StartAsSentry;
+        public bool LockAggroToSelf;
 
         public static AIBrainConfig CreateDefault() => new AIBrainConfig();
     }
@@ -71,6 +72,13 @@ namespace My.Map.Unit
                 turret.ChaseRange = 1f;
                 turret.StartAsSentry = true;
                 _configs["fixed_turret"] = turret;
+
+                var selfLockedCombat = AIBrainConfig.CreateDefault();
+                selfLockedCombat.LockAggroToSelf = true;
+                selfLockedCombat.AttackRestDuration = 0f;
+                selfLockedCombat.CombatCloseDistance = 0f;
+                selfLockedCombat.CombatFarDistance = 0f;
+                _configs["self_locked_combat"] = selfLockedCombat;
 
                 var agileMelee = AIBrainConfig.CreateDefault();
                 agileMelee.CombatMoveStyle = ECombatMoveStyle.HitAndRun;
@@ -286,6 +294,10 @@ namespace My.Map.Unit
 
             BrainConfigId = cfgId;
             Config = AIBrainParamsConfigLoader.Load(cfgId);
+            if (Config.LockAggroToSelf)
+            {
+                npcOwner.AggroSystem?.LockTargetToSelf();
+            }
 
             InitializeStates();
         }
@@ -313,7 +325,7 @@ namespace My.Map.Unit
                 StateChaseWanted = new AIStateChaseWanted(this);
             }
 
-            ChangeState(Config.StartAsSentry ? StateSentry : StateIdle);
+            ChangeState(Aggro.IsTargetLockedToSelf ? StateCombat : Config.StartAsSentry ? StateSentry : StateIdle);
         }
 
         public void TriggerUpdateImmediately()

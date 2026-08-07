@@ -4,14 +4,24 @@
   "Steps": [
     {
       "Id": "1",
-      "Note": "TODO placeholder; replace with authored dialogue content.",
+      "Note": "卡莱尔苏醒后仍然虚弱，并明确拒绝与莉莉丝和解。",
       "Commands": [
         {
           "$type": "My.Dialog.DialogCommandData4Text, Assembly-CSharp",
           "TextLines": [
             {
-              "Speaker": "",
-              "Content": "TODO：carlisle_awake_first_talk",
+              "Speaker": "卡莱尔",
+              "Content": "我醒着。不需要你再确认一次。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "莉莉丝",
+              "Content": "还能说话，看来那场自爆没有把你仅剩的判断力一起炸掉。",
+              "VoiceLine": null
+            },
+            {
+              "Speaker": "卡莱尔",
+              "Content": "别误会。我留在这里，是因为村里还有伤员，不是因为我接受了你。",
               "VoiceLine": null
             }
           ],

@@ -282,6 +282,7 @@ namespace My
             RumorIntelSpawn?.PruneExpiredEventsForCurrentMap();
             farmSystem?.ApplyDailySettlement(balanceInfo);
             AbstractGroupDreamService.OnSettlementDayBalance(this);
+            DreamPasserbyService.OnSettlementDayBalance(this);
 
             EventOnOneDayBalance?.Invoke(balanceInfo);
         }

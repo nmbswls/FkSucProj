@@ -4,6 +4,8 @@ using My.Map;
 using My.Map.Entity;
 using My.Map.Unit;
 using My.MapExport;
+using Map.Logic.Events;
+using My.Saving;
 using UnityEngine;
 
 namespace My.Map.Logic
@@ -26,6 +28,7 @@ namespace My.Map.Logic
             public EBossEncounterState State;
             public int PhaseIndex;
             public float OutsideSince = -1f;
+            public int CompletionCount;
         }
 
         readonly GameLogicAreaManager _area;
@@ -66,6 +69,55 @@ namespace My.Map.Logic
             EvChanged = null;
         }
 
+        public void ApplyPersistedState(List<BossEncounterRuntimePersist> states)
+        {
+            if (states == null)
+            {
+                return;
+            }
+
+            foreach (var saved in states)
+            {
+                if (saved == null || string.IsNullOrEmpty(saved.EncounterId))
+                {
+                    continue;
+                }
+
+                var encounter = _encounters.Find(item => item.Def.EncounterId == saved.EncounterId);
+                if (encounter == null)
+                {
+                    continue;
+                }
+
+                encounter.CompletionCount = Math.Max(0, saved.CompletionCount);
+                if (saved.Defeated || encounter.CompletionCount > 0)
+                {
+                    encounter.CompletionCount = Math.Max(1, encounter.CompletionCount);
+                    encounter.State = EBossEncounterState.Defeated;
+                }
+            }
+        }
+
+        public List<BossEncounterRuntimePersist> BuildPersistedState()
+        {
+            var result = new List<BossEncounterRuntimePersist>();
+            foreach (var encounter in _encounters)
+            {
+                if (encounter.CompletionCount <= 0 && encounter.State != EBossEncounterState.Defeated)
+                {
+                    continue;
+                }
+
+                result.Add(new BossEncounterRuntimePersist
+                {
+                    EncounterId = encounter.Def.EncounterId,
+                    Defeated = encounter.State == EBossEncounterState.Defeated,
+                    CompletionCount = encounter.CompletionCount,
+                });
+            }
+            return result;
+        }
+
         public void Tick(float dt)
         {
             foreach (var encounter in _encounters)
@@ -82,10 +134,41 @@ namespace My.Map.Logic
                     continue;
                 }
 
+                if (encounter.State == EBossEncounterState.Defeated
+                    && encounter.Def.AllowRepeatChallenge
+                    && !boss.IsDead
+                    && boss.GetAttr(AttrIdConsts.HP) > 0)
+                {
+                    encounter.PhaseIndex = 0;
+                    SetState(encounter, EBossEncounterState.Dormant);
+                }
+
                 if (boss.IsDead || boss.GetAttr(AttrIdConsts.HP) <= 0)
                 {
                     _area.Summons.ClearForSourceDestroyed(encounter.EntityId);
-                    SetState(encounter, EBossEncounterState.Defeated);
+                    if (encounter.State != EBossEncounterState.Defeated)
+                    {
+                        SetState(encounter, EBossEncounterState.Defeated);
+                        encounter.CompletionCount++;
+                        if (!encounter.Def.AllowRepeatChallenge)
+                        {
+                            _area.MarkRefreshSlotPermanentClear(encounter.StaticId);
+                        }
+                        _area.LogicManager.LogicEventBus.Publish(new MLEBossEncounterDefeated
+                        {
+                            EncounterId = encounter.Def.EncounterId,
+                            BossCfgId = boss.CfgId,
+                            BossEntityId = encounter.EntityId,
+                            AncientWorldProgressKey = encounter.Def.AncientWorldProgressKey,
+                            AncientWorldProgressStageDelta = encounter.Def.AncientWorldProgressStageDelta,
+                            Ctx = new MapLogicEventContext
+                            {
+                                SourceEntity = boss,
+                                TargetId = encounter.EntityId,
+                                HappenPos = boss.Pos,
+                            },
+                        });
+                    }
                     continue;
                 }
 
@@ -130,7 +213,9 @@ namespace My.Map.Logic
                 _byEntity.Remove(encounter.EntityId);
             }
             encounter.EntityId = refresh.EntityInstId;
-            encounter.State = EBossEncounterState.Dormant;
+            encounter.State = encounter.CompletionCount > 0
+                ? EBossEncounterState.Defeated
+                : EBossEncounterState.Dormant;
             encounter.PhaseIndex = 0;
             encounter.OutsideSince = -1f;
             _byEntity[encounter.EntityId] = encounter;

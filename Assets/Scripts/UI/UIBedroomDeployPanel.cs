@@ -79,12 +79,12 @@ namespace My.UI
         public override void Setup(object data = null)
         {
             //BedroomDeployMapUtil.CollectHuntMaps(_huntMaps);
-            CollectHuntingTargetMap(_huntMaps);
+            CollectMagicSensitiveMaps(_huntMaps);
             RebuildMapList();
             SelectMap(_huntMaps.Count > 0 ? _huntMaps[0] : null);
         }
 
-        private void CollectHuntingTargetMap(List<AreaOverlayStateInfo> outMaps)
+        private void CollectMagicSensitiveMaps(List<AreaOverlayStateInfo> outMaps)
         {
             outMaps.Clear();
             var tb = CfgMgr.Cfgs?.TbAreaOverlayStateInfo;
@@ -102,7 +102,7 @@ namespace My.UI
                     continue;
                 }
 
-                if (!m.HuntingTarget)
+                if (!m.IsMagicSensitiveArea)
                 {
                     continue;
                 }

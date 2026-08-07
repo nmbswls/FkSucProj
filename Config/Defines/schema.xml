@@ -220,6 +220,14 @@
         <var name="val" type="long" comment="固定加成"/>
     </bean>
 
+    <bean name="TalentSkillModifier" tags="sep=,">
+        <var name="skill_id" type="string" comment="目标技能 id"/>
+        <var name="ability_id" type="string" comment="可选 Ability id"/>
+        <var name="phase_name" type="string" comment="可选 Phase 名称"/>
+        <var name="modifier_type" type="string" comment="ESkillModifierType 名称"/>
+        <var name="value" type="float" comment="倍率"/>
+    </bean>
+
     <!-- 魅魔身体部位：Datas/body_part.xlsx -->
     <!-- 部位装备细节：Datas/partgear.xlsx → TbPartGear，item_id 关联 ItemData -->
     <enum name="EBodyPart">

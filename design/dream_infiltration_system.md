@@ -18,6 +18,28 @@
 
 抽象团体（路人与 Character 之间的第三层）的完整需求见：`design/abstract_group_dream_system.md`。
 
+## 入口分层与奖励语义（已定）
+
+世界对象三层仍是 **路人 → 小团体 → Character**。入梦设施内：
+
+- **浅梦路人** = 抽象 `dream_passerby`（不关联 `UnitNpc` / 场景路人），通用小黑人形象 + 品级 `ECommonGrade`（见 `common_grade.md`）。
+- **区域** `dream_passerby_region` 只是抽象条件：今晚是否允许从该区域概念刷人；不是可点地点。
+- **小团体**与路人混排在地图区；团体 UI 更大且带边框。
+- **角色梦境**独立显示在右上角。
+
+交互：点小人选中 → 下方详情 → 点「入梦」开局（选中不占次数）。
+
+| 入口 | 通关奖励语义 | 失败 |
+|---|---|---|
+| 浅梦路人 `PasserbyEntry` | 表内薄奖：欲望碎片 / 少量精元池 / 少量基础沉沦 | 无奖 |
+| 角色梦境 `CharacterEntry` | **只记**尝试/倾向胜负（任务/关系） | 仍记尝试 |
+| 小团体 `AbstractGroupEntry` | 阶段奖 + 满阶段秘会 | 不发阶段奖 |
+
+### 每晚显示数量
+
+初版固定 **6**（`DreamPasserbyService.DefaultNightlyDisplayCount`）。  
+是否可成长：建议**可成长**，但别太快——一天一局下数量主要影响「选局丰富度」而非刷次。优先挂入梦设施等级或薄属性（如 `DreamPasserbyNightlyCount`），上限建议 8～10，避免地图拥挤盖住团体辨识。
+
 ## 时段与日限（已定）
 
 | 规则 | 说明 |

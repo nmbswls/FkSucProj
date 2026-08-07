@@ -618,6 +618,8 @@ namespace My.MiniGame.Dream
                 TrickScore    = _trickDamage,
                 EntrySource = _ctx.EntrySource,
                 SpotId = _ctx.SpotId,
+                PasserbyId = _ctx.PasserbyId,
+                PasserbyRegionId = _ctx.PasserbyRegionId,
                 CharacterKey = _ctx.CharacterKey,
                 CharDreamEntryId = _ctx.CharDreamEntryId,
                 AbstractGroupId = _ctx.AbstractGroupId,
@@ -715,8 +717,10 @@ namespace My.MiniGame.Dream
         public float TrickApproachSpeed = 65f;
         public int RequiredScore;
 
-        public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.FacilitySpot;
+        public DreamEntrySourceKind EntrySource = DreamEntrySourceKind.PasserbyEntry;
         public string SpotId = "";
+        public string PasserbyId = "";
+        public string PasserbyRegionId = "";
         public string CharacterKey = "";
         public int CharDreamEntryId;
         public string AbstractGroupId = "";

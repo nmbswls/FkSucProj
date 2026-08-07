@@ -250,14 +250,14 @@ namespace My.Map.Logic
 
             checkRefreshTimer = LogicTime.time;
 
+            BossEncounters?.Dispose();
+            BossEncounters = new BossEncounterAreaRuntime(this, cacheDatabase);
+
             logicManager.ApplyPendingMapRuntimeAfterMapInit(mapOVerlayId);
 
             NpcRoutine.EnsureConfiguredNpcsCreated();
 
             SetupDesireCrystalSession(mapOVerlayId);
-
-            BossEncounters?.Dispose();
-            BossEncounters = new BossEncounterAreaRuntime(this, cacheDatabase);
 
         }
 
